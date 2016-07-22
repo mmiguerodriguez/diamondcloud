@@ -6,7 +6,7 @@ import '../../api/boards/methods.js';
 import '../../api/direct-chats/methods.js';
 
 // Drawings
-import '../../api/drawings/methods.js';
+// import '../../api/drawings/methods.js';
 
 // Messages
 import '../../api/messages/server/publications.js';
