@@ -1,0 +1,20 @@
+{
+  "name": "cloud",
+  "private": true,
+  "scripts": {
+    "start": "meteor run",
+    "storybook": "start-storybook -p 9001"
+  },
+  "dependencies": {
+    "faker": "^3.1.0",
+    "fibers": "^1.0.13",
+    "meteor-node-stubs": "^0.2.3",
+    "react": "^15.1.0",
+    "react-addons-pure-render-mixin": "^15.1.0",
+    "react-dom": "^15.1.0",
+    "react-router": "^2.6.0"
+  },
+  "devDependencies": {
+    "@kadira/storybook": "^1.38.3"
+  }
+}
