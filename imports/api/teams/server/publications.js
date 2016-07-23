@@ -11,8 +11,8 @@ Meteor.publish('teams.dashboard', function() {
   }
 
   let teams = Meteor.user().teams({ 
-        fields: Teams.dashboardFields 
-      });
+    fields: Teams.dashboardFields 
+  });
   return teams;
   
 });
