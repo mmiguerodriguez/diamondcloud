@@ -38,28 +38,7 @@ Meteor.publishComposite('teams.team', function(teamId) {
             boardsIds.push(board._id);
           });
           
-          let boards = Boards.find({
-            _id: {
-              $in: boardsIds 
-            },
-            $or: [
-              {
-                users: {
-                  $elemMatch: {
-                    _id: this.userId,
-                  }
-                }
-              },
-              {
-                isPrivate: false,
-              },
-            ],
-          }, {
-            fields: {
-              _id: 1,
-              name: 1,
-            }
-          });
+          let boards = Boards.getBoards(boardsIds, this.userId, { _id: 1, name: 1 });
           
           return boards;
         },

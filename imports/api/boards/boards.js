@@ -27,3 +27,27 @@ Boards.boardFields = {
   drawings: 1,
   archived: 1,
 };
+
+Boards.getBoards = (boardsIds, userId, fields) => {
+  fields = fields || { _id: 1, name: 1 };
+
+  return Boards.find({
+    _id: {
+      $in: boardsIds 
+    },
+    $or: [
+      {
+        users: {
+          $elemMatch: {
+            _id: userId,
+          }
+        }
+      },
+      {
+        isPrivate: false,
+      },
+    ],
+  }, {
+    fields
+  });
+}
