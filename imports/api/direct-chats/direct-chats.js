@@ -12,3 +12,14 @@ DirectChats.getUserDirectChats = (userId, teamId) => {
     }
   });
 };
+
+DirectChats.isValid = (directChatId, userId) => {
+	return DirectChats.find({
+    _id: directChatId,
+    users: {
+      $elemMatch: {
+        _id: userId,
+      }
+    }
+  }).count() !== 0;
+};

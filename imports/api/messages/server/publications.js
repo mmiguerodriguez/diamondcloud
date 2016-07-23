@@ -15,16 +15,7 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
   }
   
   if(!!directChatId){
-    let directChatExists = DirectChats.find({
-      _id: directChatId,
-      users: {
-        $elemMatch: {
-          _id: this.userId,
-        }
-      }
-    }).count() !== 0;
-    
-    if(!directChatExists) {
+    if(!DirectChats.isValid(directChatId, this.userId)) {
       throw new Meteor.Error('Messages.chat.wrongParameters', 
       'There are errors in the passed parameters.');
     } else {
