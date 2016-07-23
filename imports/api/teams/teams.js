@@ -61,3 +61,13 @@ Teams.addUser = (teamId, user, callback) => {
   });
   return callback();
 };
+
+Teams.removeUser = (teamId, userEmail) => {
+  Teams.update({ _id: teamId }, {
+    $pull: { 
+      users : { 
+        email: userEmail,
+      },
+    },
+  });
+};
