@@ -51,3 +51,13 @@ Teams.teamFields = {
   users: 1,
   boards: 1,
 };
+
+Teams.addUser = (teamId, user, callback) => {
+  callback = callback || (() => {});
+  Teams.update({ _id: teamId }, {
+    $push: {
+      users: user
+    }
+  });
+  return callback();
+};

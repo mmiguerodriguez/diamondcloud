@@ -99,11 +99,7 @@ export const shareTeam = new ValidatedMethod({
     
     let user = { email, permission: 'member' };
     
-    Teams.update({ _id: teamId }, {
-      $push: {
-        users: user
-      }
-    });
+    Teams.addUser(teamId, user);
     
     // Testing purposes
     // may need to change in the future
