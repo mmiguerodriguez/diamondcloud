@@ -45,15 +45,7 @@ Meteor.publishComposite('teams.team', function(teamId) {
       },
       {
         find: function(team) {
-          let directChats = DirectChats.find({
-            teamId, 
-            users: { 
-              $elemMatch: { 
-                _id: this.userId,
-              } 
-            }
-          });
-          return directChats;
+          return DirectChats.getUserDirectChats(this.userId, teamId);
         }
       },
     ]
