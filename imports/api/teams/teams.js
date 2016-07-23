@@ -52,14 +52,12 @@ Teams.teamFields = {
   boards: 1,
 };
 
-Teams.addUser = (teamId, user, callback) => {
-  callback = callback || (() => {});
+Teams.addUser = (teamId, user) => {
   Teams.update({ _id: teamId }, {
     $push: {
       users: user
     }
   });
-  return callback();
 };
 
 Teams.removeUser = (teamId, userEmail) => {
