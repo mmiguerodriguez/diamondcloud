@@ -50,4 +50,20 @@ Boards.getBoards = (boardsIds, userId, fields) => {
   }, {
     fields
   });
-}
+};
+
+Boards.isValid = (boardId, userId) => {
+  return Boards.find({
+    _id: boardId,
+    $or: [
+      { isPrivate: false },
+      {
+        users: {
+          $elemMatch: {
+            _id: userId,
+          }
+        }
+      }
+    ],
+  }).count() !== 0;
+};
