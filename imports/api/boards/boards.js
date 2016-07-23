@@ -47,6 +47,7 @@ Boards.getBoards = (boardsIds, userId, fields) => {
         isPrivate: false,
       },
     ],
+    archived: false,
   }, {
     fields
   });
