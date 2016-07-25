@@ -6,15 +6,15 @@ import { Boards } from '../../boards/boards.js';
 
 Meteor.publish('teams.dashboard', function() {
   if (!Meteor.user()) {
-    throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn', 
+    throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn',
     'Must be logged in to view teams.');
   }
 
-  let teams = Meteor.user().teams({ 
-        fields: Teams.dashboardFields 
-      });
-  return teams;
+  let teams = Meteor.user().teams({
+    fields: Teams.dashboardFields
+  });
   
+  return teams;
 });
 
 Meteor.publishComposite('teams.team', function(teamId) {
@@ -22,25 +22,25 @@ Meteor.publishComposite('teams.team', function(teamId) {
     throw new Meteor.Error('Teams.publication.team.notLoggedIn',
     'Must be logged in to view teams.');
   }
-  
+
   return {
     find: function() {
-      return Teams.find(teamId, { 
-        fields: Teams.teamFields, 
+      return Teams.find(teamId, {
+        fields: Teams.teamFields,
       });
     },
     children: [
       {
         find: function(team) {
           let boardsIds = [];
-          
+
           team.boards.forEach((board) => {
             boardsIds.push(board._id);
           });
-          
+
           let boards = Boards.find({
             _id: {
-              $in: boardsIds 
+              $in: boardsIds
             },
             $or: [
               {
@@ -60,18 +60,18 @@ Meteor.publishComposite('teams.team', function(teamId) {
               name: 1,
             }
           });
-          
+
           return boards;
         },
       },
       {
         find: function(team) {
           let directChats = DirectChats.find({
-            teamId, 
-            users: { 
-              $elemMatch: { 
+            teamId,
+            users: {
+              $elemMatch: {
                 _id: this.userId,
-              } 
+              }
             }
           });
           return directChats;
