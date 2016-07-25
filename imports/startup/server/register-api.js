@@ -15,3 +15,6 @@ import '../../api/messages/methods.js';
 // Teams
 import '../../api/teams/server/publications.js';
 import '../../api/teams/methods.js';
+
+// Users
+import '../../api/users/users.js';
