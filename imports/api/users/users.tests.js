@@ -53,6 +53,10 @@ if (Meteor.isServer) {
       beforeEach(function() {
         resetDatabase();
         sinon.stub(Meteor, 'user', () => user);
+        Meteor.users.insert(user);
+        for(let i = 0; i < teams.length; i++){
+          Teams.insert(teams[i]);
+        }
       });
       
       afterEach(function() {
@@ -66,12 +70,8 @@ if (Meteor.isServer) {
             name: 1 
           }
         });
-        console.log(`TEAMS: ${JSON.stringify(teams, null, 2)}`);
-        console.log(`USER: ${JSON.stringify(user, null, 2)}`);
-        console.log(`RESULT: ${result.count()}`);
         chai.assert.isTrue(result.count() === 1);
         result.forEach((team, index) => {
-
           chai.assert.isTrue(team.name === teams[index].name);
           chai.assert.isUndefined(team.users);
         });

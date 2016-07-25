@@ -21,8 +21,8 @@ Factory.define('team', Teams, {
 });
 
 Factory.define('board', Boards, {
-	_id: () => Random.id(),
-	name: () => faker.lorem.word(),
+	_id: Random.id(),
+	name: faker.lorem.word(),
 	isPrivate: null,
 	users: [],
 	moduleInstances: [],
@@ -36,30 +36,26 @@ Factory.define('publicBoard', Boards, Factory.extend('board', {
 
 Factory.define('privateBoard', Boards, Factory.extend('board', {
 	isPrivate: true,
-	users: () => {
-		[
-			{ _id: Factory.get('user')._id },
-		]
-	},
+	users: [
+		{ _id: Factory.get('user')._id },
+	],
 }));
 
 Factory.define('directChat', DirectChats, {
-	_id: () => Random.id(),
+	_id: Random.id(),
 	teamId: Factory.get('team'),
-	users: () => {
-		[
-			{ _id: Random.id() },
-			{ _id: Random.id() },
-		]
-	}
+	users: [
+		{ _id: Random.id() },
+		{ _id: Random.id() },
+	]
 });
 
 Factory.define('message', Messages, {
-	_id: () => Random.id(),
-	senderId: () => Factory.get('user')._id,
+	_id: Random.id(),
+	senderId: Factory.get('user')._id,
 	type: "text",
-	content: () => faker.lorem.sentence(),
-	createdAt: () => new Date(),
+	content: faker.lorem.sentence(),
+	createdAt: new Date(),
 });
 
 Factory.define('directChatMessage', Messages, Factory.extend('message', {
