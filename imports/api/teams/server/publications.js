@@ -10,11 +10,12 @@ Meteor.publish('teams.dashboard', function() {
     'Must be logged in to view teams.');
   }
 
-  let teams = Meteor.user().teams({
+  let user = Meteor.users.findOne(this.userId);
+  let teams = user.teams({
     fields: Teams.dashboardFields,
   });
+  
   return teams;
-
 });
 
 Meteor.publishComposite('teams.team', function(teamId) {
