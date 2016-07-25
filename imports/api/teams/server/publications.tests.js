@@ -13,8 +13,8 @@ import { Boards }               from '../../boards/boards.js';
 
 if (Meteor.isServer) {
   let userMails = [
-        faker.internet.email(), 
-        faker.internet.email(), 
+        faker.internet.email(),
+        faker.internet.email(),
         faker.internet.email(),
       ],
       teamIds  = [Random.id(), Random.id(), Random.id()],
@@ -28,18 +28,18 @@ if (Meteor.isServer) {
         ],
         teams: ({ fields }) => {
           return Teams.find({
-            _id: { 
+            _id: {
               $in: [
-                teamIds[0], 
+                teamIds[0],
                 teamIds[1],
               ]
             },
-          }, { 
-            fields 
+          }, {
+            fields
           });
         },
       };
-  
+
   describe('Teams', function() {
     describe('Publications', function() {
       let teams = [{
@@ -51,8 +51,8 @@ if (Meteor.isServer) {
               { email: userMails[0], permission: 'owner'},
               { email: userMails[1], permission: 'member' }
             ],
-            boards: [ 
-              { _id: boardIds[0] }, 
+            boards: [
+              { _id: boardIds[0] },
               { _id: boardIds[1] }
             ],
             directChats: [
@@ -98,21 +98,21 @@ if (Meteor.isServer) {
             _id: chatIds[0],
             teamId: teamIds[0],
             users: [
-              { _id: userNotInTeam[0] }, 
+              { _id: userNotInTeam[0] },
               { _id: user._id }
             ],
           }, {
             _id: chatIds[1],
             teamId: teamIds[0],
             users: [
-              { _id: userNotInTeam[0] }, 
+              { _id: userNotInTeam[0] },
               { _id: user._id }
             ],
           }, {
             _id: chatIds[2],
             teamId: teamIds[0],
             users: [
-              { _id: userNotInTeam[0] }, 
+              { _id: userNotInTeam[0] },
               { _id: userNotInTeam[1] }
             ],
           }],
@@ -141,32 +141,32 @@ if (Meteor.isServer) {
             { _id: userNotInTeam[1] }
           ],
         }];
-      
+
       beforeEach(function() {
         resetDatabase();
-        
+
         for(let i = 0; i < teams.length; i++)
           Teams.insert(teams[i]);
-          
+
         for(let i = 0; i < directChats.length; i++)
           DirectChats.insert(directChats[i]);
-          
+
         for(let i = 0; i < boards.length; i++)
           Boards.insert(boards[i]);
-        
+
         sinon.stub(Meteor, 'user', () => user);
       });
-      
+
       afterEach(function() {
         Meteor.user.restore();
       });
-      
+
       it('should publish dashboard data', function(done) {
-        const collector = new PublicationCollector();
-        
+        const collector = new PublicationCollector({ userId: user._id });
+
         collector.collect('teams.dashboard', (collections) => {
           chai.assert.equal(collections.Teams.length, 2);
-          
+
           collections.Teams.forEach((team, index) => {
             /*
             chai.assert.isTrue(team.name === teams[index].name);
@@ -200,11 +200,11 @@ if (Meteor.isServer) {
             chai.assert.isDefined(directChat.teamId);
             chai.assert.isDefined(directChat.users);
           });
-          
+
           chai.assert.isDefined(collections.DirectChats[0]);
           chai.assert.isDefined(collections.DirectChats[1]);
           chai.assert.isUndefined(collections.DirectChats[2]);
-          
+
           // Check boards collection
           chai.assert.isDefined(collections.Boards);
           collections.Boards.forEach((board, index) => {
@@ -216,11 +216,11 @@ if (Meteor.isServer) {
             chai.assert.isDefined(board._id);
             chai.assert.isDefined(board.name);
           });
-          
+
           chai.assert.isDefined(collections.Boards[0]);
           chai.assert.isDefined(collections.Boards[1]);
           chai.assert.isUndefined(collections.Boards[2]);
-          
+
           done();
         });
       });

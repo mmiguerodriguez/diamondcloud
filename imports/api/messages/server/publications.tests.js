@@ -18,14 +18,14 @@ if (Meteor.isServer) {
       { address: faker.internet.email() }
     ]
   };
-  
+
   describe('Messages', function() {
     describe('Publications', function() {
       let directChatWithUser = {
             _id: Random.id(),
             teamId: Random.id(),
             users: [
-              { _id: Random.id() }, 
+              { _id: Random.id() },
               { _id: user._id }
             ],
           },
@@ -33,7 +33,7 @@ if (Meteor.isServer) {
             _id: Random.id(),
             teamId: Random.id(),
             users: [
-              { _id: Random.id() }, 
+              { _id: Random.id() },
               { _id: Random.id() }
             ],
           },
@@ -57,7 +57,7 @@ if (Meteor.isServer) {
             _id: Random.id(),
             name: faker.lorem.word(),
             isPrivate: false,
-      },
+          },
           messages = [
             {
               directChatId: directChatWithUser._id,
@@ -94,32 +94,32 @@ if (Meteor.isServer) {
               type: 'text',
               content: 'Public board 2',
             },
-      ];
-      
+          ];
+
       beforeEach(function() {
         resetDatabase();
-        
+
         DirectChats.insert(directChatWithUser);
         DirectChats.insert(directChatWithoutUser);
-        
+
         Boards.insert(privateBoardWithUser);
         Boards.insert(privateBoardWithoutUser);
         Boards.insert(publicBoard);
-        
+
         messages.forEach((message) => {
           Messages.insert(message);
         });
-        
+
         sinon.stub(Meteor, 'user', () => user);
       });
-      
+
       afterEach(function() {
         Meteor.user.restore();
       });
-      
+
       it('should publish the messages of a direct chat in which the user is in', function(done) {
         const collector = new PublicationCollector({ userId: user._id });
-        
+
         collector.collect('messages.chat', { directChatId: directChatWithUser._id }, (collections) => {
           chai.assert.isTrue(collections.Messages.length == 2);
           done();
@@ -129,21 +129,21 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
         let collect = () => {
               collector.collect('messages.chat', { directChatId: directChatWithoutUser._id }, (collections) => {});
-            }, 
+            },
             error;
-            
+
         try {
           collect();
         } catch(err) {
           error = err;
         }
-        
+
         chai.assert.isTrue(error.error == 'Messages.chat.wrongParameters');
         done();
       });
       it('should publish the messages of a private board in which the user is in', function(done) {
         const collector = new PublicationCollector({ userId: user._id });
-        
+
         collector.collect('messages.chat', { boardId: privateBoardWithUser._id }, (collections) => {
           chai.assert.isTrue(collections.Messages.length === 2);
           done();
@@ -151,18 +151,18 @@ if (Meteor.isServer) {
       });
       it("should not publish the messages of a private board in which the user isn't in", function(done) {
         const collector = new PublicationCollector({ userId: user._id });
-        
+
         let collect = () => {
               collector.collect('messages.chat', { directChatId: privateBoardWithoutUser._id }, (collections) => {});
-            }, 
+            },
             error;
-        
+
         try {
           collect();
         } catch(err) {
           error = err;
         }
-        
+
         chai.assert.isTrue(error.error == 'Messages.chat.wrongParameters');
         done();
       });

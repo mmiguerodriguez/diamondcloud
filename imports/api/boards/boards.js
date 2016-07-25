@@ -12,10 +12,10 @@ Boards.helpers({
           _id: this._id,
         },
       },
-    }, { 
-      fields: { 
-        _id: 1 
-      } 
+    }, {
+      fields: {
+        _id: 1
+      }
     });
   },
 });
@@ -30,10 +30,10 @@ Boards.boardFields = {
 
 Boards.getBoards = (boardsIds, userId, fields) => {
   fields = fields || { _id: 1, name: 1 };
-
+  
   return Boards.find({
     _id: {
-      $in: boardsIds 
+      $in: boardsIds,
     },
     $or: [
       {
