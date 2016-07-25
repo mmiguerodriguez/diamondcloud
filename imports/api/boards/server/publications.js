@@ -10,22 +10,7 @@ Meteor.publishComposite('boards.board', function(boardId) {
   }
   return {
     find: function() {
-      return Boards.find({
-        _id: boardId,
-        $or: [ // check that current user is allowed to view the board
-          { isPrivate: false },
-          {
-            users: {
-              $elemMatch: {
-                _id: this.userId,
-              }
-            }
-          }
-        ],
-        archived: false,
-      }, { 
-        fields: Boards.boardFields, 
-      });
+      return Boards.getBoards([boardId], this.userId, Boards.boardFields);
     },
     children: [{
       find: function(board) {

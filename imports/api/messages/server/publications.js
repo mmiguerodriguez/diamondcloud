@@ -2,6 +2,7 @@ import { Meteor }      from 'meteor/meteor';
 import { Messages }    from '../messages.js';
 
 import { DirectChats } from '../../direct-chats/direct-chats.js';
+import { Boards }      from '../../boards/boards.js';
 
 Meteor.publish('messages.chat', function({ directChatId, boardId }) {
   if (!Meteor.user()) {
@@ -15,37 +16,14 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
   }
   
   if(!!directChatId){
-    let directChatExists = DirectChats.find({
-      _id: directChatId,
-      users: {
-        $elemMatch: {
-          _id: this.userId,
-        }
-      }
-    }).count() !== 0;
-    
-    if(!directChatExists) {
+    if(!DirectChats.isValid(directChatId, this.userId)) {
       throw new Meteor.Error('Messages.chat.wrongParameters', 
       'There are errors in the passed parameters.');
     } else {
       boardId = '';
     }
-  } else {
-    let boardExists = DirectChats.find({
-      _id: boardId,
-      $or: [
-        { isPrivate: false },
-        {
-          users: {
-            $elemMatch: {
-              _id: this.userId,
-            }
-          }
-        }
-      ],
-    }).count() == 0;
-    
-    if(!boardExists) {
+  } else {    
+    if(!Boards.isValid(boardId, this.userId)) {
       throw new Meteor.Error('Messages.chat.wrongParameters', 
       'There are errors in the passed parameters.');
     } else {

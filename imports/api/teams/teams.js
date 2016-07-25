@@ -51,3 +51,21 @@ Teams.teamFields = {
   users: 1,
   boards: 1,
 };
+
+Teams.addUser = (teamId, user) => {
+  Teams.update({ _id: teamId }, {
+    $push: {
+      users: user
+    }
+  });
+};
+
+Teams.removeUser = (teamId, userEmail) => {
+  Teams.update({ _id: teamId }, {
+    $pull: { 
+      users : { 
+        email: userEmail,
+      },
+    },
+  });
+};
