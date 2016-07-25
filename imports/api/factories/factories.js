@@ -6,7 +6,17 @@ import { Messages }  from '../messages/messages.js';
 import { DirectChats }  from '../direct-chats/direct-chats.js';
 
 Factory.define('user', Meteor.users, {
+	_id: Random.id(),
 	emails: [ { address: faker.internet.email() } ],
+});
+
+Factory.define('board', Boards, {
+	_id: Random.id(),
+	name: faker.lorem.word(),
+	isPrivate: null,
+	users: [],
+	moduleInstances: [],
+	archived: false,
 });
 
 Factory.define('team', Teams, {
@@ -17,15 +27,6 @@ Factory.define('team', Teams, {
 	users: [
 		{ email: faker.internet.email(), permission: 'owner' }
 	],
-	archived: false,
-});
-
-Factory.define('board', Boards, {
-	_id: Random.id(),
-	name: faker.lorem.word(),
-	isPrivate: null,
-	users: [],
-	moduleInstances: [],
 	archived: false,
 });
 

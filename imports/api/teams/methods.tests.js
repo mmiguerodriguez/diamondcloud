@@ -2,8 +2,8 @@ import { Meteor }        from 'meteor/meteor';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
 import { chai }          from 'meteor/practicalmeteor:chai';
-import { Random }        from 'meteor/random';
 import   faker           from 'faker';
+import { Random }        from 'meteor/random';
 
 import { Teams }         from './teams.js';
 import { createTeam,
@@ -15,9 +15,11 @@ import { createTeam,
 }                        from './methods.js';
 import { createBoard }   from '../boards/methods.js';
 
+import '../factories/factories.js';
+
 if (Meteor.isServer) {
   describe('Teams', function() {
-    let user = {
+    /*let user = {
       emails: [{ address: faker.internet.email() }],
     },
         name = faker.lorem.word(), 
@@ -37,19 +39,27 @@ if (Meteor.isServer) {
             { email: usersEmails[1], permission: 'member' },
           ],
           archived: false,
-        };
-    
+        };*/
+    resetDatabase();
+    let user = Factory.create('user'),
+        team = Factory.create('team'),
+        usersEmails = [faker.internet.email(), faker.internet.email()],
+        boardId = Random.id();
+    team.users[0].email = user.emails[0].address;
+    team.users.push({ email: usersEmails[0], permission: 'member' });
+    team.users.push({ email: usersEmails[1], permission: 'member' });
     beforeEach(function() {
       resetDatabase();
+      sinon.stub(Meteor, 'user', () => user);
+      Meteor.users.insert(user);
+      Teams.insert(team);
+      
       sinon.stub(createBoard, 'call', (obj, callback) => {
         let team = Teams.findOne(obj.teamId);
         team.boards.push({ _id: boardId });
         Teams.update({ _id: obj.teamId }, team);
         callback(null, boardId);
       });
-      sinon.stub(Meteor, 'user', () => user);
-      
-      Teams.insert(team);
     });
     afterEach(function() {
       createBoard.call.restore();
@@ -62,13 +72,13 @@ if (Meteor.isServer) {
           expect;
           
       args = {
-        name,
+        name: team.name,
         plan: 'free',
         type: 'web',
         usersEmails,
       };
       expect = {
-        name,
+        name: team.name,
         plan: 'free',
         type: 'web',
         boards: [{ _id: boardId }],
@@ -96,7 +106,7 @@ if (Meteor.isServer) {
         name: 'test',
         plan: 'premium',
         type: 'dota',
-        boards: [{ _id: boardId }],
+        boards: [],
         users: [
           { email: user.emails[0].address, permission: 'owner' },
           { email: usersEmails[0], permission: 'member' },
@@ -126,10 +136,10 @@ if (Meteor.isServer) {
           
       expect = {
         _id: team._id,
-        name,
+        name: team.name,
         plan: 'free',
         type: 'web',
-        boards: [{ _id: boardId }],
+        boards: [],
         users: [
           { email: user.emails[0].address, permission: 'owner' },
           { email: usersEmails[0], permission: 'member' },
@@ -156,10 +166,10 @@ if (Meteor.isServer) {
           
       expect = {
         _id: team._id,
-        name,
+        name: team.name,
         plan: 'free',
         type: 'web',
-        boards: [{ _id: boardId }],
+        boards: [],
         users: [
           { email: user.emails[0].address, permission: 'owner' },
           { email: usersEmails[0], permission: 'member' },

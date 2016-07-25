@@ -13,50 +13,22 @@ import '../factories/factories.js';
 if (Meteor.isServer) {
   describe('Users', function() {
     describe('Helpers', function(){
-      /*let user = {
-            _id: Random.id(),
-            emails: [
-              { address: faker.internet.email() }
-            ],
-          },
-          teams = [{
-            _id: '1',
-            name: 'Team 1',
-            users: [
-              { email: user.emails[0].address, permission: 'owner' },
-            ],
-            archived: false,
-          }, {
-            _id: '2',
-            name: 'Team 2',
-            users: [
-              { email: user.emails[0].address, permission: 'owner' },
-            ],
-            archived: true,
-          }, {
-            _id: '3',
-            name: 'Team 3',
-            users: [
-              { email: 'randommail@gmail.com', permission: 'owner' },
-            ],
-          }];*/
-      let user = Factory.create('user');
-      let teams = [
-        Factory.create('team'),
-        Factory.create('team', { archived: true }),
-        Factory.create('team'),
-      ];
-      
+      resetDatabase();
+      let user = Factory.create('user'),
+          teams = [
+            Factory.create('team'),
+            Factory.create('team', { archived: true }),
+            Factory.create('team'),
+          ];
       teams[0].users[0].email = user.emails[0].address;
       teams[1].users[0].email = user.emails[0].address;
-          
       beforeEach(function() {
         resetDatabase();
         sinon.stub(Meteor, 'user', () => user);
         Meteor.users.insert(user);
-        for(let i = 0; i < teams.length; i++){
-          Teams.insert(teams[i]);
-        }
+        teams.forEach((team) => {
+          Teams.insert(team);
+        });
       });
       
       afterEach(function() {
