@@ -7,7 +7,13 @@ export default class WelcomeCard extends React.Component {
         { 
           this.props.teamsCount > 0 
           ? 
-          <h3>Conectate con tu equipo</h3>:<h3>Empezá a colaborar con tu equipo</h3>
+          <div>
+            <h3>Conectate con tu equipo</h3>
+          </div>
+          :
+          <div className="welcome-card row">
+            <h3>Empezá a colaborar con tu equipo</h3>
+          </div>
         }
       </div>
     );
