@@ -1,6 +1,6 @@
 import React from 'react';
 
-import AccountsUIWrapper from '../AccountsUIWrapper.jsx';
+import AccountsUIWrapper from '../accounts/AccountsUIWrapper.jsx';
 
 export default class LandingLayout extends React.Component {
   render() {
