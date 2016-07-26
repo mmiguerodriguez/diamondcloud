@@ -12,10 +12,10 @@ export default class Dashboard extends React.Component {
   }
 }
 
-export default createContainer(() => {
+export default DashboardPageContainer = createContainer(() => {
   Meteor.subscribe('teams.dashboard');
 
   return {
-    teams: Teams.find({}).fetch(),
+    teams: Teams.find().fetch(),
   };
 }, Dashboard);

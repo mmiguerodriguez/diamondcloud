@@ -14,7 +14,7 @@ Meteor.publish('teams.dashboard', function() {
   let teams = user.teams({
     fields: Teams.dashboardFields,
   });
-  
+
   return teams;
 });
 
@@ -39,7 +39,10 @@ Meteor.publishComposite('teams.team', function(teamId) {
             boardsIds.push(board._id);
           });
 
-          let boards = Boards.getBoards(boardsIds, this.userId, { _id: 1, name: 1 });
+          let boards = Boards.getBoards(boardsIds, this.userId, {
+            _id: 1,
+            name: 1
+          });
           return boards;
         },
       },
