@@ -7,12 +7,6 @@ import { Teams } from '../../api/teams/teams.js';
 import DashboardLayout from './DashboardLayout.jsx';
 
 export default class Dashboard extends React.Component {
-  constructor() {
-    super();
-    Meteor.subscribe('teams.dashboard');
-    
-
-  }
   render() {
     return (<DashboardLayout teams={ this.props.teams } />);
   }
