@@ -4,20 +4,35 @@ import TeamCard from './team-card/TeamCard.jsx';
 
 export default class TeamsLayout extends React.Component {
   renderTeams(){
-    let teams = this.props.teams;
+    let { teams, hasTeams } = this.props;
     
-    return teams.map((team) => {
+    if(hasTeams) {
+      return teams.map((team) => {
+        return (
+          <TeamCard
+            key={ team._id }
+            team={ team }
+            hasTeams={ hasTeams }
+          />
+        );
+      });
+    } else {
       return (
-        <TeamCard
-          key={ team._id }
-          team={ team }
-        />
+        <TeamCard hasTeams={ hasTeams }/>
       );
-    });
+    }
   }
   render() {
     return (
-      <div>
+      <div className="container">
+        <div className="row">
+          <div className="col-md-6">
+            <h3><b>Equipos</b></h3>
+          </div>
+          <div className="col-md-6">
+            <a className="btn btn-default new-team-btn" href="#" role="button">CREAR NUEVO EQUIPO</a>
+          </div>
+        </div>
         { this.renderTeams() }
       </div>
     );
@@ -26,4 +41,5 @@ export default class TeamsLayout extends React.Component {
 
 TeamsLayout.propTypes = {
   teams: React.PropTypes.array.isRequired,
+  hasTeams: React.PropTypes.bool.isRequired,
 };
