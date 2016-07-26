@@ -24,7 +24,6 @@ Teams.helpers({
     // If obj.mail exists then use it, if not, use the id
     let mail = obj.email || Meteor.users.findOne(obj._id).emails[0].address;
     let found = false;
-    console.log("aasdfkjsadfoisdgfsafd: ", this, ";    this.users: ", this.users);
     this.users.forEach((user) => {
       if(user.email == mail) {
         found = true;
