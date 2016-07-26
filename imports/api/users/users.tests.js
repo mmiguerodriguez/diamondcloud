@@ -40,18 +40,24 @@ if (Meteor.isServer) {
               { email: 'randommail@gmail.com', permission: 'owner' },
             ],
           }];*/
-      let user = Factory.create('user');
-      let teams = [
-        Factory.create('team'),
-        Factory.create('team', { archived: true }),
-        Factory.create('team'),
-      ];
-      
-      teams[0].users[0].email = user.emails[0].address;
-      teams[1].users[0].email = user.emails[0].address;
+      let user, teams;
           
       beforeEach(function() {
         resetDatabase();
+        user = Factory.create('user');
+        teams = [
+          Factory.create('team'),
+          Factory.create('team', { archived: true }),
+          Factory.create('team'),
+        ];
+        
+        teams[0].users[0].email = user.emails[0].address;
+        teams[1].users[0].email = user.emails[0].address;
+        resetDatabase();
+        Meteor.users.insert(user);
+        teams.forEach((team) => {
+          Teams.insert(team);
+        });
         sinon.stub(Meteor, 'user', () => user);
       });
       
