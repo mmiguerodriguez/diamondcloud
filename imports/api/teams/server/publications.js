@@ -6,13 +6,21 @@ import { Boards } from '../../boards/boards.js';
 
 Meteor.publish('teams.dashboard', function() {
   if (!this.userId) {
+<<<<<<< HEAD
     throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn',
+=======
+    throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn', 
+>>>>>>> 65397642919bfe413520b003d040fa53642b6239
     'Must be logged in to view teams.');
   }
 
   let user = Meteor.users.findOne(this.userId);
   let teams = user.teams({
+<<<<<<< HEAD
     fields: Teams.dashboardFields,
+=======
+    fields: Teams.dashboardFields
+>>>>>>> 65397642919bfe413520b003d040fa53642b6239
   });
 
   return teams;
