@@ -5,12 +5,14 @@ import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 import App       from '../../ui/app/AppContainer.jsx';
 import Landing   from '../../ui/landing/LandingPage.jsx';
 import Dashboard from '../../ui/dashboard/DashboardPage.jsx';
+import Team      from '../../ui/team/TeamPage.jsx';
 
 export const renderRoutes = () => (
   <Router history={ browserHistory }>
     <Route path="/" component={ App }>
       <IndexRoute component={ Landing }/>
       <Route path="/dashboard" component={ Dashboard } />
+      <Route path="/team/:teamId" component={ Team } />
     </Route>
   </Router>
 );
