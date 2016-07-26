@@ -24,7 +24,6 @@ Teams.helpers({
     // If obj.mail exists then use it, if not, use the id
     let mail = obj.email || Meteor.users.findOne(obj._id).emails[0].address;
     let found = false;
-    
     this.users.forEach((user) => {
       if(user.email == mail) {
         found = true;
@@ -67,5 +66,20 @@ Teams.removeUser = (teamId, userEmail) => {
         email: userEmail,
       },
     },
+  });
+};
+
+Teams.getTeam = (teamId, userEmail, fields) => {
+  fields = fields || { _id: 1, name: 1 };
+  return Teams.find({
+    _id: teamId,
+    users: {
+      $elemMatch: {
+        email: userEmail,
+      }
+    },
+    archived: false,
+  }, {
+    fields
   });
 };

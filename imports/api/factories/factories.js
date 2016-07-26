@@ -8,12 +8,10 @@ import { DirectChats }     from '../direct-chats/direct-chats.js';
 import { ModuleInstances } from '../module-instances/module-instances.js';
 
 Factory.define('user', Meteor.users, {
-	_id: Random.id(),
 	emails: [ { address: faker.internet.email() } ],
 });
 
 Factory.define('board', Boards, {
-	_id: Random.id(),
 	name: faker.lorem.word(),
 	isPrivate: null,
 	users: [],
@@ -45,7 +43,6 @@ Factory.define('privateBoard', Boards, Factory.extend('board', {
 }));
 
 Factory.define('directChat', DirectChats, {
-	_id: Random.id(),
 	teamId: Factory.get('team'),
 	users: [
 		{ _id: Random.id() },
@@ -54,7 +51,6 @@ Factory.define('directChat', DirectChats, {
 });
 
 Factory.define('message', Messages, {
-	_id: Random.id(),
 	senderId: Factory.get('user')._id,
 	type: "text",
 	content: faker.lorem.sentence(),
