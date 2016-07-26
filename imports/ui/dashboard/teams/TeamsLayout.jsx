@@ -4,11 +4,16 @@ import TeamCard from './team-card/TeamCard.jsx';
 
 export default class TeamsLayout extends React.Component {
   renderTeams(){
-    let teams = [];
-    for(let i = 0; i < this.props.teamsCount; i++){
-      teams.push(<TeamCard />);
-    }
-    return teams;
+    let teams = this.props.teams;
+    
+    return teams.map((team) => {
+      return (
+        <TeamCard
+          key={ team._id }
+          team={ team }
+        />
+      );
+    });
   }
   render() {
     return (
@@ -20,5 +25,5 @@ export default class TeamsLayout extends React.Component {
 }
 
 TeamsLayout.propTypes = {
-  teamsCount: React.PropTypes.number.isRequired,
+  teams: React.PropTypes.array.isRequired,
 };
