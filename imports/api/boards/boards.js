@@ -32,22 +32,28 @@ Boards.getBoards = (boardsIds, userId, fields) => {
   fields = fields || { _id: 1, name: 1 };
 
   return Boards.find({
-    _id: {
-      $in: boardsIds 
-    },
-    $or: [
+    $and: [
       {
-        users: {
-          $elemMatch: {
-            _id: userId,
-          }
+        _id: {
+          $in: boardsIds 
         }
       },
       {
-        isPrivate: false,
+        $or: [
+          {
+            users: {
+              $elemMatch: {
+                _id: userId,
+              }
+            }
+          },
+          {
+            isPrivate: false,
+          },
+        ],
       },
-    ],
-    archived: false,
+      { archived: false }
+    ]
   }, {
     fields
   });

@@ -11,7 +11,6 @@ Factory.define('user', Meteor.users, {
 });
 
 Factory.define('board', Boards, {
-	_id: Random.id(),
 	name: faker.lorem.word(),
 	isPrivate: null,
 	users: [],
