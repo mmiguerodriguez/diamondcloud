@@ -14,58 +14,6 @@ if (Meteor.isServer) {
   describe('Boards', function() {
     describe('Helpers', function() {
       let teams, boards, user;
-      /*
-      boards = [{
-        _id: Random.id(),
-        name: faker.lorem.word(),
-        isPrivate: false,
-        users: [
-          { _id: user._id },
-          { _id: Random.id() },
-          { _id: Random.id() }
-        ],
-        moduleInstances: [],
-        drawings: [],
-        archived: false,
-      }, {
-        _id: Random.id(),
-        name: faker.lorem.word(),
-        isPrivate: false,
-        users: [],
-        moduleInstances: [],
-        drawings: [],
-        archived: false,
-      }],
-      teams = [{
-        _id: Random.id(),
-        name: faker.lorem.word(),
-        plan: 'free',
-        type: faker.lorem.word(),
-        users: [
-          { email: user.emails[0].address, permission: 'owner' },
-          { email: faker.internet.email(), permission: 'member' },
-          { email: faker.internet.email(), permission: 'member' },
-        ],
-        boards: [
-          { _id: boards[0]._id }
-        ],
-        drawings: [],
-        archived: false,
-      }, {
-        _id: Random.id(),
-        name: faker.lorem.word(),
-        plan: 'free',
-        type: faker.lorem.word(),
-        users: [
-          { email: user.emails[0].address, permission: 'owner' },
-          { email: faker.internet.email(), permission: 'member' },
-          { email: faker.internet.email(), permission: 'member' },
-        ],
-        boards: [],
-        drawings: [],
-        archived: false,
-      }];
-  */
 
       beforeEach(function() {
         resetDatabase();
