@@ -1,5 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 
+import { Teams } from '../teams/teams.js';
+
 export let DirectChats = new Mongo.Collection('DirectChats');
 
 DirectChats.getUserDirectChats = (userId, teamId) => {
@@ -14,12 +16,20 @@ DirectChats.getUserDirectChats = (userId, teamId) => {
 };
 
 DirectChats.isValid = (directChatId, userId) => {
-	return DirectChats.find({
+	let directChat =  DirectChats.findOne({
     _id: directChatId,
     users: {
       $elemMatch: {
         _id: userId,
       }
     }
-  }).count() !== 0;
+  });
+
+  if(!directChat){
+    return false;
+  }
+  else{
+    let team = Teams.findOne(directChat.teamId);
+    return team.hasUser({ _id: userId });
+  }
 };

@@ -12,10 +12,6 @@ Boards.helpers({
           _id: this._id,
         },
       },
-    }, { 
-      fields: { 
-        _id: 1 
-      } 
     });
   },
 });
@@ -60,7 +56,7 @@ Boards.getBoards = (boardsIds, userId, fields) => {
 };
 
 Boards.isValid = (boardId, userId) => {
-  return Boards.find({
+  let board = Boards.findOne({
     _id: boardId,
     $or: [
       { isPrivate: false },
@@ -72,5 +68,11 @@ Boards.isValid = (boardId, userId) => {
         }
       }
     ],
-  }).count() !== 0;
+  });
+  if(!board){
+    return false;
+  }
+  else{
+    return board.team().hasUser({ _id: userId });
+  }
 };
