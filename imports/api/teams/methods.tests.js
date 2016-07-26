@@ -40,20 +40,20 @@ if (Meteor.isServer) {
           ],
           archived: false,
         };*/
-    resetDatabase();
-    let user = Factory.create('user'),
-        team = Factory.create('team'),
-        usersEmails = [faker.internet.email(), faker.internet.email()],
+    let user, team;
+    let usersEmails = [faker.internet.email(), faker.internet.email()],
         boardId = Random.id();
-    team.users[0].email = user.emails[0].address;
-    team.users.push({ email: usersEmails[0], permission: 'member' });
-    team.users.push({ email: usersEmails[1], permission: 'member' });
     beforeEach(function() {
+      resetDatabase();
+      user = Factory.create('user');
+      team = Factory.create('team', {  });
+      team.users[0].email = user.emails[0].address;
+      team.users.push({ email: usersEmails[0], permission: 'member' });
+      team.users.push({ email: usersEmails[1], permission: 'member' });
       resetDatabase();
       sinon.stub(Meteor, 'user', () => user);
       Meteor.users.insert(user);
       Teams.insert(team);
-      
       sinon.stub(createBoard, 'call', (obj, callback) => {
         let team = Teams.findOne(obj.teamId);
         team.boards.push({ _id: boardId });
@@ -133,21 +133,9 @@ if (Meteor.isServer) {
       let result,
           expect, 
           args;
-          
-      expect = {
-        _id: team._id,
-        name: team.name,
-        plan: 'free',
-        type: 'web',
-        boards: [],
-        users: [
-          { email: user.emails[0].address, permission: 'owner' },
-          { email: usersEmails[0], permission: 'member' },
-          { email: usersEmails[1], permission: 'member' },
-          { email: 'test@test.com', permission: 'member' }, 
-        ],
-        archived: false,
-      };
+
+      expect = team;
+      expect.users.push({ email: 'test@test.com', permission: 'member' });
       args = {
         email: 'test@test.com',
         teamId: team._id,
@@ -163,33 +151,23 @@ if (Meteor.isServer) {
       let result,
           expect, 
           args;
-          
-      expect = {
-        _id: team._id,
-        name: team.name,
-        plan: 'free',
-        type: 'web',
-        boards: [],
-        users: [
-          { email: user.emails[0].address, permission: 'owner' },
-          { email: usersEmails[0], permission: 'member' },
-        ],
-        archived: false,
-      };
+      expect = team;
+      expect.users = [
+        { email: user.emails[0].address, permission: 'owner' },
+        { email: usersEmails[0], permission: 'member' },
+      ];
       args = {
         email: usersEmails[1],
         teamId: team._id,
       };
-      
       removeUserFromTeam.call(args, (err, res) => {
         result = res;
       });
-      
       chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
     });
     it('should archive a team', function(done) {
       let result,
-          expect, 
+          expect,
           args;
           
       args = { 
