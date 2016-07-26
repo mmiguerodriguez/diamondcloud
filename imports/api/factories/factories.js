@@ -6,7 +6,17 @@ import { Messages }  from '../messages/messages.js';
 import { DirectChats }  from '../direct-chats/direct-chats.js';
 
 Factory.define('user', Meteor.users, {
+	_id: Random.id(),
 	emails: [ { address: faker.internet.email() } ],
+});
+
+Factory.define('board', Boards, {
+	_id: Random.id(),
+	name: faker.lorem.word(),
+	isPrivate: null,
+	users: [],
+	moduleInstances: [],
+	archived: false,
 });
 
 Factory.define('team', Teams, {
@@ -20,15 +30,6 @@ Factory.define('team', Teams, {
 	archived: false,
 });
 
-Factory.define('board', Boards, {
-	_id: () => Random.id(),
-	name: () => faker.lorem.word(),
-	isPrivate: null,
-	users: [],
-	moduleInstances: [],
-	archived: false,
-});
-
 Factory.define('publicBoard', Boards, Factory.extend('board', {
 	isPrivate: false,
 	users: undefined,
@@ -36,30 +37,26 @@ Factory.define('publicBoard', Boards, Factory.extend('board', {
 
 Factory.define('privateBoard', Boards, Factory.extend('board', {
 	isPrivate: true,
-	users: () => {
-		[
-			{ _id: Factory.get('user')._id },
-		]
-	},
+	users: [
+		{ _id: Factory.get('user')._id },
+	],
 }));
 
 Factory.define('directChat', DirectChats, {
-	_id: () => Random.id(),
+	_id: Random.id(),
 	teamId: Factory.get('team'),
-	users: () => {
-		[
-			{ _id: Random.id() },
-			{ _id: Random.id() },
-		]
-	}
+	users: [
+		{ _id: Random.id() },
+		{ _id: Random.id() },
+	]
 });
 
 Factory.define('message', Messages, {
-	_id: () => Random.id(),
-	senderId: () => Factory.get('user')._id,
+	_id: Random.id(),
+	senderId: Factory.get('user')._id,
 	type: "text",
-	content: () => faker.lorem.sentence(),
-	createdAt: () => new Date(),
+	content: faker.lorem.sentence(),
+	createdAt: new Date(),
 });
 
 Factory.define('directChatMessage', Messages, Factory.extend('message', {

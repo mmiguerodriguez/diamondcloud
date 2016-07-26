@@ -5,20 +5,21 @@ import { DirectChats } from '../../direct-chats/direct-chats.js';
 import { Boards } from '../../boards/boards.js';
 
 Meteor.publish('teams.dashboard', function() {
-  if (!Meteor.user()) {
+  if (!this.userId) {
     throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn', 
     'Must be logged in to view teams.');
   }
 
-  let teams = Meteor.user().teams({ 
-    fields: Teams.dashboardFields 
+  let user = Meteor.users.findOne(this.userId);
+  let teams = user.teams({
+    fields: Teams.dashboardFields
   });
   return teams;
   
 });
 
 Meteor.publishComposite('teams.team', function(teamId) {
-  if (!Meteor.user()) {
+  if (!this.userId) {
     throw new Meteor.Error('Teams.publication.team.notLoggedIn',
     'Must be logged in to view teams.');
   }

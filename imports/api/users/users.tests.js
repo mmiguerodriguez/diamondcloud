@@ -41,7 +41,6 @@ if (Meteor.isServer) {
             ],
           }];*/
       let user, teams;
-          
       beforeEach(function() {
         resetDatabase();
         user = Factory.create('user');
@@ -72,12 +71,8 @@ if (Meteor.isServer) {
             name: 1 
           }
         });
-        console.log(`TEAMS: ${JSON.stringify(teams, null, 2)}`);
-        console.log(`USER: ${JSON.stringify(user, null, 2)}`);
-        console.log(`RESULT: ${result.count()}`);
         chai.assert.isTrue(result.count() === 1);
         result.forEach((team, index) => {
-
           chai.assert.isTrue(team.name === teams[index].name);
           chai.assert.isUndefined(team.users);
         });
