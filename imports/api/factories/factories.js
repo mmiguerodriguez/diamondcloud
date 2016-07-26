@@ -1,9 +1,11 @@
 import faker		     from 'faker';
 import { Random }    from 'meteor/random';
-import { Teams }     from '../teams/teams.js';
-import { Boards }    from '../boards/boards.js';
-import { Messages }  from '../messages/messages.js';
-import { DirectChats }  from '../direct-chats/direct-chats.js';
+
+import { Teams }           from '../teams/teams.js';
+import { Boards }          from '../boards/boards.js';
+import { Messages }        from '../messages/messages.js';
+import { DirectChats }     from '../direct-chats/direct-chats.js';
+import { ModuleInstances } from '../module-instances/module-instances.js';
 
 Factory.define('user', Meteor.users, {
 	_id: Random.id(),
@@ -66,3 +68,13 @@ Factory.define('directChatMessage', Messages, Factory.extend('message', {
 Factory.define('boardMessage', Messages, Factory.extend('message', {
 	directChatId: Factory.get('board'),
 }));
+
+Factory.define('moduleInstance', ModuleInstances, {
+	moduleId: Random.id(),
+	x: faker.random.number(),
+	y: faker.random.number(),
+	width: faker.random.number({ min: 0, max: 1920 }),
+	height: faker.random.number({ min: 0, max: 1080 }),
+	vars: {},
+	archived: false,
+});
