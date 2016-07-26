@@ -7,13 +7,13 @@ export default class DashboardLayout extends React.Component {
   render() {
     return (
       <div>
-        <WelcomeCard teamsCount={ this.props.teamsCount } />
-        <TeamsLayout teamsCount={ this.props.teamsCount } />
+        <WelcomeCard hasTeams={ this.props.teams.length > 0 ? true : false } />
+        <TeamsLayout teams={ this.props.teams } />
       </div>
     );
   }
 }
 
 DashboardLayout.propTypes = {
-  teamsCount: React.PropTypes.number.isRequired,
+  teams: React.PropTypes.array.isRequired,
 };

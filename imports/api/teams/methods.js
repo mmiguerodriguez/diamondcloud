@@ -99,11 +99,7 @@ export const shareTeam = new ValidatedMethod({
     
     let user = { email, permission: 'member' };
     
-    Teams.update({ _id: teamId }, {
-      $push: {
-        users: user
-      }
-    });
+    Teams.addUser(teamId, user);
     
     // Testing purposes
     // may need to change in the future
@@ -122,15 +118,7 @@ export const removeUserFromTeam = new ValidatedMethod({
       throw new Meteor.Error('Teams.methods.removeUser.notLoggedIn', 
       'Must be logged in to edit a team.');
     }
-    
-    Teams.update({ _id: teamId }, {
-      $pull: { 
-        users : { 
-          email
-        } 
-      },
-    });
-    
+    Teams.removeUser(teamId, email);
     // Testing purposes
     // may need to change in the future
     return Teams.findOne(teamId);

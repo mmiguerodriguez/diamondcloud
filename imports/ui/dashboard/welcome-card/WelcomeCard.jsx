@@ -5,7 +5,7 @@ export default class WelcomeCard extends React.Component {
     return (
       <div>
         {
-          this.props.teamsCount > 0 ? (
+          this.props.hasTeams === true ? (
           <div className="welcome-card row">
             <div className="col-md-7 welcome-text">
               <h3><b>Conectate con tu equipo</b></h3>
@@ -31,5 +31,5 @@ export default class WelcomeCard extends React.Component {
 }
 
 WelcomeCard.propTypes = {
-  teamsCount: React.PropTypes.number.isRequired,
+  hasTeams: React.PropTypes.bool.isRequired,
 };
