@@ -4,16 +4,26 @@ export default class WelcomeCard extends React.Component {
   render() {
     return (
       <div>
-        { 
-          this.props.teamsCount > 0 
-          ? 
-          <div>
-            <h3>Conectate con tu equipo</h3>
-          </div>
-          :
+        {
+          this.props.teamsCount > 0 ? (
           <div className="welcome-card row">
-            <h3>Empezá a colaborar con tu equipo</h3>
-          </div>
+            <div className="col-md-7 welcome-text">
+              <h3><b>Conectate con tu equipo</b></h3>
+              <p className="text-muted">Aca vamos a tener que poner una bajada para que no quede tan vacio (en gris).</p>
+            </div>
+            <div className="col-md-5">
+              <img src="img/dashboard.png" className="welcome-card-photo" />
+            </div>
+          </div> ) : (
+          <div className="welcome-card row">
+            <div className="col-md-6 welcome-text">
+              <h3><b>Empezá a colaborar con tu equipo</b></h3>
+              <p className="text-muted">Aca vamos a tener que poner una bajada para que no quede tan vacio (en gris).</p>
+            </div>
+            <div className="col-md-6">
+              <img src="img/dashboard.png" className="welcome-card-photo" />
+            </div>
+          </div> )
         }
       </div>
     );
