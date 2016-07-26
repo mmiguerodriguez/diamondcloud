@@ -33,7 +33,9 @@ export default class TeamsLayout extends React.Component {
             <a className="btn btn-default new-team-btn" href="#" role="button">CREAR NUEVO EQUIPO</a>
           </div>
         </div>
-        { this.renderTeams() }
+        <div className="row">
+          { this.renderTeams() }
+        </div>
       </div>
     );
   }
