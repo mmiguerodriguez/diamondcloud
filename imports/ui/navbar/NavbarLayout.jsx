@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 
 export default class NavbarLayout extends React.Component {
   render() {
@@ -12,12 +13,18 @@ export default class NavbarLayout extends React.Component {
               <span className="icon-bar"></span>
               <span className="icon-bar"></span>
             </button>
-            <a href="#"><img src="img/logo.svg" className="logo-photo"/></a>
+            <a>
+              <img src="img/logo.svg" className="logo-photo"/>
+            </a>
           </div>
           <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul className="nav navbar-nav">
-              <li className="active"><a href="/dashboard" className="li-navbar-text">Dashboard</a></li>
-              <li><a href="#" className="li-navbar-text">Help</a></li>
+              <li className="active">
+                <Link to="/dashboard" className="li-navbar-text">Dashboard</Link>
+              </li>
+              <li>
+                <Link to="/help" className="li-navbar-text">Help</Link>
+              </li>
             </ul>
             <ul className="nav navbar-nav navbar-right">
               <li>
