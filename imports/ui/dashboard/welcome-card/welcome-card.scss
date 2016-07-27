@@ -1,5 +1,4 @@
 .welcome-card-photo {
-  position: relative;
   height: 300px;
   float: right;
 }
@@ -9,6 +8,10 @@
 }
 .welcome-text {
   margin-top: 5%;
-  margin-left: 30px;
-  margin-right: -30px;
+  margin-left: 50px;
+  margin-right: -50px;
+  z-index: 10;
+}
+.welcome-card-photo-div {
+  padding-right: 0px !important;
 }
