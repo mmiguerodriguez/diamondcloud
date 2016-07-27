@@ -32,13 +32,13 @@ Factory.define('team', Teams, {
 
 Factory.define('publicBoard', Boards, Factory.extend('board', {
 	isPrivate: false,
-	users: undefined,
+	users: [],
 }));
 
 Factory.define('privateBoard', Boards, Factory.extend('board', {
 	isPrivate: true,
 	users: [
-		{ _id: Factory.get('user')._id },
+		{ _id: Random.id() },
 	],
 }));
 

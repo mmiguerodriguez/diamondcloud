@@ -18,12 +18,7 @@ if (Meteor.isServer) {
       beforeEach(function() {
         resetDatabase();
 
-        user = {
-          _id: Random.id(),
-          emails: [{
-            address: faker.internet.email(),
-          }],
-        };
+        user = Factory.create('user');
         boards = [
           Factory.create('board'),
           Factory.create('board')
