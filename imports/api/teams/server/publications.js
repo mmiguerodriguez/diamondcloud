@@ -6,13 +6,13 @@ import { Boards } from '../../boards/boards.js';
 
 Meteor.publish('teams.dashboard', function() {
   if (!this.userId) {
-    throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn',
+    throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn', 
     'Must be logged in to view teams.');
   }
 
   let user = Meteor.users.findOne(this.userId);
   let teams = user.teams({
-    fields: Teams.dashboardFields,
+    fields: Teams.dashboardFields
   });
 
   return teams;
@@ -23,12 +23,10 @@ Meteor.publishComposite('teams.team', function(teamId) {
     throw new Meteor.Error('Teams.publication.team.notLoggedIn',
     'Must be logged in to view teams.');
   }
-
+  let user = Meteor.users.findOne(this.userId);
   return {
     find: function() {
-      return Teams.find(teamId, {
-        fields: Teams.teamFields,
-      });
+      return Teams.getTeam(teamId, user.emails[0].address, Teams.teamFields);
     },
     children: [
       {
@@ -38,7 +36,6 @@ Meteor.publishComposite('teams.team', function(teamId) {
           team.boards.forEach((board) => {
             boardsIds.push(board._id);
           });
-
           let boards = Boards.getBoards(boardsIds, this.userId, {
             _id: 1,
             name: 1

@@ -1,5 +1,0 @@
-# For real app 
-meteor
-
-# For testing
-meteor test --driver-package practicalmeteor:mocha
