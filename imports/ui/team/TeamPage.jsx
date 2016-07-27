@@ -10,21 +10,29 @@ import TeamLayout from './TeamLayout.jsx';
 
 export default class Team extends React.Component {
   render() {
-    return (
-      <TeamLayout
-        team={ this.props.team }
-        boards={ this.props.boards }
-        directChats={ this.props.directChats }
-      />
-    );
+    const { team, boards, directChats, loading } = this.props;
+
+    if(loading) {
+      return null;
+    } else {
+      return (
+        <TeamLayout
+          team={ team }
+          boards={ boards }
+          directChats={ directChats }
+        />
+      );
+    }
   }
 }
 
 export default TeamPageContainer = createContainer(({ params }) => {
   const { teamId } = params;
-  Meteor.subscribe('teams.team', teamId);
+  const teamHandle = Meteor.subscribe('teams.team', teamId);
+  const loading = !teamHandle.ready();
 
   return {
+    loading,
     team: Teams.findOne(),
     boards: Boards.find().fetch(),
     directChats: DirectChats.find().fetch(),
