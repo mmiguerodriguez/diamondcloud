@@ -11,7 +11,7 @@ export default class TeamLayout extends React.Component {
 }
 
 TeamLayout.propTypes = {
-  team: React.PropTypes.array.isRequired,
+  team: React.PropTypes.object.isRequired,
   boards: React.PropTypes.array.isRequired,
   directChats: React.PropTypes.array.isRequired,
 };
