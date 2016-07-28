@@ -28,10 +28,18 @@ OrganizationModule = {
       {
         name: 'Release the MVP',
         boardId: 'generalBoardId'
+      },
+      {
+        name: 'Some super secret task',
+        visibleBy: [
+          { userId: 'obamaId' },
+          { boardId: 'General' },
+          { group: 'groupId' }
+        ]
       }
     ]
   },
-}
+};
 //needs mongo 3.2 to run
 //Get every todo in some board
 
