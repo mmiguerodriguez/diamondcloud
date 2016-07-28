@@ -1,0 +1,59 @@
+OrganizationModule = {
+  database: {
+    todos: [
+      {
+        name: 'Define business model',
+        boardId: 'businessBoardId',
+      },
+      {
+        name: 'Research payment processors',
+        boardId: 'businessBoardId',
+      },
+      {
+        name: 'Design landing wireframe',
+        boardId: 'designBoardId',
+        users: [
+          { _id: "ryanId" },
+        ],
+      },
+      {
+        name: 'Develop modules API',
+        boardId: 'programmingBoardId',
+        users: [
+          { _id: 'dylanId' },
+          { _id: 'joelId' },
+          { _id: 'migueId' },
+        ],
+      },
+      {
+        name: 'Release the MVP',
+        boardId: 'generalBoardId'
+      }
+    ]
+  },
+}
+//needs mongo 3.2 to run
+//Get every todo in some board
+
+JSON.stringify(db.modules.aggregate(
+  [
+    {
+      $project: {
+        todos: "$database.todos"
+      }
+    },
+    {
+      $project: {
+        todos: {
+          $filter: {
+            input: "$todos",
+            as: "todo",
+            cond: {
+              $eq: ["$$todo.boardId", "programmingBoardId"]
+            }
+          }
+        }
+      }
+    }
+  ]
+)._batch, null, 4);
