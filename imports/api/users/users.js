@@ -21,6 +21,24 @@ Meteor.users.helpers({
   },
   boards(teamId, fields){
     fields = fields || {};
-    //todo: finish this method
+    let team = Teams.findOne(teamId);
+    if(!team){
+      throw new Meteor.Error('Users.boards.wrongTeamId',
+      'There is no team with the given id');
+    }
+    if(!team.hasUser(this)){
+      throw new Meteor.Error('Users.boards.userNotInTeam',
+      'The user is not in the team');
+    }
+    let boardsIds = [];
+
+    team.boards.forEach((board) => {
+      boardsIds.push(board._id);
+    });
+    let boards = Boards.getBoards(boardsIds, this.userId, {
+      _id: 1,
+      name: 1
+    });
+    return boards;
   }
 });

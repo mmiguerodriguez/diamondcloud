@@ -26,12 +26,17 @@ Boards.boardFields = {
 
 Boards.getBoards = (boardsIds, userId, fields) => {
   fields = fields || { _id: 1, name: 1 };
-  
+  if(typeof(boardsIds) === "object"){
+    boardsIds.forEach((board, index) => {
+      boardsIds[index] = board._id;
+    });
+  }
+
   return Boards.find({
     $and: [
       {
         _id: {
-          $in: boardsIds 
+          $in: boardsIds
         }
       },
       {

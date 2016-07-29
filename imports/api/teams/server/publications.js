@@ -6,7 +6,7 @@ import { Boards } from '../../boards/boards.js';
 
 Meteor.publish('teams.dashboard', function() {
   if (!this.userId) {
-    throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn', 
+    throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn',
     'Must be logged in to view teams.');
   }
 
@@ -31,12 +31,7 @@ Meteor.publishComposite('teams.team', function(teamId) {
     children: [
       {
         find: function(team) {
-          let boardsIds = [];
-
-          team.boards.forEach((board) => {
-            boardsIds.push(board._id);
-          });
-          let boards = Boards.getBoards(boardsIds, this.userId, {
+          let boards = Boards.getBoards(team.boards, this.userId, {
             _id: 1,
             name: 1
           });
