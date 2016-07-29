@@ -57,7 +57,14 @@ JSON.stringify(db.modules.aggregate(
             input: "$todos",
             as: "todo",
             cond: {
-              $eq: ["$$todo.boardId", "programmingBoardId"]
+              $and: [
+                {
+                  $or: [
+                    {  },
+                  ]
+                },
+                { $eq: ["$$todo.boardId", "programmingBoardId"] },
+              ],
             }
           }
         }
