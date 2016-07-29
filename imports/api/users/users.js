@@ -5,8 +5,9 @@ import { Teams } from '../teams/teams.js';
 Meteor.users.helpers({
   teams({ fields }) {
     fields = fields || {};
-    
+
     let teams = Teams.find({
+
       users: {
         $elemMatch: {
           email: this.emails[0].address,
@@ -14,8 +15,12 @@ Meteor.users.helpers({
       },
       archived: false,
     }, { fields }); // translates to -> { fields: { name: 1 } }
-    
+
     if(teams)
       return teams;
+  },
+  boards(teamId, fields){
+    fields = fields || {};
+    //todo: finish this method
   }
 });

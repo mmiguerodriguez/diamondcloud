@@ -13,33 +13,6 @@ import '../factories/factories.js';
 if (Meteor.isServer) {
   describe('Users', function() {
     describe('Helpers', function(){
-      /*let user = {
-            _id: Random.id(),
-            emails: [
-              { address: faker.internet.email() }
-            ],
-          },
-          teams = [{
-            _id: '1',
-            name: 'Team 1',
-            users: [
-              { email: user.emails[0].address, permission: 'owner' },
-            ],
-            archived: false,
-          }, {
-            _id: '2',
-            name: 'Team 2',
-            users: [
-              { email: user.emails[0].address, permission: 'owner' },
-            ],
-            archived: true,
-          }, {
-            _id: '3',
-            name: 'Team 3',
-            users: [
-              { email: 'randommail@gmail.com', permission: 'owner' },
-            ],
-          }];*/
       let user, teams;
       beforeEach(function() {
         resetDatabase();
@@ -49,7 +22,7 @@ if (Meteor.isServer) {
           Factory.create('team', { archived: true }),
           Factory.create('team'),
         ];
-        
+
         teams[0].users[0].email = user.emails[0].address;
         teams[1].users[0].email = user.emails[0].address;
         resetDatabase();
@@ -59,16 +32,16 @@ if (Meteor.isServer) {
         });
         sinon.stub(Meteor, 'user', () => user);
       });
-      
+
       afterEach(function() {
         Meteor.user.restore();
       });
-      
+
       it('should return the teams the user is in', function(done) {
         let result;
-        result = user.teams({ 
+        result = user.teams({
           fields: {
-            name: 1 
+            name: 1
           }
         });
         chai.assert.isTrue(result.count() === 1);
@@ -76,8 +49,12 @@ if (Meteor.isServer) {
           chai.assert.isTrue(team.name === teams[index].name);
           chai.assert.isUndefined(team.users);
         });
-        
+
         done();
+      });
+
+      it('should return the boards the user is able to see in a team', function(done){
+        //todo: finish this test
       });
     });
   });
