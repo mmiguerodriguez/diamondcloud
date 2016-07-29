@@ -24,7 +24,7 @@ export default class TeamsLayout extends React.Component {
   }
   render() {
     return (
-      <div className="container">
+      <div className="container team-container">
         <div className="row">
           <div className="col-md-6">
             <h3>
