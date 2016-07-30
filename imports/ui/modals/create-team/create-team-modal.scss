@@ -43,9 +43,13 @@
 }
 .plan-card-title {
   padding-top: 5px;
+  text-align: center;
 }
-.premium-price {
-  margin: 0;
+.premium-card-price {
+  text-align: center;
+  .premium-price {
+    margin: 0;
+  }
 }
 .contact-list-photo {
   border-radius: 20px;

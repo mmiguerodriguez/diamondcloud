@@ -62,7 +62,7 @@ export default class CreateTeamModal extends React.Component {
               <div className="row">
                 <div className="free col-xs-5 col-xs-offset-1">
                   <div className="free-card">
-                    <h3 align="center" className="plan-card-title">Free</h3>
+                    <h3 className="plan-card-title">Free</h3>
                     <div className="row">
                       <ul>
                         <li>12 branches</li>
@@ -79,7 +79,7 @@ export default class CreateTeamModal extends React.Component {
                 </div>
                 <div className="premium col-xs-5">
                   <div className="premium-card">
-                    <h3 align="center" className="plan-card-title">Premium</h3>
+                    <h3 className="plan-card-title">Premium</h3>
                     <div className="row">
                       <ul>
                         <li>Infinitas branches</li>
@@ -88,9 +88,9 @@ export default class CreateTeamModal extends React.Component {
                       </ul>
                     </div>
                     <br />
-                    <div className="row">
-                      <h4 align="center" className="premium-price">$2.99</h4>
-                      <p align="center">por usuario/mes</p>
+                    <div className="row premium-card-price">
+                      <h4 className="premium-price">$2.99</h4>
+                      <p>por usuario/mes</p>
                     </div>
                   </div>
                   <button type="button" 
@@ -119,15 +119,17 @@ export default class CreateTeamModal extends React.Component {
                 <div className="contacts-list col-sm-6 col-xs-12 col-sm-offset-3">
                   <div className="row">
                     <div className="col-xs-1">
-                      <img alt="User" src="//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg" className="contact-list-photo" />
+                      <img  className="contact-list-photo" 
+                            alt="User" 
+                            src="//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg" />
                     </div>
                     <div className="col-xs-6">
                       <p className="contact-list-name">Gomito Gomez</p>
                     </div>
                     <div className="col-xs-3">
-                      <img  alt="Enviar mensaje"
+                      <img  className="send-message-icon"
+                            alt="Enviar mensaje"
                             src="img/send-message-icon.svg"
-                            className="send-message-icon"
                             width="25px" />
                     </div>
                     <div className="col-xs-1">
