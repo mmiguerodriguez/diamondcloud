@@ -10,7 +10,7 @@ export default class CreateTeamModal extends React.Component {
         header={
           <div>
             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-              <img src="http://image.flaticon.com/icons/svg/61/61155.svg" width="24px" />
+              <img src="img/close-modal-icon.svg" width="24px" />
             </button>
             <h3 className="modal-title">Crear Proyecto</h3>
           </div>
@@ -111,7 +111,7 @@ export default class CreateTeamModal extends React.Component {
                           type="text" />
                   <div className="input-group-addon search-input">
                     <img src="img/add-people-icon.svg" 
-                         width="20px" />
+                         width="24px" />
                   </div>
                 </div>
               </div>
@@ -130,7 +130,7 @@ export default class CreateTeamModal extends React.Component {
                       <img  className="send-message-icon"
                             alt="Enviar mensaje"
                             src="img/send-message-icon.svg"
-                            width="25px" />
+                            width="24px" />
                     </div>
                     <div className="col-xs-1">
                       <button type="button" className="close" aria-label="Close">
