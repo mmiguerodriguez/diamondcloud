@@ -34,3 +34,7 @@ Meteor.users.helpers({
     return Boards.getBoards(team.boards, this._id);
   }
 });
+
+Meteor.users.deny({
+  update() { return true; }
+});
