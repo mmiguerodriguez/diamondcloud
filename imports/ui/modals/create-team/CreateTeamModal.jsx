@@ -10,15 +10,15 @@ export default class CreateTeamModal extends React.Component {
         header={
           <div>
             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-              <img src="img/close-modal-icon.svg" width="24px" />
+              <img src="img/close-modal-icon.svg" width="18px" />
             </button>
-            <h3 className="modal-title">Crear Proyecto</h3>
+            <h4 className="modal-title">Crear Proyecto</h4>
           </div>
         }
         body={
           <div>
-            <div className="name">
-              <div className="form-group">
+            <div className="name hidden">
+              <div className="name-input">
                 <label  htmlFor="projectName" 
                         className="col-xs-2 col-sm-offset-2 control-label left-align">
                   Nombre
@@ -30,7 +30,7 @@ export default class CreateTeamModal extends React.Component {
                           type="text" />
                 </div>
               </div>
-              <div className="form-group">
+              <div className="name-input">
                 <label  htmlFor="projectDescription" 
                         className="col-xs-2 col-sm-offset-2 control-label left-align">
                   Tipo
@@ -48,13 +48,11 @@ export default class CreateTeamModal extends React.Component {
                   </select>
                 </div>
               </div>
-              <div className="form-group">
-                <div className="col-xs-12 col-sm-6 col-sm-offset-4">
-                  <input  id="projectType" 
-                          className="form-control" 
-                          placeholder="Tipo de proyecto" 
-                          type="text" />
-                </div>
+              <div className="col-xs-12 col-sm-6 col-sm-offset-4">
+                <input  id="projectType" 
+                        className="form-control" 
+                        placeholder="Tipo de proyecto" 
+                        type="text" />
               </div>
             </div>
             
@@ -102,7 +100,7 @@ export default class CreateTeamModal extends React.Component {
               </div>
             </div>
             
-            <div className="share hidden">
+            <div className="share">
               <div className="row">
                 <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
                   <input  id="searchUsers" 
@@ -115,7 +113,7 @@ export default class CreateTeamModal extends React.Component {
                   </div>
                 </div>
               </div>
-              <div className="row">
+              <div className="row contacts-list-row">
                 <div className="contacts-list col-sm-6 col-xs-12 col-sm-offset-3">
                   <div className="row">
                     <div className="col-xs-1">
@@ -133,9 +131,9 @@ export default class CreateTeamModal extends React.Component {
                             width="24px" />
                     </div>
                     <div className="col-xs-1">
-                      <button type="button" className="close" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
+                      <div className="close">
+                        <img src="http://image.flaticon.com/icons/svg/61/61155.svg" width="15px" />
+                      </div>
                     </div>
                   </div>
                 </div>
