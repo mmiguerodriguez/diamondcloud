@@ -1,3 +1,5 @@
+db.createCollection('modules');
+
 OrganizationModule = {
   database: {
     todos: [
@@ -34,7 +36,7 @@ OrganizationModule = {
         visibleBy: [
           { userId: 'obamaId' },
           { boardId: 'General' },
-          { group: 'groupId' }
+          { groupId: 'groupId' }
         ]
       }
     ]
@@ -47,23 +49,26 @@ JSON.stringify(db.modules.aggregate(
   [
     {
       $project: {
-        todos: "$database.todos"
+        todos: '$database.todos'
       }
     },
     {
       $project: {
         todos: {
           $filter: {
-            input: "$todos",
-            as: "todo",
+            input: '$todos',
+            as: 'todo',
             cond: {
               $and: [
                 {
                   $or: [
-                    {  },
+                    { '$$todo.visibleBy': { '$exists': false } },
+                    { '$$todo.visibleBy.userId': 'obamaId' },
+                    { '$$todo.visibleBy.boardId': { $in: ['asd', 'General'] } },
+                    { '$$todo.visibleBy.groupId': { $in: ['asd','groupId'] } }
                   ]
                 },
-                { $eq: ["$$todo.boardId", "programmingBoardId"] },
+                { $eq: ['$$todo.boardId', 'programmingBoardId'] },
               ],
             }
           }
