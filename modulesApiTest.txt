@@ -62,10 +62,10 @@ JSON.stringify(db.modules.aggregate(
               $and: [
                 {
                   $or: [
-                    { '$$todo.visibleBy': { '$exists': false } },
-                    { '$$todo.visibleBy.userId': 'obamaId' },
-                    { '$$todo.visibleBy.boardId': { $in: ['asd', 'General'] } },
-                    { '$$todo.visibleBy.groupId': { $in: ['asd','groupId'] } }
+                    { $eq: ['$$todo.visibleBy', null] },
+                    { $eq: ['$$todo.visibleBy.userId', 'obamaId'] },
+                    { $match: { '$$todo.visibleBy.boardId': { $in: ['asd', 'General'] } } },
+                    { $match: { '$$todo.visibleBy.groupId': { $in: ['asd','groupId'] } } }
                   ]
                 },
                 { $eq: ['$$todo.boardId', 'programmingBoardId'] },
