@@ -22,17 +22,17 @@ if (Meteor.isServer) {
     /*let user = {
       emails: [{ address: faker.internet.email() }],
     },
-        name = faker.lorem.word(), 
+        name = faker.lorem.word(),
         usersEmails = [faker.internet.email(), faker.internet.email()],
         boardId = Random.id(),
-        team = { 
+        team = {
           _id: Random.id(),
-          name, 
-          plan: 'free', 
-          type: 'web', 
+          name,
+          plan: 'free',
+          type: 'web',
           boards: [
             { _id: boardId }
-          ], 
+          ],
           users: [
             { email: user.emails[0].address, permission: 'owner' },
             { email: usersEmails[0], permission: 'member' },
@@ -46,7 +46,7 @@ if (Meteor.isServer) {
     beforeEach(function() {
       resetDatabase();
       user = Factory.create('user');
-      team = Factory.create('team', {  });
+      team = Factory.create('team');
       team.users[0].email = user.emails[0].address;
       team.users.push({ email: usersEmails[0], permission: 'member' });
       team.users.push({ email: usersEmails[1], permission: 'member' });
@@ -65,12 +65,12 @@ if (Meteor.isServer) {
       createBoard.call.restore();
       Meteor.user.restore();
     });
-    
+
     it('should create a team', function() {
       let args,
           result,
           expect;
-          
+
       args = {
         name: team.name,
         plan: 'free',
@@ -89,18 +89,18 @@ if (Meteor.isServer) {
         ],
         archived: false,
       };
-      
+
       createTeam.call(args, (err, res) => {
         result = res;
       });
-    
+
       chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
     });
     it('should edit a team', function() {
       let result,
-          expect, 
+          expect,
           args;
-          
+
       expect = {
         _id: team._id,
         name: 'test',
@@ -122,16 +122,16 @@ if (Meteor.isServer) {
         },
         teamId: team._id,
       };
-      
+
       editTeam.call(args, (err, res) => {
         result = res;
       });
-      
+
       chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
     });
     it('should share a team', function() {
       let result,
-          expect, 
+          expect,
           args;
 
       expect = team;
@@ -140,7 +140,7 @@ if (Meteor.isServer) {
         email: 'test@test.com',
         teamId: team._id,
       };
-          
+
       shareTeam.call(args, (err, res) => {
         result = res;
       });
@@ -149,7 +149,7 @@ if (Meteor.isServer) {
     });
     it('should remove a user from a team', function() {
       let result,
-          expect, 
+          expect,
           args;
       expect = team;
       expect.users = [
@@ -169,36 +169,36 @@ if (Meteor.isServer) {
       let result,
           expect,
           args;
-          
-      args = { 
-        teamId: team._id, 
+
+      args = {
+        teamId: team._id,
       };
       expect = team;
       expect.archived = true;
-      
+
       archiveTeam.call(args, (err, res) => {
-        if(err) throw new Meteor.Error(err); 
+        if(err) throw new Meteor.Error(err);
         result = res;
-        
+
         chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
         done();
       });
     });
     it('should dearchive a team', function(done) {
       let result,
-          expect, 
+          expect,
           args;
-          
+
       args = {
         teamId: team._id,
       };
       expect = team;
       expect.archived = false;
-      
+
       dearchiveTeam.call(args, (err, res) => {
-        if(err) throw new Meteor.Error(err); 
+        if(err) throw new Meteor.Error(err);
         result = res;
-      
+
         chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
         done();
       });
