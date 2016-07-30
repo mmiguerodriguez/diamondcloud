@@ -19,6 +19,6 @@
     "react-router": "^2.6.0"
   },
   "devDependencies": {
-    "@kadira/storybook": "^1.38.3"
+    "@kadira/storybook": "^1.41.0"
   }
 }
