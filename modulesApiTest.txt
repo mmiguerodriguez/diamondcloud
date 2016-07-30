@@ -1,4 +1,7 @@
+db.createCollection('modules');
+
 OrganizationModule = {
+  _id: 'organizationModuleInstance1Id',
   database: {
     todos: [
       {
@@ -28,10 +31,19 @@ OrganizationModule = {
       {
         name: 'Release the MVP',
         boardId: 'generalBoardId'
+      },
+      {
+        name: 'Some super secret task',
+        boardId: 'secretBoardId',
+        visibleBy: [
+          { userId: 'obamaId' },
+          { boardId: 'General' },
+          { groupId: 'groupId' }
+        ]
       }
     ]
   },
-}
+};
 //needs mongo 3.2 to run
 //Get every todo in some board
 
@@ -39,21 +51,57 @@ JSON.stringify(db.modules.aggregate(
   [
     {
       $project: {
-        todos: "$database.todos"
+        todos: '$database.todos'
       }
     },
     {
       $project: {
         todos: {
           $filter: {
-            input: "$todos",
-            as: "todo",
+            input: '$todos',
+            as: 'todo',
             cond: {
-              $eq: ["$$todo.boardId", "programmingBoardId"]
+              $eq: ['$$todo.boardId', 'designBoardId']
             }
           }
         }
       }
+    },
+    {
+      $match: {
+        $or: [
+          { 'todos.visibleBy': null },
+          { 'todos.visibleBy.userId': '.' },
+          { 'todos.visibleBy.boardId': { $in: ['General', '.'] } },
+          { 'todos.visibleBy.groupId': { $in: ['sas','.'] } }
+        ]
+      }
     }
   ]
 )._batch, null, 4);
+
+//insert new todo
+let moduleInstanceId = 'organizationModuleInstance1Id',
+    collection = 'todos';
+
+let todo = {
+  name: 'Implement tests on the client',
+  boardId: designBoardId,
+  visibleBy: [
+    { boardId: 'General' },
+    { boardId: 'Design' },
+  ],
+}
+
+db.modules.update(
+  { _id: 'organizationModuleInstance1Id' },
+  { $push: { 'database.todos': {
+    name: 'Implement tests on the client',
+    boardId: 'designBoardId',
+    visibleBy: [
+      { boardId: 'General' },
+      { boardId: 'Design' },
+    ],
+  } } });
+
+db.modules.update({ _id: 'organizationModuleInstance1Id' }, { $push: { `database.todos`: {name: 'Implement tests on the client', boardId: 'designBoardId', visibleBy: [ { boardId: 'General' }, { boardId: 'Design' }, ], } } } )

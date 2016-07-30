@@ -19,17 +19,6 @@ Factory.define('board', Boards, {
 	archived: false,
 });
 
-Factory.define('team', Teams, {
-	name: faker.company.companyName(),
-	plan: Random.choice(['free', 'premium']),
-	type: Random.choice(['web', 'android', 'ios', 'marketing']),
-	boards: [],
-	users: [
-		{ email: faker.internet.email(), permission: 'owner' }
-	],
-	archived: false,
-});
-
 Factory.define('publicBoard', Boards, Factory.extend('board', {
 	isPrivate: false,
 	users: [],
@@ -41,6 +30,17 @@ Factory.define('privateBoard', Boards, Factory.extend('board', {
 		{ _id: Random.id() },
 	],
 }));
+
+Factory.define('team', Teams, {
+	name: faker.company.companyName(),
+	plan: Random.choice(['free', 'premium']),
+	type: Random.choice(['web', 'android', 'ios', 'marketing']),
+	boards: [],
+	users: [
+		{ email: faker.internet.email(), permission: 'owner' }
+	],
+	archived: false,
+});
 
 Factory.define('directChat', DirectChats, {
 	teamId: Factory.get('team'),
