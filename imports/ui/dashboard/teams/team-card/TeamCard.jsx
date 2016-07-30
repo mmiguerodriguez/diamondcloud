@@ -27,7 +27,10 @@ export default class TeamCard extends React.Component {
               }
             </div>
             <div className="col-xs-4">
-              <img src="img/config.svg" className="config-icon" />
+              <a role="button" 
+                 onClick={ this.props.openConfigTeamModal }>
+                <img src="img/config.svg" className="config-icon" />
+              </a>
             </div>
           </div>
           <Link to={ "/team/" + team._id } 
