@@ -150,8 +150,16 @@ export default class CreateTeamModal extends React.Component {
               </p>
             </div>
             <div className="col-xs-11">
-              <button type="button" className="btn btn-cancel btn-hover">Atrás</button>
-              <button type="button" className="btn btn-accept btn-hover">Siguiente</button>
+              <button type="button" 
+                      className="btn btn-cancel btn-hover"
+                      onClick="">
+                Atrás
+              </button>
+              <button type="button" 
+                      className="btn btn-accept btn-hover"
+                      onClick="">
+                Siguiente
+              </button>
             </div>
           </div>
         }
