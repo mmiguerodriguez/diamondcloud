@@ -2,15 +2,15 @@ import React from 'react';
 
 export default class Profile extends React.Component {
   render() {
-    let { imageSrc } = this.props;
+    let { image } = this.props;
     return (
       <li>
-        <img src={ imageSrc } className="img-circle user-photo" />
+        <img src={ image } className="img-circle user-photo" />
       </li>
     );
   }
 }
 
 Profile.propTypes = {
-  imageSrc: React.PropTypes.string.isRequired,
+  image: React.PropTypes.string.isRequired,
 };
