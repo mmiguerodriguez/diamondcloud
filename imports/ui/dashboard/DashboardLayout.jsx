@@ -2,6 +2,7 @@ import React from 'react';
 
 import WelcomeCard from './welcome-card/WelcomeCard.jsx';
 import TeamsLayout from './teams/TeamsLayout.jsx';
+import CreateTeamModal from '../modals/create-team/CreateTeamModal.jsx';
 
 export default class DashboardLayout extends React.Component {
   render() {
@@ -11,9 +12,14 @@ export default class DashboardLayout extends React.Component {
     return (
       <div>
         <WelcomeCard hasTeams={ hasTeams } />
-        <TeamsLayout hasTeams={ hasTeams } teams={ teams } />
+        <TeamsLayout hasTeams={ hasTeams } teams={ teams } openCreateTeamModal={ this.openCreateTeamModal }/>
+        <CreateTeamModal /> { /* props: users(image, name, id (to send message) ) */ }
       </div>
     );
+  }
+  
+  openCreateTeamModal() {
+    $('#createTeamModal').modal('show');
   }
 }
 

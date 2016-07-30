@@ -1,0 +1,12 @@
+@import '{}/imports/ui/modals/create-team/create-team-modal';
+
+.modal-header, .modal-footer {
+  padding: 24px !important;
+  border: none !important;
+}
+.modal-body {
+  overflow: auto;
+}
+.modal-content {
+  border-radius: 3px !important;
+}

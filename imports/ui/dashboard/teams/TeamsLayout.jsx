@@ -32,7 +32,11 @@ export default class TeamsLayout extends React.Component {
             </h3>
           </div>
           <div className="col-md-6">
-            <a className="btn btn-default new-team-btn" href="#" role="button">CREAR NUEVO EQUIPO</a>
+            <a className="btn btn-default new-team-btn" 
+               role="button" 
+               onClick={ this.props.openCreateTeamModal }>
+              CREAR NUEVO EQUIPO
+            </a>
           </div>
         </div>
         <div className="row">
@@ -46,4 +50,5 @@ export default class TeamsLayout extends React.Component {
 TeamsLayout.propTypes = {
   teams: React.PropTypes.array.isRequired,
   hasTeams: React.PropTypes.bool.isRequired,
+  openCreateTeamModal: React.PropTypes.func.isRequired,
 };

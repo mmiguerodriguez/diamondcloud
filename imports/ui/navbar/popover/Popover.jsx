@@ -2,16 +2,15 @@ import React from 'react';
 
 export default class Popover extends React.Component {
   render() {
-    const { name, image, email } = this.props;
     return (
       <div>
         <div className="row popover-data">
           <div className="col-xs-3">
-            <img alt="User" src={ image } className="popover-user-photo" />
+            <img alt="User" src={ this.props.image } className="popover-user-photo" />
           </div>
           <div className="col-xs-7">
-            <b className="user-info">{ name }</b>
-            <p className="user-mail">{ email }</p>
+            <b className="user-info">{ this.props.name }</b>
+            <p className="user-mail">{ this.props.email }</p>
           </div>
         </div>
         <hr />

@@ -50,13 +50,12 @@ export default class NavbarLayout extends React.Component {
     );
   }
   componentDidMount() {
-    const { image, name, email } = this.props;
     $('[data-toggle="popover"]').popover({
-      html : true, 
+      html: true, 
       content: function() {
-        const popover = <Popover image={ image } 
-                                 name={ name } 
-                                 email={ email } />;
+        const popover = <Popover image={ this.props.image } 
+                                 name={ this.props.name } 
+                                 email={ this.props.email } />;
         return ReactDOMServer.renderToString(popover);
       }
     });
