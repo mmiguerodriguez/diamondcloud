@@ -96,7 +96,7 @@ export default class CreateTeamModal extends React.Component {
                   <button type="button" 
                           className="btn btn-premium col-xs-12" 
                           onClick={ this.chosePlan.bind(this, 'premium') }>
-                    Elegir plan Premuim
+                    Elegir plan Premium
                   </button>
                 </div>
               </div>
