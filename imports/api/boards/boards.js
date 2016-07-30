@@ -25,13 +25,12 @@ Boards.boardFields = {
 };
 
 Boards.getBoards = (boardsIds, userId, fields) => {
-  fields = fields || { _id: 1, name: 1 };
+  fields = fields || {};
   if(Object.prototype.toString.call(boardsIds[0]) === "[object Object]"){
     boardsIds.forEach((board, index) => {
       boardsIds[index] = board._id;
     });
   }
-
   return Boards.find({
     $and: [
       {

@@ -1,6 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 
 import { Teams } from '../teams/teams.js';
+import { Boards } from '../boards/boards.js';
 
 Meteor.users.helpers({
   teams({ fields }) {
@@ -30,15 +31,6 @@ Meteor.users.helpers({
       throw new Meteor.Error('Users.boards.userNotInTeam',
       'The user is not in the team');
     }
-    let boardsIds = [];
-
-    team.boards.forEach((board) => {
-      boardsIds.push(board._id);
-    });
-    let boards = Boards.getBoards(boardsIds, this.userId, {
-      _id: 1,
-      name: 1
-    });
-    return boards;
+    return Boards.getBoards(team.boards, this._id);
   }
 });
