@@ -33,6 +33,7 @@ OrganizationModule = {
       },
       {
         name: 'Some super secret task',
+        boardId: 'secretBoardId',
         visibleBy: [
           { userId: 'obamaId' },
           { boardId: 'General' },
@@ -59,20 +60,20 @@ JSON.stringify(db.modules.aggregate(
             input: '$todos',
             as: 'todo',
             cond: {
-              $and: [
-                {
-                  $or: [
-                    { $eq: ['$$todo.visibleBy', null] },
-                    { $eq: ['$$todo.visibleBy.userId', 'obamaId'] },
-                    { $match: { '$$todo.visibleBy.boardId': { $in: ['asd', 'General'] } } },
-                    { $match: { '$$todo.visibleBy.groupId': { $in: ['asd','groupId'] } } }
-                  ]
-                },
-                { $eq: ['$$todo.boardId', 'programmingBoardId'] },
-              ],
+              $eq: ['$$todo.boardId', 'secretBoardId']
             }
           }
         }
+      }
+    },
+    {
+      $match: {
+        $or: [
+          { 'todos.visibleBy': null },
+          { 'todos.visibleBy.userId': '.' },
+          { 'todos.visibleBy.boardId': { $in: ['.', '.'] } },
+          { 'todos.visibleBy.groupId': { $in: ['sas','groupId'] } }
+        ]
       }
     }
   ]
