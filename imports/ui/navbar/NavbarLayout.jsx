@@ -36,7 +36,7 @@ export default class NavbarLayout extends React.Component {
                           name={ 'Help' } />
             </ul>
             <ul className="nav navbar-nav navbar-right">
-              <a class="UserPhotoPopover"
+              <a className="UserPhotoPopover"
                 data-container="body"
                 data-toggle="popover"
                 data-placement="bottom"
