@@ -19,7 +19,7 @@ export default class CreateTeamModal extends React.Component {
           <div>
             <div className="name">
               <div className="form-group">
-                <label  for="projectName" 
+                <label  htmlFor="projectName" 
                         className="col-xs-2 col-sm-offset-2 control-label left-align">
                   Nombre
                 </label>
@@ -31,7 +31,7 @@ export default class CreateTeamModal extends React.Component {
                 </div>
               </div>
               <div className="form-group">
-                <label  for="projectDescription" 
+                <label  htmlFor="projectDescription" 
                         className="col-xs-2 col-sm-offset-2 control-label left-align">
                   Tipo
                 </label>

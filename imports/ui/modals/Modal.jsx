@@ -3,7 +3,7 @@ import React from 'react';
 export default class Modal extends React.Component {
   render() {
     return (
-      <div className="modal fade" id={ this.props.id } tabindex="-1" role="dialog">
+      <div className="modal fade" id={ this.props.id } tabIndex="-1" role="dialog">
         <div className="modal-dialog" role="document">
           <div className="modal-content">
             <div className="modal-header">
