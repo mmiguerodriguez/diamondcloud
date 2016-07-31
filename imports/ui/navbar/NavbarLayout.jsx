@@ -8,8 +8,7 @@ import Popover from './popover/Popover.jsx';
 
 export default class NavbarLayout extends React.Component {
   render() {
-    let user = this.props.user;
-    console.log(this.props);
+    let { user } = this.props;
     return (
       <nav className="navbar header">
         <div className="container-fluid">
@@ -30,16 +29,24 @@ export default class NavbarLayout extends React.Component {
           </div>
           <div className="collapse navbar-collapse" id="navbar">
             <ul className="nav navbar-nav">
-              <NavbarLink active={ true }
-                          link={ '/dashboard' }
-                          name={ 'Dashboard' } />
+              {
+                user ? (
+                  <NavbarLink
+                    active={ true }
+                    link={ '/dashboard' }
+                    name={ 'Dashboard' } />
+                ) : (
+                  null
+                )
+              }
+
               <NavbarLink active={ false }
                           link={ '/help' }
                           name={ 'Help' } />
             </ul>
             <ul className="nav navbar-nav navbar-right">
             {
-              (!!this.props.user) ? (
+              user ? (
                 <a className="UserPhotoPopover"
                   data-container="body"
                   data-toggle="popover"

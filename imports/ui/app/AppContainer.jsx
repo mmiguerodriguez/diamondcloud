@@ -5,7 +5,7 @@ import AppLayout from './AppLayout.jsx';
 
 export default class App extends React.Component {
   render() {
-    if (this.props.loading) {
+    if (this.props.user === undefined) {
       return null;
     } else {
       return (<AppLayout { ...this.props } />);
@@ -15,9 +15,7 @@ export default class App extends React.Component {
 
 export default AppContainer = createContainer(() => {
   const user = Meteor.user();
-  const loading = !user;
   return {
-    loading,
     user,
   };
 }, App);
