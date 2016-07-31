@@ -97,7 +97,7 @@ export default class ConfigTeamModal extends React.Component {
               <button type="button"
                       className="btn btn-accept btn-hover"
                       data-dismiss="modal"
-                      onClick="">
+                      onClick={ this.saveTeam }>
                 Guardar
               </button>
             </div>
@@ -105,6 +105,18 @@ export default class ConfigTeamModal extends React.Component {
         />
       );
     }
+  }
+  saveTeam() {
+    let teamId = this.props.team._id;
+    /*
+    Meteor.call('Teams.methods.edit', { teamId, team }, (error, result) => {
+      if(error) {
+        throw new Meteor.Error(error);
+      } else {
+        console.log(result);
+      }
+    });
+    */
   }
 }
 
