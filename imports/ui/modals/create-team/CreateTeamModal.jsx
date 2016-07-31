@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
-import Router from 'react-router';
+import { browserHistory } from 'react-router'
 
 import Modal from '../Modal.jsx';
 
@@ -271,7 +271,7 @@ export default class CreateTeamModal extends React.Component {
         throw new Meteor.Error(error);
       } else {
         $('#createTeamModal').modal('hide');
-        Router.browserHistory.push('/team/' + result._id);
+        browserHistory.push('/team/' + result._id);
       }
     });
   }
