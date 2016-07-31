@@ -20,7 +20,7 @@ export default class ConfigTeamModal extends React.Component {
               <h4 className="modal-title">Configuración del equipo</h4>
             </div>
           }
-            body={
+          body={
             <div>
               <h4 className="configuration-title">Miembros</h4>
               <div className="row contacts-list-row">
