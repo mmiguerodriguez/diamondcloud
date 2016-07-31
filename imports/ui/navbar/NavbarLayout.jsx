@@ -8,14 +8,16 @@ import Popover from './popover/Popover.jsx';
 
 export default class NavbarLayout extends React.Component {
   render() {
+    let user = this.props.user;
+    console.log(this.props);
     return (
       <nav className="navbar header">
         <div className="container-fluid">
           <div className="navbar-header">
-            <button className="navbar-toggle collapsed" 
-                    type="button" 
-                    data-toggle="collapse" 
-                    data-target="#bs-example-navbar-collapse-1" 
+            <button className="navbar-toggle collapsed"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbar"
                     aria-expanded="false">
               <span className="sr-only">Toggle navigation</span>
               <span className="icon-bar"></span>
@@ -26,23 +28,27 @@ export default class NavbarLayout extends React.Component {
               <img src="img/logo.svg" className="logo-photo"/>
             </a>
           </div>
-          <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <div className="collapse navbar-collapse" id="navbar">
             <ul className="nav navbar-nav">
-              <NavbarLink active={ true } 
-                          link={ '/dashboard' } 
+              <NavbarLink active={ true }
+                          link={ '/dashboard' }
                           name={ 'Dashboard' } />
-              <NavbarLink active={ false } 
-                          link={ '/help' } 
+              <NavbarLink active={ false }
+                          link={ '/help' }
                           name={ 'Help' } />
             </ul>
             <ul className="nav navbar-nav navbar-right">
-              <a className="UserPhotoPopover"
-                data-container="body"
-                data-toggle="popover"
-                data-placement="bottom"
-                data-content="">
-                <Profile image={ this.props.image } />
-              </a>
+            {
+              (!!this.props.user) ? (
+                <a className="UserPhotoPopover"
+                  data-container="body"
+                  data-toggle="popover"
+                  data-placement="bottom"
+                  data-content="">
+                  <Profile picture={ user.profile.picture } />
+                </a>
+              ) : ( null )
+            }
             </ul>
           </div>
         </div>
@@ -50,12 +56,11 @@ export default class NavbarLayout extends React.Component {
     );
   }
   componentDidMount() {
+    let { user } = this.props;
     $('[data-toggle="popover"]').popover({
-      html: true, 
+      html: true,
       content: function() {
-        const popover = <Popover image={ this.props.image } 
-                                 name={ this.props.name } 
-                                 email={ this.props.email } />;
+        const popover = <Popover user={ user } />;
         return ReactDOMServer.renderToString(popover);
       }
     });
@@ -63,7 +68,6 @@ export default class NavbarLayout extends React.Component {
 }
 
 NavbarLayout.propTypes = {
-  name: React.PropTypes.string.isRequired,
-  image: React.PropTypes.string.isRequired,
-  email: React.PropTypes.string.isRequired,
+  user: React.PropTypes.object,
+  path: React.PropTypes.string.isRequired,
 };
