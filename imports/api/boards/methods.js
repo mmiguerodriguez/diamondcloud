@@ -49,6 +49,13 @@ export const createBoard = new ValidatedMethod({
 
       boardId = res;
       _board = Boards.findOne(boardId);
+      
+      Teams.update(teamId, {
+        $push: {
+          boards: { _id: boardId },
+        },
+      });
+
       future.return(_board);
     });
     return future.wait();

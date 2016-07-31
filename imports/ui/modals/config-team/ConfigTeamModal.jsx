@@ -82,7 +82,7 @@ export default class ConfigTeamModal extends React.Component {
                     }
                   </p>
                   <p>Personas: { team.users.length }</p>
-                  <p>Boards: 4/12</p>
+                  <p>Boards: { team.boards.length }/12</p>
                 </div>
               </div>
             </div>
