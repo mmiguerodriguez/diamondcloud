@@ -1,4 +1,6 @@
+import { Meteor } from 'meteor/meteor';
 import React from 'react';
+import Router from 'react-router';
 
 import Modal from '../Modal.jsx';
 
@@ -7,9 +9,11 @@ export default class CreateTeamModal extends React.Component {
     super(props);
     this.state = {
       page: 1,
+      name: '',
+      plan: '',
+      type: 'Web',
+      usersEmails: [],
     };
-    this.nextPage = this.nextPage.bind(this);
-    this.backPage = this.backPage.bind(this);
   }
   render() {
     return (
@@ -38,18 +42,20 @@ export default class CreateTeamModal extends React.Component {
                     <input  id="projectName"
                             className="form-control"
                             placeholder="Nombre del proyecto"
-                            type="text" />
+                            type="text"
+                            onChange={ this.handleChange.bind(this, 'name') } />
                   </div>
                 </div>
                 <div className="name-input">
-                  <label  htmlFor="projectDescription"
+                  <label  htmlFor="projectType"
                           className="col-xs-2 col-sm-offset-2 control-label left-align">
                     Tipo
                   </label>
                   <div className="col-xs-12 col-sm-6">
-                    <select id="projectDescription"
+                    <select id="projectType"
                             className="form-control"
-                            placeholder="Tipo de proyecto">
+                            placeholder="Tipo de proyecto"
+                            onChange={ this.handleChange.bind(this, 'type') }>
                       <option disabled defaultValue>Tipo de proyecto</option>
                       <option value="Web">Web</option>
                       <option value="Marketing">Marketing</option>
@@ -59,12 +65,13 @@ export default class CreateTeamModal extends React.Component {
                     </select>
                   </div>
                 </div>
-                <div  id="otherProjectDescription"
+                <div  id="otherprojectType"
                       className="col-xs-12 col-sm-6 col-sm-offset-4 hidden">
                   <input  id="projectType"
                           className="form-control"
                           placeholder="Tipo de proyecto"
-                          type="text" />
+                          type="text"
+                          onChange={ this.handleChange.bind(this, 'type') } />
                 </div>
               </div>
             </div>
@@ -111,6 +118,7 @@ export default class CreateTeamModal extends React.Component {
                     Elegir plan Premium
                   </button>
                 </div>
+                <input id="projectPlan" type="hidden" />
               </div>
             </div>
             <div  id="create-team-page-3"
@@ -168,13 +176,13 @@ export default class CreateTeamModal extends React.Component {
               <button type="button"
                       id="back-page-btn"
                       className="btn btn-cancel btn-hover"
-                      onClick={ this.backPage }>
+                      onClick={ this.backPage.bind(this) }>
                 Atrás
               </button>
               <button type="button"
                       id="next-page-btn"
                       className="btn btn-accept btn-hover"
-                      onClick={ this.nextPage }>
+                      onClick={ this.nextPage.bind(this) }>
                 Siguiente
               </button>
             </div>
@@ -184,9 +192,9 @@ export default class CreateTeamModal extends React.Component {
     );
   }
   componentDidMount() {
-    $('#projectDescription').on('change', function() {
+    $('#projectType').on('change', function() {
+      let element = $('#otherprojectType');
       let otherDescription = $(this).val() === 'Otro';
-      let element = $('#otherProjectDescription');
 
       if(otherDescription) {
         element.removeClass('hidden');
@@ -196,12 +204,20 @@ export default class CreateTeamModal extends React.Component {
       }
     });
   }
+  handleChange(index, event) {
+    this.setState({
+      [index]: event.target.value,
+    });
+  }
+
   chosePlan(type) {
     let other = type === 'free' ? 'premium' : 'free';
     $('.' + type).addClass(type + '-card-active');
     $('.' + other).removeClass(other + '-card-active');
+
+    this.setState({ plan: type });
   }
-  backPage(){
+  backPage() {
     let page = this.state.page;
     if(page - 1 < 1) return;
 
@@ -216,9 +232,12 @@ export default class CreateTeamModal extends React.Component {
 
     this.setState({ page: page - 1 });
   }
-  nextPage(){
+  nextPage() {
     let page = this.state.page;
-    if(page + 1 > 3) return;
+    if(page + 1 > 3) {
+      this.createTeam();
+      return;
+    }
 
     $('#create-team-page-' + (page + 1)).effect('slide', {
       direction: 'right',
@@ -233,7 +252,27 @@ export default class CreateTeamModal extends React.Component {
     } else {
       $('#next-page-btn').html('Siguiente');
     }
-    
+
     this.setState({ page: page + 1 });
+  }
+
+  createTeam() {
+    let { name, plan, type, usersEmails } = this.state;
+    type = type === 'Otro' ? $('#otherprojectType').val() : type;
+
+    $('#createTeamModal .contacts-list-row').each(function(index, item) {
+      // let mail = ''; // Todo: Grab users emails
+      // usersEmails.push(mail);
+    });
+
+    let form = { name, plan, type, usersEmails };
+    Meteor.call('Teams.methods.create', form, (error, result) => {
+      if (error) {
+        throw new Meteor.Error(error);
+      } else {
+        $('#createTeamModal').modal('hide');
+        Router.browserHistory.push('/team/' + result._id);
+      }
+    });
   }
 }
