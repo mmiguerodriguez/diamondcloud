@@ -12,7 +12,7 @@ export default class ConfigTeamModal extends React.Component {
             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
               <img src="img/close-modal-icon.svg" width="18px" />
             </button>
-            <h4 className="modal-title">Configuración del proyecto</h4>
+            <h4 className="modal-title">Configuración del equipo</h4>
           </div>
         }
         body={
@@ -20,8 +20,13 @@ export default class ConfigTeamModal extends React.Component {
             <h4>Miembros</h4>
             <div className="row contacts-list-row">
               <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-                <input type="text" className="form-control" id="searchUsers" placeholder="Buscá entre los integrantes" />
-                <div className="input-group-addon search-input"><img src="http://image0.flaticon.com/icons/svg/109/109164.svg" width="20px" /></div>
+                <input  id="searchUsers"
+                        className="form-control"
+                        placeholder="Buscá entre los integrantes"
+                        type="text"/>
+                <div className="input-group-addon search-input">
+                  <img src="img/search-people-icon.svg" width="20px" />
+                </div>
               </div>
             </div>
             <div className="row">
@@ -34,11 +39,11 @@ export default class ConfigTeamModal extends React.Component {
                     <p className="contact-list-name">Gomito Gomez</p>
                   </div>
                   <div className="col-xs-3">
-                    <img alt="Enviar mensaje" src="http://image0.flaticon.com/icons/svg/60/60697.svg" width="25px" className="send-message-icon" />
+                    <img alt="Enviar mensaje" src="img/send-message-icon.svg" width="24px" className="send-message-icon" />
                   </div>
                   <div className="col-xs-1">
                     <div className="close">
-                      <img src="http://image.flaticon.com/icons/svg/61/61155.svg" width="15px" />
+                      <img src="img/close-modal-icon.svg" width="16px" />
                     </div>
                   </div>
                 </div>
@@ -47,15 +52,23 @@ export default class ConfigTeamModal extends React.Component {
             <br />
             <div className="row">
               <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-                <input type="text" className="form-control" id="searchUsers" placeholder="Compartir proyecto" />
-                <div className="input-group-addon search-input"><img src="http://image0.flaticon.com/icons/svg/60/60807.svg" width="20px" /></div>
+                <input  id="shareTeam"
+                        className="form-control"
+                        placeholder="Compartir equipo"
+                        type="text" />
+                <div className="input-group-addon search-input">
+                  <img src="img/add-people-icon.svg" width="20px" />
+                </div>
               </div>
             </div>
             <hr />
             <h4>Plan</h4>
             <div className="row">
               <div className="col-sm-6 col-sm-offset-2 col-xs-12">
-                <p>Plan actual: Free <button type="button" className="btn btn-add btn-upgrade">Upgrade</button></p>
+                <p>
+                  Plan actual: Free
+                  <button type="button" className="btn btn-add btn-upgrade">Upgrade</button>
+                </p>
                 <p>Personas: 10</p>
                 <p>Boards: 4/12</p>
               </div>
@@ -64,30 +77,20 @@ export default class ConfigTeamModal extends React.Component {
         }
         footer={
           <div className="row">
-            <div className="col-xs-1">
-              <p className="create-modal-page">
-                <span id="actual-page">1</span>
-                <span>/3</span>
-              </p>
-            </div>
-            <div className="col-xs-11">
-              <button type="button"
-                      className="btn btn-cancel btn-hover"
-                      onClick="">
-                Cancelar
-              </button>
-              <button type="button"
-                      className="btn btn-accept btn-hover"
-                      onClick="">
-                Aceptar
-              </button>
-            </div>
+            <button type="button"
+                    className="btn btn-cancel btn-hover"
+                    data-dismiss="modal">
+              Cancelar
+            </button>
+            <button type="button"
+                    className="btn btn-accept btn-hover"
+                    data-dismiss="modal"
+                    onClick="">
+              Guardar
+            </button>
           </div>
         }
       />
     );
-  }
-  chosePlan(type) {
-    console.log('Chose plan: ', type);
   }
 }
