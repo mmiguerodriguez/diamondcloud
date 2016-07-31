@@ -5,7 +5,7 @@ import TeamCard from './team-card/TeamCard.jsx';
 export default class TeamsLayout extends React.Component {
   renderTeams(){
     let { teams, hasTeams } = this.props;
-    
+
     if(hasTeams) {
       return teams.map((team) => {
         return (
@@ -13,6 +13,7 @@ export default class TeamsLayout extends React.Component {
             key={ team._id }
             team={ team }
             hasTeams={ hasTeams }
+            openConfigTeamModal={ this.props.openConfigTeamModal }
           />
         );
       });
@@ -32,8 +33,8 @@ export default class TeamsLayout extends React.Component {
             </h3>
           </div>
           <div className="col-md-6">
-            <a className="btn btn-default new-team-btn" 
-               role="button" 
+            <a className="btn btn-default new-team-btn"
+               role="button"
                onClick={ this.props.openCreateTeamModal }>
               CREAR NUEVO EQUIPO
             </a>

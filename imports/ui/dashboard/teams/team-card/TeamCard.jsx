@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 export default class TeamCard extends React.Component {
   render() {
     let { team } = this.props;
-    
+
     return (
       this.props.hasTeams === true ? (
         <div className="col-md-3 teams">
@@ -14,28 +14,29 @@ export default class TeamCard extends React.Component {
                 <b>{ team.name }</b>
               </h4>
               <h5>Plan: { team.plan }</h5>
-              { 
+              {
                 team.users.length >= 4 ? (
                   <h5>Miembros:
                     <b className="text-danger">
                       &nbsp;{ team.users.length } / 5
                     </b>
-                  </h5> 
-                ) : ( 
-                  <h5>Miembros: { team.users.length } / 5</h5> 
+                  </h5>
+                ) : (
+                  <h5>Miembros: { team.users.length } / 5</h5>
                 )
               }
             </div>
             <div className="col-xs-4">
-              <a role="button" 
+              <a role="button"
                  onClick={ this.props.openConfigTeamModal }>
                 <img src="img/config.svg" className="config-icon" />
               </a>
             </div>
           </div>
-          <Link to={ "/team/" + team._id } 
-                className="col-md-4 btn open-team-btn" 
-                role="button">Abrir
+          <Link to={ "/team/" + team._id }
+                className="col-md-4 btn open-team-btn"
+                role="button">
+            Abrir
           </Link>
         </div>
       ) : (
@@ -52,4 +53,5 @@ export default class TeamCard extends React.Component {
 TeamCard.propTypes = {
   team: React.PropTypes.object,
   hasTeams: React.PropTypes.bool,
+  openConfigTeamModal: React.PropTypes.func,
 };

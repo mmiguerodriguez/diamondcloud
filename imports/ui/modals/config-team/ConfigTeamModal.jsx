@@ -2,10 +2,10 @@ import React from 'react';
 
 import Modal from '../Modal.jsx';
 
-export default class CreateTeamModal extends React.Component {
+export default class ConfigTeamModal extends React.Component {
   render() {
     return (
-      <Modal 
+      <Modal
         id={ 'configTeamModal' }
         header={
           <div>
@@ -17,46 +17,47 @@ export default class CreateTeamModal extends React.Component {
         }
         body={
           <div>
-            <h4 style="margin-left: 0px;">Miembros</h4>
-            <div class="row" style="margin-bottom: -1px;">
-              <div class="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-                <input type="text" class="form-control" id="searchUsers" placeholder="Buscá entre los integrantes" />
-                <div class="input-group-addon search-input"><img src="http://image0.flaticon.com/icons/svg/109/109164.svg" width="20px" /></div>
+            <h4>Miembros</h4>
+            <div className="row contacts-list-row">
+              <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
+                <input type="text" className="form-control" id="searchUsers" placeholder="Buscá entre los integrantes" />
+                <div className="input-group-addon search-input"><img src="http://image0.flaticon.com/icons/svg/109/109164.svg" width="20px" /></div>
               </div>
             </div>
-            <div class="row">
-              <div class="contacts-list col-sm-6 col-xs-12 col-sm-offset-3">
-                <div class="row">
-                  <div class="col-xs-1">
-                    <img alt="User" src="//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg" className="navbar-photo" />
+            <div className="row">
+              <div className="contacts-list col-sm-6 col-xs-12 col-sm-offset-3">
+                <div className="row">
+                  <div className="col-xs-1">
+                    <img alt="User" src="//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg" className="navbar-photo contact-list-photo" />
                   </div>
-                  <div class="col-xs-6">
-                    <p style="margin-left: 25px; margin-top: 10px; margin-bottom: 10px;">Gomito Gomez</p>
+                  <div className="col-xs-6">
+                    <p className="contact-list-name">Gomito Gomez</p>
                   </div>
-                  <div class="col-xs-3">
-                    <img alt="Enviar mensaje" style="margin-top: 10px; margin-bottom: 10px;" src="http://image0.flaticon.com/icons/svg/60/60697.svg" width="25px" />
+                  <div className="col-xs-3">
+                    <img alt="Enviar mensaje" src="http://image0.flaticon.com/icons/svg/60/60697.svg" width="25px" className="send-message-icon" />
                   </div>
-                  <div class="col-xs-1">
-                    <button type="button" class="close" aria-label="Close" style="margin-left: 15px; margin-top: 10px; margin-bottom: 10px;"><span aria-hidden="true">&times;</span></button>
+                  <div className="col-xs-1">
+                    <div className="close">
+                      <img src="http://image.flaticon.com/icons/svg/61/61155.svg" width="15px" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             <br />
-            <div class="row">
-              <div class="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-                <input type="text" class="form-control" id="searchUsers" placeholder="Compartir proyecto" />
-                <div class="input-group-addon search-input"><img src="http://image0.flaticon.com/icons/svg/60/60807.svg" width="20px" /></div>
+            <div className="row">
+              <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
+                <input type="text" className="form-control" id="searchUsers" placeholder="Compartir proyecto" />
+                <div className="input-group-addon search-input"><img src="http://image0.flaticon.com/icons/svg/60/60807.svg" width="20px" /></div>
               </div>
             </div>
             <hr />
-            <h4 style="margin-left: 10px;">Plan</h4>
-            <div class="row">
-              <div class="col-sm-6 col-sm-offset-2 col-xs-12">
-                <p>Plan actual: Free <button type="button" class="btn btn-add btn-upgrade">Upgrade</button></p>
-                <p>Personas: 10/50</p>
-                <p>Branches: 4/12</p>
-                <p>Módulos usados: <b style="color: red;">5/5</b></p>
+            <h4>Plan</h4>
+            <div className="row">
+              <div className="col-sm-6 col-sm-offset-2 col-xs-12">
+                <p>Plan actual: Free <button type="button" className="btn btn-add btn-upgrade">Upgrade</button></p>
+                <p>Personas: 10</p>
+                <p>Boards: 4/12</p>
               </div>
             </div>
           </div>
@@ -70,12 +71,12 @@ export default class CreateTeamModal extends React.Component {
               </p>
             </div>
             <div className="col-xs-11">
-              <button type="button" 
+              <button type="button"
                       className="btn btn-cancel btn-hover"
                       onClick="">
                 Cancelar
               </button>
-              <button type="button" 
+              <button type="button"
                       className="btn btn-accept btn-hover"
                       onClick="">
                 Aceptar
