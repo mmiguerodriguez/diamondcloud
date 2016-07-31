@@ -6,16 +6,16 @@ Teams.helpers({
   owner() {
     let found = false;
     let owner;
-    
+
     this.users.forEach((user, index) => {
       if(user.permission == "owner"){
         found = true;
         owner = user.email;
       }
     });
-    
+
     if(!found) {
-      throw new Meteor.Error('Teams.owner.noOwner', 
+      throw new Meteor.Error('Teams.owner.noOwner',
       'The team has no owner.');
     }
     return owner;
@@ -29,7 +29,7 @@ Teams.helpers({
         found = true;
       }
     });
-    
+
     return found;
   }
 });
@@ -40,6 +40,7 @@ Teams.dashboardFields = {
   plan: 1,
   type: 1,
   users: 1,
+  boards: 1,
 };
 
 // Fields that are shown in the team page (/team)
@@ -61,8 +62,8 @@ Teams.addUser = (teamId, user) => {
 
 Teams.removeUser = (teamId, userEmail) => {
   Teams.update({ _id: teamId }, {
-    $pull: { 
-      users : { 
+    $pull: {
+      users : {
         email: userEmail,
       },
     },

@@ -8,7 +8,6 @@ Meteor.users.helpers({
     fields = fields || {};
 
     let teams = Teams.find({
-
       users: {
         $elemMatch: {
           email: this.emails[0].address,
