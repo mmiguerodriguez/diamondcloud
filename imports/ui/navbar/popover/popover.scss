@@ -5,7 +5,7 @@
 .popover-btn {
   padding: 3px !important;
   font-size: small !important;
-  background-color: #dedede;
+  background-color: $grey-btn;
 }
 .popover-btn-text {
   margin: 0;
@@ -15,25 +15,21 @@
   border-radius: 30px;
   width: 60px;
 }
-.user-info {
-  
-}
-.user-mail {
-  color: #666;
-}
 .popover-content {
   padding: 9px 0px;
 }
 .popover-data {
-  margin-bottom: 10px;
   margin-left: 0;
   margin-right: 0;
+  margin-bottom: 10px;
 }
 .popover-footer {
   margin-left: 0;
   margin-right: 0;
   margin-top: 10px;
 }
-hr {
-  margin: 0;
+.popover-content {
+  hr {
+    margin: 0 !important;
+  }
 }

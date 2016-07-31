@@ -4,8 +4,8 @@
   margin-bottom: 0px !important;
   border-radius: 0px !important;
   border: none !important;
-  background-color: #3498db !important;
-  box-shadow: 0 3px 4px rgba(191,191,191,0.5);
+  background-color: $navbar-color !important;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
 }
 .user-photo {
   margin-top: 5px;
@@ -17,8 +17,8 @@
   margin-right: 15px;
 }
 .li-navbar-text {
-  color: #fff !important;
+  color: $white !important;
 }
 .nav > li > a:focus, .nav > li > a:hover {
-  background-color: #2980b9 !important;
+  background-color: $li-active !important;
 }
