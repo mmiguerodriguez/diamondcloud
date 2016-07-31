@@ -90,11 +90,10 @@ export default class CreateTeamModal extends React.Component {
                       </ul>
                     </div>
                   </div>
-                  <button type="button"
-                          className="btn btn-free col-xs-12"
+                  <div className="btn btn-free col-xs-12"
                           onClick={ this.chosePlan.bind(this, 'free') }>
                     Elegir plan Free
-                  </button>
+                  </div>
                 </div>
                 <div className="premium col-xs-5">
                   <div className="premium-card">
@@ -112,11 +111,9 @@ export default class CreateTeamModal extends React.Component {
                       <p>por usuario/mes</p>
                     </div>
                   </div>
-                  <button type="button"
-                          className="btn btn-premium col-xs-12"
-                          onClick={ this.chosePlan.bind(this, 'premium') }>
-                    Elegir plan Premium
-                  </button>
+                  <div className="btn btn-premium col-xs-12">
+                    Coming soon...
+                  </div>
                 </div>
                 <input id="projectPlan" type="hidden" />
               </div>
