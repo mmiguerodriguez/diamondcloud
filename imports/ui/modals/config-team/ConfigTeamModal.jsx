@@ -22,6 +22,47 @@ export default class ConfigTeamModal extends React.Component {
           }
           body={
             <div>
+              <h4 className="configuration-title">Equipo</h4>
+              <div className="row">
+                <div className="name-input">
+                  <label  htmlFor="projectName"
+                          className="col-xs-2 col-sm-offset-2 control-label left-align">
+                    Nombre
+                  </label>
+                  <div className="col-xs-12 col-sm-6">
+                    <input  id="projectName"
+                            className="form-control"
+                            placeholder="Nombre del proyecto"
+                            type="text"/>
+                  </div>
+                </div>
+                <div className="name-input">
+                  <label  htmlFor="projectType"
+                          className="col-xs-2 col-sm-offset-2 control-label left-align">
+                    Tipo
+                  </label>
+                  <div className="col-xs-12 col-sm-6">
+                    <select id="projectType"
+                            className="form-control"
+                            placeholder="Tipo de proyecto">
+                      <option disabled defaultValue>Tipo de proyecto</option>
+                      <option value="Web">Web</option>
+                      <option value="Marketing">Marketing</option>
+                      <option value="Diseño">Diseño</option>
+                      <option value="Programación">Programación</option>
+                      <option value="Otro">Otro</option>
+                    </select>
+                  </div>
+                </div>
+                <div  id="otherprojectType"
+                      className="col-xs-12 col-sm-6 col-sm-offset-4 hidden">
+                  <input  id="projectType"
+                          className="form-control"
+                          placeholder="Tipo de proyecto"
+                          type="text"/>
+                </div>
+              </div>
+              <hr />
               <h4 className="configuration-title">Miembros</h4>
               <div className="row contacts-list-row">
                 <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
