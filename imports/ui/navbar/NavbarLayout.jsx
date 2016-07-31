@@ -62,13 +62,15 @@ export default class NavbarLayout extends React.Component {
   }
   componentDidMount() {
     let { user } = this.props;
-    $('[data-toggle="popover"]').popover({
-      html: true,
-      content: function() {
-        const popover = <Popover user={ user } />;
-        return ReactDOMServer.renderToString(popover);
-      }
-    });
+    if(user) {
+      $('[data-toggle="popover"]').popover({
+        html: true,
+        content: function() {
+          const popover = <Popover user={ user } />;
+          return ReactDOMServer.renderToString(popover);
+        }
+      });
+    }
   }
 }
 
