@@ -3,9 +3,17 @@ import React from 'react';
 import Modal from '../Modal.jsx';
 
 export default class CreateTeamModal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      page: 1,
+    };
+    this.nextPage = this.nextPage.bind(this);
+    this.backPage = this.backPage.bind(this);
+  }
   render() {
     return (
-      <Modal 
+      <Modal
         id={ 'createTeamModal' }
         header={
           <div>
@@ -17,46 +25,52 @@ export default class CreateTeamModal extends React.Component {
         }
         body={
           <div>
-            <div className="name hidden">
-              <div className="name-input">
-                <label  htmlFor="projectName" 
-                        className="col-xs-2 col-sm-offset-2 control-label left-align">
-                  Nombre
-                </label>
-                <div className="col-xs-12 col-sm-6">
-                  <input  id="projectName" 
-                          className="form-control" 
-                          placeholder="Nombre del proyecto"
+            <div  id="create-team-page-1"
+                  className="name"
+                  style={{ display: 'block' }}>
+              <div className="row">
+                <div className="name-input">
+                  <label  htmlFor="projectName"
+                          className="col-xs-2 col-sm-offset-2 control-label left-align">
+                    Nombre
+                  </label>
+                  <div className="col-xs-12 col-sm-6">
+                    <input  id="projectName"
+                            className="form-control"
+                            placeholder="Nombre del proyecto"
+                            type="text" />
+                  </div>
+                </div>
+                <div className="name-input">
+                  <label  htmlFor="projectDescription"
+                          className="col-xs-2 col-sm-offset-2 control-label left-align">
+                    Tipo
+                  </label>
+                  <div className="col-xs-12 col-sm-6">
+                    <select id="projectDescription"
+                            className="form-control"
+                            placeholder="Tipo de proyecto">
+                      <option disabled defaultValue>Tipo de proyecto</option>
+                      <option value="Web">Web</option>
+                      <option value="Marketing">Marketing</option>
+                      <option value="Diseño">Diseño</option>
+                      <option value="Programación">Programación</option>
+                      <option value="Otro">Otro</option>
+                    </select>
+                  </div>
+                </div>
+                <div  id="otherProjectDescription"
+                      className="col-xs-12 col-sm-6 col-sm-offset-4 hidden">
+                  <input  id="projectType"
+                          className="form-control"
+                          placeholder="Tipo de proyecto"
                           type="text" />
                 </div>
               </div>
-              <div className="name-input">
-                <label  htmlFor="projectDescription" 
-                        className="col-xs-2 col-sm-offset-2 control-label left-align">
-                  Tipo
-                </label>
-                <div className="col-xs-12 col-sm-6">
-                  <select id="projectDescription" 
-                          className="form-control" 
-                          placeholder="Tipo de proyecto">
-                    <option disabled defaultValue>Tipo de proyecto</option>
-                    <option>Web</option>
-                    <option>Marketing</option>
-                    <option>Diseño</option>
-                    <option>Programación</option>
-                    <option>Otro</option>
-                  </select>
-                </div>
-              </div>
-              <div className="col-xs-12 col-sm-6 col-sm-offset-4">
-                <input  id="projectType" 
-                        className="form-control" 
-                        placeholder="Tipo de proyecto" 
-                        type="text" />
-              </div>
             </div>
-            
-            <div className="plan hidden">
+            <div  id="create-team-page-2"
+                  className="plan"
+                  style={{ display: 'none' }}>
               <div className="row">
                 <div className="free col-xs-5 col-xs-offset-1">
                   <div className="free-card">
@@ -69,8 +83,8 @@ export default class CreateTeamModal extends React.Component {
                       </ul>
                     </div>
                   </div>
-                  <button type="button" 
-                          className="btn btn-free col-xs-12" 
+                  <button type="button"
+                          className="btn btn-free col-xs-12"
                           onClick={ this.chosePlan.bind(this, 'free') }>
                     Elegir plan Free
                   </button>
@@ -91,24 +105,25 @@ export default class CreateTeamModal extends React.Component {
                       <p>por usuario/mes</p>
                     </div>
                   </div>
-                  <button type="button" 
-                          className="btn btn-premium col-xs-12" 
+                  <button type="button"
+                          className="btn btn-premium col-xs-12"
                           onClick={ this.chosePlan.bind(this, 'premium') }>
                     Elegir plan Premium
                   </button>
                 </div>
               </div>
             </div>
-            
-            <div className="share">
+            <div  id="create-team-page-3"
+                  className="share"
+                  style={{ display: 'none' }}>
               <div className="row">
                 <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-                  <input  id="searchUsers" 
+                  <input  id="searchUsers"
                           className="form-control"
-                          placeholder="Compartir proyecto" 
+                          placeholder="Compartir proyecto"
                           type="text" />
                   <div className="input-group-addon search-input">
-                    <img src="img/add-people-icon.svg" 
+                    <img src="img/add-people-icon.svg"
                          width="24px" />
                   </div>
                 </div>
@@ -117,8 +132,8 @@ export default class CreateTeamModal extends React.Component {
                 <div className="contacts-list col-sm-6 col-xs-12 col-sm-offset-3">
                   <div className="row">
                     <div className="col-xs-1">
-                      <img  className="contact-list-photo" 
-                            alt="User" 
+                      <img  className="contact-list-photo"
+                            alt="User"
                             src="//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg" />
                     </div>
                     <div className="col-xs-6">
@@ -132,7 +147,7 @@ export default class CreateTeamModal extends React.Component {
                     </div>
                     <div className="col-xs-1">
                       <div className="close">
-                        <img src="http://image.flaticon.com/icons/svg/61/61155.svg" width="15px" />
+                        <img src="img/close-modal-icon.svg" width="16px" />
                       </div>
                     </div>
                   </div>
@@ -150,14 +165,16 @@ export default class CreateTeamModal extends React.Component {
               </p>
             </div>
             <div className="col-xs-11">
-              <button type="button" 
+              <button type="button"
+                      id="back-page-btn"
                       className="btn btn-cancel btn-hover"
-                      onClick="">
+                      onClick={ this.backPage }>
                 Atrás
               </button>
-              <button type="button" 
+              <button type="button"
+                      id="next-page-btn"
                       className="btn btn-accept btn-hover"
-                      onClick="">
+                      onClick={ this.nextPage }>
                 Siguiente
               </button>
             </div>
@@ -166,7 +183,56 @@ export default class CreateTeamModal extends React.Component {
       />
     );
   }
+  componentDidMount() {
+    $('#projectDescription').on('change', function() {
+      let otherDescription = $(this).val() === 'Otro';
+      let element = $('#otherProjectDescription');
+
+      if(otherDescription) {
+        element.removeClass('hidden');
+      } else {
+        if(!element.hasClass('hidden'))
+          element.addClass('hidden');
+      }
+    });
+  }
   chosePlan(type) {
-    console.log('Chose plan: ', type);
+    let other = type === 'free' ? 'premium' : 'free';
+    $('.' + type).addClass(type + '-card-active');
+    $('.' + other).removeClass(other + '-card-active');
+  }
+  backPage(){
+    let page = this.state.page;
+    if(page - 1 < 1) return;
+
+    $('#create-team-page-' + (page - 1)).effect('slide', {
+      direction: 'left',
+      mode: 'show',
+    }, 500);
+
+    $('#create-team-page-' + page).hide();
+    $('#actual-page').html(page - 1);
+    $('#next-page-btn').html('Siguiente');
+
+    this.setState({ page: page - 1 });
+  }
+  nextPage(){
+    let page = this.state.page;
+    if(page + 1 > 3) return;
+
+    $('#create-team-page-' + (page + 1)).effect('slide', {
+      direction: 'right',
+      mode: 'show',
+    }, 500);
+
+    $('#create-team-page-' + page).hide();
+    $('#actual-page').html(page + 1);
+
+    if(page + 1 === 3) {
+      $('#next-page-btn').html('Crear');
+    } else {
+      $('#next-page-btn').html('Siguiente');
+    }
+    this.setState({ page: page + 1 });
   }
 }
