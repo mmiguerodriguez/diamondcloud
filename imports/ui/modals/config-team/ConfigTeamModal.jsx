@@ -17,7 +17,7 @@ export default class ConfigTeamModal extends React.Component {
         }
         body={
           <div>
-            <h4>Miembros</h4>
+            <h4 className="configuration-title">Miembros</h4>
             <div className="row contacts-list-row">
               <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
                 <input  id="searchUsers"
@@ -62,7 +62,7 @@ export default class ConfigTeamModal extends React.Component {
               </div>
             </div>
             <hr />
-            <h4>Plan</h4>
+            <h4 className="configuration-title">Plan</h4>
             <div className="row">
               <div className="col-sm-6 col-sm-offset-2 col-xs-12">
                 <p>

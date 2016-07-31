@@ -33,6 +33,7 @@
 .btn-upgrade {
   padding: 1px 12px;
   vertical-align: bottom;
+  margin-left: 5px;
 }
 .free-card, .premium-card {
   height: 200px;
@@ -89,4 +90,9 @@
 }
 .contacts-list-row {
   margin-top: -1px;
+}
+.modal-body {
+  #create-team-page-1, #create-team-page-2, #create-team-page-3 {
+    height: 300px !important;
+  }
 }
