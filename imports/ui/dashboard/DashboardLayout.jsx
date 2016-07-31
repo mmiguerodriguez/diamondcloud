@@ -21,6 +21,9 @@ export default class DashboardLayout extends React.Component {
   openCreateTeamModal() {
     $('#createTeamModal').modal('show');
   }
+  openConfigTeamModal() {
+    $('#configTeamModal').modal('show');
+  }
 }
 
 DashboardLayout.propTypes = {
