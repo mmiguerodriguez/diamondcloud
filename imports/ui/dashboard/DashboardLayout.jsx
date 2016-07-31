@@ -6,6 +6,12 @@ import CreateTeamModal from '../modals/create-team/CreateTeamModal.jsx';
 import ConfigTeamModal from '../modals/config-team/ConfigTeamModal.jsx';
 
 export default class DashboardLayout extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      team: null,
+    };
+  }
   render() {
     let { teams } = this.props;
     let hasTeams = teams.length > 0 ? true : false;
@@ -16,9 +22,9 @@ export default class DashboardLayout extends React.Component {
         <TeamsLayout  hasTeams={ hasTeams }
                       teams={ teams }
                       openCreateTeamModal={ this.openCreateTeamModal }
-                      openConfigTeamModal={ this.openConfigTeamModal } />
+                      openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
         <CreateTeamModal /> { /* props: users(image, name, id (to send message) ) */ }
-        <ConfigTeamModal />
+        <ConfigTeamModal team={ this.state.team }/>
       </div>
     );
   }
@@ -26,7 +32,8 @@ export default class DashboardLayout extends React.Component {
   openCreateTeamModal() {
     $('#createTeamModal').modal('show');
   }
-  openConfigTeamModal() {
+  openConfigTeamModal(team) {
+    this.setState({ team: team });
     $('#configTeamModal').modal('show');
   }
 }
