@@ -233,6 +233,7 @@ export default class CreateTeamModal extends React.Component {
     } else {
       $('#next-page-btn').html('Siguiente');
     }
+    
     this.setState({ page: page + 1 });
   }
 }
