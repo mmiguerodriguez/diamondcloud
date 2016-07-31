@@ -18,11 +18,11 @@ export default class TeamCard extends React.Component {
                 team.users.length >= 4 ? (
                   <h5>Miembros:
                     <b className="text-danger">
-                      &nbsp;{ team.users.length } / 5
+                      &nbsp;{ team.users.length }/5
                     </b>
                   </h5>
                 ) : (
-                  <h5>Miembros: { team.users.length } / 5</h5>
+                  <h5>Miembros: { team.users.length }/5</h5>
                 )
               }
             </div>
