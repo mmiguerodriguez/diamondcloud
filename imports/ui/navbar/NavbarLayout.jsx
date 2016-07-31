@@ -35,9 +35,7 @@ export default class NavbarLayout extends React.Component {
                     active={ true }
                     link={ '/dashboard' }
                     name={ 'Dashboard' } />
-                ) : (
-                  null
-                )
+                ) : ( null )
               }
 
               <NavbarLink active={ false }
