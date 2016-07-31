@@ -6,22 +6,25 @@ Teams.helpers({
   owner() {
     let found = false;
     let owner;
-    
+
     this.users.forEach((user, index) => {
       if(user.permission == "owner"){
         found = true;
         owner = user.email;
       }
     });
-    
+
     if(!found) {
-      throw new Meteor.Error('Teams.owner.noOwner', 
+      throw new Meteor.Error('Teams.owner.noOwner',
       'The team has no owner.');
     }
     return owner;
   },
   hasUser(obj){
     // If obj.mail exists then use it, if not, use the id
+    if(typeof(obj) === "number"){
+      obj = Meteor.users.findOne(obj);
+    }
     let mail = obj.email || Meteor.users.findOne(obj._id).emails[0].address;
     let found = false;
     this.users.forEach((user) => {
@@ -29,7 +32,7 @@ Teams.helpers({
         found = true;
       }
     });
-    
+
     return found;
   }
 });
@@ -61,8 +64,8 @@ Teams.addUser = (teamId, user) => {
 
 Teams.removeUser = (teamId, userEmail) => {
   Teams.update({ _id: teamId }, {
-    $pull: { 
-      users : { 
+    $pull: {
+      users : {
         email: userEmail,
       },
     },

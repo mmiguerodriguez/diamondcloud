@@ -8,11 +8,12 @@ import   faker                  from 'faker';
 import                               './publications.js';
 
 import { Boards }               from '../boards.js';
+import { Teams }               from '../../teams/teams.js';
 
 if (Meteor.isServer) {
   describe('Boards', function() {
     describe('Publications', function() {
-
+      let user, boards, team;
       beforeEach(function(done) {
         resetDatabase();
 
@@ -23,6 +24,12 @@ if (Meteor.isServer) {
           Factory.create('privateBoard'),
           Factory.create('privateBoard')
         ];
+        team = Factory.create('team');
+        console.log('user: ', user);
+        team.users[0].email = user.emails[0].address;
+        boards.forEach((board) => {
+          team.boards.push({ _id: board._id });
+        });
 
         boards[2].users.push({ _id: user._id });
         boards[3].users = [];
@@ -30,6 +37,8 @@ if (Meteor.isServer) {
         resetDatabase();
 
         Meteor.users.insert(user);
+
+        Teams.insert(team);
 
         boards.forEach((board) => {
           Boards.insert(board);
