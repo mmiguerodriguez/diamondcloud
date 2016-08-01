@@ -1,0 +1,24 @@
+@import '{}/imports/ui/navbar/popover/popover';
+
+.header {
+  margin-bottom: 0px !important;
+  border-radius: 0px !important;
+  border: none !important;
+  background-color: $navbar-color !important;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
+}
+.user-photo {
+  margin-top: 5px;
+  height: 40px;
+}
+.logo-photo {
+  height: 40px;
+  margin-top: 5px;
+  margin-right: 15px;
+}
+.li-navbar-text {
+  color: $white !important;
+}
+.nav > li > a:focus, .nav > li > a:hover {
+  background-color: $li-active !important;
+}

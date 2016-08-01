@@ -1,0 +1,22 @@
+@import '{}/imports/ui/modals/create-team/create-team-modal';
+@import '{}/imports/ui/modals/config-team/config-team-modal';
+
+.modal-header, .modal-footer {
+  padding: 24px !important;
+  border: none !important;
+}
+.modal-body {
+  overflow: auto;
+}
+.modal-content {
+  border-radius: 3px !important;
+}
+.close {
+  margin-left: 15px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  opacity: 0.5;
+  &:hover {
+    opacity: 0.7;
+  }
+}

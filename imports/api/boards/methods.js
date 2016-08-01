@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import Future from 'fibers/future';
 
 import { Boards } from './boards.js';
 import { Teams } from '../teams/teams.js';
@@ -19,7 +20,7 @@ export const createBoard = new ValidatedMethod({
       throw new Meteor.Error('Boards.methods.createBoard.notLoggedIn',
       'Must be logged in to create a board.');
     }
-  
+
     let team = Teams.findOne(teamId);
     users = users || [];
 
@@ -31,7 +32,7 @@ export const createBoard = new ValidatedMethod({
         }
       });
     }
-  
+
     let board = {
       name,
       isPrivate,
@@ -40,9 +41,24 @@ export const createBoard = new ValidatedMethod({
       drawings: [],
       archived: false,
     };
-    
-    Boards.insert(board);
-    return board;
+
+    let future = new Future();
+    let boardId, _board;
+    Boards.insert(board, (err, res) => {
+      if(!!err) future.throw(err);
+
+      boardId = res;
+      _board = Boards.findOne(boardId);
+      
+      Teams.update(teamId, {
+        $push: {
+          boards: { _id: boardId },
+        },
+      });
+
+      future.return(_board);
+    });
+    return future.wait();
   }
 });
 
@@ -56,15 +72,15 @@ export const archiveBoard = new ValidatedMethod({
       throw new Meteor.Error('Boards.methods.archiveBoard.notLoggedIn',
       'Must be logged in to archive a board.');
     }
-    
+
     let board;
-    
-    Boards.update(_id, { 
+
+    Boards.update(_id, {
       $set: {
-        archived: true, 
+        archived: true,
       }
     });
-    
+
     board = Boards.findOne(_id);
     return board;
   },
@@ -80,15 +96,15 @@ export const dearchiveBoard = new ValidatedMethod({
       throw new Meteor.Error('Boards.methods.dearchiveBoard.notLoggedIn',
       'Must be logged in to dearchive a board.');
     }
-    
+
     let board;
-    
-    Boards.update(_id, { 
+
+    Boards.update(_id, {
       $set: {
-        archived: false, 
+        archived: false,
       }
     });
-    
+
     board = Boards.findOne(_id);
     return board;
   },

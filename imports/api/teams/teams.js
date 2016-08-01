@@ -43,6 +43,7 @@ Teams.dashboardFields = {
   plan: 1,
   type: 1,
   users: 1,
+  boards: 1,
 };
 
 // Fields that are shown in the team page (/team)

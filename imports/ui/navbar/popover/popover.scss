@@ -1,0 +1,35 @@
+.popover {
+  top: 50px !important;
+  width: 300px;
+}
+.popover-btn {
+  padding: 3px !important;
+  font-size: small !important;
+  background-color: $grey-btn;
+}
+.popover-btn-text {
+  margin: 0;
+}
+.popover-user-photo {
+  margin-top: 5px;
+  border-radius: 30px;
+  width: 60px;
+}
+.popover-content {
+  padding: 9px 0px;
+}
+.popover-data {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 10px;
+}
+.popover-footer {
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 10px;
+}
+.popover-content {
+  hr {
+    margin: 0 !important;
+  }
+}

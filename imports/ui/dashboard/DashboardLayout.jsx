@@ -2,16 +2,47 @@ import React from 'react';
 
 import WelcomeCard from './welcome-card/WelcomeCard.jsx';
 import TeamsLayout from './teams/TeamsLayout.jsx';
+import CreateTeamModal from '../modals/create-team/CreateTeamModal.jsx';
+import ConfigTeamModal from '../modals/config-team/ConfigTeamModal.jsx';
 
 export default class DashboardLayout extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      team: null,
+    };
+  }
   render() {
+    let { teams } = this.props;
+    let hasTeams = teams.length > 0 ? true : false;
+
     return (
       <div>
-        <h2>Dashboard</h2>
-        <WelcomeCard hasTeams={ this.props.teams.length > 0 ? true : false } />
-        <TeamsLayout teams={ this.props.teams } />
+        <WelcomeCard hasTeams={ hasTeams } />
+        <TeamsLayout  hasTeams={ hasTeams }
+                      teams={ teams }
+                      openCreateTeamModal={ this.openCreateTeamModal }
+                      openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
+        <CreateTeamModal /> { /* props: users(image, name, id (to send message) ) */ }
+        {
+          (this.state.team) ? (
+            <ConfigTeamModal team={ this.state.team }/>
+          ) : ( null )
+        }
       </div>
     );
+  }
+
+  openCreateTeamModal() {
+    $('#createTeamModal').modal('show');
+  }
+  openConfigTeamModal(team) {
+    this.setState({ team: team });
+    // Fixes modal not opening on the
+    // first click
+    setTimeout(() => {
+      $('#configTeamModal').modal('show');
+    }, 0);
   }
 }
 

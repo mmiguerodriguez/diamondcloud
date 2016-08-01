@@ -19,43 +19,44 @@ export const createTeam = new ValidatedMethod({
       throw new Meteor.Error('Teams.methods.create.notLoggedIn',
       'Must be logged in to make a team.');
     }
-    
-    let team, 
+
+    let team,
         teamId;
-    
+
     team = {
-      name, 
+      name,
       plan,
-      type, 
+      type,
       boards: [],
       users: [
         { email: Meteor.user().emails[0].address, permission: 'owner' }
       ],
       archived: false,
     };
-    
+
     usersEmails.forEach(function(email) {
       team.users.push({ email, permission: 'member' });
     });
-    
+
     let future = new Future(); // Needed to make asynchronous call to db
     Teams.insert(team, (err, res) => {
       if(err) throw new Meteor.Error(err);
-      
+
       teamId = res;
-      createBoard.call({ 
-        name: 'General', 
-        isPrivate: false, 
+      createBoard.call({
+        name: 'General',
+        isPrivate: false,
         teamId,
       }, (err, res) => {
         if(!!err) future.throw(err);
-        
-        team.boards.push({ _id: res });
+
+        team.boards.push({ _id: res._id });
+        team._id = teamId;
         
         future.return(team);
       });
     });
-    
+
     return future.wait();
   }
 });
@@ -64,21 +65,21 @@ export const editTeam = new ValidatedMethod({
   name: 'Teams.methods.edit',
   validate: new SimpleSchema({
     'teamId': { type: String },
-    'team': { type: Object }, 
+    'team': { type: Object },
     'team.name': { type: String, optional: true, },
     'team.plan': { type: String, optional: true, allowedValues: ['free', 'premium'] },
     'team.type': { type: String, optional: true, },
   }).validator(),
   run({ team, teamId }) {
     if (!Meteor.user()) {
-      throw new Meteor.Error('Teams.methods.edit.notLoggedIn', 
+      throw new Meteor.Error('Teams.methods.edit.notLoggedIn',
       'Must be logged in to edit a team.');
     }
-    
+
     Teams.update({ _id: teamId }, {
       $set: team
     });
-    
+
     // Testing purposes
     // may need to change in the future
     return Teams.findOne(teamId);
@@ -93,14 +94,14 @@ export const shareTeam = new ValidatedMethod({
   }).validator(),
   run({ email, teamId }) {
     if (!Meteor.user()) {
-      throw new Meteor.Error('Teams.methods.share.notLoggedIn', 
+      throw new Meteor.Error('Teams.methods.share.notLoggedIn',
       'Must be logged in to edit a team.');
     }
-    
+
     let user = { email, permission: 'member' };
-    
+
     Teams.addUser(teamId, user);
-    
+
     // Testing purposes
     // may need to change in the future
     return Teams.findOne(teamId);
@@ -115,7 +116,7 @@ export const removeUserFromTeam = new ValidatedMethod({
   }).validator(),
   run({ email, teamId }) {
     if (!Meteor.user()) {
-      throw new Meteor.Error('Teams.methods.removeUser.notLoggedIn', 
+      throw new Meteor.Error('Teams.methods.removeUser.notLoggedIn',
       'Must be logged in to edit a team.');
     }
     Teams.removeUser(teamId, email);
@@ -132,21 +133,21 @@ export const archiveTeam = new ValidatedMethod({
   }).validator(),
   run({ teamId }) {
     if (!Meteor.user()) {
-      throw new Meteor.Error('Teams.methods.archive.notLoggedIn', 
+      throw new Meteor.Error('Teams.methods.archive.notLoggedIn',
       'Must be logged in to archive a team.');
     }
     // Verify user is the team owner
     let team = Teams.findOne(teamId);
     if (team.owner() !== Meteor.user().emails[0].address)
-      throw new Meteor.Error('Teams.methods.archive.notTeamOwner', 
+      throw new Meteor.Error('Teams.methods.archive.notTeamOwner',
       'Must be the team owner to archive the team.');
-    
+
     Teams.update(teamId, {
       $set: {
         archived: true,
       }
     });
-    
+
     // Testing purposes
     // may need to change in the future
     return Teams.findOne(teamId);
@@ -160,26 +161,25 @@ export const dearchiveTeam = new ValidatedMethod({
   }).validator(),
   run({ teamId }) {
     if (!Meteor.user()) {
-      throw new Meteor.Error('Teams.methods.dearchive.notLoggedIn', 
+      throw new Meteor.Error('Teams.methods.dearchive.notLoggedIn',
       'Must be logged in to archive a team.');
     }
-    
+
     // Verify user is the team owner
     let team = Teams.findOne(teamId);
     if (team.owner() !== Meteor.user().emails[0].address) {
-      throw new Meteor.Error('Teams.methods.dearchive.notTeamOwner', 
+      throw new Meteor.Error('Teams.methods.dearchive.notTeamOwner',
       'Must be the team owner to archive the team.');
     }
-    
+
     Teams.update(teamId, {
       $set: {
         archived: false,
       }
     });
-    
+
     // Testing purposes
     // may need to change in the future
     return Teams.findOne(teamId);
   }
 });
-

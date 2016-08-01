@@ -1,0 +1,17 @@
+@import '{}/imports/ui/dashboard/teams/team-card/team-card';
+
+.new-team-btn {
+  float: right;
+  margin-top: 20px !important;
+  margin-bottom: 10px !important;
+  border-radius: 2px;
+  border: none !important;
+  box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+  padding: 10px 20px !important;
+  background-color: $blue-btn !important;
+  color: $white !important;
+}
+
+.team-container {
+  margin-bottom: 50px;
+}

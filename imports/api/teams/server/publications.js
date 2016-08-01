@@ -12,7 +12,7 @@ Meteor.publish('teams.dashboard', function() {
 
   let user = Meteor.users.findOne(this.userId);
   let teams = user.teams({
-    fields: Teams.dashboardFields
+    fields: Teams.dashboardFields,
   });
 
   return teams;
