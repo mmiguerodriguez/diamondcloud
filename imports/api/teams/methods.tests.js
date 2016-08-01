@@ -43,24 +43,33 @@ if (Meteor.isServer) {
     let user, team;
     let usersEmails = [faker.internet.email(), faker.internet.email()],
         boardId = Random.id();
+        
     beforeEach(function() {
       resetDatabase();
+      
       user = Factory.create('user');
       team = Factory.create('team');
+      
       team.users[0].email = user.emails[0].address;
       team.users.push({ email: usersEmails[0], permission: 'member' });
       team.users.push({ email: usersEmails[1], permission: 'member' });
+      
       resetDatabase();
+      
       sinon.stub(Meteor, 'user', () => user);
+      
       Meteor.users.insert(user);
       Teams.insert(team);
+      
       sinon.stub(createBoard, 'call', (obj, callback) => {
         let team = Teams.findOne(obj.teamId);
+        
         team.boards.push({ _id: boardId });
-        Teams.update({ _id: obj.teamId }, team);
-        callback(null, boardId);
+
+        callback(null, { _id: boardId });
       });
     });
+    
     afterEach(function() {
       createBoard.call.restore();
       Meteor.user.restore();
@@ -92,8 +101,10 @@ if (Meteor.isServer) {
 
       createTeam.call(args, (err, res) => {
         result = res;
+        delete result._id;
       });
-
+      
+      console.log(result, expect);
       chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
     });
     it('should edit a team', function() {

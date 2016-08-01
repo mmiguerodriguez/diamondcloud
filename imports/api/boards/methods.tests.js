@@ -113,11 +113,13 @@ if (Meteor.isServer) {
         if(err) throw new Meteor.Error(err);
         
         result_1 = res;
+        delete result_1._id;
         
         createBoard.call(test_2, (err, res) => {
           if(err) throw new Meteor.Error(err);
           
           result_2 = res;
+          delete result_2._id;
           
           chai.assert.isTrue(JSON.stringify(result_1) === JSON.stringify(expect_1));
           chai.assert.isTrue(JSON.stringify(result_2) === JSON.stringify(expect_2));

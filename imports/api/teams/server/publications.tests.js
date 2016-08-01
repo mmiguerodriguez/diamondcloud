@@ -71,7 +71,7 @@ if (Meteor.isServer) {
             chai.assert.isDefined(team.plan);
             chai.assert.isDefined(team.type);
             chai.assert.isDefined(team.users);
-            chai.assert.isUndefined(team.boards);
+            chai.assert.isDefined(team.boards);
             chai.assert.isUndefined(team.directChats);
           });
           done();
