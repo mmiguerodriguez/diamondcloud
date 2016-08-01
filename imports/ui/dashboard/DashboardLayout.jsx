@@ -24,7 +24,11 @@ export default class DashboardLayout extends React.Component {
                       openCreateTeamModal={ this.openCreateTeamModal }
                       openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
         <CreateTeamModal /> { /* props: users(image, name, id (to send message) ) */ }
-        <ConfigTeamModal team={ this.state.team }/>
+        {
+          (this.state.team) ? (
+            <ConfigTeamModal team={ this.state.team }/>
+          ) : ( null )
+        }
       </div>
     );
   }
@@ -34,7 +38,11 @@ export default class DashboardLayout extends React.Component {
   }
   openConfigTeamModal(team) {
     this.setState({ team: team });
-    $('#configTeamModal').modal('show');
+    // Fixes modal not opening on the
+    // first click
+    setTimeout(() => {
+      $('#configTeamModal').modal('show');
+    }, 0);
   }
 }
 
