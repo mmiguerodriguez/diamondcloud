@@ -25,7 +25,6 @@ if (Meteor.isServer) {
           Factory.create('privateBoard')
         ];
         team = Factory.create('team');
-        console.log('user: ', user);
         team.users[0].email = user.emails[0].address;
         boards.forEach((board) => {
           team.boards.push({ _id: board._id });

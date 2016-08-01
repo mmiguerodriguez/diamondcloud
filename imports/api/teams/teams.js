@@ -22,7 +22,7 @@ Teams.helpers({
   },
   hasUser(obj){
     // If obj.mail exists then use it, if not, use the id
-    if(typeof(obj) === "number"){
+    if(typeof(obj) === "string"){
       obj = Meteor.users.findOne(obj);
     }
     let mail = obj.email || Meteor.users.findOne(obj._id).emails[0].address;
