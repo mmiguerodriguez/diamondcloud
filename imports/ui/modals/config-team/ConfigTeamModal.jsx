@@ -152,19 +152,6 @@ export default class ConfigTeamModal extends React.Component {
       />
     );
   }
-  componentDidMount() {
-    $('#configTeamModal #projectType').on('change', function() {
-      let element = $('#configTeamModal #otherProjectType');
-      let otherDescription = $(this).val() === 'Otro';
-
-      if(otherDescription) {
-        element.removeClass('hidden');
-      } else {
-        if(!element.hasClass('hidden'))
-          element.addClass('hidden');
-      }
-    });
-  }
   handleChange(index, event) {
     this.setState({
       [index]: event.target.value,

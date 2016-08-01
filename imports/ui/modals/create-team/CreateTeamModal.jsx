@@ -112,10 +112,9 @@ export default class CreateTeamModal extends React.Component {
                     </div>
                   </div>
                   <div className="btn btn-premium col-xs-12">
-                    Coming soon...
+                    Próximamente...
                   </div>
                 </div>
-                <input id="projectPlan" type="hidden" />
               </div>
             </div>
             <div  id="create-team-page-3"
