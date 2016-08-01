@@ -65,7 +65,7 @@ export default class CreateTeamModal extends React.Component {
                     </select>
                   </div>
                 </div>
-                <div  id="otherprojectType"
+                <div  id="otherProjectType"
                       className="col-xs-12 col-sm-6 col-sm-offset-4 hidden">
                   <input  id="projectType"
                           className="form-control"
@@ -189,8 +189,8 @@ export default class CreateTeamModal extends React.Component {
     );
   }
   componentDidMount() {
-    $('#projectType').on('change', function() {
-      let element = $('#otherprojectType');
+    $('#createTeamModal #projectType').on('change', function() {
+      let element = $('#createTeamModal #otherProjectType');
       let otherDescription = $(this).val() === 'Otro';
 
       if(otherDescription) {
@@ -209,8 +209,8 @@ export default class CreateTeamModal extends React.Component {
 
   chosePlan(type) {
     let other = type === 'free' ? 'premium' : 'free';
-    $('.' + type).addClass(type + '-card-active');
-    $('.' + other).removeClass(other + '-card-active');
+    $('#createTeamModal .' + type).addClass(type + '-card-active');
+    $('#createTeamModal .' + other).removeClass(other + '-card-active');
 
     this.setState({ plan: type });
   }
@@ -218,14 +218,14 @@ export default class CreateTeamModal extends React.Component {
     let page = this.state.page;
     if(page - 1 < 1) return;
 
-    $('#create-team-page-' + (page - 1)).effect('slide', {
+    $('#createTeamModal #create-team-page-' + (page - 1)).effect('slide', {
       direction: 'left',
       mode: 'show',
     }, 500);
 
-    $('#create-team-page-' + page).hide();
-    $('#actual-page').html(page - 1);
-    $('#next-page-btn').html('Siguiente');
+    $('#createTeamModal #create-team-page-' + page).hide();
+    $('#createTeamModal #actual-page').html(page - 1);
+    $('#createTeamModal #next-page-btn').html('Siguiente');
 
     this.setState({ page: page - 1 });
   }
@@ -241,13 +241,13 @@ export default class CreateTeamModal extends React.Component {
       mode: 'show',
     }, 500);
 
-    $('#create-team-page-' + page).hide();
-    $('#actual-page').html(page + 1);
+    $('#createTeamModal #create-team-page-' + page).hide();
+    $('#createTeamModal #actual-page').html(page + 1);
 
     if(page + 1 === 3) {
-      $('#next-page-btn').html('Crear');
+      $('#createTeamModal #next-page-btn').html('Crear');
     } else {
-      $('#next-page-btn').html('Siguiente');
+      $('#createTeamModal #next-page-btn').html('Siguiente');
     }
 
     this.setState({ page: page + 1 });
@@ -255,7 +255,7 @@ export default class CreateTeamModal extends React.Component {
 
   createTeam() {
     let { name, plan, type, usersEmails } = this.state;
-    type = type === 'Otro' ? $('#otherprojectType').val() : type;
+    type = type === 'Otro' ? $('#createTeamModal #otherProjectType').val() : type;
 
     $('#createTeamModal .contacts-list-row').each(function(index, item) {
       // let mail = ''; // Todo: Grab users emails
