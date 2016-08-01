@@ -19,6 +19,10 @@
     "react-router": "^2.6.0"
   },
   "devDependencies": {
-    "@kadira/storybook": "^1.41.0"
+    "@kadira/storybook": "^2.0.0",
+    "css-loader": "^0.23.1",
+    "node-sass": "^3.8.0",
+    "sass-loader": "^4.0.0",
+    "webpack": "^1.13.1"
   }
 }

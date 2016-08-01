@@ -1,5 +1,5 @@
-@import '{}/imports/ui/modals/create-team/create-team-modal';
-@import '{}/imports/ui/modals/config-team/config-team-modal';
+@import 'create-team/create-team-modal';
+@import 'config-team/config-team-modal';
 
 .modal-header, .modal-footer {
   padding: 24px !important;
