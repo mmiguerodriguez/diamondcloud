@@ -8,7 +8,7 @@ import Dashboard from '../../ui/dashboard/DashboardPage.jsx';
 import Team      from '../../ui/team/TeamPage.jsx';
 import Pricing   from '../../ui/pricing/PricingPage.jsx';
 import Help      from '../../ui/help/HelpPage.jsx';
-import About      from '../../ui/about-us/AboutPage.jsx';
+import About     from '../../ui/about-us/AboutPage.jsx';
 
 export const renderRoutes = () => (
   <Router history={ browserHistory }>
