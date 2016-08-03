@@ -53,7 +53,6 @@ Meteor.users.findByEmail = (emails, fields) => {
       },
     },
   }, { fields });
-  console.log(users.fetch());
   return users;
 };
 
