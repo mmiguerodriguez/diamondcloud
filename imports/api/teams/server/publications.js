@@ -40,6 +40,7 @@ Meteor.publishComposite('teams.team', function(teamId) {
     throw new Meteor.Error('Teams.publication.team.notLoggedIn',
     'Must be logged in to view teams.');
   }
+  
   let user = Meteor.users.findOne(this.userId);
   return {
     find: function() {

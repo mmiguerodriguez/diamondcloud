@@ -44,9 +44,17 @@ Meteor.users.findByEmail = (emails, fields) => {
     emails = [emails];
   }
 
-  Meteor.users.find({
-    
+  let users = Meteor.users.find({
+    emails: {
+      $elemMatch: {
+        address: {
+          $in: emails,
+        },
+      },
+    },
   }, { fields });
+  console.log(users.fetch());
+  return users;
 };
 
 Meteor.users.deny({
