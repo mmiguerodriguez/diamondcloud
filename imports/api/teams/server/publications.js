@@ -4,35 +4,16 @@ import { Teams } from '../teams.js';
 import { DirectChats } from '../../direct-chats/direct-chats.js';
 import { Boards } from '../../boards/boards.js';
 
-Meteor.publishComposite('teams.dashboard', function() {
+Meteor.publish('teams.dashboard', function() {
   if (!this.userId) {
     throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn',
     'Must be logged in to view teams.');
   }
 
   let user = Meteor.users.findOne(this.userId);
-  return {
-    find: function() {
-      return user.teams({
-        fields: Teams.dashboardFields,
-      });
-    },
-    children: [
-      {
-        find: function() {
-          let teams = user.teams({ fields: Teams.dashboardFields });
-          let users = [];
-          teams.forEach((team) => {
-            team.users.forEach((user) => {
-                users.push(user.email);
-            });
-          });
-
-          return Meteor.users.findByEmail(users, Meteor.users.dashboardFields);
-        }
-      }
-    ]
-  };
+  return user.teams({
+    fields: Teams.dashboardFields,
+  });
 });
 
 Meteor.publishComposite('teams.team', function(teamId) {
@@ -40,7 +21,7 @@ Meteor.publishComposite('teams.team', function(teamId) {
     throw new Meteor.Error('Teams.publication.team.notLoggedIn',
     'Must be logged in to view teams.');
   }
-  
+
   let user = Meteor.users.findOne(this.userId);
   return {
     find: function() {

@@ -14,12 +14,14 @@ Meteor.users.helpers({
         }
       },
       archived: false,
-    }, { fields }); // translates to -> { fields: { name: 1 } }
+    }, {
+      fields,
+    });
 
     if(teams)
       return teams;
   },
-  boards(teamId, fields){
+  boards(teamId, fields) {
     fields = fields || {};
     let team = Teams.findOne(teamId);
     if(!team){
