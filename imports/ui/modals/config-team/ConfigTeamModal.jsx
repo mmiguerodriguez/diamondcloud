@@ -90,9 +90,7 @@ export default class ConfigTeamModal extends React.Component {
                   <div className="col-xs-6">
                     <p className="contact-list-name">Gomito Gomez</p>
                   </div>
-                  <div className="col-xs-3">
-                    <img alt="Enviar mensaje" src="img/send-message-icon.svg" width="24px" className="send-message-icon" />
-                  </div>
+                  <div className="col-xs-3"></div>
                   <div className="col-xs-1">
                     <div className="close">
                       <img src="img/close-modal-icon.svg" width="16px" />

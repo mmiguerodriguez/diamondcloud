@@ -9,16 +9,20 @@ import Team      from '../../ui/team/TeamPage.jsx';
 import Pricing   from '../../ui/pricing/PricingPage.jsx';
 import Help      from '../../ui/help/HelpPage.jsx';
 import About     from '../../ui/about-us/AboutPage.jsx';
+import NotFound  from '../../ui/not-found/NotFoundPage.jsx';
 
 export const renderRoutes = () => (
   <Router history={ browserHistory }>
     <Route path="/" component={ App }>
       <IndexRoute component={ Landing }/>
+      
       <Route path="/dashboard" component={ Dashboard } />
       <Route path="/team/:teamId" component={ Team } />
       <Route path="/pricing" component={ Pricing } />
       <Route path="/help" component={ Help } />
       <Route path="/about" component={ About } />
+
+      <Route path="*" component={ NotFound }/>
     </Route>
   </Router>
 );

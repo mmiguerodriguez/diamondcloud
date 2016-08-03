@@ -143,12 +143,7 @@ export default class CreateTeamModal extends React.Component {
                     <div className="col-xs-6">
                       <p className="contact-list-name">Gomito Gomez</p>
                     </div>
-                    <div className="col-xs-3">
-                      <img  className="send-message-icon"
-                            alt="Enviar mensaje"
-                            src="img/send-message-icon.svg"
-                            width="24px" />
-                    </div>
+                    <div className="col-xs-3"></div>
                     <div className="col-xs-1">
                       <div className="close">
                         <img src="img/close-modal-icon.svg" width="16px" />
