@@ -1,0 +1,19 @@
+.sidebar {
+  width: 64px;
+  background-color: $sidebar-color;
+  height: calc(100% - 98px);
+  position: absolute;
+  .item {
+    margin-top: 8px;
+    width: 64px;
+    height: 64px;
+    text-align: center;
+    .text {
+      color: $sidebar-text-color;
+    }
+  }
+  .bottom {
+    position: absolute;
+    bottom: 0;
+  }
+}
