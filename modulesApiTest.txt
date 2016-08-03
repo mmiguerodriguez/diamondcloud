@@ -7,10 +7,12 @@ OrganizationModule = {
       {
         name: 'Define business model',
         boardId: 'businessBoardId',
+        categoryId: 'categoryId1',
       },
       {
         name: 'Research payment processors',
         boardId: 'businessBoardId',
+        categoryId: 'categoryId1',
       },
       {
         name: 'Design landing wireframe',
@@ -18,6 +20,7 @@ OrganizationModule = {
         users: [
           { _id: "ryanId" },
         ],
+        categoryId: 'categoryId1',
       },
       {
         name: 'Develop modules API',
@@ -27,10 +30,12 @@ OrganizationModule = {
           { _id: 'joelId' },
           { _id: 'migueId' },
         ],
+        categoryId: 'categoryId2',
       },
       {
         name: 'Release the MVP',
-        boardId: 'generalBoardId'
+        boardId: 'generalBoardId',
+        categoryId: 'categoryId2',
       },
       {
         name: 'Some super secret task',
@@ -39,9 +44,20 @@ OrganizationModule = {
           { userId: 'obamaId' },
           { boardId: 'General' },
           { groupId: 'groupId' }
-        ]
+        ],
+        categoryId: 'categoryId2',
       }
-    ]
+    ],
+    categories: [
+      {
+        _id: 'categoryId1',
+        name: 'Lorem ipsum category'
+      },
+      {
+        _id: 'categoryId2',
+        name: 'Another great category'
+      },
+    ],
   },
 };
 //needs mongo 3.2 to run
@@ -105,3 +121,17 @@ db.modules.update(
   } } });
 
 db.modules.update({ _id: 'organizationModuleInstance1Id' }, { $push: { `database.todos`: {name: 'Implement tests on the client', boardId: 'designBoardId', visibleBy: [ { boardId: 'General' }, { boardId: 'Design' }, ], } } } )
+
+
+//get all categories and the todos from each one
+
+DiamondAPI.subscribe({
+  collection: 'categories',
+  condition: {},
+  children: [
+    {
+      collection: 'todos',
+
+    }
+  ]
+})
