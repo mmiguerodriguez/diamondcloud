@@ -34,6 +34,21 @@ Meteor.users.helpers({
   }
 });
 
+Meteor.users.dashboardFields = {
+  profile: 1,
+  emails: 1,
+};
+
+Meteor.users.findByEmail = (emails, fields) => {
+  if(typeof emails === 'string') {
+    emails = [emails];
+  }
+
+  Meteor.users.find({
+    
+  }, { fields });
+};
+
 Meteor.users.deny({
   update() { return true; }
 });
