@@ -20,4 +20,23 @@
     position: absolute;
     bottom: 0;
   }
+
+  .collapsible {
+    position: absolute;
+    width: 250px;
+    height: 100%;
+    background-color: white;
+    top: 0px;
+    left: 64px;
+    .header {
+      margin-left: 0px !important;
+      margin-right: 0px !important; 
+    }
+    .title {
+      margin-top: 10px;
+    }
+    .close {
+      z-index: 1;
+    }
+  }
 }
