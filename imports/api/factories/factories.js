@@ -71,6 +71,66 @@ Factory.define('moduleInstance', ModuleInstances, {
 	y: faker.random.number(),
 	width: faker.random.number({ min: 0, max: 1920 }),
 	height: faker.random.number({ min: 0, max: 1080 }),
-	vars: {},
+	datbase: {},
 	archived: false,
 });
+
+Factory.define('todosModuleInstance', ModuleInstances, Factory.extend('moduleInstance', {
+	database: {
+		todos: [
+      {
+        name: 'Define business model',
+        boardId: 'businessBoardId',
+        categoryId: 'categoryId1',
+      },
+      {
+        name: 'Research payment processors',
+        boardId: 'businessBoardId',
+        categoryId: 'categoryId1',
+      },
+      {
+        name: 'Design landing wireframe',
+        boardId: 'designBoardId',
+        users: [
+          { _id: "ryanId" },
+        ],
+        categoryId: 'categoryId1',
+      },
+      {
+        name: 'Develop modules API',
+        boardId: 'programmingBoardId',
+        users: [
+          { _id: 'dylanId' },
+          { _id: 'joelId' },
+          { _id: 'migueId' },
+        ],
+        categoryId: 'categoryId2',
+      },
+      {
+        name: 'Release the MVP',
+        boardId: 'generalBoardId',
+        categoryId: 'categoryId2',
+      },
+      {
+        name: 'Some super secret task',
+        boardId: 'secretBoardId',
+        visibleBy: [
+          { userId: 'obamaId' },
+          { boardId: 'General' },
+          { groupId: 'groupId' }
+        ],
+        categoryId: 'categoryId2',
+      }
+    ],
+		categories: [
+      {
+        _id: 'categoryId1',
+        name: 'Lorem ipsum category'
+      },
+      {
+        _id: 'categoryId2',
+        name: 'Another great category'
+      },
+    ]
+	},
+}));
