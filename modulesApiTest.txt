@@ -134,4 +134,4 @@ DiamondAPI.subscribe({
 
     }
   ]
-})
+}, (data) => { /*Do something with data*/ })
