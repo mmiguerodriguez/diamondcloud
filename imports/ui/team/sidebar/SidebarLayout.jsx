@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ModulesCollapsibleLayout from './modules-collapsible/ModulesCollapsibleLayout.jsx';
+
 export default class SidebarLayout extends React.Component {
   render() {
     return (
@@ -20,6 +22,8 @@ export default class SidebarLayout extends React.Component {
         <div className="item bottom">
           <img src="http://image.flaticon.com/icons/png/512/61/61094.png" width="48px" />
         </div>
+
+        <ModulesCollapsibleLayout />
       </div>
     );
   }

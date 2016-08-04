@@ -1,1 +1,10 @@
 @import 'module/module';
+
+.module-collapsible {
+  position: absolute;
+  width: 250px;
+  height: 100%;
+  background-color: white;
+  top: 0px;
+  left: 64px;
+}
