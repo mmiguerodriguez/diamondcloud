@@ -22,11 +22,7 @@ if (Meteor.isServer) {
         board.moduleInstances.push({ _id: moduleInstance._id });
         resetDatabase();
         Boards.insert(board);
-        Boards.insert(moduleInstance);
-      });
-
-      afterEach(function() {
-        Meteor.user.restore();
+        ModuleInstances.insert(moduleInstance);
       });
 
       it('should return the board in which the module instance is in', function() {
