@@ -10,6 +10,7 @@
     width: 64px;
     text-align: center;
     .text {
+      font-size: 12px;
       color: $sidebar-text-color;
     }
   }
@@ -28,7 +29,7 @@
     left: 64px;
     .header {
       margin-left: 0px !important;
-      margin-right: 0px !important; 
+      margin-right: 0px !important;
     }
     .title {
       margin-top: 10px;
