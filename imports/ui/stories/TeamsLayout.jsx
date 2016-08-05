@@ -9,7 +9,7 @@ let createTeamModal = () => {
 
 let openConfigTeamModal = (team) => {
   $('#configTeamModal').modal('show');
-}
+};
 
 storiesOf('TeamsLayout', module)
   .add('with teams', () => {
