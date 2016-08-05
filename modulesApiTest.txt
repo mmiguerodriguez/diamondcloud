@@ -2,7 +2,7 @@ db.createCollection('modules');
 
 OrganizationModule = {
   _id: 'organizationModuleInstance1Id',
-  database: {
+  data: {
     todos: [
       {
         name: 'Define business model',
@@ -67,7 +67,7 @@ JSON.stringify(db.modules.aggregate(
   [
     {
       $project: {
-        todos: '$database.todos'
+        todos: '$data.todos'
       }
     },
     {
@@ -120,7 +120,7 @@ db.modules.update(
     ],
   } } });
 
-db.modules.update({ _id: 'organizationModuleInstance1Id' }, { $push: { `database.todos`: {name: 'Implement tests on the client', boardId: 'designBoardId', visibleBy: [ { boardId: 'General' }, { boardId: 'Design' }, ], } } } )
+db.modules.update({ _id: 'organizationModuleInstance1Id' }, { $push: { `data.todos`: {name: 'Implement tests on the client', boardId: 'designBoardId', visibleBy: [ { boardId: 'General' }, { boardId: 'Design' }, ], } } } )
 
 
 //get all categories and the todos from each one
@@ -131,7 +131,7 @@ DiamondAPI.subscribe({
   children: [
     {
       collection: 'todos',
-
+      condition: {}
     }
   ]
 }, (data) => { /*Do something with data*/ })

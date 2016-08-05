@@ -71,12 +71,12 @@ Factory.define('moduleInstance', ModuleInstances, {
 	y: faker.random.number(),
 	width: faker.random.number({ min: 0, max: 1920 }),
 	height: faker.random.number({ min: 0, max: 1080 }),
-	datbase: {},
+	data: {},
 	archived: false,
 });
 
 Factory.define('todosModuleInstance', ModuleInstances, Factory.extend('moduleInstance', {
-	database: {
+	data: {
 		todos: [
       {
         name: 'Define business model',

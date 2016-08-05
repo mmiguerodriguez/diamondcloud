@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ModuleInstances } from '../module-instances.js';
 
-Meteor.publish('ModuleInstances.database', function(obj, teamId) {
+Meteor.publish('ModuleInstances.data', function(obj, teamId) {
 
   let boards = this.user.boards(teamId, { _id: 1 });
   boards = boards.map((board) => {
@@ -24,7 +24,7 @@ Meteor.publish('ModuleInstances.database', function(obj, teamId) {
           [
             {
               $project: {
-                [params.collection]: `$database.${params.collection}`
+                [params.collection]: `$data.${params.collection}`
               }
             },
             {
