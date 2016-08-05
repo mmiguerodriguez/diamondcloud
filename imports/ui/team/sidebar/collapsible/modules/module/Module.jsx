@@ -5,9 +5,9 @@ export default class Module extends React.Component {
     return (
       <div className="module-item row">
         <div className="col-md-2">
-          <img src={ this.props.module.img } width="32px" className="img" />
+          <img src={ this.props.module.img } width="32px" className="img module-preview" />
         </div>
-        <h4 className="col-md-10">{ this.props.module.name }</h4>
+        <h4 className="col-md-10 module-name">{ this.props.module.name }</h4>
       </div>
     );
   }
