@@ -21,17 +21,12 @@ if (Meteor.isServer) {
           Factory.create('team'),//with user
           Factory.create('team'),//without user
         ];
-        boards = [
-          Factory.create('publicBoard', { name: 'General' }),
-        ];
-        boards[2].users[0]._id = user._id;
+        board = Factory.create('publicBoard', { name: 'General' });
+        board.users.push({ _id: user._id });
 
         teams[0].users[0].email = user.emails[0].address;
-        teams[1].users[0].email = user.emails[0].address;
 
-        boards.forEach((board) => {
-          teams[0].boards.push(board);
-        });
+        teams[0].boards.push(board);
         resetDatabase();
         Meteor.users.insert(user);
         boards.forEach((board) => {
@@ -48,7 +43,16 @@ if (Meteor.isServer) {
       });
       it('should not publish team data if the team is archived', function(done){
         const collector = new PublicationCollector({ userId: user._id });
-
+        let params = {
+          collection: 'categories',
+          condition: {},
+          children: [
+            {
+              collection: 'todos',
+              condition: {}
+            }
+          ]
+        };
         collector.collect('teams.team', teams[1]._id, (collections) => {//pass the id of an archived team
           chai.assert.isUndefined(collections.Teams);//assert it does not return any team
           done();
