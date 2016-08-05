@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start": "meteor run",
-    "storybook": "start-storybook -p 9001",
+    "storybook": "start-storybook -p 9001 -s ./public",
     "tests-local": "meteor test --driver-package practicalmeteor:mocha",
     "tests-c9": "meteor test --driver-package practicalmeteor:mocha --port $IP:$PORT",
     "run-c9-ryan": "ROOT_URL=https://cloud-joelsobolmark.c9users.io meteor --port $IP:$PORT",
@@ -19,7 +19,7 @@
     "react-router": "^2.6.0"
   },
   "devDependencies": {
-    "@kadira/storybook": "^2.0.0",
+    "@kadira/storybook": "^2.1.0",
     "css-loader": "^0.23.1",
     "node-sass": "^3.8.0",
     "sass-loader": "^4.0.0",
