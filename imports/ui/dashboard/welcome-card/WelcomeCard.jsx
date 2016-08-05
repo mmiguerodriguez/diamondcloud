@@ -12,7 +12,7 @@ export default class WelcomeCard extends React.Component {
           <p className="text-muted">Aca vamos a tener que poner una bajada para que no quede tan vacio (en gris).</p>
         </div>
         <div className="col-xs-5 welcome-card-photo-div">
-          <img src="img/dashboard.png" className="welcome-card-photo" />
+          <img src="/img/dashboard.png" className="welcome-card-photo" />
         </div>
       </div> 
       ) : (
@@ -24,7 +24,7 @@ export default class WelcomeCard extends React.Component {
           <p className="text-muted">Aca vamos a tener que poner una bajada para que no quede tan vacio (en gris).</p>
         </div>
         <div className="col-xs-6 welcome-card-photo-div">
-          <img src="img/dashboard.png" className="welcome-card-photo" />
+          <img src="/img/dashboard.png" className="welcome-card-photo" />
         </div>
       </div> 
       )

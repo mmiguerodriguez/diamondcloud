@@ -29,7 +29,7 @@ export default class ConfigTeamModal extends React.Component {
         header={
           <div>
             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-              <img src="img/close-modal-icon.svg" width="18px" />
+              <img src="/img/close-modal-icon.svg" width="18px" />
             </button>
             <h4 className="modal-title">Configuración del equipo</h4>
           </div>
@@ -77,7 +77,7 @@ export default class ConfigTeamModal extends React.Component {
                         placeholder="Buscá entre los integrantes"
                         type="text"/>
                 <div className="input-group-addon search-input">
-                  <img src="img/search-people-icon.svg" width="20px" />
+                  <img src="/img/search-people-icon.svg" width="20px" />
                 </div>
               </div>
             </div>
@@ -93,7 +93,7 @@ export default class ConfigTeamModal extends React.Component {
                   <div className="col-xs-3"></div>
                   <div className="col-xs-1">
                     <div className="close">
-                      <img src="img/close-modal-icon.svg" width="16px" />
+                      <img src="/img/close-modal-icon.svg" width="16px" />
                     </div>
                   </div>
                 </div>
@@ -107,7 +107,7 @@ export default class ConfigTeamModal extends React.Component {
                         placeholder="Compartir equipo"
                         type="text" />
                 <div className="input-group-addon search-input">
-                  <img src="img/add-people-icon.svg" width="20px" />
+                  <img src="/img/add-people-icon.svg" width="20px" />
                 </div>
               </div>
             </div>

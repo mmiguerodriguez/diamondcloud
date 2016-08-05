@@ -1,21 +1,24 @@
 import React from 'react';
 
 import Module from './module/Module.jsx';
+import Collapsible from '../Collapsible.jsx';
 
-export default class ModulesCollapsibleLayout extends React.Component {
+export default class ModulesCollapsible extends React.Component {
   render() {
     return (
-      <div className="collapsible">
-        <div className="header row">
-          <div type="button" className="close col-md-2">
-            <img src="/img/close-modal-icon.svg" width="18px" />
+      <Collapsible
+        header={
+          <div>
+            <div type="button" className="close col-md-2">
+              <img src="/img/close-modal-icon.svg" width="18px" />
+            </div>
+            <h3 className="col-md-10 title">Modulos</h3>
           </div>
-          <h3 className="col-md-10 title">Modulos</h3>
-        </div>
-        <div className="modules-list">
-          { this.renderModules() }
-        </div>
-      </div>
+        }
+        body={
+          this.renderModules()
+        }
+      />
     );
   }
   renderModules() {
@@ -34,7 +37,7 @@ export default class ModulesCollapsibleLayout extends React.Component {
   }
 }
 
-ModulesCollapsibleLayout.propTypes = {
+ModulesCollapsible.propTypes = {
   team: React.PropTypes.object.isRequired,
   boards: React.PropTypes.array.isRequired,
   directChats: React.PropTypes.array.isRequired,

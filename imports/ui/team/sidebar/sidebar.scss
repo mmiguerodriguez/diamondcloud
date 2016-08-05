@@ -1,6 +1,4 @@
-@import 'boards-collapsible/boards-collapsible';
-@import 'chats-collapsible/chats-collapsible';
-@import 'modules-collapsible/modules-collapsible';
+@import 'collapsible/collapsible';
 
 .sidebar {
   width: 64px;
@@ -10,7 +8,6 @@
   .item {
     margin-top: 8px;
     width: 64px;
-    height: 64px;
     text-align: center;
     .text {
       color: $sidebar-text-color;
@@ -19,6 +16,7 @@
   .bottom {
     position: absolute;
     bottom: 0;
+    margin-bottom: 1rem;
   }
 
   .collapsible {

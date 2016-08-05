@@ -24,7 +24,7 @@ export default class NavbarLayout extends React.Component {
               <span className="icon-bar"></span>
             </button>
             <a>
-              <img src="img/logo.svg" className="logo-photo"/>
+              <img src="/img/logo.svg" className="logo-photo"/>
             </a>
           </div>
           <div className="collapse navbar-collapse" id="navbar">
