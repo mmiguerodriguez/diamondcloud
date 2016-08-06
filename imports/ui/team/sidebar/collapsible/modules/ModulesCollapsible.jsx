@@ -7,6 +7,7 @@ export default class ModulesCollapsible extends React.Component {
   render() {
     return (
       <Collapsible
+        id={ 'modules-collapsible' }
         header={
           <div>
             <div type="button" className="close col-md-2">
@@ -29,7 +30,7 @@ export default class ModulesCollapsible extends React.Component {
       { _id: '3', name: 'Text 3', img: 'http://image.flaticon.com/icons/png/512/102/102260.png' },
       { _id: '4', name: 'Text 4', img: 'http://image.flaticon.com/icons/png/512/102/102260.png' }
     ];
-    
+
     modules.map((module) => {
       arr.push(<Module module={ module } />);
     });
