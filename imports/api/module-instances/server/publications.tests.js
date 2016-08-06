@@ -7,6 +7,9 @@ import { Random }               from 'meteor/random';
 import   faker                  from 'faker';
 import                               './publications.js';
 
+import { Boards }               from '../../boards/boards.js';
+import { Teams }               from '../../teams/teams.js';
+
 import '../../factories/factories.js';
 
 if (Meteor.isServer) {
@@ -29,9 +32,7 @@ if (Meteor.isServer) {
         teams[0].boards.push(board);
         resetDatabase();
         Meteor.users.insert(user);
-        boards.forEach((board) => {
-          Boards.insert(board);
-        });
+        Boards.insert(board);
         teams.forEach((team) => {
           Teams.insert(team);
         });
