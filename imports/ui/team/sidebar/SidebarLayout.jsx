@@ -6,7 +6,7 @@ export default class SidebarLayout extends React.Component {
   render() {
     return (
       <div className="sidebar">
-        <div className="item">
+        <div className="item no-margin">
           <img src="/img/sidebar/boards.svg" width="32px" />
           <p className="text">Boards</p>
         </div>
