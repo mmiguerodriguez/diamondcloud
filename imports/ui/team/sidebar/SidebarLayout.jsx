@@ -38,6 +38,7 @@ export default class SidebarLayout extends React.Component {
     );
   }
 
+  // collapsibles
   toggleCollapsible(name) {
     let elem = name + '-' + 'collapsible';
     let active = this.checkActive(elem);
@@ -57,7 +58,6 @@ export default class SidebarLayout extends React.Component {
       });
     }
   }
-
   checkActive(name) {
     let result;
     $('.collapsible').each((index, item) => {
@@ -72,7 +72,6 @@ export default class SidebarLayout extends React.Component {
     });
     return result || false;
   }
-
   hideActive(callback) {
     let activeElement;
     $('.collapsible').each((index, item) => {
@@ -93,6 +92,7 @@ export default class SidebarLayout extends React.Component {
     }
   }
 
+  // items
   showBackground(elem) {
     let img = elem.children('img').attr('src');
     let src = img.slice(0, img.length - '.svg'.length) + '-active' + img.slice(img.length - '.svg'.length);
@@ -100,7 +100,6 @@ export default class SidebarLayout extends React.Component {
     elem.addClass('active');
     elem.children('img').attr('src', src);
   }
-
   hideBackground(elem) {
     let img = elem.children('img').attr('src');
     let src = img.slice(0, img.length - '.svg'.length - '-active'.length) + img.slice(img.length - '.svg'.length);
@@ -108,7 +107,6 @@ export default class SidebarLayout extends React.Component {
     elem.removeClass('active');
     elem.children('img').attr('src', src);
   }
-
   hideAllActiveBackgrounds() {
     $('.item').each((index, item) => {
       let elem = $(item);
