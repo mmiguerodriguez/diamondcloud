@@ -32,15 +32,16 @@ export default class NavbarLayout extends React.Component {
               {
                 user ? (
                   <NavbarLink
-                    active={ true }
+                    active={ this.props.path === '/dashboard' ? true : false }
                     link={ '/dashboard' }
                     name={ 'Dashboard' } />
                 ) : ( null )
               }
 
-              <NavbarLink active={ false }
-                          link={ '/help' }
-                          name={ 'Help' } />
+              <NavbarLink
+                active={ this.props.path === '/help' ? true : false }
+                link={ '/help' }
+                name={ 'Help' } />
             </ul>
             <ul className="nav navbar-nav navbar-right">
             {

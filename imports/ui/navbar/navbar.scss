@@ -19,6 +19,13 @@ nav.header {
 .li-navbar-text {
   color: $white !important;
 }
-.nav > li > a:focus, .nav > li > a:hover {
-  background-color: $li-active !important;
+.nav {
+  li {
+    a:hover, a:focus, {
+      background-color: $li-active !important;
+    }
+  }
+  li.active {
+    background-color: $li-active !important;
+  }
 }
