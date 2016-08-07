@@ -13,13 +13,19 @@ export default class ModulesCollapsible extends React.Component {
             <div  type="button"
                   className="close col-md-2"
                   onClick={ this.props.toggleCollapsible.bind(null, 'modules') }>
-              <img src="/img/close-modal-icon.svg" width="18px" />
+              <img src="/img/close-modal-icon.svg" width="22px" />
             </div>
             <h3 className="col-md-10 title">Modulos</h3>
           </div>
         }
         body={
           this.renderModules()
+        }
+        footer={
+          <a className="btn btn-default add-modules-btn"
+             role="button">
+            <img src="/img/sidebar/shop-cart.svg" width="32px" />
+          </a>
         }
       />
     );
