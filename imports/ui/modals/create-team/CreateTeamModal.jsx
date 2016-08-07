@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import { browserHistory } from 'react-router'
 
-import Modal from '../Modal.jsx';
+import Modal     from '../Modal.jsx';
+import UsersList from '../users-list/UsersList.jsx';
 
 export default class CreateTeamModal extends React.Component {
   constructor(props) {
@@ -132,26 +133,7 @@ export default class CreateTeamModal extends React.Component {
                   </div>
                 </div>
               </div>
-              <div className="row contacts-list-row">
-                <div className="contacts-list col-sm-6 col-xs-12 col-sm-offset-3">
-                  <div className="row">
-                    <div className="col-xs-1">
-                      <img  className="contact-list-photo"
-                            alt="User"
-                            src="//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg" />
-                    </div>
-                    <div className="col-xs-6">
-                      <p className="contact-list-name">Gomito Gomez</p>
-                    </div>
-                    <div className="col-xs-3"></div>
-                    <div className="col-xs-1">
-                      <div className="close">
-                        <img src="img/close-modal-icon.svg" width="16px" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <UsersList users={ undefined } />
             </div>
           </div>
         }
