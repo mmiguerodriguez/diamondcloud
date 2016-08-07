@@ -1,7 +1,7 @@
 import React from 'react';
 
-import Module from './module/Module.jsx';
 import Collapsible from '../Collapsible.jsx';
+import Module      from './module/Module.jsx';
 
 export default class ModulesCollapsible extends React.Component {
   render() {
@@ -10,7 +10,9 @@ export default class ModulesCollapsible extends React.Component {
         id={ 'modules-collapsible' }
         header={
           <div>
-            <div type="button" className="close col-md-2">
+            <div  type="button"
+                  className="close col-md-2"
+                  onClick={ this.props.toggleCollapsible.bind(null, 'modules') }>
               <img src="/img/close-modal-icon.svg" width="18px" />
             </div>
             <h3 className="col-md-10 title">Modulos</h3>
@@ -32,14 +34,14 @@ export default class ModulesCollapsible extends React.Component {
     ];
 
     modules.map((module) => {
-      arr.push(<Module module={ module } />);
+      arr.push(<Module key={ module._id } module={ module } />);
     });
+
     return arr;
   }
 }
 
 ModulesCollapsible.propTypes = {
-  team: React.PropTypes.object.isRequired,
-  boards: React.PropTypes.array.isRequired,
-  directChats: React.PropTypes.array.isRequired,
+  modules: React.PropTypes.array.isRequired,
+  toggleCollapsible: React.PropTypes.func.isRequired,
 };

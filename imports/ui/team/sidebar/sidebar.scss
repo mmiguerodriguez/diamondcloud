@@ -23,24 +23,4 @@
     bottom: 0;
     margin-bottom: 1rem;
   }
-
-  .collapsible {
-    position: absolute;
-    width: 250px;
-    height: 100%;
-    background-color: white;
-    top: 0px;
-    left: 64px;
-    .header {
-      margin-left: 0px !important;
-      margin-right: 0px !important;
-    }
-    .title {
-      margin-top: 10px;
-      font-weight: 600;
-    }
-    .close {
-      z-index: 1;
-    }
-  }
 }
