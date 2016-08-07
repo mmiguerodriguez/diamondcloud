@@ -8,26 +8,32 @@ export default class SidebarLayout extends React.Component {
   render() {
     return (
       <div className="sidebar">
-        <div className="item no-margin" onClick={ this.toggleCollapsible.bind(this, 'boards') }>
+        <div  id="boards-item"
+              className="item no-margin"
+              onClick={ this.toggleCollapsible.bind(this, 'boards') }>
           <img src="/img/sidebar/boards.svg" width="32px" />
-          <p className="text">Boards</p>
+          <p className="text item-title">Boards</p>
         </div>
-        <div className="item" onClick={ this.toggleCollapsible.bind(this, 'modules') }>
+        <div  id="modules-item"
+              className="item"
+              onClick={ this.toggleCollapsible.bind(this, 'modules') }>
           <img src="/img/sidebar/modules.svg" width="32px" />
-          <p className="text">Módulos</p>
+          <p className="text item-title">Módulos</p>
         </div>
-        <div className="item" onClick={ this.toggleCollapsible.bind(this, 'chats') }>
+        <div  id="chats-item"
+              className="item"
+              onClick={ this.toggleCollapsible.bind(this, 'chats') }>
           <img src="/img/sidebar/messages.svg" width="32px" />
-          <p className="text">Mensajes</p>
+          <p className="text item-title">Mensajes</p>
         </div>
 
         <div className="item bottom">
           <img src="/img/sidebar/config.svg" width="32px" />
         </div>
 
-        <ModulesCollapsible toggleCollapsible={ this.toggleCollapsible } />
-        <BoardsCollapsible  toggleCollapsible={ this.toggleCollapsible } />
-        <ChatsCollapsible   toggleCollapsible={ this.toggleCollapsible } />
+        <ModulesCollapsible toggleCollapsible={ this.toggleCollapsible.bind(this) } />
+        <BoardsCollapsible  toggleCollapsible={ this.toggleCollapsible.bind(this) } />
+        <ChatsCollapsible   toggleCollapsible={ this.toggleCollapsible.bind(this) } />
       </div>
     );
   }
@@ -35,6 +41,8 @@ export default class SidebarLayout extends React.Component {
   toggleCollapsible(name) {
     let elem = name + '-' + 'collapsible';
     let active = this.checkActive(elem);
+
+    this.hideAllActiveBackgrounds();
 
     if(active) {
       this.hideActive();
@@ -44,6 +52,8 @@ export default class SidebarLayout extends React.Component {
           direction: 'left',
           mode: 'show',
         }, 350);
+
+        this.showBackground($('#' + name + '-' + 'item'));
       });
     }
   }
@@ -83,6 +93,33 @@ export default class SidebarLayout extends React.Component {
     }
   }
 
+  showBackground(elem) {
+    let img = elem.children('img').attr('src');
+    let src = img.slice(0, img.length - '.svg'.length) + '-active' + img.slice(img.length - '.svg'.length);
+
+    elem.addClass('active');
+    elem.children('img').attr('src', src);
+  }
+
+  hideBackground(elem) {
+    let img = elem.children('img').attr('src');
+    let src = img.slice(0, img.length - '.svg'.length - '-active'.length) + img.slice(img.length - '.svg'.length);
+
+    elem.removeClass('active');
+    elem.children('img').attr('src', src);
+  }
+
+  hideAllActiveBackgrounds() {
+    $('.item').each((index, item) => {
+      let elem = $(item);
+
+      if(!elem.hasClass('bottom')){
+        if(elem.css('backgroundColor') === 'rgb(255, 255, 255)'){
+          this.hideBackground(elem);
+        }
+      }
+    });
+  }
 }
 
 SidebarLayout.propTypes = {

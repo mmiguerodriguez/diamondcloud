@@ -13,7 +13,7 @@ export default class ChatsCollapsible extends React.Component {
           <div>
             <div  type="button"
                   className="close col-md-2"
-                  onClick={ this.props.toggleCollapsible.bind(null, 'boards') }>
+                  onClick={ this.props.toggleCollapsible.bind(null, 'chats') }>
               <img src="/img/close-modal-icon.svg" width="18px" />
             </div>
             <h3 className="col-md-10 title">Chats</h3>

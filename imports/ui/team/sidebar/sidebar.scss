@@ -6,12 +6,19 @@
   height: calc(100% - 98px);
   position: absolute;
   .item {
-    margin-top: 8px;
+    padding-top: 8px;
     width: 64px;
     text-align: center;
+    cursor: pointer;
     .text {
       font-size: 12px;
       color: $sidebar-text-color;
+    }
+  }
+  .active {
+    background-color: #fff;
+    .item-title {
+      color: #3f3f3f !important;
     }
   }
   .no-margin {
