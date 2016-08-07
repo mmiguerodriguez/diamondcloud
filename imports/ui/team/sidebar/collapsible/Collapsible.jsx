@@ -18,5 +18,5 @@ export default class ModulesCollapsible extends React.Component {
 ModulesCollapsible.propTypes = {
   id: React.PropTypes.string.isRequired,
   header: React.PropTypes.element.isRequired,
-  body: React.PropTypes.element.isRequired,
+  body: React.PropTypes.any.isRequired,
 };
