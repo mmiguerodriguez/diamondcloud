@@ -1,0 +1,27 @@
+var DiamondAPI;
+
+DiamondAPI.validationDFS = (obj) => {
+  if (obj.collection === null) return false;
+  let x = true;
+  obj.children.forEach((child) => x = x && validationDFS(child));
+  return x;
+};
+
+DiamondAPI.subscribe = (moduleInstanceId, obj) => {
+  // Validation.
+  if (validationDFS(obj)) {
+    // Subscribe to data
+    Meteor.subscribe('', moduleInstanceId, obj);
+  } else throw new error('The provided data is wrong.');
+};
+
+/*
+(function() {
+  let DiamondAPI = DiamondAPI || {};
+
+  DiamondAPI.subscribe = () => {
+
+  };
+
+})();
+*/

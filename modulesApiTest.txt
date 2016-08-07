@@ -107,7 +107,7 @@ let todo = {
     { boardId: 'General' },
     { boardId: 'Design' },
   ],
-}
+};
 
 db.modules.update(
   { _id: 'organizationModuleInstance1Id' },
@@ -120,18 +120,21 @@ db.modules.update(
     ],
   } } });
 
-db.modules.update({ _id: 'organizationModuleInstance1Id' }, { $push: { `data.todos`: {name: 'Implement tests on the client', boardId: 'designBoardId', visibleBy: [ { boardId: 'General' }, { boardId: 'Design' }, ], } } } )
+db.modules.update({ _id: 'organizationModuleInstance1Id' }, { $push: { 'data.todos': { name: 'Implement tests on the client', boardId: 'designBoardId', visibleBy: [ { boardId: 'General' }, { boardId: 'Design' } ], } } } );
 
+// Get all categories and the todos from each one
 
-//get all categories and the todos from each one
-
-DiamondAPI.subscribe({
+DiamondAPI.subscribe('heyImMe123ImAnId', {
   collection: 'categories',
-  condition: {},
+  condition: {
+
+  },
   children: [
     {
       collection: 'todos',
       condition: {}
     }
   ]
-}, (data) => { /*Do something with data*/ })
+}, (data) => {
+  /* Do something with data */
+});
