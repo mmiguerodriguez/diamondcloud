@@ -1,27 +1,31 @@
 import { Meteor } from 'meteor/meteor';
 import { ModuleInstances } from '../module-instances.js';
 
-Meteor.publish('ModuleInstances.data', function(obj, teamId) {
+Meteor.publish('moduleInstances.data', function(moduleInstanceId, obj) {
 
-  let boards = this.user.boards(teamId, { _id: 1 });
+  let teamId = ModuleInstances.findOne(moduleInstanceId).board().team()._id;
+
+  let boards = Meteor.user().boards(teamId, { _id: 1 });
   boards = boards.map((board) => {
     return board._id;
   });
 
-  let groups = this.user.groups(teamId, { _id: 1});
-  groups = groups.map((group) => {
-    return group._id;
-  });
-
   let generateTree = (params, upperParams) => {
     let children = [];
-    params.children.forEach((child) => {
-      children.push(generateTree(child, params));
-    });
+    if (params.children) {
+      params.children.forEach((child) => {
+        children.push(generateTree(child, params));
+      });
+    }
     let result = {
       find: () => {
         return ModuleInstances.aggregate(
           [
+            {
+              $match: {
+                '$_id': moduleInstanceId,
+              }
+            },
             {
               $project: {
                 [params.collection]: `$data.${params.collection}`
@@ -43,8 +47,7 @@ Meteor.publish('ModuleInstances.data', function(obj, teamId) {
                 $or: [
                   { 'todos.visibleBy': null },
                   { 'todos.visibleBy.userId': this.userId },
-                  { 'todos.visibleBy.boardId': { $in: boards } },
-                  { 'todos.visibleBy.groupId': { $in: groups } }
+                  { 'todos.visibleBy.boardId': { $in: boards } }
                 ]
               }
             }
