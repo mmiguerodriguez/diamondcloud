@@ -43,7 +43,6 @@ OrganizationModule = {
         visibleBy: [
           { userId: 'obamaId' },
           { boardId: 'General' },
-          { groupId: 'groupId' }
         ],
         categoryId: 'categoryId2',
       }
@@ -89,7 +88,6 @@ JSON.stringify(db.modules.aggregate(
           { 'todos.visibleBy': null },
           { 'todos.visibleBy.userId': '.' },
           { 'todos.visibleBy.boardId': { $in: ['General', '.'] } },
-          { 'todos.visibleBy.groupId': { $in: ['sas','.'] } }
         ]
       }
     }

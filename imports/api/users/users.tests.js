@@ -14,22 +14,24 @@ import '../factories/factories.js';
 if (Meteor.isServer) {
   describe('Users', function() {
     describe('Helpers', function(){
-      let user, teams;
+      let user, teams, boards;
       beforeEach(function() {
         resetDatabase();
         user = Factory.create('user');
+        
         teams = [
           Factory.create('team'),
           Factory.create('team', { archived: true }),
           Factory.create('team'),
         ];
+        
         boards = [
           Factory.create('publicBoard'),
           Factory.create('publicBoard', { archived: true }),
           Factory.create('privateBoard'), // with user
           Factory.create('privateBoard'), // without user
         ];
-
+        
         teams[0].users[0].email = user.emails[0].address;
         teams[1].users[0].email = user.emails[0].address;
 
@@ -38,7 +40,7 @@ if (Meteor.isServer) {
         boards.forEach((board) => {
           teams[0].boards.push(board);
         });
-
+        
         resetDatabase();
         Meteor.users.insert(user);
         teams.forEach((team) => {
@@ -70,10 +72,11 @@ if (Meteor.isServer) {
         done();
       });
 
-      it('should return the boards the user is able to see in a team', function(){
+      it('should return the boards the user is able to see in a team', function(done){
         let result;
         result = user.boards(teams[0]._id);
         chai.assert.equal(result.count(), 2);
+        done();
       });
     });
   });

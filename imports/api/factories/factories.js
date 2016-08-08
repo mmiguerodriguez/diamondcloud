@@ -117,7 +117,6 @@ Factory.define('todosModuleInstance', ModuleInstances, Factory.extend('moduleIns
         visibleBy: [
           { userId: 'obamaId' },
           { boardId: 'General' },
-          { groupId: 'groupId' }
         ],
         categoryId: 'categoryId2',
       }

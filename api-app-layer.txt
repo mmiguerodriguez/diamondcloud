@@ -3,13 +3,13 @@ var DiamondAPI;
 DiamondAPI.validationDFS = (obj) => {
   if (obj.collection === null) return false;
   let x = true;
-  if (obj.children) obj.children.forEach((child) => x = x && validationDFS(child));
+  if (obj.children) obj.children.forEach((child) => x = x && DiamondAPI.validationDFS(child));
   return x;
 };
 
 DiamondAPI.subscribe = (moduleInstanceId, obj, callback) => {
   // Validation.
-  if (validationDFS(obj)) {
+  if (DiamondAPI.validationDFS(obj)) {
     // Subscribe to data
     Meteor.subscribe('moduleInstances.data', moduleInstanceId, obj, {
       onReady: callback,
