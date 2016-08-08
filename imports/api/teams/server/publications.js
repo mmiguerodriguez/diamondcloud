@@ -20,11 +20,11 @@ Meteor.publishComposite('teams.dashboard', function() {
     children: [
       {
         find: function(teamId) {
-          
+
         }
       }
     ]
-  }
+  };
 });
 
 Meteor.publishComposite('teams.team', function(teamId) {
