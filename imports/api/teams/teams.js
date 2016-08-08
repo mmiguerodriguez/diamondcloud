@@ -20,7 +20,7 @@ Teams.helpers({
     }
     return owner;
   },
-  hasUser(obj){
+  hasUser(obj) {
     // If obj.mail exists then use it, if not, use the id
     if(typeof(obj) === "string"){
       obj = Meteor.users.findOne(obj);
@@ -34,6 +34,13 @@ Teams.helpers({
     });
 
     return found;
+  },
+  getUsers(fields) {
+    let emails = this.users;
+    emails.forEach((email, index) => {
+      emails[index] = email.email;
+    });
+    return Meteor.users.findByEmail(emails, fields);
   }
 });
 

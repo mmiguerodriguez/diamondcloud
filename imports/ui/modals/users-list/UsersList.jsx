@@ -39,6 +39,10 @@ export default class UsersList extends React.Component {
 
     return arr;
   }
+  
+  removeUser(email, teamId) {
+    Meteor.call('Teams.methods.removeUser', { email, teamId });
+  }
 }
 
 UsersList.propTypes = {

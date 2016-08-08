@@ -30,12 +30,14 @@ if (Meteor.isServer) {
       beforeEach(function() {
         resetDatabase();
         sinon.stub(Meteor, 'user', () => user);
+        sinon.stub(Meteor.users, 'findByEmail', (emails, fields) => {emails, fields});
         Meteor.users.insert(user);
         Teams.insert(team);
       });
       
       afterEach(function() {
         Meteor.user.restore();
+        Meteor.users.findByEmail.restore()
       });
       
       it('should return owner of a team', function() {
@@ -51,6 +53,20 @@ if (Meteor.isServer) {
         chai.assert.isTrue(result.hasUser({ _id: user._id }));
         chai.assert.isTrue(result.hasUser({ email: team.users[1].email }));
         chai.assert.isFalse(result.hasUser({ email: faker.internet.email() }));
+      });
+      
+      it('should return the users of a team', function() {
+        let result = Teams.findOne(team._id).getUsers({ field1: 'value1' }),
+            expect = {
+              emails: team.users,
+              fields: { field1: 'value1' }
+            };
+        expect.emails.forEach((email, index) => {
+          expect.emails[index] = email.email;
+        });
+        
+        
+        chai.assert.deepEqual(result, expect);
       });
     });
   });
