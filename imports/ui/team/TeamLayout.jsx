@@ -13,6 +13,16 @@ export default class TeamLayout extends React.Component {
       </div>
     );
   }
+  
+  renderChats() {
+    let arr = [];
+    
+    this.props.directChats.map((chat) => {
+      arr.push(<ChatLayout key={ chat._id } chat={ chat } position={ 'minimized' } />);
+    });
+    
+    return arr;
+  }
 }
 
 TeamLayout.propTypes = {

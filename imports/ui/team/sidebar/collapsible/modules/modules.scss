@@ -1,5 +1,9 @@
 @import 'module/module';
 
+.modules-list {
+  overflow: auto;
+  max-height: 500px;
+}
 .module-item {
   margin-left: 0px !important;
   margin-right: 0px !important;
@@ -20,7 +24,7 @@
   margin-bottom: 10px !important;
   border-radius: 2px;
   border: none !important;
-  box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
   padding: 10px 20px !important;
   background-color: $blue-btn !important;
   color: $white !important;

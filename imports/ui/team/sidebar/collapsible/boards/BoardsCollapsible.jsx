@@ -21,6 +21,9 @@ export default class BoardsCollapsible extends React.Component {
         body={
           this.renderBoards()
         }
+        footer={
+          <div></div>
+        }
       />
     );
   }

@@ -22,6 +22,9 @@ export default class ChatsCollapsible extends React.Component {
         body={
           <div></div>
         }
+        footer={
+          <div></div>
+        }
       />
     );
   }

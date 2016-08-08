@@ -9,5 +9,6 @@ export default class MessageLayout extends React.Component {
 }
 
 MessageLayout.propTypes = {
-
+  message: React.PropTypes.object.isRequired,
+  position: React.PropTypes.string.isRequired
 };
