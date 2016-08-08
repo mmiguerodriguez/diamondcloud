@@ -1,6 +1,6 @@
 import React from 'react';
 
-// import Board from './board/Board.jsx';
+import Board from './board/Board.jsx';
 import ChatLayout from './chat/ChatLayout.jsx';
 import SidebarLayout from './sidebar/SidebarLayout.jsx';
 
@@ -9,6 +9,7 @@ export default class TeamLayout extends React.Component {
     return (
       <div>
         <SidebarLayout { ...this.props } />
+        <Board />
         <ChatLayout />
       </div>
     );
