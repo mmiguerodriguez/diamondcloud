@@ -13,7 +13,11 @@ export default class AppLayout extends React.Component {
           user={ this.props.user }
         />
         { this.props.children }
-        <Footer />
+        { 
+          this.props.location.pathname.indexOf('/team') === -1 ? (
+            <Footer />
+          ) : ( null )
+        }
       </div>
     );
   }
@@ -21,4 +25,4 @@ export default class AppLayout extends React.Component {
 
 AppLayout.propTypes = {
   user: React.PropTypes.object,
-}
+};
