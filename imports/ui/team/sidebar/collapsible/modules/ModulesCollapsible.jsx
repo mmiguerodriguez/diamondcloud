@@ -11,11 +11,11 @@ export default class ModulesCollapsible extends React.Component {
         header={
           <div>
             <div  type="button"
-                  className="close col-md-2"
+                  className="close col-xs-2"
                   onClick={ this.props.toggleCollapsible.bind(null, 'modules') }>
-              <img src="/img/close-modal-icon.svg" width="22px" />
+              <img src="/img/close-modal-icon.svg" width="18px" />
             </div>
-            <h3 className="col-md-10 title">Modulos</h3>
+            <h3 className="col-xs-10 title">Modulos</h3>
           </div>
         }
         body={

@@ -94,18 +94,16 @@ export default class SidebarLayout extends React.Component {
 
   // items
   showBackground(elem) {
-    let img = elem.children('img').attr('src');
-    let src = img.slice(0, img.length - '.svg'.length) + '-active' + img.slice(img.length - '.svg'.length);
-
+    let img = elem.children('img');
+    
+    img.addClass('filter');
     elem.addClass('active');
-    elem.children('img').attr('src', src);
   }
   hideBackground(elem) {
-    let img = elem.children('img').attr('src');
-    let src = img.slice(0, img.length - '.svg'.length - '-active'.length) + img.slice(img.length - '.svg'.length);
-
+    let img = elem.children('img');
+    
+    img.removeClass('filter');
     elem.removeClass('active');
-    elem.children('img').attr('src', src);
   }
   hideAllActiveBackgrounds() {
     $('.item').each((index, item) => {
