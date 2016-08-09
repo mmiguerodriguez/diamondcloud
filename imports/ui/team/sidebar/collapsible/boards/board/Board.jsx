@@ -9,7 +9,7 @@ export default class Board extends React.Component {
         </div>
           <div className="col-xs-2">
             <img  className="img board-preview"
-                  src="/img/sidebar/more-options.svg" 
+                  src="/img/sidebar/vertical-ellipsis.svg" 
                   width="22px" />
           </div>
       </div>
