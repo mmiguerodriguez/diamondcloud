@@ -4,10 +4,10 @@ export default class ModulesCollapsible extends React.Component {
   render() {
     return (
       <div className="collapsible" id={ this.props.id }>
-        <div className="header row">
+        <div className="collapsible-header row">
           { this.props.header }
         </div>
-        <div className="modules-list">
+        <div className="collapsible-body">
           { this.props.body }
         </div>
         <div className="collapsible-footer">

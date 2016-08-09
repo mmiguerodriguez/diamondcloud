@@ -22,7 +22,9 @@ export default class BoardsCollapsible extends React.Component {
           this.renderBoards()
         }
         footer={
-          <div></div>
+          <a className="btn btn-default add-boards-btn" role="button">
+            CREAR BOARD
+          </a>
         }
       />
     );
@@ -30,6 +32,11 @@ export default class BoardsCollapsible extends React.Component {
 
   renderBoards() {
     let arr = [];
+    
+    this.props.boards.map((board) => {
+      arr.push(<Board key={ board._id } board={ board } />);
+    });
+    
     return arr;
   }
 }

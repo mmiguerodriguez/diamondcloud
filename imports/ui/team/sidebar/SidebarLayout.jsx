@@ -31,9 +31,13 @@ export default class SidebarLayout extends React.Component {
           <img src="/img/sidebar/config.svg" width="32px" />
         </div>
 
-        <ModulesCollapsible toggleCollapsible={ this.toggleCollapsible.bind(this) } />
-        <BoardsCollapsible  toggleCollapsible={ this.toggleCollapsible.bind(this) } />
-        <ChatsCollapsible   toggleCollapsible={ this.toggleCollapsible.bind(this) } />
+        <ModulesCollapsible 
+          toggleCollapsible={ this.toggleCollapsible.bind(this) } />
+        <BoardsCollapsible  
+          toggleCollapsible={ this.toggleCollapsible.bind(this) }
+          boards={ this.props.boards } />
+        <ChatsCollapsible   
+          toggleCollapsible={ this.toggleCollapsible.bind(this) } />
       </div>
     );
   }

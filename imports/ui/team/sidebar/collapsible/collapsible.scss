@@ -3,27 +3,34 @@
 @import 'modules/modules';
 
 .collapsible {
+  z-index: 2;
   display: none;
   position: absolute;
   width: 250px;
   height: 100%;
-  background-color: white;
+  background-color: $white;
   top: 0px;
   left: 64px;
-  .header {
+  
+  .collapsible-header {
     margin-left: 0px !important;
     margin-right: 0px !important;
   }
+  .collapsible-body {
+    overflow: auto;
+    max-height: 500px;
+  }
+  .collapsible-footer {
+    position: absolute;
+    margin-left: 15px;
+    bottom: 12px;
+  }
+  
   .title {
     margin-top: 10px;
     font-weight: 600;
   }
   .close {
     z-index: 1;
-  }
-  .collapsible-footer {
-    position: absolute;
-    margin-left: 15px;
-    bottom: 12px;
   }
 }
