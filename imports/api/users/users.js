@@ -45,8 +45,8 @@ Meteor.users.findByEmail = (emails, fields) => {
   if(typeof emails === 'string') {
     emails = [emails];
   }
-
-  let users = Meteor.users.find({
+  
+  return Meteor.users.find({
     emails: {
       $elemMatch: {
         address: {
@@ -55,7 +55,6 @@ Meteor.users.findByEmail = (emails, fields) => {
       },
     },
   }, { fields });
-  return users;
 };
 
 Meteor.users.deny({

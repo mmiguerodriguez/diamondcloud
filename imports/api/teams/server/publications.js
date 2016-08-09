@@ -19,8 +19,8 @@ Meteor.publishComposite('teams.dashboard', function() {
     },
     children: [
       {
-        find: function(teamId) {
-
+        find: function(team) {
+          return team.getUsers(Teams.dashboardUsersFields);
         }
       }
     ]
