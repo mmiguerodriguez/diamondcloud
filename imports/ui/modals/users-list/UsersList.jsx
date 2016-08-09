@@ -2,6 +2,8 @@ import React from 'react';
 
 import User from './user/User.jsx';
 
+import { Teams } from '../../../api/teams/teams.js';
+
 export default class UsersList extends React.Component {
   render() {
     return (
@@ -15,36 +17,20 @@ export default class UsersList extends React.Component {
 
   renderUsers() {
     let arr = [];
-    let users = [
-      {
-        _id: '1',
-        name: 'Pepe peposo',
-        picture: 'https://lh6.googleusercontent.com/-Y7bDHBt36fI/AAAAAAAAAAI/AAAAAAAAAAw/d8VMfHZ1LbU/photo.jpg',
-      },
-      {
-        _id: '2',
-        name: 'Pepe peposo',
-        picture: 'https://lh6.googleusercontent.com/-Y7bDHBt36fI/AAAAAAAAAAI/AAAAAAAAAAw/d8VMfHZ1LbU/photo.jpg',
-      },
-      {
-        _id: '3',
-        name: 'Pepe leproso',
-        picture: 'https://lh6.googleusercontent.com/-Y7bDHBt36fI/AAAAAAAAAAI/AAAAAAAAAAw/d8VMfHZ1LbU/photo.jpg',
-      }
-    ];
+    let users = this.props.team ? this.props.team.getUsers(Teams.dashboardUsersFields) : [];
 
     users.map((user) => {
-      arr.push(<User key={ user._id } user={ user } />);
+      arr.push(<User user={ user } />);
     });
 
     return arr;
   }
-  
+
   removeUser(email, teamId) {
     Meteor.call('Teams.methods.removeUser', { email, teamId });
   }
 }
 
 UsersList.propTypes = {
-  users: React.PropTypes.array.isRequired,
+  team: React.PropTypes.object
 };

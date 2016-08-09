@@ -133,7 +133,7 @@ export default class CreateTeamModal extends React.Component {
                   </div>
                 </div>
               </div>
-              <UsersList users={ undefined } />
+              <UsersList team={ undefined } />
             </div>
           </div>
         }
