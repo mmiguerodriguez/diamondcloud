@@ -13,9 +13,8 @@ Meteor.publish('moduleInstances.data', function(moduleInstanceId, obj) {
   let generateTree = (params, upperParams) => {
     let children = [];
     if (params.children) {
-      params.children.forEach((child) => {
-        children.push(generateTree(child, params));
-      });
+      console.log('Has childrens!');
+      params.children.forEach((child) => children.push(generateTree(child, params)));
     }
     let result = {
       find: () => {
@@ -53,10 +52,11 @@ Meteor.publish('moduleInstances.data', function(moduleInstanceId, obj) {
             }
           ]
         );
-      },
-      children
+      }
     };
+    
+    if (children.length) result.children = children;
   };
-
+  
   return generateTree(obj);
 });

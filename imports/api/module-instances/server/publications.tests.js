@@ -15,7 +15,7 @@ import { ModuleInstances }      from '../../module-instances/module-instances.js
 if (Meteor.isServer) {
   describe('Modules API', function() {
     describe('Publication', function() {
-      let user, teams, boards, moduleInstance, request;
+      let user, teams, board, moduleInstance, request;
 
       beforeEach(function() {
         resetDatabase();
@@ -24,11 +24,10 @@ if (Meteor.isServer) {
           Factory.create('team'), // With user
           Factory.create('team'), // Without user
         ];
-
         board = Factory.create('publicBoard', { name: 'General' });
-        board.users.push({ _id: user._id });
         teams[0].users[0].email = user.emails[0].address;
-        teams[0].boards.push(board);
+        teams[0].users[0].permission = 'member';
+        teams[0].boards.push({ _id: board._id });
         moduleInstance = Factory.create('todosModuleInstance');
         moduleInstance._id = Random.id();
         board.moduleInstances.push({ _id: moduleInstance._id });
@@ -59,6 +58,7 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('moduleInstances.data', moduleInstance._id, request, (collections) => {
+          // console.log(collections.ModuleInstances[0].data);
           chai.assert.isDefined(collections.ModuleInstances[0]);
           chai.assert.isUndefined(collections.ModuleInstances[1]);
           chai.assert.isDefined(collections.ModuleInstances[0].data.todos[0]);
