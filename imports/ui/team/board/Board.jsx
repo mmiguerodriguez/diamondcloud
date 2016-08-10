@@ -5,7 +5,13 @@ export default class Board extends React.Component {
     return (
       <div className='board-container'>
         <div className='sub-header'>
-          <h3 className="title">BoardName</h3>
+          <div className="col-xs-6">
+            <h4 className="title col-xs-4">BoardName</h4>
+            <h4 className="members col-xs-8">Miembros:</h4>
+          </div>
+          <div className="col-xs-6">
+            <span><img src="/img/sidebar/messages.svg" width="28px" className="message-icon" /></span>
+          </div>
         </div>
         <div>{ /* main board */ }</div>
       </div>
