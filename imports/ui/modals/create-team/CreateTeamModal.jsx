@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
-import { browserHistory } from 'react-router'
+import { browserHistory } from 'react-router';
 
 import Modal     from '../Modal.jsx';
 import UsersList from '../users-list/UsersList.jsx';
@@ -13,6 +13,7 @@ export default class CreateTeamModal extends React.Component {
       name: '',
       plan: '',
       type: 'Web',
+      otherType: '',
       usersEmails: [],
     };
   }
@@ -66,14 +67,18 @@ export default class CreateTeamModal extends React.Component {
                     </select>
                   </div>
                 </div>
-                <div  id="otherProjectType"
-                      className="col-xs-12 col-sm-6 col-sm-offset-4 hidden">
-                  <input  id="projectType"
-                          className="form-control"
-                          placeholder="Tipo de proyecto"
-                          type="text"
-                          onChange={ this.handleChange.bind(this, 'type') } />
-                </div>
+                { 
+                  this.state.type === 'Otro' ? (
+                    <div  id="otherProjectType"
+                          className="col-xs-12 col-sm-6 col-sm-offset-4">
+                      <input  id="projectType"
+                              className="form-control"
+                              placeholder="Tipo de proyecto"
+                              type="text"
+                              onChange={ this.handleChange.bind(this, 'otherType') } />
+                    </div>
+                  ) : ( null )
+                }
               </div>
             </div>
             <div  id="create-team-page-2"
@@ -92,7 +97,7 @@ export default class CreateTeamModal extends React.Component {
                     </div>
                   </div>
                   <div className="btn btn-free col-xs-12"
-                          onClick={ this.chosePlan.bind(this, 'free') }>
+                          onClick={ this.choosePlan.bind(this, 'free') }>
                     Elegir plan Free
                   </div>
                 </div>
@@ -121,19 +126,7 @@ export default class CreateTeamModal extends React.Component {
             <div  id="create-team-page-3"
                   className="share"
                   style={{ display: 'none' }}>
-              <div className="row">
-                <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-                  <input  id="searchUsers"
-                          className="form-control"
-                          placeholder="Compartir proyecto"
-                          type="text" />
-                  <div className="input-group-addon search-input">
-                    <img src="img/add-people-icon.svg"
-                         width="24px" />
-                  </div>
-                </div>
-              </div>
-              <UsersList team={ undefined } />
+              <UsersList usersEmails={ this.state.usersEmails } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
             </div>
           </div>
         }
@@ -164,26 +157,31 @@ export default class CreateTeamModal extends React.Component {
       />
     );
   }
-  componentDidMount() {
-    $('#createTeamModal #projectType').on('change', function() {
-      let element = $('#createTeamModal #otherProjectType');
-      let otherDescription = $(this).val() === 'Otro';
-
-      if(otherDescription) {
-        element.removeClass('hidden');
-      } else {
-        if(!element.hasClass('hidden'))
-          element.addClass('hidden');
-      }
-    });
-  }
   handleChange(index, event) {
     this.setState({
       [index]: event.target.value,
     });
   }
-
-  chosePlan(type) {
+  addUser(user) {
+    let users = this.state.usersEmails;
+    if(users.indexOf(user) === -1) {
+      users.push(user);
+      this.setState({
+        usersEmails: users,
+      });
+    }
+  }
+  removeUser(user){
+    let users = this.state.usersEmails;
+    let index = users.indexOf(user);
+    if(index !== -1) {
+      users.splice(index, 1);
+      this.setState({
+        usersEmails: users,
+      });
+    }
+  }
+  choosePlan(type) {
     let other = type === 'free' ? 'premium' : 'free';
     $('#createTeamModal .' + type).addClass(type + '-card-active');
     $('#createTeamModal .' + other).removeClass(other + '-card-active');
@@ -228,15 +226,10 @@ export default class CreateTeamModal extends React.Component {
 
     this.setState({ page: page + 1 });
   }
-
+  
   createTeam() {
-    let { name, plan, type, usersEmails } = this.state;
-    type = type === 'Otro' ? $('#createTeamModal #otherProjectType').val() : type;
-
-    $('#createTeamModal .contacts-list-row').each(function(index, item) {
-      // let mail = ''; // Todo: Grab users emails
-      // usersEmails.push(mail);
-    });
+    let { name, plan, type, otherType, usersEmails } = this.state;
+    type = type === 'Otro' ? otherType : type;
 
     let form = { name, plan, type, usersEmails };
     Meteor.call('Teams.methods.create', form, (error, result) => {
