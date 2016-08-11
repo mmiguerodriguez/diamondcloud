@@ -14,78 +14,68 @@ export default class ChatLayout extends React.Component {
     };
   }
   render() {
-    if(!this.props.loading) {
-      console.log(this.props.messages);
-      if (this.state.position === 'minimized') {
-        return (
-          <div>
-            <div className='chat-container minimized'>
-              <div className='chat-bottom'>
-                <p className="chat-name">Miguel Rodriguez</p>
-              </div>
-              <div>
-                { this.renderMessages() }
-              </div>
+    console.log('ChatLayout -> render -> messages', this.props.messages);
+    if (this.state.position === 'minimized') {
+      return (
+        <div>
+          <div className='chat-container minimized'>
+            <div className='chat-bottom'>
+              <p className="chat-name">Miguel Rodriguez</p>
+            </div>
+            <div>
+              { this.renderMessages() }
             </div>
           </div>
-        );
-      } else if (this.state.position === 'medium') {
-        return (
-          <div>
-            <div className='chat-container medium'>
-              <div className='chat-bottom'>
-                <p className='chat-name'>Miguel Rodriguez</p>
-              </div>
-              <div>
-                { this.renderMessages() }
-              </div>
+        </div>
+      );
+    } else if (this.state.position === 'medium') {
+      return (
+        <div>
+          <div className='chat-container medium'>
+            <div className='chat-bottom'>
+              <p className='chat-name'>Miguel Rodriguez</p>
+            </div>
+            <div>
+              { this.renderMessages() }
             </div>
           </div>
-        );
-      } else if (this.state.position === 'maximized') {
-        return (
-          <div>
-            <div className='chat-container medium'>
-              <div className='chat-bottom'>
-                <p className='chat-name'>Miguel Rodriguez</p>
-              </div>
-              <div>
-                { this.renderMessages() }
-              </div>
+        </div>
+      );
+    } else if (this.state.position === 'maximized') {
+      return (
+        <div>
+          <div className='chat-container maximized'>
+            <div className='chat-bottom'>
+              <p className='chat-name'>Miguel Rodriguez</p>
+            </div>
+            <div>
+              { this.renderMessages() }
             </div>
           </div>
-        );
-      }
+        </div>
+      );
     } else {
-      return ( null ); // loading chats
+      return ( null ); // Temporary
     }
   }
-  
+
   renderMessages() {
     let arr = [];
-    
+
     this.props.messages.map((message) => {
       arr.push(<Message key={ message._id } message={ message } position={ this.state.position } />);
     });
-    
+
     return arr;
   }
 }
 
+/**
+ * TODO: Render chat and pass props to <Message />
+ */
+
 ChatLayout.propTypes = {
   chat: React.PropTypes.object.isRequired,
+  messages: React.PropTypes.array.isRequired,
   position: React.PropTypes.string.isRequired,
 };
-
-export default ChatLayoutContainer = createContainer(() => {
-  const chatsHandle = Meteor.subscribe('messages.chat', { 
-    boardId: null,
-    directChatId: "Lu7y3fc3mDHCokkZ7" 
-  });
-  const loading = !chatsHandle.ready();
-
-  return {
-    loading,
-    messages: Messages.find().fetch(),
-  };
-}, ChatLayout);

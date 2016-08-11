@@ -31,12 +31,13 @@ export default class SidebarLayout extends React.Component {
           <img src="/img/sidebar/config.svg" width="32px" />
         </div>
 
-        <ModulesCollapsible 
+        <ModulesCollapsible
           toggleCollapsible={ this.toggleCollapsible.bind(this) } />
-        <BoardsCollapsible  
+        <BoardsCollapsible
+          boards={ this.props.boards }
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
-          boards={ this.props.boards } />
-        <ChatsCollapsible   
+          getMessages={ this.props.getMessages } />
+        <ChatsCollapsible
           toggleCollapsible={ this.toggleCollapsible.bind(this) } />
       </div>
     );
@@ -99,13 +100,13 @@ export default class SidebarLayout extends React.Component {
   // items
   showBackground(elem) {
     let img = elem.children('img');
-    
+
     img.addClass('filter');
     elem.addClass('active');
   }
   hideBackground(elem) {
     let img = elem.children('img');
-    
+
     img.removeClass('filter');
     elem.removeClass('active');
   }
@@ -126,4 +127,5 @@ SidebarLayout.propTypes = {
   team: React.PropTypes.object.isRequired,
   boards: React.PropTypes.array.isRequired,
   directChats: React.PropTypes.array.isRequired,
+  getMessages: React.PropTypes.func.isRequired,
 };

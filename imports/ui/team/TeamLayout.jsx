@@ -6,35 +6,44 @@ import SidebarLayout from './sidebar/SidebarLayout.jsx';
 
 export default class TeamLayout extends React.Component {
   render() {
-    console.log(this.props.directChats);
+    console.log('TeamLayout -> messages: ', this.props.messages);
     return (
       <div>
         <SidebarLayout { ...this.props } />
         <Board />
-        { this.renderChats() }
+        <div className=""> { /* full width of screen, contains all the chats */ }
+          { this.renderChats() }
+        </div>
       </div>
     );
   }
-  
+
   renderChats() {
-    let arr = [];
-    
-    this.props.directChats.map((chat) => {
-      arr.push(
-        <ChatLayout 
-          key={ chat._id } 
-          chat={ chat } 
-          position={ 'minimized' }
-          boardId={ '' }
-          directChatId={ chat._id } />);
+    let chats = [];
+
+    this.props.messages.map((message) => {
+
     });
-    
+
+    let arr = [];
+
+    this.props.chats.map((chat) => {
+      // arr.push(<ChatLayout  />);
+    });
+
     return arr;
   }
 }
+
+/**
+ * TODO: Render chat, pass props so it can render
+ * messages correctly
+ */
 
 TeamLayout.propTypes = {
   team: React.PropTypes.object.isRequired,
   boards: React.PropTypes.array.isRequired,
   directChats: React.PropTypes.array.isRequired,
+  messages: React.PropTypes.array.isRequired,
+  getMessages: React.PropTypes.func.isRequired,
 };
