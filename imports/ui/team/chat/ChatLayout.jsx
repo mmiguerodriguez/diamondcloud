@@ -9,7 +9,7 @@ export default class ChatLayout extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      chats: this.props.chats,
+      chat: this.props.chat,
       position: this.props.position,
     };
   }
@@ -62,7 +62,8 @@ export default class ChatLayout extends React.Component {
   renderMessages() {
     let arr = [];
 
-    this.props.messages.map((message) => {
+    // chat.messages ?
+    this.props.chat.messages.map((message) => {
       arr.push(<Message key={ message._id } message={ message } position={ this.state.position } />);
     });
 
@@ -76,6 +77,5 @@ export default class ChatLayout extends React.Component {
 
 ChatLayout.propTypes = {
   chat: React.PropTypes.object.isRequired,
-  messages: React.PropTypes.array.isRequired,
   position: React.PropTypes.string.isRequired,
 };

@@ -13,12 +13,12 @@ export default class Team extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: [],
+      chats: [],
     };
   }
   render() {
     const { team, boards, directChats, loading } = this.props;
-    const { messages } = this.state;
+    const { chats } = this.state;
 
     if(loading) {
       return null;
@@ -28,7 +28,7 @@ export default class Team extends React.Component {
           team={ team }
           boards={ boards }
           directChats={ directChats }
-          messages={ messages }
+          chats={ chats }
 
           getMessages= { this.getMessages.bind(this) }
         />
@@ -38,10 +38,56 @@ export default class Team extends React.Component {
 
   getMessages(obj) {
     console.log('getMessages -> obj', obj);
-    const chatsHandle = Meteor.subscribe('messages.chat', obj, {
+    Meteor.subscribe('messages.chat', obj, {
       onReady: () => {
+        let messages = Messages.find(obj).fetch();
+        let chats =  this.state.chats;
+        
+        // Replace any undefined variable to an empty string
+        obj.boardId = obj.boardId || '';
+        obj.directChatId = obj.directChatId || '';
+        
+        // Checks if this chat exists
+        let chatExists = false;
+        chats.map((chat) => {
+          if(!!chat.boardId || !!chat.directChatId) {
+            chatExists = true; 
+          }
+        });
+        
+        if(chatExists) {
+          // si existe un chat con obj.boardId o obj.directChat entonces
+          // reemplazo chat.$.messages con los nuevos mensajes
+          chats.map((chat) => {
+            if(!!chat.boardId) {
+              if(chat.boardId === obj.boardId) {
+                chat.messages = messages;
+              }
+            } else if(!!chat.directChatId) {
+              if(chat.directChatId === obj.directChatId) {
+                chat.messages = messages;
+              }
+            }
+          });
+        } else {
+        // si no existe el boardId o directChatId en el state chats
+        // hago un push de los mensajes que me vinieron a un nuevo
+        // objeto dentro de chats
+          if(obj.boardId != '') {
+            chats.push({
+              boardId: obj.boardId,
+              messages,
+            });
+          } else if(obj.directChatId != '') {
+            chats.push({
+              directChatId: obj.directChatId,
+              messages,
+            });
+          }
+        }
+  
         this.setState({
-          messages: Messages.find().fetch(),
+          chats: chats,
         });
       },
       onError: (error) => {
