@@ -6,12 +6,11 @@ import SidebarLayout from './sidebar/SidebarLayout.jsx';
 
 export default class TeamLayout extends React.Component {
   render() {
-    console.log('TeamLayout -> chats: ', this.props.chats);
     return (
       <div>
         <SidebarLayout { ...this.props } />
         <Board />
-        <div> { /* full width of screen, contains all the chats */ }
+        <div>
           { this.renderChats() }
         </div>
       </div>
@@ -24,7 +23,7 @@ export default class TeamLayout extends React.Component {
     this.props.chats.map((chat) => {
       arr.push(
         <ChatLayout
-          key={ chat._id }
+          key={ chat.directChatId || chat.boardId }
           chat={ chat }
           position={ 'minimized' } />
       );

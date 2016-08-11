@@ -37,7 +37,6 @@ export default class Team extends React.Component {
   }
 
   getMessages(obj) {
-    console.log('getMessages -> obj', obj);
     Meteor.subscribe('messages.chat', obj, {
       onReady: () => {
         let messages = Messages.find(obj).fetch();

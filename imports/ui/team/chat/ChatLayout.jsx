@@ -14,13 +14,12 @@ export default class ChatLayout extends React.Component {
     };
   }
   render() {
-    console.log('ChatLayout -> render -> chat.messages', this.props.chat.messages);
     if (this.state.position === 'minimized') {
       return (
         <div>
           <div className='chat-container minimized'>
             <div className='chat-bottom'>
-              <p className="chat-name">Miguel Rodriguez</p>
+              <p className="chat-name">User name</p>
             </div>
             <div>
               { this.renderMessages() }
@@ -33,7 +32,7 @@ export default class ChatLayout extends React.Component {
         <div>
           <div className='chat-container medium'>
             <div className='chat-bottom'>
-              <p className='chat-name'>Miguel Rodriguez</p>
+              <p className='chat-name'>User name</p>
             </div>
             <div>
               { this.renderMessages() }
@@ -46,7 +45,7 @@ export default class ChatLayout extends React.Component {
         <div>
           <div className='chat-container maximized'>
             <div className='chat-bottom'>
-              <p className='chat-name'>Miguel Rodriguez</p>
+              <p className='chat-name'>User name</p>
             </div>
             <div>
               { this.renderMessages() }
@@ -55,25 +54,24 @@ export default class ChatLayout extends React.Component {
         </div>
       );
     } else {
-      return ( null ); // Temporary
+      return ( null );
     }
   }
 
   renderMessages() {
     let arr = [];
 
-    // chat.messages ?
     this.props.chat.messages.map((message) => {
-      arr.push(<Message key={ message._id } message={ message } position={ this.state.position } />);
+      arr.push(
+        <Message
+          key={ message._id }
+          message={ message }
+          position={ this.state.position } />);
     });
 
     return arr;
   }
 }
-
-/**
- * TODO: Render chat and pass props to <Message />
- */
 
 ChatLayout.propTypes = {
   chat: React.PropTypes.object.isRequired,

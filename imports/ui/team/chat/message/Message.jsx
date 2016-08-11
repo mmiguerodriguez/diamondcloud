@@ -1,8 +1,8 @@
 import React from 'react';
 
-export default class MessageLayout extends React.Component {
+export default class Message extends React.Component {
   render() {
-    console.log('MessageLayout -> render -> message', this.props.message);
+    console.log('Message -> render -> message', this.props.message);
     return (
       <div>
 
@@ -15,7 +15,7 @@ export default class MessageLayout extends React.Component {
  * TODO: Render actual message
  */
 
-MessageLayout.propTypes = {
+Message.propTypes = {
   message: React.PropTypes.object.isRequired,
   position: React.PropTypes.string.isRequired
 };

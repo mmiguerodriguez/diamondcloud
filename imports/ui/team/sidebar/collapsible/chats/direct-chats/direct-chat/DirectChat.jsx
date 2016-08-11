@@ -2,7 +2,6 @@ import React from 'react';
 
 export default class DirectChat extends React.Component {
   render() {
-    console.log('DirectChat -> render -> directChat', this.props.directChat);
     return (
       <div onClick={ this.props.getMessages.bind(null, { directChatId: this.props.directChat._id }) }>
         <h4 className="">{ this.props.directChat.users[0]._id }</h4>
