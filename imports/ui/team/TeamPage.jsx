@@ -42,19 +42,21 @@ export default class Team extends React.Component {
       onReady: () => {
         let messages = Messages.find(obj).fetch();
         let chats =  this.state.chats;
-        
+
         // Replace any undefined variable to an empty string
         obj.boardId = obj.boardId || '';
         obj.directChatId = obj.directChatId || '';
-        
+
         // Checks if this chat exists
         let chatExists = false;
         chats.map((chat) => {
           if(!!chat.boardId || !!chat.directChatId) {
-            chatExists = true; 
+            chatExists = true;
           }
         });
-        
+
+        // console.log('chat exists', chatExists);
+
         if(chatExists) {
           // si existe un chat con obj.boardId o obj.directChat entonces
           // reemplazo chat.$.messages con los nuevos mensajes
@@ -85,7 +87,7 @@ export default class Team extends React.Component {
             });
           }
         }
-  
+
         this.setState({
           chats: chats,
         });

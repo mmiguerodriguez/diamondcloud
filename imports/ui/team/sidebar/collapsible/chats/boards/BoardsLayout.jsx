@@ -7,7 +7,9 @@ export default class BoardsLayout extends React.Component {
     return (
       <div>
         <h3>Boards</h3>
-        { this.renderBoards() }
+        <div>
+          { this.renderBoards() }
+        </div>
       </div>
     );
   }

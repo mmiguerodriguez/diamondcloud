@@ -1,8 +1,8 @@
 import React from 'react';
 
-import Collapsible  from '../Collapsible.jsx';
-import BoardsLayout from './boards/BoardsLayout.jsx';
-import UsersLayout  from './users/UsersLayout.jsx';
+import Collapsible        from '../Collapsible.jsx';
+import BoardsLayout       from './boards/BoardsLayout.jsx';
+import DirectChatsLayout  from './direct-chats/DirectChatsLayout.jsx';
 
 export default class ChatsCollapsible extends React.Component {
   render() {
@@ -23,8 +23,10 @@ export default class ChatsCollapsible extends React.Component {
           <div>
             <BoardsLayout
               boards={ this.props.boards }
-              getMessages={ this.props.getMessages }/>
-            { /* Add DirectChats render */ }
+              getMessages={ this.props.getMessages } />
+            <DirectChatsLayout
+              directChats={ this.props.directChats }
+              getMessages={ this.props.getMessages } />
           </div>
         }
         footer={
@@ -37,6 +39,7 @@ export default class ChatsCollapsible extends React.Component {
 
 ChatsCollapsible.propTypes = {
   boards: React.PropTypes.array.isRequired,
+  directChats: React.PropTypes.array.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
   getMessages: React.PropTypes.func.isRequired,
 };
