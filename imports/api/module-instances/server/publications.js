@@ -5,9 +5,7 @@ import { ModuleInstances } from '../module-instances.js';
 Meteor.publishComposite('moduleInstances.data', function(moduleInstanceId, obj) {
   let teamId = ModuleInstances.findOne(moduleInstanceId).board().team()._id;
   let boards = Meteor.user().boards(teamId, { _id: 1 });
-  boards = boards.map((board) => {
-    return board._id;
-  });
+  boards = boards.map((board) => board._id);
   let generateTree = (params) => {
     "use strict";
     let children = [];
@@ -25,16 +23,16 @@ Meteor.publishComposite('moduleInstances.data', function(moduleInstanceId, obj) 
           },
           {
             $project: {
-              [params.collection]: '$data.${params.collection}'
+              ${params.collection}: '$data.${params.collection}',
             }
           },
           {
             $project: {
-              [params.collection]: {
+              ${params.collection}: {
                 $filter: {
                   input: '$${params.collection}',
                   as: 'element',
-                  cond: params.condition
+                  cond: ${params.condition}
                 }
               }
             }
@@ -53,7 +51,7 @@ Meteor.publishComposite('moduleInstances.data', function(moduleInstanceId, obj) 
     `;
     var result = {};
     /* jshint ignore:start */
-    result.find = (new Function(functionBody));
+    result.find = new Function(functionBody);
     /* jshint ignore:end */
     if (children.length) result.children = children;
     return result;
