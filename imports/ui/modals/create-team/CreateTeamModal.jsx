@@ -67,7 +67,7 @@ export default class CreateTeamModal extends React.Component {
                     </select>
                   </div>
                 </div>
-                { 
+                {
                   this.state.type === 'Otro' ? (
                     <div  id="otherProjectType"
                           className="col-xs-12 col-sm-6 col-sm-offset-4">
@@ -226,7 +226,7 @@ export default class CreateTeamModal extends React.Component {
 
     this.setState({ page: page + 1 });
   }
-  
+
   createTeam() {
     let { name, plan, type, otherType, usersEmails } = this.state;
     type = type === 'Otro' ? otherType : type;

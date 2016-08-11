@@ -11,10 +11,12 @@ export default class UsersList extends React.Component {
     super(props);
     this.state = {
       email: '',
+      users: [],
     };
   }
-  
+
   render() {
+    let email = this.state.email;
     return (
       <div>
         <div className="row">
@@ -23,6 +25,7 @@ export default class UsersList extends React.Component {
                     className="form-control"
                     placeholder="Compartir proyecto"
                     type="text"
+                    value={ email }
                     onChange={ this.handleChange.bind(this, 'email') }/>
             <div className="input-group-addon search-input" onClick={ this.handleSubmit.bind(this) }>
               <img src="img/add-people-icon.svg"
@@ -44,22 +47,32 @@ export default class UsersList extends React.Component {
     });
   }
   handleSubmit() {
-    console.log("asdasdasd");
+    this.props.addUser(this.state.email);
     this.setState({ email: '' });
-    this.props.addUser.bind(null, this.state.email);
   }
   renderUsers() {
     let arr = [];
-    let users = this.props.team ? this.props.team.getUsers(Teams.dashboardUsersFields) : this.props.usersEmails;
-    if(!this.props.team) {//todo: if user does not exist, create a user object
+    this.state.users = this.props.team ? this.props.team.getUsers(Teams.dashboardUsersFields) : this.props.usersEmails;
+    let users = JSON.parse(JSON.stringify(this.state.users));
+    if(!this.props.team) {
       users.forEach((user, index) => {
-        users[index] = Meteor.users.findByEmail(user, Teams.dashboardUsersFields);
+        let _user = Meteor.users.findByEmail(user, Teams.dashboardUsersFields).fetch()[0];
+        users[index] = _user ? _user : {
+          _id: index,
+          emails: [
+            {
+              address: user,
+            }
+          ],
+          profile: {
+            name: user,
+          },
+        };
       });
     }
     users.map((user) => {
-      arr.push(<User key={ user._id } user={ user } />);
+      arr.push(<User key={ user._id } user={ user } removeUser={ this.props.removeUser } />);
     });
-
     return arr;
   }
 
