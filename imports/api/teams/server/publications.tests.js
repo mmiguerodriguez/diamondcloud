@@ -36,6 +36,7 @@ if (Meteor.isServer) {
 
         teams[0].users[0] = { email: user.emails[0].address, permission: 'owner' };
         teams[1].users[0] = { email: user.emails[0].address, permission: 'owner' };
+        teams[2].users[0] = { email: Random.id(), permission: 'owner' };
 
         boards.forEach((board) => {
           teams[0].boards.push({ _id: board._id });
@@ -89,10 +90,11 @@ if (Meteor.isServer) {
           done();
         });
       });
-      it('should publish the correct boards and direct chats data', function(done){
+      it('should publish the correct boards, direct chats and users data', function(done){
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('teams.team', teams[0]._id, (collections) => {
+          console.log(collections.Teams[0]);
           chai.assert.equal(collections.Teams.length, 1);
           chai.assert.equal(collections.Teams[0].name, teams[0].name);
           chai.assert.equal(collections.Teams[0].plan, teams[0].plan);
@@ -100,6 +102,10 @@ if (Meteor.isServer) {
           chai.assert.deepEqual(collections.Teams[0].users, teams[0].users);
 
           chai.assert.equal(collections.Boards.length, 2);
+          
+          chai.assert.equal(collections.users)
+          chai.assert.isDefined(collections.users[0].emails);
+          chai.assert.isDefined(collections.users[0].profile);
           done();
         });
       });

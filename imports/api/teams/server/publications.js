@@ -52,6 +52,11 @@ Meteor.publishComposite('teams.team', function(teamId) {
           return DirectChats.getUserDirectChats(this.userId, teamId);
         }
       },
+      {
+        find: function(team) {
+          return team.getUsers(Teams.teamUsersFields);
+        }
+      }
     ]
   };
 });

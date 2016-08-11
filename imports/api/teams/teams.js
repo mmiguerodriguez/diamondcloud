@@ -58,6 +58,11 @@ Teams.dashboardUsersFields = {
   emails: 1,
 };
 
+Teams.teamUsersFields = {
+  profile: 1,
+  emails: 1,
+};
+
 // Fields that are shown in the team page (/team)
 Teams.teamFields = {
   name: 1,
