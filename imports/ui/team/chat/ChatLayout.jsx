@@ -58,6 +58,11 @@ export default class ChatLayout extends React.Component {
     }
   }
 
+  togglePosition(position) {
+    this.setState({
+      position: position,
+    });
+  }
   renderMessages() {
     let arr = [];
 
