@@ -51,15 +51,15 @@ export default class Team extends React.Component {
         let chatExists = false;
         chats.map((chat) => {
           if(!!chat.boardId || !!chat.directChatId) {
-            chatExists = true;
+            if(chat.boardId === obj.boardId || chat.directChatId === obj.directChatId) {
+              chatExists = true;
+            }
           }
         });
 
-        // console.log('chat exists', chatExists);
-
+        // If chat exists, replace its messages with the new ones
+        // If it doesn't, push the new messages to a new object
         if(chatExists) {
-          // si existe un chat con obj.boardId o obj.directChat entonces
-          // reemplazo chat.$.messages con los nuevos mensajes
           chats.map((chat) => {
             if(!!chat.boardId) {
               if(chat.boardId === obj.boardId) {
@@ -72,9 +72,6 @@ export default class Team extends React.Component {
             }
           });
         } else {
-        // si no existe el boardId o directChatId en el state chats
-        // hago un push de los mensajes que me vinieron a un nuevo
-        // objeto dentro de chats
           if(obj.boardId != '') {
             chats.push({
               boardId: obj.boardId,
@@ -88,6 +85,7 @@ export default class Team extends React.Component {
           }
         }
 
+        // Update chats state
         this.setState({
           chats: chats,
         });
