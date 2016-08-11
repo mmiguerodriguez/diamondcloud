@@ -2,6 +2,7 @@ import React from 'react';
 
 export default class MessageLayout extends React.Component {
   render() {
+    console.log('MessageLayout -> render -> message', this.props.message);
     return (
       <div>
 

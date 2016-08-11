@@ -11,7 +11,7 @@ export default class TeamLayout extends React.Component {
       <div>
         <SidebarLayout { ...this.props } />
         <Board />
-        <div className=""> { /* full width of screen, contains all the chats */ }
+        <div> { /* full width of screen, contains all the chats */ }
           { this.renderChats() }
         </div>
       </div>
@@ -22,17 +22,17 @@ export default class TeamLayout extends React.Component {
     let arr = [];
 
     this.props.chats.map((chat) => {
-      arr.push(<ChatLayout chat={ chat } position={ 'minimized' } />);
+      arr.push(
+        <ChatLayout
+          key={ chat._id }
+          chat={ chat }
+          position={ 'minimized' } />
+      );
     });
 
     return arr;
   }
 }
-
-/**
- * TODO: Render chat, pass props so it can render
- * messages correctly
- */
 
 TeamLayout.propTypes = {
   team: React.PropTypes.object.isRequired,

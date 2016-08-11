@@ -14,7 +14,7 @@ export default class ChatLayout extends React.Component {
     };
   }
   render() {
-    console.log('ChatLayout -> render -> messages', this.props.messages);
+    console.log('ChatLayout -> render -> chat.messages', this.props.chat.messages);
     if (this.state.position === 'minimized') {
       return (
         <div>
