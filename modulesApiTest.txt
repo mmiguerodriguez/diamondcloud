@@ -74,9 +74,9 @@ JSON.stringify(db.modules.aggregate(
         todos: {
           $filter: {
             input: '$todos',
-            as: 'todo',
+            as: 'element',
             cond: {
-              $eq: ['$$todo.boardId', 'designBoardId']
+              $eq: ['$$element.boardId', 'designBoardId']
             }
           }
         }

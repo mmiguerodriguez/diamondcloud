@@ -30,8 +30,9 @@ aldeed:simple-schema@1.5.3            # Collection schemas
 practicalmeteor:mocha                 # Testing
 xolvio:cleaner                        # Reset database
 johanbrook:publication-collector      # Test a Meteor publication by collecting its output
-underscore@1.0.9                            # Some helpers
-check@1.2.3                                 # Check whether a value matches a pattern
+underscore@1.0.9                      # Some helpers
+check@1.2.3                           # Check whether a value matches a pattern
 reywood:publish-composite             # Publish a set of related documents from multiple collections with a reactive join
 dburles:collection-helpers            # Helpers
-meteorhacks:kadira
+meteorhacks:kadira                    # Kadira
+monbro:mongodb-mapreduce-aggregation  # Mongo aggregate

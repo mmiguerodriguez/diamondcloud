@@ -35,7 +35,7 @@ if (Meteor.isServer) {
         request = {
           collection: 'todos',
           condition: {
-            $eq: ['$$todo.boardId', 'designBoardId']
+            $eq: ['$$element.boardId', 'designBoardId']
           },
         };
 
@@ -58,7 +58,6 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('moduleInstances.data', moduleInstance._id, request, (collections) => {
-          // console.log(collections.ModuleInstances[0].data);
           chai.assert.isDefined(collections.ModuleInstances[0]);
           chai.assert.isUndefined(collections.ModuleInstances[1]);
           chai.assert.isDefined(collections.ModuleInstances[0].data.todos[0]);
