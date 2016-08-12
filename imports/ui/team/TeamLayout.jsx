@@ -25,7 +25,7 @@ export default class TeamLayout extends React.Component {
         <ChatLayout
           key={ chat.directChatId || chat.boardId }
           chat={ chat }
-          position={ 'minimized' } />
+          position={ 'medium' } />
       );
     });
 

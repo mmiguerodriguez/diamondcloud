@@ -5,7 +5,7 @@ export default class Message extends React.Component {
     console.log('Message -> render -> message', this.props.message);
     return (
       <div>
-
+        
       </div>
     );
   }

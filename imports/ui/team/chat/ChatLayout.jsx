@@ -19,9 +19,6 @@ export default class ChatLayout extends React.Component {
           <div className='chat-bottom'>
             <p className="chat-name">User name</p>
           </div>
-          <div>
-            { this.renderMessages() }
-          </div>
         </div>
       );
     } else if (this.state.position === 'medium') {
@@ -30,7 +27,7 @@ export default class ChatLayout extends React.Component {
           <div className='chat-bottom'>
             <p className='chat-name'>User name</p>
           </div>
-          <div>
+          <div className='messages-container'>
             { this.renderMessages() }
           </div>
         </div>
@@ -41,7 +38,7 @@ export default class ChatLayout extends React.Component {
           <div className='chat-bottom'>
             <p className='chat-name'>User name</p>
           </div>
-          <div>
+          <div className='messages-container'>
             { this.renderMessages() }
           </div>
         </div>
