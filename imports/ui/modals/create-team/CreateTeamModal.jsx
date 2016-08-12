@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import { browserHistory } from 'react-router';
+import validator from 'validator';
 
 import Modal     from '../Modal.jsx';
 import UsersList from '../users-list/UsersList.jsx';
@@ -31,103 +32,103 @@ export default class CreateTeamModal extends React.Component {
         }
         body={
           <div>
-            <div  id="create-team-page-1"
-                  className="name"
-                  style={{ display: 'block' }}>
-              <div className="row">
-                <div className="name-input">
-                  <label  htmlFor="projectName"
-                          className="col-xs-2 col-sm-offset-2 control-label left-align">
-                    Nombre
-                  </label>
-                  <div className="col-xs-12 col-sm-6">
-                    <input  id="projectName"
-                            className="form-control"
-                            placeholder="Nombre del proyecto"
-                            type="text"
-                            onChange={ this.handleChange.bind(this, 'name') } />
+              <div  id="create-team-page-1"
+                    className="name"
+                    style={{ display: 'block' }}>
+                <div className="row">
+                  <div className="name-input">
+                    <label  htmlFor="projectName"
+                            className="col-xs-2 col-sm-offset-2 control-label left-align">
+                      Nombre
+                    </label>
+                    <div className="col-xs-12 col-sm-6">
+                      <input  id="projectName"
+                              className="form-control"
+                              placeholder="Nombre del proyecto"
+                              type="text"
+                              onChange={ this.handleChange.bind(this, 'name') } />
+                    </div>
                   </div>
-                </div>
-                <div className="name-input">
-                  <label  htmlFor="projectType"
-                          className="col-xs-2 col-sm-offset-2 control-label left-align">
-                    Tipo
-                  </label>
-                  <div className="col-xs-12 col-sm-6">
-                    <select id="projectType"
-                            className="form-control"
-                            placeholder="Tipo de proyecto"
-                            onChange={ this.handleChange.bind(this, 'type') }>
-                      <option disabled defaultValue>Tipo de proyecto</option>
-                      <option value="Web">Web</option>
-                      <option value="Marketing">Marketing</option>
-                      <option value="Diseño">Diseño</option>
-                      <option value="Programación">Programación</option>
-                      <option value="Otro">Otro</option>
-                    </select>
-                  </div>
-                </div>
-                {
-                  this.state.type === 'Otro' ? (
-                    <div  id="otherProjectType"
-                          className="col-xs-12 col-sm-6 col-sm-offset-4">
-                      <input  id="projectType"
+                  <div className="name-input">
+                    <label  htmlFor="projectType"
+                            className="col-xs-2 col-sm-offset-2 control-label left-align">
+                      Tipo
+                    </label>
+                    <div className="col-xs-12 col-sm-6">
+                      <select id="projectType"
                               className="form-control"
                               placeholder="Tipo de proyecto"
-                              type="text"
-                              onChange={ this.handleChange.bind(this, 'otherType') } />
-                    </div>
-                  ) : ( null )
-                }
-              </div>
-            </div>
-            <div  id="create-team-page-2"
-                  className="plan"
-                  style={{ display: 'none' }}>
-              <div className="row">
-                <div className="free col-xs-5 col-xs-offset-1">
-                  <div className="free-card">
-                    <h3 className="plan-card-title">Free</h3>
-                    <div className="row">
-                      <ul>
-                        <li>12 branches</li>
-                        <li>5 módulos</li>
-                        <li>200MB por proyecto</li>
-                      </ul>
+                              onChange={ this.handleChange.bind(this, 'type') }>
+                        <option disabled defaultValue>Tipo de proyecto</option>
+                        <option value="Web">Web</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Diseño">Diseño</option>
+                        <option value="Programación">Programación</option>
+                        <option value="Otro">Otro</option>
+                      </select>
                     </div>
                   </div>
-                  <div className="btn btn-free col-xs-12"
-                          onClick={ this.choosePlan.bind(this, 'free') }>
-                    Elegir plan Free
-                  </div>
-                </div>
-                <div className="premium col-xs-5">
-                  <div className="premium-card">
-                    <h3 className="plan-card-title">Premium</h3>
-                    <div className="row">
-                      <ul>
-                        <li>Infinitas branches</li>
-                        <li>Módulos infinitos</li>
-                        <li>Storage relativo a la contidad de usuarios</li>
-                      </ul>
-                    </div>
-                    <br />
-                    <div className="row premium-card-price">
-                      <h4 className="premium-price">$2.99</h4>
-                      <p>por usuario/mes</p>
-                    </div>
-                  </div>
-                  <div className="btn btn-premium col-xs-12">
-                    Próximamente...
-                  </div>
+                  {
+                    this.state.type === 'Otro' ? (
+                      <div  id="otherProjectType"
+                            className="col-xs-12 col-sm-6 col-sm-offset-4">
+                        <input  id="projectType"
+                                className="form-control"
+                                placeholder="Tipo de proyecto"
+                                type="text"
+                                onChange={ this.handleChange.bind(this, 'otherType') } />
+                      </div>
+                    ) : ( null )
+                  }
                 </div>
               </div>
-            </div>
-            <div  id="create-team-page-3"
-                  className="share"
-                  style={{ display: 'none' }}>
-              <UsersList usersEmails={ this.state.usersEmails } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
-            </div>
+              <div  id="create-team-page-2"
+                    className="plan"
+                    style={{ display: 'none' }}>
+                <div className="row">
+                  <div className="free col-xs-5 col-xs-offset-1">
+                    <div className="free-card">
+                      <h3 className="plan-card-title">Free</h3>
+                      <div className="row">
+                        <ul>
+                          <li>12 branches</li>
+                          <li>5 módulos</li>
+                          <li>200MB por proyecto</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="btn btn-free col-xs-12"
+                            onClick={ this.choosePlan.bind(this, 'free') }>
+                      Elegir plan Free
+                    </div>
+                  </div>
+                  <div className="premium col-xs-5">
+                    <div className="premium-card">
+                      <h3 className="plan-card-title">Premium</h3>
+                      <div className="row">
+                        <ul>
+                          <li>Infinitas branches</li>
+                          <li>Módulos infinitos</li>
+                          <li>Storage relativo a la contidad de usuarios</li>
+                        </ul>
+                      </div>
+                      <br />
+                      <div className="row premium-card-price">
+                        <h4 className="premium-price">$2.99</h4>
+                        <p>por usuario/mes</p>
+                      </div>
+                    </div>
+                    <div className="btn btn-premium col-xs-12">
+                      Próximamente...
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div  id="create-team-page-3"
+                    className="share"
+                    style={{ display: 'none' }}>
+                <UsersList usersEmails={ this.state.usersEmails } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
+              </div>
           </div>
         }
         footer={
@@ -205,6 +206,9 @@ export default class CreateTeamModal extends React.Component {
   }
   nextPage() {
     let page = this.state.page;
+    if(page === 1){
+      
+    }
     if(page + 1 > 3) {
       this.createTeam();
       return;
