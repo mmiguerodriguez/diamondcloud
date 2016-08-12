@@ -10,7 +10,7 @@ export default class TeamLayout extends React.Component {
       <div>
         <SidebarLayout { ...this.props } />
         <Board />
-        <div>
+        <div className='chat-container'>
           { this.renderChats() }
         </div>
       </div>

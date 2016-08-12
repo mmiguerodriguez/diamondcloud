@@ -1,5 +1,4 @@
 import React from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
 
 import { Messages } from '../../../api/messages/messages.js';
 
@@ -16,40 +15,34 @@ export default class ChatLayout extends React.Component {
   render() {
     if (this.state.position === 'minimized') {
       return (
-        <div>
-          <div className='chat-container minimized'>
-            <div className='chat-bottom'>
-              <p className="chat-name">User name</p>
-            </div>
-            <div>
-              { this.renderMessages() }
-            </div>
+        <div className='minimized'>
+          <div className='chat-bottom'>
+            <p className="chat-name">User name</p>
+          </div>
+          <div>
+            { this.renderMessages() }
           </div>
         </div>
       );
     } else if (this.state.position === 'medium') {
       return (
-        <div>
-          <div className='chat-container medium'>
-            <div className='chat-bottom'>
-              <p className='chat-name'>User name</p>
-            </div>
-            <div>
-              { this.renderMessages() }
-            </div>
+        <div className='medium'>
+          <div className='chat-bottom'>
+            <p className='chat-name'>User name</p>
+          </div>
+          <div>
+            { this.renderMessages() }
           </div>
         </div>
       );
     } else if (this.state.position === 'maximized') {
       return (
-        <div>
-          <div className='chat-container maximized'>
-            <div className='chat-bottom'>
-              <p className='chat-name'>User name</p>
-            </div>
-            <div>
-              { this.renderMessages() }
-            </div>
+        <div className='maximized'>
+          <div className='chat-bottom'>
+            <p className='chat-name'>User name</p>
+          </div>
+          <div>
+            { this.renderMessages() }
           </div>
         </div>
       );

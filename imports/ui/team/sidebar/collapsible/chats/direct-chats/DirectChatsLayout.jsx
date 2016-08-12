@@ -5,8 +5,11 @@ import DirectChat from './direct-chat/DirectChat.jsx';
 export default class DirectChatsLayout extends React.Component {
   render() {
     return (
-      <div>
-        <h3>Chats</h3>
+      <div className='container-fluid'>
+        <h5>
+          <b>Chats</b>
+        </h5>
+        <hr className='hr-fixed-color' />
         <div>
           { this.renderDirectChats() }
         </div>

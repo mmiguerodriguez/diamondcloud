@@ -22,7 +22,7 @@ export default class BoardsCollapsible extends React.Component {
           this.renderBoards()
         }
         footer={
-          <a className="btn btn-default add-boards-btn" role="button">
+          <a className="btn btn-default footer-btn" role="button">
             CREAR BOARD
           </a>
         }

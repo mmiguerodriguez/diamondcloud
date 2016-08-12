@@ -1,2 +1,33 @@
 @import 'direct-chats/direct-chats';
 @import 'boards/boards';
+
+.row-fixed-margin {
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+
+.img-fixed-margin {
+  margin-top: 8px;
+}
+
+.img-fixed-margin.fixed-padding {
+  padding-left: 5px !important;
+}
+
+.hr-fixed-color {
+  border-color: $black;
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}
+
+.messages-badge {
+  height: 18px;
+  width: 18px;
+  background-color: red;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

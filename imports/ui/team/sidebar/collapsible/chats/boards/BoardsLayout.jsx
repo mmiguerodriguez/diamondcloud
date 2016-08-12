@@ -5,8 +5,11 @@ import Board from './board/Board.jsx';
 export default class BoardsLayout extends React.Component {
   render() {
     return (
-      <div>
-        <h3>Boards</h3>
+      <div className='container-fluid'>
+        <h5>
+          <b>Boards</b>
+        </h5>
+        <hr className='hr-fixed-color' />
         <div>
           { this.renderBoards() }
         </div>
