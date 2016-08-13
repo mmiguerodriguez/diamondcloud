@@ -9,7 +9,7 @@ export default class TeamLayout extends React.Component {
     super(props);
     this.state = {
       board: this.props.boards[0],
-    }
+    };
   }
   render() {
     return (
