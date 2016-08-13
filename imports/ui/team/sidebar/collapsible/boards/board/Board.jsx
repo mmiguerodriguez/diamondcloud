@@ -3,7 +3,7 @@ import React from 'react';
 export default class Board extends React.Component {
   render() {
     return (
-      <div className='board-item-container' onClick={ this.props.changeBoard.bind(null, this.props.board._id) }>
+      <div className='board-item-container' onClick={ this.setBoard.bind(this) }>
         <div className="board-item col-xs-10 row">
           <h4 className="board-name">{ this.props.board.name }</h4>
         </div>
@@ -15,9 +15,14 @@ export default class Board extends React.Component {
       </div>
     );
   }
+  setBoard() {
+    this.props.changeBoard(this.props.board._id);
+    this.props.toggleCollapsible('board');
+  }
 }
 
 Board.propTypes = {
   board: React.PropTypes.object.isRequired,
+  toggleCollapsible: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
 };

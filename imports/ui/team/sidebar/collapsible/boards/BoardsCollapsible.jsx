@@ -38,6 +38,7 @@ export default class BoardsCollapsible extends React.Component {
         <Board
           key={ board._id }
           board={ board }
+          toggleCollapsible={ this.props.toggleCollapsible }
           changeBoard={ this.props.changeBoard }/>
       );
     });
