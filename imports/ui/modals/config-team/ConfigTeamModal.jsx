@@ -15,15 +15,7 @@ export default class ConfigTeamModal extends React.Component {
       type: this.props.team.type,
     };
   }
-  componentWillReceiveProps(props) {
-    // Fixes issues when component receives
-    // new props
-    this.setState({
-      name: props.team.name,
-      plan: props.team.plan,
-      type: props.team.type,
-    });
-  }
+  
   render() {
     return (
       <Modal

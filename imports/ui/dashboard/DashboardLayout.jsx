@@ -13,20 +13,19 @@ export default class DashboardLayout extends React.Component {
     };
   }
   render() {
-    let { teams } = this.props;
-    let hasTeams = teams.length > 0 ? true : false;
+    let hasTeams = this.props.teams.length > 0 ? true : false;
 
     return (
       <div>
         <WelcomeCard hasTeams={ hasTeams } />
         <TeamsLayout  hasTeams={ hasTeams }
-                      teams={ teams }
+                      teams={ this.props.teams }
                       openCreateTeamModal={ this.openCreateTeamModal }
                       openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
         <CreateTeamModal /> { /* props: users(image, name, id (to send message) ) */ }
         {
           (this.state.team) ? (
-            <ConfigTeamModal team={ this.state.team }/>
+            <ConfigTeamModal key={ this.state.team._id } team={ this.state.team }/>
           ) : ( null )
         }
       </div>
@@ -37,12 +36,10 @@ export default class DashboardLayout extends React.Component {
     $('#createTeamModal').modal('show');
   }
   openConfigTeamModal(team) {
-    this.setState({ team: team });
-    // Fixes modal not opening on the
-    // first click
-    setTimeout(() => {
-      $('#configTeamModal').modal('show');
-    }, 0);
+    console.log(team);
+    this.setState({ team }, () => {
+      $('#configTeamModal').modal('show');//show modal once state is updated
+    });
   }
 }
 

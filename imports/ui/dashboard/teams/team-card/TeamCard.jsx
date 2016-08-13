@@ -3,37 +3,35 @@ import { Link } from 'react-router';
 
 export default class TeamCard extends React.Component {
   render() {
-    let { team } = this.props;
-
     return (
       this.props.hasTeams === true ? (
         <div className="col-md-3 teams">
           <div className="row team-data">
             <div className="col-xs-8">
               <h4>
-                <b>{ team.name }</b>
+                <b>{ this.props.team.name }</b>
               </h4>
-              <h5>Plan: { team.plan }</h5>
+              <h5>Plan: { this.props.team.plan }</h5>
               {
-                team.users.length >= 4 ? (
+                this.props.team.users.length >= 4 ? (
                   <h5>Miembros:
                     <b className="text-danger">
-                      &nbsp;{ team.users.length }/5
+                      &nbsp;{ this.props.team.users.length }/5
                     </b>
                   </h5>
                 ) : (
-                  <h5>Miembros: { team.users.length }/5</h5>
+                  <h5>Miembros: { this.props.team.users.length }/5</h5>
                 )
               }
             </div>
             <div className="col-xs-4">
               <a role="button"
-                 onClick={ this.props.openConfigTeamModal.bind(null, team) }>
+                 onClick={ this.props.openConfigTeamModal.bind(null, this.props.team) }>
                 <img src="img/config.svg" className="config-icon" />
               </a>
             </div>
           </div>
-          <Link to={ "/team/" + team._id }
+          <Link to={ "/team/" + this.props.team._id }
                 className="col-md-4 btn open-team-btn"
                 role="button">
             Abrir
@@ -51,7 +49,7 @@ export default class TeamCard extends React.Component {
 }
 
 TeamCard.propTypes = {
-  team: React.PropTypes.object,
-  hasTeams: React.PropTypes.bool,
-  openConfigTeamModal: React.PropTypes.func,
+  team: React.PropTypes.object.isRequired,
+  hasTeams: React.PropTypes.bool.isRequired,
+  openConfigTeamModal: React.PropTypes.func.isRequired,
 };
