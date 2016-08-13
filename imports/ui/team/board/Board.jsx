@@ -6,7 +6,7 @@ export default class Board extends React.Component {
       <div className='board-container'>
         <div className='sub-header'>
           <div className="col-xs-6">
-            <h4 className="title col-xs-4">BoardName</h4>
+            <h4 className="title col-xs-4">{ this.props.board.name }</h4>
             <h4 className="members col-xs-8">Miembros:</h4>
           </div>
           <div className="col-xs-6">
@@ -20,5 +20,5 @@ export default class Board extends React.Component {
 }
 
 Board.propTypes = {
-  
+  board: React.PropTypes.object.isRequired,
 };

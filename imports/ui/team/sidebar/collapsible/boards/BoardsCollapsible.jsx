@@ -37,7 +37,8 @@ export default class BoardsCollapsible extends React.Component {
       arr.push(
         <Board
           key={ board._id }
-          board={ board } />
+          board={ board }
+          changeBoard={ this.props.changeBoard }/>
       );
     });
 
@@ -48,4 +49,5 @@ export default class BoardsCollapsible extends React.Component {
 BoardsCollapsible.propTypes = {
   boards: React.PropTypes.array.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
+  changeBoard: React.PropTypes.func.isRequired,
 };

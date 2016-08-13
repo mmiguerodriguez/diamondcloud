@@ -1,12 +1,15 @@
 @import 'board/board';
 
-.board-item {
-  margin-left: 0px !important;
-  margin-right: 0px !important;
-}
-.board-preview {
-  margin-top: 12px;
-}
-.board-name {
-  margin-top: 16px !important;
+.board-item-container {
+  cursor: pointer;
+  .board-item {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+  }
+  .board-preview {
+    margin-top: 12px;
+  }
+  .board-name {
+    margin-top: 16px !important;
+  }
 }

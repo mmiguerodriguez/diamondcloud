@@ -35,7 +35,8 @@ export default class SidebarLayout extends React.Component {
           toggleCollapsible={ this.toggleCollapsible.bind(this) } />
         <BoardsCollapsible
           boards={ this.props.boards }
-          toggleCollapsible={ this.toggleCollapsible.bind(this) } />
+          toggleCollapsible={ this.toggleCollapsible.bind(this) }
+          changeBoard={ this.props.changeBoard } />
         <ChatsCollapsible
           boards={ this.props.boards }
           directChats={ this.props.directChats }
@@ -130,4 +131,5 @@ SidebarLayout.propTypes = {
   boards: React.PropTypes.array.isRequired,
   directChats: React.PropTypes.array.isRequired,
   getMessages: React.PropTypes.func.isRequired,
+  changeBoard: React.PropTypes.func.isRequired,
 };
