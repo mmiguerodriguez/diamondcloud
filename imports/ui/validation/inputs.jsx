@@ -37,7 +37,7 @@ export class TextInput extends React.Component {
 
     this.state = {
       isEmpty: true,
-      value: '',
+      value: this.props.value || '',
       valid: false,
       errorMessage: "Input is invalid",
       errorVisible: false
@@ -129,6 +129,7 @@ TextInput.propTypes = {
   id: React.PropTypes.string,
   class: React.PropTypes.string,
   placeholder: React.PropTypes.string,
+  value: React.PropTypes.string,
   required: React.PropTypes.bool,
   minCharacters: React.PropTypes.number,
   validate: React.PropTypes.func,

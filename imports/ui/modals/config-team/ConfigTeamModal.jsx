@@ -2,6 +2,7 @@ import React from 'react';
 
 import Modal     from '../Modal.jsx';
 import UsersList from '../users-list/UsersList.jsx';
+import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
 
 export default class ConfigTeamModal extends React.Component {
   constructor(props) {
@@ -45,12 +46,17 @@ export default class ConfigTeamModal extends React.Component {
                   Nombre
                 </label>
                 <div className="col-xs-12 col-sm-6">
-                  <input  id="projectName"
-                          className="form-control"
-                          placeholder="Nombre del proyecto"
-                          type="text"
-                          value={ this.state.name }
-                          onChange={ this.handleChange.bind(this, 'name') }/>
+                  <TextInput
+                    id="projectName"
+                    class="form-control"
+                    placeholder="Nombre del equipo"
+                    value={ this.state.name }
+                    required={true}
+                    minCharacters={3}
+                    onChange={ this.handleChange.bind(this, 'name') }
+                    errorMessage="El nombre no es válido"
+                    emptyMessage="Es obligatorio poner un nombre"
+                    minCharactersMessage="El nombre debe tener 3 o más caracteres"/>
                 </div>
               </div>
               <div className="name-input">
@@ -60,41 +66,21 @@ export default class ConfigTeamModal extends React.Component {
                 </label>
                 <div  id="otherProjectType"
                       className="col-xs-12 col-sm-6">
-                  <input  id="projectType"
-                          className="form-control"
-                          placeholder="Tipo de proyecto"
-                          type="text"
-                          value={ this.state.type }
-                          onChange={ this.handleChange.bind(this, 'type') }/>
+                  <TextInput
+                    id="projectType"
+                    class="form-control"
+                    placeholder="Tipo de equipo"
+                    value={ this.state.type }
+                    onChange={ this.handleChange.bind(this, 'otherType') }
+                    required={ false }
+                    errorMessage="El tipo de equipo no es válido"/>
                 </div>
               </div>
             </div>
             <hr />
             <h4 className="configuration-title">Miembros</h4>
-            <div className="row contacts-list-row">
-              <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-                <input  id="searchUsers"
-                        className="form-control"
-                        placeholder="Buscá entre los integrantes"
-                        type="text"/>
-                <div className="input-group-addon search-input">
-                  <img src="img/search-people-icon.svg" width="20px" />
-                </div>
-              </div>
-            </div>
-            <UsersList users={ undefined } />
-            <br />
-            <div className="row">
-              <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-                <input  id="shareTeam"
-                        className="form-control"
-                        placeholder="Compartir equipo"
-                        type="text" />
-                <div className="input-group-addon search-input">
-                  <img src="img/add-people-icon.svg" width="20px" />
-                </div>
-              </div>
-            </div>
+
+            <UsersList team={ this.props.team } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
             <hr />
             <h4 className="configuration-title">Plan</h4>
             <div className="row">
@@ -148,8 +134,22 @@ export default class ConfigTeamModal extends React.Component {
     Meteor.call('Teams.methods.edit', { teamId, team }, (error, result) => {
       if(error) {
         throw new Meteor.Error(error);
-      } else {
-        // ... what shall we do?
+      }
+    });
+  }
+
+  addUser(user) {
+    Meteor.call('Teams.methods.share', { teamId, team }, (error, result) => {
+      if(error){
+        throw new Meteor.Error(error);
+      }
+    });
+  }
+
+  removeUser(user){
+    Meteor.call('Teams.methods.removeUser', { teamId, team }, (error, result) => {
+      if(error){
+        throw new Meteor.Error(error);
       }
     });
   }
