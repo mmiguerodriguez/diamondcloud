@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import { browserHistory } from 'react-router';
-import validator from 'validator';
 
 import Modal     from '../Modal.jsx';
 import UsersList from '../users-list/UsersList.jsx';
-
+import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
 export default class CreateTeamModal extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +26,7 @@ export default class CreateTeamModal extends React.Component {
             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
               <img src="img/close-modal-icon.svg" width="18px" />
             </button>
-            <h4 className="modal-title">Crear Proyecto</h4>
+            <h4 className="modal-title">Crear equipo</h4>
           </div>
         }
         body={
@@ -42,11 +41,16 @@ export default class CreateTeamModal extends React.Component {
                       Nombre
                     </label>
                     <div className="col-xs-12 col-sm-6">
-                      <input  id="projectName"
-                              className="form-control"
-                              placeholder="Nombre del proyecto"
-                              type="text"
-                              onChange={ this.handleChange.bind(this, 'name') } />
+                      <TextInput
+                        id="projectName"
+                        class="form-control"
+                        placeholder="Nombre del equipo"
+                        required={true}
+                        minCharacters={3}
+                        onChange={this.handleChange.bind(this, 'name')}
+                        errorMessage="El nombre no es válido"
+                        emptyMessage="Es obligatorio poner un nombre"
+                        minCharactersMessage="El nombre debe tener 3 o más caracteres"/>
                     </div>
                   </div>
                   <div className="name-input">
@@ -55,28 +59,33 @@ export default class CreateTeamModal extends React.Component {
                       Tipo
                     </label>
                     <div className="col-xs-12 col-sm-6">
-                      <select id="projectType"
-                              className="form-control"
-                              placeholder="Tipo de proyecto"
-                              onChange={ this.handleChange.bind(this, 'type') }>
-                        <option disabled defaultValue>Tipo de proyecto</option>
-                        <option value="Web">Web</option>
-                        <option value="Marketing">Marketing</option>
-                        <option value="Diseño">Diseño</option>
-                        <option value="Programación">Programación</option>
-                        <option value="Otro">Otro</option>
-                      </select>
+                      <SelectInput
+                        id="projectType"
+                        class="form-control"
+                        placeholder="Tipo de equipo"
+                        onChange={this.handleChange.bind(this, 'type')}
+                        options={
+                          [
+                            { isDefault: true, name: 'Tipo de equipo' },
+                            { value: 'Web', name: 'Web' },
+                            { value: 'Marketing', name: 'Marketing' },
+                            { value: 'Diseño', name: 'Diseño' },
+                            { value: 'Programación', name: 'Programación' },
+                            { value: 'Otro', name: 'Otro' },
+                          ]
+                        }/>
                     </div>
                   </div>
                   {
                     this.state.type === 'Otro' ? (
                       <div  id="otherProjectType"
                             className="col-xs-12 col-sm-6 col-sm-offset-4">
-                        <input  id="projectType"
-                                className="form-control"
-                                placeholder="Tipo de proyecto"
-                                type="text"
-                                onChange={ this.handleChange.bind(this, 'otherType') } />
+                        <TextInput
+                          id="projectType"
+                          class="form-control"
+                          placeholder="Tipo de equipo"
+                          onChange={ this.handleChange.bind(this, 'otherType') }
+                          required={false}/>
                       </div>
                     ) : ( null )
                   }
@@ -93,7 +102,7 @@ export default class CreateTeamModal extends React.Component {
                         <ul>
                           <li>12 branches</li>
                           <li>5 módulos</li>
-                          <li>200MB por proyecto</li>
+                          <li>200MB por equipo</li>
                         </ul>
                       </div>
                     </div>
@@ -207,7 +216,17 @@ export default class CreateTeamModal extends React.Component {
   nextPage() {
     let page = this.state.page;
     if(page === 1){
-      
+      if($('#projectName').val().length < 3) {
+        this.errorBorder('#projectName');
+        return;
+      }
+    }
+
+    else if (page === 2) {
+      if(this.state.plan !== 'free'){
+        this.errorBorder('.btn-free');
+        return;
+      }
     }
     if(page + 1 > 3) {
       this.createTeam();
@@ -244,5 +263,13 @@ export default class CreateTeamModal extends React.Component {
         browserHistory.push('/team/' + result._id);
       }
     });
+  }
+
+  errorBorder(element) {
+    $(element).css('transition', 'border-color 500ms');
+    $(element).css('border-color', 'red');
+    setTimeout(() => {
+      $(element).css('border-color', '#ccc');
+    }, 500);
   }
 }

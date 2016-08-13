@@ -11,6 +11,7 @@
     "run-c9-joel": "ROOT_URL=https://cloud-joel-joelsobolmark.c9users.io meteor --port $IP:$PORT"
   },
   "dependencies": {
+    "classnames": "^2.2.5",
     "faker": "^3.1.0",
     "fibers": "^1.0.13",
     "meteor-node-stubs": "^0.2.3",
