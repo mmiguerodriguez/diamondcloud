@@ -1,4 +1,4 @@
-import React from 'react';
+import React       from 'react';
 
 import Collapsible from '../Collapsible.jsx';
 import Board       from './board/Board.jsx';

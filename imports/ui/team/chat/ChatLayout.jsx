@@ -1,8 +1,8 @@
-import React from 'react';
+import React        from 'react';
 
 import { Messages } from '../../../api/messages/messages.js';
 
-import Message from './message/Message.jsx';
+import Message      from './message/Message.jsx';
 
 export default class ChatLayout extends React.Component {
   constructor(props) {

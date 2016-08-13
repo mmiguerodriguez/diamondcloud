@@ -26,7 +26,6 @@ export default class SidebarLayout extends React.Component {
           <img src="/img/sidebar/messages.svg" width="32px" />
           <p className="text item-title">Mensajes</p>
         </div>
-
         <div className="item bottom">
           <img src="/img/sidebar/config.svg" width="32px" />
         </div>
@@ -41,7 +40,7 @@ export default class SidebarLayout extends React.Component {
           boards={ this.props.boards }
           directChats={ this.props.directChats }
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
-          getMessages={ this.props.getMessages }/>
+          getMessages={ this.props.getMessages } />
       </div>
     );
   }

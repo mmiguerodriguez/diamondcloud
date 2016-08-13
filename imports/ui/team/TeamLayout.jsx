@@ -1,4 +1,4 @@
-import React from 'react';
+import React         from 'react';
 
 import Board         from './board/Board.jsx';
 import ChatLayout    from './chat/ChatLayout.jsx';
