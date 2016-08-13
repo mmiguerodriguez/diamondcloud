@@ -17,7 +17,7 @@ if(Meteor.isClient) {
           name: faker.name.findName(),
         }
       };
-      
+
       beforeEach(function() {
         resetDatabase();
         Meteor.users.insert(user);
@@ -26,7 +26,7 @@ if(Meteor.isClient) {
       it('should not let users to update its values', function() {
         Meteor.users.update(user._id, {
           $set: {
-            'profile.name': 'otherName',
+            'profile.name': 'Another name',
           }
         });
         let result = Meteor.users.findOne(user._id);
