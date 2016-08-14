@@ -35,86 +35,76 @@ export default class Team extends React.Component {
   getMessages(obj) {
     let subscriptions = this.state.subscriptions;
     let isSubscribed = false;
-    
+
+    // Hard check if the subscription exists
     subscriptions.map((sub) => {
-      if(sub[1] === obj.boardId || sub[1] === obj.directChatId) {
-        isSubscribed = true;
+      if(sub.boardId && obj.boardId) {
+        if(sub.boardId === obj.boardId) {
+          isSubscribed = true;
+        }
+      } else if(sub.directChatId && obj.directChatId) {
+        if(sub.directChatId === obj.directChatId) {
+          isSubscribed = true;
+        }
       }
     });
-    
+
     if(!isSubscribed) {
       let subscription = Meteor.subscribe('messages.chat', obj, {
+        onReady: () => {
+          if(obj.boardId) {
+            subscriptions.push({ subscription, boardId: obj.boardId });
+          } else if(obj.directChatId) {
+            subscriptions.push({ subscription, directChatId: obj.directChatId });
+          }
+
+          this.setState({
+            subscriptions: subscriptions,
+          }, () => {
+            this.formatChats();
+          });
+        },
         onError: (error) => {
           throw new Meteor.Error(error);
         },
       });
-      
-      subscriptions.push([subscription, obj.boardId || obj.directChatId]);
-      
-      this.setState({
-        subscriptions: subscriptions,
-      });
-      
-      this.formatChats(obj);
     }
   }
-  formatChats(obj) {
-    let chats = this.props.chats || [];
+  formatChats() {
+    let chats = [];
     let messages = this.props.messages;
-    
-    if(obj) {
-      if(obj.boardId) {
+
+    this.state.subscriptions.map((sub) => {
+      if(sub.boardId) {
         chats.push({
-          boardId: obj.boardId,
+          boardId: sub.boardId,
           messages: [],
         });
-      } else if(obj.directChatId) {
+      } else if(sub.directChatId) {
         chats.push({
-          directChatId: obj.directChatId,
+          directChatId: sub.directChatId,
           messages: [],
         });
       }
-    }
-    
-    messages.map((message) => {
-      let chatExists = false;
-      chats.map((chat) => {
-        if(chat.directChatId === message.directChatId || chat.boardId === message.boardId) {
-          chatExists = true;
-        }
-      });
-      
-      if(chatExists) {
+    });
+
+    if(messages.length > 0) {
+      messages.map((message) => {
         chats.map((chat) => {
-          if(chat.directChatId === message.directChatId || chat.boardId === message.boardId) {
-            let messageExists = false;
-            chat.messages.map((_message) => {
-              if(_message._id === message._id) {
-                messageExists = true;
-              }
-            });
-            
-            if(!messageExists) {
+          // Hard check if message in chat exists
+          if(chat.directChatId && message.directChatId){
+            if(chat.directChatId === message.directChatId) {
+              chat.messages.push(message);
+            }
+          } else if(chat.boardId && message.boardId) {
+            if(chat.boardId === message.boardId) {
               chat.messages.push(message);
             }
           }
         });
-      } else {
-        if(message.directChatId) {
-          chats.push({
-            directChatId: message.directChatId, 
-            messages: [message],
-          });
-        } else if(message.boardId) {
-          chats.push({
-            boardId: message.boardId, 
-            messages: [message],
-          });
-        }
-      }
-    });
-    
-    this.props.chats = chats;
+      });
+    }
+
     return chats;
   }
 }
@@ -130,6 +120,5 @@ export default TeamPageContainer = createContainer(({ params }) => {
     boards: Boards.find().fetch(),
     directChats: DirectChats.find().fetch(),
     messages: Messages.find().fetch(),
-    chats: [],
   };
 }, Team);
