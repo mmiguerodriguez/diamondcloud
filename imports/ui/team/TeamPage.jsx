@@ -26,7 +26,8 @@ export default class Team extends React.Component {
           boards={ this.props.boards }
           directChats={ this.props.directChats }
           chats={ this.formatChats() }
-          getMessages= { this.getMessages.bind(this) }
+          getMessages={ this.getMessages.bind(this) }
+          removeChat={ this.removeChat.bind(this) }
         />
       );
     }
@@ -66,7 +67,7 @@ export default class Team extends React.Component {
         },
         onError: (error) => {
           throw new Meteor.Error(error);
-        },
+        }
       });
     }
   }
@@ -106,6 +107,29 @@ export default class Team extends React.Component {
     }
 
     return chats;
+  }
+  removeChat(obj) {
+    let subscriptions = this.state.subscriptions;
+    if(obj.directChatId) { // check if it is a direct-chat or a board
+      subscriptions.map((sub, index) => {
+        if(sub.directChatId === obj.directChatId) {
+          sub.subscription.stop(); // stop subscription
+          subscriptions.splice(index, 1); // remove element from array
+        }
+      });
+    } else if(obj.boardId) {
+      subscriptions.map((sub, index) => {
+        if(sub.boardId === obj.boardId) {
+          sub.subscription.stop();
+          subscriptions.splice(index, 1);
+        }
+      });
+    }
+    
+    // update state
+    this.setState({
+      subscriptions: subscriptions,
+    });
   }
 }
 

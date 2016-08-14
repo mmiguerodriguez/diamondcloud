@@ -6,13 +6,21 @@
   background-color: #ccc;
   float: right;
   cursor: pointer;
-  margin: 250px 0px 0px 24px;
+  margin: 238px 0px 0px 24px;
+  box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.75);
   .chat-text {
     padding: 5px 10px 0px 10px !important;
     margin-bottom: 0px;
   }
   .chat-image {
-    margin-top: 3px;
+    margin-top: 4px;
+    .close-image {
+      margin: 0 !important;
+      opacity: 0.3;
+    }
+    .close-image:hover {
+      opacity: 0.7;
+    }
   }
 }
 .medium {
@@ -22,14 +30,21 @@
   margin-left: 24px;
   .chat-header {
     height: 30px;
-    background-color: #ccc;
+    background-color: $peter-river;
+    color: $white;
     cursor: pointer;
     .chat-text {
       padding: 5px 10px 0px 10px !important;
       margin-bottom: 0px;
     }
     .chat-image {
-      margin-top: 3px;
+      margin-top: 4px;
+      .maximize-image {
+        opacity: 0.5;
+      }
+      .maximize-image:hover {
+        opacity: 1;
+      }
     }
   }
   
@@ -43,9 +58,8 @@
   }
   
   .chat-footer {
-    height: 50px;
-    padding-top: 6px;
     background-color: #e6e6fa;
+    padding: 0px !important;
     .send-message {
       padding: 0px 0px 0px 5px;
       margin-top: 6px;
@@ -67,6 +81,12 @@
     }
     .chat-image {
       margin-top: 3px;
+      .exit-maximize-image {
+        opacity: 0.3;
+      }
+      .exit-maximize-image:hover {
+        opacity: 0.7;
+      }
     }
   }
   

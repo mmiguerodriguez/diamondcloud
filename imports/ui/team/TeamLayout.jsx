@@ -31,7 +31,8 @@ export default class TeamLayout extends React.Component {
         <ChatLayout
           key={ chat.directChatId || chat.boardId }
           chat={ chat }
-          position={ 'medium' } />
+          position={ 'medium' } 
+          removeChat={ this.props.removeChat }/>
       );
     });
 
@@ -56,4 +57,5 @@ TeamLayout.propTypes = {
   directChats: React.PropTypes.array.isRequired,
   chats: React.PropTypes.array.isRequired,
   getMessages: React.PropTypes.func.isRequired,
+  removeChat: React.PropTypes.func.isRequired,
 };

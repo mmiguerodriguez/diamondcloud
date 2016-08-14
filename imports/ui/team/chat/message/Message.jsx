@@ -10,7 +10,7 @@ export default class Message extends React.Component {
               <p className='message-text'>{ this.props.message.content }</p>
             </div>
             <div className='col-xs-2 message-user-image'>
-              <img className='img-circle' src='//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg' width='40px' /> 
+              <img className='img-rounded' src='//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg' width='32px' /> 
             </div>
           </div>
         );
@@ -18,7 +18,7 @@ export default class Message extends React.Component {
         return (
           <div className='message-other'>
             <div className='col-xs-2 message-user-image'>
-              <img className='img-circle' src='//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg' width='40px' /> 
+              <img className='img-rounded' src='//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg' width='32px' /> 
             </div>
             <div className='col-xs-9 message-text-container'>
               <p className='message-text'>{ this.props.message.content }</p>

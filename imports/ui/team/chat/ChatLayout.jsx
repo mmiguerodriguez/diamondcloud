@@ -1,7 +1,5 @@
 import React        from 'react';
 
-import { Messages } from '../../../api/messages/messages.js';
-
 import Message      from './message/Message.jsx';
 
 export default class ChatLayout extends React.Component {
@@ -15,11 +13,25 @@ export default class ChatLayout extends React.Component {
   }
   render() {
     if (this.state.position === 'minimized') {
+      let obj;
+      if(this.props.chat.boardId) {
+        obj = { boardId: this.props.chat.boardId };
+      } else if(this.props.chat.directChatId) {
+        obj = { directChatId: this.props.chat.directChatId };
+      }
+      
+      
       return (
         <div className='chat minimized'>
-          <p className='col-xs-10 chat-text' onClick={ this.togglePosition.bind(this, 'medium') }>User name / Board name</p>
-          <div className='col-xs-2 chat-image' onClick={ this.togglePosition.bind(this, 'maximized') }>
-            <img src='http://image0.flaticon.com/icons/svg/126/126538.svg' width='16px' />
+          <p  className='col-xs-10 chat-text' 
+              onClick={ this.togglePosition.bind(this, 'medium') }>
+            <b>User name / Board name</b>
+          </p>
+          <div  className='col-xs-2 chat-image' 
+                onClick={ this.props.removeChat.bind(this, obj) }>
+            <img  className='close-image' 
+                  src='/img/chat/close.svg' 
+                  width='16px' />
           </div>
         </div>
       );
@@ -27,21 +39,28 @@ export default class ChatLayout extends React.Component {
       return (
         <div className='chat medium'>
           <div className='chat-header'>
-            <p className='col-xs-10 chat-text' onClick={ this.togglePosition.bind(this, 'minimized') }>User name / Board name</p>
-            <div className='col-xs-2 chat-image' onClick={ this.togglePosition.bind(this, 'maximized') }>
-              <img src='http://image0.flaticon.com/icons/svg/126/126538.svg' width='16px' />
+            <p  className='col-xs-10 chat-text' 
+                onClick={ this.togglePosition.bind(this, 'minimized') }>
+                <b>User name / Board name</b>
+            </p>
+            <div  className='col-xs-2 chat-image'
+                  onClick={ this.togglePosition.bind(this, 'maximized') }>
+              <img  className='maximize-image' 
+                    src='/img/chat/maximize.svg' 
+                    width='16px' />
             </div>
           </div>
           <div className='chat-body'>
             { this.renderMessages() }
           </div>
-          <div className='chat-footer'>
-            <div className='col-xs-10'>
-              <input onKeyDown={ this.handleKey.bind(this) } value={ this.state.message } onChange={ this.changeText.bind(this) } type='text' placeholder='Escriba el mensaje' className='form-control' />
-            </div>
-            <div className='send-message col-xs-2' onClick={ this.sendMessage.bind(this) }>
-              <img src='http://image0.flaticon.com/icons/svg/60/60525.svg' width='24px'/>
-            </div>
+          <div className='chat-footer col-xs-12'>
+            <input 
+              value={ this.state.message } 
+              className='form-control'
+              type='text' 
+              placeholder='Escriba el mensaje'
+              onKeyDown={ this.handleKey.bind(this) } 
+              onChange={ this.changeText.bind(this) }  />
           </div>
         </div>
       );
@@ -49,9 +68,12 @@ export default class ChatLayout extends React.Component {
       return (
         <div className='chat maximized'>
           <div className='chat-header'>
-            <p className='col-xs-10 chat-text' onClick={ this.togglePosition.bind(this, 'minimized') }>User name / Board name</p>
-            <div className='col-xs-2 chat-image' onClick={ this.togglePosition.bind(this, 'maximized') }>
-              <img src='http://image0.flaticon.com/icons/svg/126/126538.svg' width='16px' />
+            <p className='col-xs-10 chat-text'>User name / Board name</p>
+            <div  className='col-xs-2 chat-image' 
+                  onClick={ this.togglePosition.bind(this, 'medium') }>
+              <img  className='exit-maximize-image' 
+                    src='http://image.flaticon.com/icons/svg/60/60801.svg' 
+                    width='16px' />
             </div>
           </div>
           <div className='chat-body'>
@@ -59,9 +81,16 @@ export default class ChatLayout extends React.Component {
           </div>
           <div className='chat-footer'>
             <div className='col-xs-10'>
-              <input onKeyDown={ this.handleKey.bind(this) } value={ this.state.message } onChange={ this.changeText.bind(this) } type='text' placeholder='Escriba el mensaje' className='form-control' />
+              <input 
+                value={ this.state.message } 
+                className='form-control'
+                type='text' 
+                placeholder='Escriba el mensaje'
+                onKeyDown={ this.handleKey.bind(this) } 
+                onChange={ this.changeText.bind(this) }  />
             </div>
-            <div className='send-message col-xs-2' onClick={ this.sendMessage.bind(this) }>
+            <div  className='send-message col-xs-2' 
+                  onClick={ this.sendMessage.bind(this) }>
               <img src='http://image0.flaticon.com/icons/svg/60/60525.svg' width='24px'/>
             </div>
           </div>
@@ -80,6 +109,11 @@ export default class ChatLayout extends React.Component {
   changeText(event) {
     this.setState({
       message: event.target.value,
+    });
+  }
+  togglePosition(position) {
+    this.setState({
+      position: position,
     });
   }
   sendMessage() {
@@ -110,11 +144,6 @@ export default class ChatLayout extends React.Component {
       message: '',
     });
   }
-  togglePosition(position) {
-    this.setState({
-      position: position,
-    });
-  }
   renderMessages() {
     let arr = [];
 
@@ -135,4 +164,5 @@ export default class ChatLayout extends React.Component {
 ChatLayout.propTypes = {
   chat: React.PropTypes.object.isRequired,
   position: React.PropTypes.string.isRequired,
+  removeChat: React.PropTypes.func.isRequired,
 };
