@@ -134,6 +134,10 @@ export default class ConfigTeamModal extends React.Component {
       if(error){
         throw new Meteor.Error(error);
       }
+      else {
+        this.props.loadTeam(this.props.team._id);
+        // todo: show success message
+      }
     });
   }
 
@@ -142,10 +146,15 @@ export default class ConfigTeamModal extends React.Component {
       if(error){
         throw new Meteor.Error(error);
       }
+      else {
+        this.props.loadTeam(this.props.team._id);
+        // todo: show success message
+      }
     });
   }
 }
 
 ConfigTeamModal.propTypes = {
-  team: React.PropTypes.any,
+  team: React.PropTypes.any.isRequired,
+  loadTeam: React.PropTypes.func.isRequired,
 }

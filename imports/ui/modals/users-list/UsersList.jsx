@@ -51,8 +51,7 @@ export default class UsersList extends React.Component {
   }
   renderUsers() {
     let arr = [];
-    let users = this.props.team ? this.props.team.getUsers(Teams.dashboardUsersFields).fetch() : this.props.usersEmails;
-    console.log(users);
+    let users = this.props.team ? Teams.findOne(this.props.team._id).getUsers(Teams.dashboardUsersFields).fetch() : this.props.usersEmails;
     // Unregistered users will be undefined,
     // so we have to replace them with the email
     if(this.props.team) {

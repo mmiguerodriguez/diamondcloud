@@ -25,7 +25,7 @@ export default class DashboardLayout extends React.Component {
         <CreateTeamModal /> { /* props: users(image, name, id (to send message) ) */ }
         {
           (this.state.team) ? (
-            <ConfigTeamModal key={ this.state.team._id } team={ this.state.team }/>
+            <ConfigTeamModal key={ this.state.team._id } team={ this.state.team } loadTeam={ this.loadTeam.bind(this) }/>
           ) : ( null )
         }
       </div>
@@ -36,9 +36,14 @@ export default class DashboardLayout extends React.Component {
     $('#createTeamModal').modal('show');
   }
   openConfigTeamModal(team) {
-    this.setState({ team: Teams.findOne(team._id) }, () => {
+    this.loadTeam(team._id, () => {
       $('#configTeamModal').modal('show');//show modal once state is updated
     });
+  }
+  loadTeam(id, callback){
+    this.setState({
+      team: Teams.findOne(id)
+    }, callback);
   }
 }
 
