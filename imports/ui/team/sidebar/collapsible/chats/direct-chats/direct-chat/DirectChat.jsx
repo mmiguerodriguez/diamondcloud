@@ -3,7 +3,6 @@ import React from 'react';
 
 export default class DirectChat extends React.Component {
   render() {
-    console.log('DirectChat -> render -> directChat', this.props.directChat);
     return (
       <div className='row row-fixed-margin' onClick={ this.props.getMessages.bind(null, { directChatId: this.props.directChat._id }) }>
         <div className='col-xs-2 img-fixed-margin fixed-padding'>

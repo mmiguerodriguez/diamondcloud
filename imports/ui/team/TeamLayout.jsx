@@ -1,16 +1,22 @@
-import React from 'react';
+import React         from 'react';
 
-import Board from './board/Board.jsx';
-import ChatLayout from './chat/ChatLayout.jsx';
+import Board         from './board/Board.jsx';
+import ChatLayout    from './chat/ChatLayout.jsx';
 import SidebarLayout from './sidebar/SidebarLayout.jsx';
 
 export default class TeamLayout extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      board: this.props.boards[0],
+    };
+  }
   render() {
     return (
       <div>
-        <SidebarLayout { ...this.props } />
-        <Board />
-        <div className='chat-container'>
+        <SidebarLayout { ...this.props } changeBoard={ this.changeBoard.bind(this) } />
+        <Board board={ this.state.board } getMessages={ this.props.getMessages } />
+        <div className='chats-container'>
           { this.renderChats() }
         </div>
       </div>
@@ -30,6 +36,17 @@ export default class TeamLayout extends React.Component {
     });
 
     return arr;
+  }
+  changeBoard(boardId) {
+    if(boardId !== this.state.board._id) {
+      let board = this.props.boards.find((board) => {
+        return board._id === boardId;
+      });
+
+      this.setState({
+        board: board,
+      });
+    }
   }
 }
 

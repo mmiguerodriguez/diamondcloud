@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class ModulesCollapsible extends React.Component {
+export default class Collapsible extends React.Component {
   render() {
     return (
       <div className="collapsible" id={ this.props.id }>
@@ -18,7 +18,7 @@ export default class ModulesCollapsible extends React.Component {
   }
 }
 
-ModulesCollapsible.propTypes = {
+Collapsible.propTypes = {
   id: React.PropTypes.string.isRequired,
   header: React.PropTypes.element.isRequired,
   body: React.PropTypes.any.isRequired,

@@ -1,34 +1,91 @@
 @import 'message/message';
 
-.chat-container {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: calc(100% - 64px);
-}
-.chat-bottom {
-  margin-left: 16px;
-  float: right;
-  width: 200px;
-  height: 30px;
-  background-color: #e6e6e6;
-  box-shadow: 0px 0px 2px #3f3f3f;
-}
-.chat-name {
-  padding: 6px 0px 0px 6px;
-  margin: 0px !important;
-}
-
 .minimized {
-  
-}
-
-.medium {
-  .messages-container {
-    
+  height: 30px;
+  width: 250px;
+  background-color: #ccc;
+  float: right;
+  cursor: pointer;
+  margin: 250px 0px 0px 24px;
+  .chat-text {
+    padding: 5px 10px 0px 10px !important;
+    margin-bottom: 0px;
+  }
+  .chat-image {
+    margin-top: 3px;
   }
 }
-
-.maximized {
+.medium {
+  background-color: #ddd;
+  width: 250px;
+  float: right;
+  margin-left: 24px;
+  .chat-header {
+    height: 30px;
+    background-color: #ccc;
+    cursor: pointer;
+    .chat-text {
+      padding: 5px 10px 0px 10px !important;
+      margin-bottom: 0px;
+    }
+    .chat-image {
+      margin-top: 3px;
+    }
+  }
   
+  .chat-body {
+    height: 200px;
+    max-height: 200px;
+    width: 100%;
+    background-color: #a9a9a9;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .chat-footer {
+    height: 50px;
+    padding-top: 6px;
+    background-color: #e6e6fa;
+    .send-message {
+      padding: 0px 0px 0px 5px;
+      margin-top: 6px;
+    }
+  }
+}
+.maximized {
+  background-color: #ddd;
+  width: 250px;
+  float: right;
+  margin-left: 24px;
+  .chat-header {
+    height: 30px;
+    background-color: #ccc;
+    cursor: pointer;
+    .chat-text {
+      padding: 5px 10px 0px 10px !important;
+      margin-bottom: 0px;
+    }
+    .chat-image {
+      margin-top: 3px;
+    }
+  }
+  
+  .chat-body {
+    height: 200px;
+    max-height: 200px;
+    width: 100%;
+    background-color: #a9a9a9;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .chat-footer {
+    height: 50px;
+    padding-top: 6px;
+    background-color: #e6e6fa;
+    .send-message {
+      padding: 0px 0px 0px 5px;
+      margin-top: 6px;
+    }
+  }
 }

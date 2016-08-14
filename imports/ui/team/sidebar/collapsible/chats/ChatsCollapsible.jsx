@@ -31,7 +31,7 @@ export default class ChatsCollapsible extends React.Component {
         }
         footer={
           <a className='btn btn-default footer-btn' role='button'>
-            <img src='http://image.flaticon.com/icons/svg/60/60807.svg' width="32px" />
+            <img src='/img/add-people-icon.svg' style={{ 'WebkitFilter': 'invert(1)' }} width="32px" />
           </a>
         }
       />

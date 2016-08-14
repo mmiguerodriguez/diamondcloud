@@ -26,7 +26,6 @@ export default class SidebarLayout extends React.Component {
           <img src="/img/sidebar/messages.svg" width="32px" />
           <p className="text item-title">Mensajes</p>
         </div>
-
         <div className="item bottom">
           <img src="/img/sidebar/config.svg" width="32px" />
         </div>
@@ -35,12 +34,13 @@ export default class SidebarLayout extends React.Component {
           toggleCollapsible={ this.toggleCollapsible.bind(this) } />
         <BoardsCollapsible
           boards={ this.props.boards }
-          toggleCollapsible={ this.toggleCollapsible.bind(this) } />
+          toggleCollapsible={ this.toggleCollapsible.bind(this) }
+          changeBoard={ this.props.changeBoard } />
         <ChatsCollapsible
           boards={ this.props.boards }
           directChats={ this.props.directChats }
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
-          getMessages={ this.props.getMessages }/>
+          getMessages={ this.props.getMessages } />
       </div>
     );
   }
@@ -130,4 +130,5 @@ SidebarLayout.propTypes = {
   boards: React.PropTypes.array.isRequired,
   directChats: React.PropTypes.array.isRequired,
   getMessages: React.PropTypes.func.isRequired,
+  changeBoard: React.PropTypes.func.isRequired,
 };
