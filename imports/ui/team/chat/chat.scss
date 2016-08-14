@@ -3,11 +3,11 @@
 .minimized {
   height: 30px;
   width: 250px;
-  background-color: #ccc;
+  background-color: #f1f2f3;
   float: right;
   cursor: pointer;
   margin: 238px 0px 0px 24px;
-  box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.75);
+  border: 1px solid #CCC;
   .chat-text {
     padding: 5px 10px 0px 10px !important;
     margin-bottom: 0px;
@@ -41,9 +41,9 @@
       margin-top: 4px;
       .maximize-image {
         opacity: 0.5;
-      }
-      .maximize-image:hover {
-        opacity: 1;
+        &:hover {
+          opacity: 1;
+        }
       }
     }
   }
@@ -53,6 +53,7 @@
     max-height: 200px;
     width: 100%;
     background-color: #a9a9a9;
+    background-image: linear-gradient(to bottom, #dadada, #c4c4c4);
     overflow-y: auto;
     overflow-x: hidden;
   }
