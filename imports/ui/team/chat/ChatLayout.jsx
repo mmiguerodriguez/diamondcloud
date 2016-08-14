@@ -37,7 +37,7 @@ export default class ChatLayout extends React.Component {
           </div>
           <div className='chat-footer'>
             <div className='col-xs-10'>
-              <input onChange={ this.changeText.bind(this) } type='text' placeholder='Escriba el mensaje' className='form-control' />
+              <input value={ this.state.message } onChange={ this.changeText.bind(this) } type='text' placeholder='Escriba el mensaje' className='form-control' />
             </div>
             <div className='send-message col-xs-2' onClick={ this.sendMessage.bind(this) }>
               <img src='http://image0.flaticon.com/icons/svg/60/60525.svg' width='24px'/>
@@ -59,7 +59,7 @@ export default class ChatLayout extends React.Component {
           </div>
           <div className='chat-footer'>
             <div className='col-xs-10'>
-              <input onChange={ this.changeText.bind(this) } type='text' placeholder='Escriba el mensaje' className='form-control' />
+              <input value={ this.state.message } onChange={ this.changeText.bind(this) } type='text' placeholder='Escriba el mensaje' className='form-control' />
             </div>
             <div className='send-message col-xs-2' onClick={ this.sendMessage.bind(this) }>
               <img src='http://image0.flaticon.com/icons/svg/60/60525.svg' width='24px'/>
