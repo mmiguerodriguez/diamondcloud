@@ -19,14 +19,3 @@ DiamondAPI.subscribe = (moduleInstanceId, obj, callback) => {
     });
   } else throw console.error('The provided data is wrong.');
 };
-
-/*
-(function() {
-  let DiamondAPI = DiamondAPI || {};
-
-  DiamondAPI.subscribe = () => {
-
-  };
-
-})();
-*/

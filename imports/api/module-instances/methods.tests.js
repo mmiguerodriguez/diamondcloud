@@ -15,6 +15,7 @@ import {
 
 import '../factories/factories.js';
 
+/*
 if(Meteor.isServer){
   describe('ModuleInstances', function(){
 
@@ -132,3 +133,4 @@ if(Meteor.isServer){
     });
   });
 }
+*/

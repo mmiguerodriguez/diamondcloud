@@ -35,4 +35,4 @@ check@1.2.3                           # Check whether a value matches a pattern
 reywood:publish-composite             # Publish a set of related documents from multiple collections with a reactive join
 dburles:collection-helpers            # Helpers
 meteorhacks:kadira                    # Kadira
-monbro:mongodb-mapreduce-aggregation  # Mongo aggregate
+meteorhacks:aggregate                 # Mongo aggregate

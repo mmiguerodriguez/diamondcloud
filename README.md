@@ -1,1 +1,3 @@
-This is the private repository for Diamond Cloud
+# Diamond Cloud
+
+We are better than Obama.

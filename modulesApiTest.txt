@@ -130,7 +130,9 @@ DiamondAPI.subscribe('heyImMe123ImAnId', {
   children: [
     {
       collection: 'todos',
-      condition: {}
+      condition: `{
+        $eq: ['$$element.boardId', 'designBoardId']
+      }`
     }
   ]
 }, (data) => {

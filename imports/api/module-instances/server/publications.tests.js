@@ -34,9 +34,9 @@ if (Meteor.isServer) {
 
         request = {
           collection: 'todos',
-          condition: {
+          condition: JSON.stringify({
             $eq: ['$$element.boardId', 'designBoardId']
-          },
+          }),
         };
 
         resetDatabase();
