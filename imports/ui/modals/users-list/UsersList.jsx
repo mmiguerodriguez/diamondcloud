@@ -78,6 +78,7 @@ export default class UsersList extends React.Component {
       });
     }
     else {
+      users = JSON.parse(JSON.stringify(this.props.usersEmails));
       users.forEach((user, index) => {
         let _user = Meteor.users.findByEmail(user, Teams.dashboardUsersFields).fetch()[0];
         users[index] = _user ? _user : {
