@@ -15,7 +15,7 @@ export default class ConfigTeamModal extends React.Component {
       type: this.props.team.type,
     };
   }
-  
+
   render() {
     return (
       <Modal
@@ -118,12 +118,11 @@ export default class ConfigTeamModal extends React.Component {
     });
   }
   saveTeam() {
-    let teamId = this.props.team._id;
     let team = {
       ...this.state,
     };
 
-    Meteor.call('Teams.methods.edit', { teamId, team }, (error, result) => {
+    Meteor.call('Teams.methods.edit', { teamId: this.props.team._id, team }, (error, result) => {
       if(error) {
         throw new Meteor.Error(error);
       }
@@ -131,7 +130,7 @@ export default class ConfigTeamModal extends React.Component {
   }
 
   addUser(user) {
-    Meteor.call('Teams.methods.share', { teamId, team }, (error, result) => {
+    Meteor.call('Teams.methods.share', { teamId: this.props.team._id, email: user }, (error, result) => {
       if(error){
         throw new Meteor.Error(error);
       }
@@ -139,7 +138,7 @@ export default class ConfigTeamModal extends React.Component {
   }
 
   removeUser(user){
-    Meteor.call('Teams.methods.removeUser', { teamId, team }, (error, result) => {
+    Meteor.call('Teams.methods.removeUser', { teamId: this.props.team._id, email: user }, (error, result) => {
       if(error){
         throw new Meteor.Error(error);
       }

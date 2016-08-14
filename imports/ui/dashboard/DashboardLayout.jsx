@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Teams } from '../../api/teams/teams.js';
 import WelcomeCard from './welcome-card/WelcomeCard.jsx';
 import TeamsLayout from './teams/TeamsLayout.jsx';
 import CreateTeamModal from '../modals/create-team/CreateTeamModal.jsx';
@@ -14,7 +15,6 @@ export default class DashboardLayout extends React.Component {
   }
   render() {
     let hasTeams = this.props.teams.length > 0 ? true : false;
-
     return (
       <div>
         <WelcomeCard hasTeams={ hasTeams } />
@@ -36,8 +36,7 @@ export default class DashboardLayout extends React.Component {
     $('#createTeamModal').modal('show');
   }
   openConfigTeamModal(team) {
-    console.log(team);
-    this.setState({ team }, () => {
+    this.setState({ team: Teams.findOne(team._id) }, () => {
       $('#configTeamModal').modal('show');//show modal once state is updated
     });
   }

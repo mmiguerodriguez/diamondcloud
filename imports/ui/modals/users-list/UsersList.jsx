@@ -11,7 +11,6 @@ export default class UsersList extends React.Component {
     super(props);
     this.state = {
       email: '',
-      users: [],
     };
   }
 
@@ -52,10 +51,34 @@ export default class UsersList extends React.Component {
   }
   renderUsers() {
     let arr = [];
-    this.state.users = this.props.team ? this.props.team.getUsers(Teams.dashboardUsersFields) : this.props.usersEmails;
-    let users = this.state.users;
-    if(!this.props.team) {
-      users = JSON.parse(JSON.stringify(this.state.users));
+    let users = this.props.team ? this.props.team.getUsers(Teams.dashboardUsersFields).fetch() : this.props.usersEmails;
+    console.log(users);
+    // Unregistered users will be undefined,
+    // so we have to replace them with the email
+    if(this.props.team) {
+      let emails = [];
+      users.forEach((user) => {
+        if(user) {
+          emails.push(user.emails[0].address);
+        }
+      });
+      this.props.team.users.forEach((user) => {
+        if(emails.indexOf(user.email) === -1){
+          users.push({
+            _id: user.email,
+            emails: [
+              {
+                address: user.email,
+              }
+            ],
+            profile: {
+              name: user.email,
+            }
+          });
+        }
+      });
+    }
+    else {
       users.forEach((user, index) => {
         let _user = Meteor.users.findByEmail(user, Teams.dashboardUsersFields).fetch()[0];
         users[index] = _user ? _user : {
