@@ -37,7 +37,7 @@ export default class ChatLayout extends React.Component {
           </div>
           <div className='chat-footer'>
             <div className='col-xs-10'>
-              <input value={ this.state.message } onChange={ this.changeText.bind(this) } type='text' placeholder='Escriba el mensaje' className='form-control' />
+              <input onKeyDown={ this.handleKey.bind(this) } value={ this.state.message } onChange={ this.changeText.bind(this) } type='text' placeholder='Escriba el mensaje' className='form-control' />
             </div>
             <div className='send-message col-xs-2' onClick={ this.sendMessage.bind(this) }>
               <img src='http://image0.flaticon.com/icons/svg/60/60525.svg' width='24px'/>
@@ -59,7 +59,7 @@ export default class ChatLayout extends React.Component {
           </div>
           <div className='chat-footer'>
             <div className='col-xs-10'>
-              <input value={ this.state.message } onChange={ this.changeText.bind(this) } type='text' placeholder='Escriba el mensaje' className='form-control' />
+              <input onKeyDown={ this.handleKey.bind(this) } value={ this.state.message } onChange={ this.changeText.bind(this) } type='text' placeholder='Escriba el mensaje' className='form-control' />
             </div>
             <div className='send-message col-xs-2' onClick={ this.sendMessage.bind(this) }>
               <img src='http://image0.flaticon.com/icons/svg/60/60525.svg' width='24px'/>
@@ -71,10 +71,43 @@ export default class ChatLayout extends React.Component {
       return ( null );
     }
   }
-  
+
+  handleKey(event){
+    if(event.which === 13) {
+      this.sendMessage();
+    }
+  }
   changeText(event) {
     this.setState({
-      message: event.target.value
+      message: event.target.value,
+    });
+  }
+  sendMessage() {
+    let text = this.state.message;
+    let obj = {
+      type: 'text',
+      content: text,
+      createdAt: new Date().getTime(),
+    };
+
+    if(this.props.chat.directChatId) {
+      obj.directChatId = this.props.chat.directChatId;
+    } else if(this.props.chat.boardId) {
+      obj.boardId = this.props.chat.boardId;
+    }
+
+    if(text != '') {
+      Meteor.call('Messages.methods.send', obj, (error, response) => {
+        if(error) {
+          throw new Meteor.Error(error);
+        } else {
+          console.log(response);
+        }
+      });
+    }
+
+    this.setState({
+      message: '',
     });
   }
   togglePosition(position) {
@@ -96,35 +129,6 @@ export default class ChatLayout extends React.Component {
     });
 
     return arr;
-  }
-  
-  sendMessage() {
-    let text = this.state.message;
-    let obj = {
-      type: 'text',
-      content: text,
-      createdAt: new Date().getTime(),
-    };
-    
-    if(this.props.chat.directChatId) {
-      obj.directChatId = this.props.chat.directChatId;
-    } else if(this.props.chat.boardId) {
-      obj.boardId = this.props.chat.boardId;
-    }
-    
-    if(text != '') {
-      Meteor.call('Messages.methods.send', obj, (error, response) => {
-        if(error) {
-          throw new Meteor.Error(error);
-        } else { 
-          console.log(response);
-        }
-      });
-    }
-    
-    this.setState({
-      message: '',
-    });
   }
 }
 
