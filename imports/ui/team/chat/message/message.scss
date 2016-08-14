@@ -1,0 +1,32 @@
+.message-me, .message-other {
+  padding: 5px 0px;
+  overflow: auto;
+}
+.message-me {
+  .message-text-container {
+    background-color: #dbf8c6;
+  }
+}
+.message-other {
+  .message-text-container {
+    background-color: $white;
+    margin-left: 5px;
+  }
+}
+
+.message-text-container {
+  border-radius: 5px;
+  padding-left: 0px;
+  padding-right: 0px;
+  margin-left: 10px;
+  word-wrap: break-word;
+  .message-text {
+    padding: 5px;
+  }
+}
+
+.message-user-image {
+  margin: 0px 5px;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}

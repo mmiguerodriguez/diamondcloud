@@ -1,3 +1,10 @@
 @import 'board/board';
 @import 'chat/chat';
 @import 'sidebar/sidebar';
+
+.chats-container {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: auto;
+}

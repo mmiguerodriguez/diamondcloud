@@ -16,7 +16,7 @@ export default class TeamLayout extends React.Component {
       <div>
         <SidebarLayout { ...this.props } changeBoard={ this.changeBoard.bind(this) } />
         <Board board={ this.state.board } getMessages={ this.props.getMessages } />
-        <div className='chat-container'>
+        <div className='chats-container'>
           { this.renderChats() }
         </div>
       </div>
