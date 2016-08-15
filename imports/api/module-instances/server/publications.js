@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { ModuleInstances } from '../module-instances.js';
 
-let miid;
+let globalModuleInstanceId, userId, boards, sub;
 
 let printObject = (obj) => {
-  console.log(obj, function(key, val) {
-    if (typeof val === 'function') return val + '';
-    return val;
-  }, 4);
+  console.log(JSON.stringify(obj, function(key, val) {
+    return (typeof val === 'function' ? val + '' : val);
+  }, 4));
 };
 
 let generateTree = (params) => {
@@ -17,51 +16,48 @@ let generateTree = (params) => {
       children.push(generateTree(child));
     });
   }
-  let functionBody = `
-    "use strict";
-    return ModuleInstances.aggregate(
-      [
-        {
-          $match: {
-            '_id': '${miid}',
-          }
-        },/*
-        {
-          $project: {
-            ${params.collection}: '$data.${params.collection}',
-          }
-        },
-        {
-          $project: {
-            ${params.collection}: {
-              $filter: {
-                input: '$${params.collection}',
-                as: 'element',
-                cond: ${params.condition}
-              }
+  let find = function() {
+    let parents = arguments;
+    let pipeline = [
+      {
+        $match: {
+          '_id': globalModuleInstanceId,
+        }
+      },
+      {
+        $project: {
+           [params.collection]: `$data.${params.collection}`,
+        }
+      },
+
+    ];
+    if (params.condition) pipeline.push(
+      {
+        $project: {
+          [params.collection]: {
+            $filter: {
+              input: `$${params.collection}`,
+              as: 'element',
+              cond: JSON.parse(params.condition)
             }
           }
-        },
-        {
-          $match: {
-            $or: [
-              { 'todos.visibleBy': null },
-              { 'todos.visibleBy.userId': this.userId },
-              { 'todos.visibleBy.boardId': { $in: boards } }
-            ]
-          }
-        }*/
-      ]
+        }
+      }
     );
-  `;
-  /* jshint ignore:start */
-  let findFunc = new Function('ModuleInstances', 'parents', functionBody);
-  /* jshint ignore:end */
-  let find = function find() {
-    let parents = arguments;
-    return findFunc(ModuleInstances, parents);
+    pipeline.push(
+      {
+        $match: {
+          $or: [
+            { 'todos.visibleBy': null },
+            { 'todos.visibleBy.userId': userId },
+            { 'todos.visibleBy.boardId': { $in: boards } }
+          ]
+        }
+      }
+    );
+    ReactiveAggregate(sub, ModuleInstances, pipeline);
   };
-  var result = {
+  let result = {
     find
   };
   if (children.length) result.children = children;
@@ -69,10 +65,12 @@ let generateTree = (params) => {
 };
 
 Meteor.publishComposite('moduleInstances.data', function(moduleInstanceId, obj) {
+  sub = this;
   let teamId = ModuleInstances.findOne(moduleInstanceId).board().team()._id;
-  let boards = Meteor.user().boards(teamId, { _id: 1 }).map((board) => board._id);
-  miid = moduleInstanceId;
+  boards = Meteor.user().boards(teamId, { _id: 1 }).map((board) => board._id);
+  globalModuleInstanceId = moduleInstanceId;
+  userId = this.userId;
   let x = generateTree(obj);
-  printObject(x);
+  //printObject(x);
   return x;
 });

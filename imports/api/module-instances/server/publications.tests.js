@@ -15,7 +15,7 @@ import { ModuleInstances }      from '../../module-instances/module-instances.js
 if (Meteor.isServer) {
   describe('Modules API', function() {
     describe('Publication', function() {
-      let user, teams, board, moduleInstance, request;
+      let user, teams, board, moduleInstance, requests;
 
       beforeEach(function() {
         resetDatabase();
@@ -28,25 +28,44 @@ if (Meteor.isServer) {
         teams[0].users[0].email = user.emails[0].address;
         teams[0].users[0].permission = 'member';
         teams[0].boards.push({ _id: board._id });
-        moduleInstance = Factory.create('todosModuleInstance');
-        moduleInstance._id = Random.id();
-        board.moduleInstances.push({ _id: moduleInstance._id });
+        moduleInstances = [
+          Factory.create('todosModuleInstance'),
+          Factory.create('moduleInstance'),
+          Factory.create('moduleInstance'),
+          Factory.create('moduleInstance'),
+          Factory.create('moduleInstance'),
+        ];
+        board.moduleInstances.push({ _id: moduleInstances[0]._id });
 
-        request = {
-          collection: 'todos',
-          condition: JSON.stringify({
-            $eq: ['$$element.boardId', 'designBoardId']
-          }),
-        };
+        requests = [
+          {
+            collection: 'todos',
+            condition: JSON.stringify({
+              $eq: ['$$element.boardId', 'designBoardId']
+            }),
+          },
+          {
+            collection: 'categories',
+            condition: JSON.stringify({
+              $eq: ['$$element.color', 'red']
+            }),
+            children: [
+              {
+                collection: 'todos',
+                condition: `{
+                  $eq: ['$$element.categoryId', parents[0]._id]
+                }`
+              }
+            ]
+          }
+        ];
 
         resetDatabase();
 
         Meteor.users.insert(user);
         Boards.insert(board);
-        teams.forEach((team) => {
-          Teams.insert(team);
-        });
-        ModuleInstances.insert(moduleInstance);
+        teams.forEach((team) => Teams.insert(team));
+        moduleInstances.forEach((moduleInstance) => ModuleInstances.insert(moduleInstance));
         sinon.stub(Meteor, 'user', () => user);
       });
 
@@ -54,14 +73,26 @@ if (Meteor.isServer) {
         Meteor.user.restore();
       });
 
-      it('should publish the requested moduleInstance data', function(done) {
+      it('should publish the requested moduleInstance data when there are no childrens', function(done) {
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('moduleInstances.data', moduleInstance._id, request, (collections) => {
+        collector.collect('moduleInstances.data', moduleInstances[0]._id, requests[0], (collections) => {
           chai.assert.isDefined(collections.ModuleInstances[0]);
           chai.assert.isUndefined(collections.ModuleInstances[1]);
-          chai.assert.isDefined(collections.ModuleInstances[0].data.todos[0]);
-          chai.assert.isUndefined(collections.ModuleInstances[0].data.todos[1]);
+          chai.assert.isDefined(collections.ModuleInstances[0].todos[0]);
+          chai.assert.isUndefined(collections.ModuleInstances[0].todos[1]);
+          done();
+        });
+      });
+
+      it('should publish the requested moduleInstance data when there are childrens', function(done) {
+        const collector = new PublicationCollector({ userId: user._id });
+
+        collector.collect('moduleInstances.data', moduleInstances[0]._id, requests[1], (collections) => {
+          chai.assert.isDefined(collections.ModuleInstances[0]);
+          chai.assert.isUndefined(collections.ModuleInstances[1]);
+          chai.assert.isTrue(collections.ModuleInstances[0].categories.length == 2);
+          chai.assert.isTrue(collections.ModuleInstances[0].todos.length == 6);
           done();
         });
       });

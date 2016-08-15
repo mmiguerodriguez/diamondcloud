@@ -119,16 +119,28 @@ Factory.define('todosModuleInstance', ModuleInstances, Factory.extend('moduleIns
           { boardId: 'General' },
         ],
         categoryId: 'categoryId2',
+      },
+			{
+        name: 'Conquer the world',
+        boardId: 'secretBoardId',
+        categoryId: 'categoryId3',
       }
     ],
 		categories: [
       {
         _id: 'categoryId1',
-        name: 'Lorem ipsum category'
+        name: 'Lorem ipsum category',
+				color: 'red',
       },
       {
         _id: 'categoryId2',
-        name: 'Another great category'
+        name: 'Another great category',
+				color: 'red',
+      },
+			{
+        _id: 'categoryId3',
+        name: 'Another great banana',
+				color: 'blue'
       },
     ]
 	},
