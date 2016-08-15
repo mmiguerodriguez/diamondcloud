@@ -17,9 +17,9 @@
     .close-image {
       margin: 0 !important;
       opacity: 0.3;
-    }
-    .close-image:hover {
-      opacity: 0.7;
+      &:hover {
+        opacity: 0.7;
+      }
     }
   }
 }
