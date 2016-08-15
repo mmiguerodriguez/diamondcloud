@@ -85,7 +85,8 @@ export default class CreateTeamModal extends React.Component {
                           class="form-control"
                           placeholder="Tipo de equipo"
                           onChange={ this.handleChange.bind(this, 'otherType') }
-                          required={ false }/>
+                          required={ false }
+                          errorMessage="El tipo de proyecto no es válido"/>
                       </div>
                     ) : ( null )
                   }

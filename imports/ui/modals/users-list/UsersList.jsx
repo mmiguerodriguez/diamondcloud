@@ -16,22 +16,25 @@ export default class UsersList extends React.Component {
 
   render() {
     let email = this.state.email;
+    let isOwner = this.props.team ? this.props.team.owner() === Meteor.user().emails[0].address : true;
     return (
       <div>
-        <div className="row">
-          <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-            <input  id="searchUsers"
-                    className="form-control"
-                    placeholder="Compartir proyecto"
-                    type="text"
-                    value={ email }
-                    onChange={ this.handleChange.bind(this, 'email') }/>
-            <div className="input-group-addon search-input" onClick={ this.handleSubmit.bind(this) }>
-              <img src="img/add-people-icon.svg"
-                   width="24px" />
+        { (isOwner) ? (
+          <div className="row">
+            <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
+              <input  id="searchUsers"
+                      className="form-control"
+                      placeholder="Compartir proyecto"
+                      type="text"
+                      value={ email }
+                      onChange={ this.handleChange.bind(this, 'email') }/>
+              <div className="input-group-addon search-input" onClick={ this.handleSubmit.bind(this) }>
+                <img src="img/add-people-icon.svg"
+                     width="24px" />
+              </div>
             </div>
           </div>
-        </div>
+        ) : null }
         <div className="row contacts-list-row">
           <div className="contacts-list col-sm-6 col-xs-12 col-sm-offset-3">
             { this.renderUsers() }
@@ -50,15 +53,24 @@ export default class UsersList extends React.Component {
     this.setState({ email: '' });
   }
   renderUsers() {
-    let arr = [];
-    let users = this.props.team ? Teams.findOne(this.props.team._id).getUsers(Teams.dashboardUsersFields).fetch() : this.props.usersEmails;
-    // Unregistered users will be undefined,
-    // so we have to replace them with the email
+    let arr = [],
+        users,
+        isOwner = false;
     if(this.props.team) {
+      users = this.props.team.getUsers(Teams.dashboardUsersFields).fetch();
+      let owner = this.props.team.owner();
+      if(owner === Meteor.user().emails[0].address) {
+        isOwner = true;
+      }
+      // Unregistered users will be undefined,
+      // so we have to replace them with the email
       let emails = [];
       users.forEach((user) => {
         if(user) {
           emails.push(user.emails[0].address);
+          if(user.emails[0].address === owner) {
+            user.isOwner = true;
+          }
         }
       });
       this.props.team.users.forEach((user) => {
@@ -78,6 +90,7 @@ export default class UsersList extends React.Component {
       });
     }
     else {
+      isOwner = true;
       users = JSON.parse(JSON.stringify(this.props.usersEmails));
       users.forEach((user, index) => {
         let _user = Meteor.users.findByEmail(user, Teams.dashboardUsersFields).fetch()[0];
@@ -95,7 +108,7 @@ export default class UsersList extends React.Component {
       });
     }
     users.map((user) => {
-      arr.push(<User key={ user._id } user={ user } removeUser={ this.props.removeUser } />);
+      arr.push(<User key={ user._id } user={ user } removeUser={ this.props.removeUser } isOwner={isOwner} />);
     });
     return arr;
   }
