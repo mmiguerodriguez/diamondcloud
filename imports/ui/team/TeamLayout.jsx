@@ -15,7 +15,7 @@ export default class TeamLayout extends React.Component {
     return (
       <div>
         <SidebarLayout { ...this.props } changeBoard={ this.changeBoard.bind(this) } />
-        <Board board={ this.state.board } getMessages={ this.props.getMessages } />
+        <Board board={ this.state.board } users={ this.props.team.users } getMessages={ this.props.getMessages } />
         <div className='chats-container'>
           { this.renderChats() }
         </div>
@@ -31,6 +31,9 @@ export default class TeamLayout extends React.Component {
         <ChatLayout
           key={ chat.directChatId || chat.boardId }
           chat={ chat }
+          users={ this.props.team.users }
+          boards={ this.props.boards }
+          directChats={ this.props.directChats }
           position={ 'medium' } 
           removeChat={ this.props.removeChat }/>
       );

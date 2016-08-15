@@ -1,3 +1,5 @@
+import { Meteor }   from 'meteor/meteor';
+
 import React        from 'react';
 
 import Message      from './message/Message.jsx';
@@ -5,10 +7,15 @@ import Message      from './message/Message.jsx';
 export default class ChatLayout extends React.Component {
   constructor(props) {
     super(props);
+    
     this.state = {
       chat: this.props.chat,
       position: this.props.position,
       message: '',
+    };
+    
+    this.refs = {
+      chat_end: null,
     };
   }
   render() {
@@ -20,12 +27,11 @@ export default class ChatLayout extends React.Component {
         obj = { directChatId: this.props.chat.directChatId };
       }
       
-      
       return (
         <div className='chat minimized'>
           <p  className='col-xs-10 chat-text' 
               onClick={ this.togglePosition.bind(this, 'medium') }>
-            <b>User name / Board name</b>
+            <b>{ this.getName() }</b>
           </p>
           <div  className='col-xs-2 chat-image' 
                 onClick={ this.props.removeChat.bind(this, obj) }>
@@ -41,7 +47,7 @@ export default class ChatLayout extends React.Component {
           <div className='chat-header'>
             <p  className='col-xs-10 chat-text' 
                 onClick={ this.togglePosition.bind(this, 'minimized') }>
-                <b>User name / Board name</b>
+                <b>{ this.getName() }</b>
             </p>
             <div  className='col-xs-2 chat-image'
                   onClick={ this.togglePosition.bind(this, 'maximized') }>
@@ -52,6 +58,7 @@ export default class ChatLayout extends React.Component {
           </div>
           <div className='chat-body'>
             { this.renderMessages() }
+            <div className='chat-end' ref='chat_end'></div>
           </div>
           <div className='chat-footer col-xs-12'>
             <input 
@@ -68,7 +75,7 @@ export default class ChatLayout extends React.Component {
       return (
         <div className='chat maximized'>
           <div className='chat-header'>
-            <p className='col-xs-10 chat-text'>User name / Board name</p>
+            <p className='col-xs-10 chat-text'>{ this.getName() }</p>
             <div  className='col-xs-2 chat-image' 
                   onClick={ this.togglePosition.bind(this, 'medium') }>
               <img  className='exit-maximize-image' 
@@ -100,7 +107,13 @@ export default class ChatLayout extends React.Component {
       return ( null );
     }
   }
-
+  componentDidUpdate() {
+    console.log('update');
+    let elem = this.refs.chat_end;
+    if(elem !== null && elem !== undefined) {
+      console.log(elem);
+    }
+  }
   handleKey(event){
     if(event.which === 13) {
       this.sendMessage();
@@ -159,10 +172,32 @@ export default class ChatLayout extends React.Component {
 
     return arr;
   }
+  getName() {
+    let name = '';
+    if(this.props.chat.boardId) {
+      let board = this.props.boards.find((_board) => {
+        return _board._id === this.props.chat.boardId;
+      });
+      
+      name = board.name;
+    } else if(this.props.chat.directChatId) {
+      let directChat = this.props.directChats.find((_directChat) => {
+        return _directChat._id === this.props.chat.directChatId;  
+      });
+      
+      directChat.users.map((user) => {
+        if(user._id !== Meteor.userId()) {
+          name = Meteor.users.findOne(user._id).profile.name;
+        }
+      });
+    }
+    return name;
+  }
 }
 
 ChatLayout.propTypes = {
   chat: React.PropTypes.object.isRequired,
+  users: React.PropTypes.array.isRequired,
   position: React.PropTypes.string.isRequired,
   removeChat: React.PropTypes.func.isRequired,
 };

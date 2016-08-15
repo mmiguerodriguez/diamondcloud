@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import React from 'react';
 
 export default class Board extends React.Component {
@@ -9,9 +11,7 @@ export default class Board extends React.Component {
             <h4 className="title">{ this.props.board.name }</h4>
             <h4 className="members">
               Miembros: 
-              <img className='img-circle shared-people'
-                   src='//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg'
-                   width='32px' />
+              { this.renderUsers() }
             </h4>
           </div>
           <span>
@@ -25,9 +25,28 @@ export default class Board extends React.Component {
       </div>
     );
   }
+  
+  renderUsers() {
+    let arr = [];
+    
+    this.props.users.map((_user) => {
+      let user = Meteor.users.findOne({ 'emails.address': _user.email });
+      arr.push(
+        <img  key={ user._id }
+              className='img-circle shared-people'
+              src={ user.profile.picture }
+              alt={ user.profile.name }
+              title={ user.profile.name }
+              width='32px' />
+      );
+    });
+    
+    return arr;
+  }
 }
 
 Board.propTypes = {
   board: React.PropTypes.object.isRequired,
+  users: React.PropTypes.array.isRequired,
   getMessages: React.PropTypes.func.isRequired,
 };
