@@ -4,22 +4,20 @@ import TeamCard from './team-card/TeamCard.jsx';
 
 export default class TeamsLayout extends React.Component {
   renderTeams(){
-    let { teams, hasTeams } = this.props;
-
-    if(hasTeams) {
-      return teams.map((team) => {
+    if(this.props.hasTeams) {
+      return this.props.teams.map((team) => {
         return (
           <TeamCard
             key={ team._id }
             team={ team }
-            hasTeams={ hasTeams }
+            hasTeams={ this.props.hasTeams }
             openConfigTeamModal={ this.props.openConfigTeamModal }
           />
         );
       });
     } else {
       return (
-        <TeamCard hasTeams={ hasTeams }/>
+        <TeamCard hasTeams={ this.props.hasTeams }/>
       );
     }
   }

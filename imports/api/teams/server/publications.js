@@ -4,18 +4,27 @@ import { Teams } from '../teams.js';
 import { DirectChats } from '../../direct-chats/direct-chats.js';
 import { Boards } from '../../boards/boards.js';
 
-Meteor.publish('teams.dashboard', function() {
+Meteor.publishComposite('teams.dashboard', function() {
   if (!this.userId) {
     throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn',
     'Must be logged in to view teams.');
   }
 
   let user = Meteor.users.findOne(this.userId);
-  let teams = user.teams({
-    fields: Teams.dashboardFields,
-  });
-
-  return teams;
+  return{
+    find: function() {
+      return user.teams({
+        fields: Teams.dashboardFields,
+      });
+    },
+    children: [
+      {
+        find: function(team) {
+          return team.getUsers(Teams.dashboardUsersFields);
+        }
+      }
+    ]
+  };
 });
 
 Meteor.publishComposite('teams.team', function(teamId) {
@@ -23,6 +32,7 @@ Meteor.publishComposite('teams.team', function(teamId) {
     throw new Meteor.Error('Teams.publication.team.notLoggedIn',
     'Must be logged in to view teams.');
   }
+
   let user = Meteor.users.findOne(this.userId);
   return {
     find: function() {
@@ -31,11 +41,10 @@ Meteor.publishComposite('teams.team', function(teamId) {
     children: [
       {
         find: function(team) {
-          let boards = Boards.getBoards(team.boards, this.userId, {
+          return Boards.getBoards(team.boards, this.userId, {
             _id: 1,
             name: 1
           });
-          return boards;
         },
       },
       {
@@ -43,6 +52,11 @@ Meteor.publishComposite('teams.team', function(teamId) {
           return DirectChats.getUserDirectChats(this.userId, teamId);
         }
       },
+      {
+        find: function(team) {
+          return team.getUsers(Teams.teamUsersFields);
+        }
+      }
     ]
   };
 });

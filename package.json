@@ -7,9 +7,11 @@
     "tests-local": "meteor test --driver-package practicalmeteor:mocha",
     "tests-c9": "meteor test --driver-package practicalmeteor:mocha --port $IP:$PORT",
     "run-c9-ryan": "ROOT_URL=https://cloud-joelsobolmark.c9users.io meteor --port $IP:$PORT",
-    "run-c9-migue": "ROOT_URL=https://cloud-migue-miguelrodriguez.c9users.io meteor --port $IP:$PORT"
+    "run-c9-migue": "ROOT_URL=https://cloud-migue-miguelrodriguez.c9users.io meteor --port $IP:$PORT",
+    "run-c9-joel": "ROOT_URL=https://cloud-joel-joelsobolmark.c9users.io meteor --port $IP:$PORT"
   },
   "dependencies": {
+    "classnames": "^2.2.5",
     "faker": "^3.1.0",
     "fibers": "^1.0.13",
     "meteor-node-stubs": "^0.2.3",
