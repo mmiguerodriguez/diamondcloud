@@ -94,7 +94,6 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('teams.team', teams[0]._id, (collections) => {
-          console.log(collections.Teams[0]);
           chai.assert.equal(collections.Teams.length, 1);
           chai.assert.equal(collections.Teams[0].name, teams[0].name);
           chai.assert.equal(collections.Teams[0].plan, teams[0].plan);
@@ -103,7 +102,7 @@ if (Meteor.isServer) {
 
           chai.assert.equal(collections.Boards.length, 2);
           
-          chai.assert.equal(collections.users)
+          chai.assert.isDefined(collections.users);
           chai.assert.isDefined(collections.users[0].emails);
           chai.assert.isDefined(collections.users[0].profile);
           done();

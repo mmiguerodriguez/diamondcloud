@@ -36,7 +36,7 @@ Teams.helpers({
     return found;
   },
   getUsers(fields) {
-    let emails = this.users;
+    let emails = JSON.parse(JSON.stringify(this.users));
     emails.forEach((email, index) => {
       emails[index] = email.email;
     });
@@ -75,7 +75,7 @@ Teams.teamFields = {
 Teams.addUser = (teamId, user) => {
   Teams.update({ _id: teamId }, {
     $push: {
-      users: user
+      users: user,
     }
   });
 };
@@ -94,11 +94,7 @@ Teams.getTeam = (teamId, userEmail, fields) => {
   fields = fields || { _id: 1, name: 1 };
   return Teams.find({
     _id: teamId,
-    users: {
-      $elemMatch: {
-        email: userEmail,
-      }
-    },
+    'users.email': userEmail,
     archived: false,
   }, {
     fields
