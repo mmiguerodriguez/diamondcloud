@@ -7,15 +7,15 @@ import Message      from './message/Message.jsx';
 export default class ChatLayout extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       chat: this.props.chat,
       position: this.props.position,
       message: '',
     };
-    
+
     this.refs = {
-      chat_end: null,
+      chat_body: null,
     };
   }
   render() {
@@ -26,17 +26,17 @@ export default class ChatLayout extends React.Component {
       } else if(this.props.chat.directChatId) {
         obj = { directChatId: this.props.chat.directChatId };
       }
-      
+
       return (
         <div className='chat minimized'>
-          <p  className='col-xs-10 chat-text' 
+          <p  className='col-xs-10 chat-text'
               onClick={ this.togglePosition.bind(this, 'medium') }>
             <b>{ this.getName() }</b>
           </p>
-          <div  className='col-xs-2 chat-image' 
+          <div  className='col-xs-2 chat-image'
                 onClick={ this.props.removeChat.bind(this, obj) }>
-            <img  className='close-image' 
-                  src='/img/chat/close.svg' 
+            <img  className='close-image'
+                  src='/img/chat/close.svg'
                   width='16px' />
           </div>
         </div>
@@ -45,28 +45,27 @@ export default class ChatLayout extends React.Component {
       return (
         <div className='chat medium'>
           <div className='chat-header'>
-            <p  className='col-xs-10 chat-text' 
+            <p  className='col-xs-10 chat-text'
                 onClick={ this.togglePosition.bind(this, 'minimized') }>
                 <b>{ this.getName() }</b>
             </p>
             <div  className='col-xs-2 chat-image'
                   onClick={ this.togglePosition.bind(this, 'maximized') }>
-              <img  className='maximize-image' 
-                    src='/img/chat/maximize.svg' 
+              <img  className='maximize-image'
+                    src='/img/chat/maximize.svg'
                     width='16px' />
             </div>
           </div>
-          <div className='chat-body'>
+          <div className='chat-body' ref='chat_body'>
             { this.renderMessages() }
-            <div className='chat-end' ref='chat_end'></div>
           </div>
           <div className='chat-footer col-xs-12'>
-            <input 
-              value={ this.state.message } 
+            <input
+              value={ this.state.message }
               className='form-control'
-              type='text' 
+              type='text'
               placeholder='Escriba el mensaje'
-              onKeyDown={ this.handleKey.bind(this) } 
+              onKeyDown={ this.handleKey.bind(this) }
               onChange={ this.changeText.bind(this) }  />
           </div>
         </div>
@@ -76,27 +75,27 @@ export default class ChatLayout extends React.Component {
         <div className='chat maximized'>
           <div className='chat-header'>
             <p className='col-xs-10 chat-text'>{ this.getName() }</p>
-            <div  className='col-xs-2 chat-image' 
+            <div  className='col-xs-2 chat-image'
                   onClick={ this.togglePosition.bind(this, 'medium') }>
-              <img  className='exit-maximize-image' 
-                    src='http://image.flaticon.com/icons/svg/60/60801.svg' 
+              <img  className='exit-maximize-image'
+                    src='http://image.flaticon.com/icons/svg/60/60801.svg'
                     width='16px' />
             </div>
           </div>
-          <div className='chat-body'>
+          <div className='chat-body' ref='chat_body'>
             { this.renderMessages() }
           </div>
           <div className='chat-footer'>
             <div className='col-xs-10'>
-              <input 
-                value={ this.state.message } 
+              <input
+                value={ this.state.message }
                 className='form-control'
-                type='text' 
+                type='text'
                 placeholder='Escriba el mensaje'
-                onKeyDown={ this.handleKey.bind(this) } 
-                onChange={ this.changeText.bind(this) }  />
+                onKeyDown={ this.handleKey.bind(this) }
+                onChange={ this.changeText.bind(this) } />
             </div>
-            <div  className='send-message col-xs-2' 
+            <div  className='send-message col-xs-2'
                   onClick={ this.sendMessage.bind(this) }>
               <img src='http://image0.flaticon.com/icons/svg/60/60525.svg' width='24px'/>
             </div>
@@ -107,11 +106,14 @@ export default class ChatLayout extends React.Component {
       return ( null );
     }
   }
-  componentDidUpdate() {
-    console.log('update');
-    let elem = this.refs.chat_end;
-    if(elem !== null && elem !== undefined) {
-      console.log(elem);
+  componentDidUpdate(prevProps, prevState) {
+    // Scroll to bottom if a new message is sent or received
+    if(this.props.chat.messages.length > prevProps.chat.messages.length) {
+      let chat_body = this.refs.chat_body;
+      if(chat_body !== null && chat_body !== undefined) {
+        let e = $(chat_body);
+        e.scrollTop(e.prop("scrollHeight"));
+      }
     }
   }
   handleKey(event){
@@ -178,13 +180,13 @@ export default class ChatLayout extends React.Component {
       let board = this.props.boards.find((_board) => {
         return _board._id === this.props.chat.boardId;
       });
-      
+
       name = board.name;
     } else if(this.props.chat.directChatId) {
       let directChat = this.props.directChats.find((_directChat) => {
-        return _directChat._id === this.props.chat.directChatId;  
+        return _directChat._id === this.props.chat.directChatId;
       });
-      
+
       directChat.users.map((user) => {
         if(user._id !== Meteor.userId()) {
           name = Meteor.users.findOne(user._id).profile.name;
