@@ -150,7 +150,7 @@ export default class ChatLayout extends React.Component {
         if(error) {
           throw new Meteor.Error(error);
         } else {
-          console.log(response);
+          // Message sent correctly
         }
       });
     }

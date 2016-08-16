@@ -22,7 +22,7 @@ export default class BoardsCollapsible extends React.Component {
           this.renderBoards()
         }
         footer={
-          <a className="btn btn-default footer-btn" role="button">
+          <a className="btn btn-default footer-btn" role="button" onClick={ this.props.openCreateBoardModal }>
             CREAR BOARD
           </a>
         }
@@ -51,4 +51,5 @@ BoardsCollapsible.propTypes = {
   boards: React.PropTypes.array.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
+  openCreateBoardModal: React.PropTypes.func.isRequired,
 };

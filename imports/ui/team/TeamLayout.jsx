@@ -1,8 +1,10 @@
-import React         from 'react';
+import React            from 'react';
 
-import Board         from './board/Board.jsx';
-import ChatLayout    from './chat/ChatLayout.jsx';
-import SidebarLayout from './sidebar/SidebarLayout.jsx';
+import Board            from './board/Board.jsx';
+import ChatLayout       from './chat/ChatLayout.jsx';
+import SidebarLayout    from './sidebar/SidebarLayout.jsx';
+import CreateBoardModal from '../modals/create-board/CreateBoardModal.jsx';
+
 
 export default class TeamLayout extends React.Component {
   constructor(props){
@@ -14,11 +16,13 @@ export default class TeamLayout extends React.Component {
   render() {
     return (
       <div>
-        <SidebarLayout { ...this.props } changeBoard={ this.changeBoard.bind(this) } />
+        <SidebarLayout { ...this.props } changeBoard={ this.changeBoard.bind(this) } openCreateBoardModal={ this.openCreateBoardModal } />
         <Board board={ this.state.board } users={ this.props.team.users } getMessages={ this.props.getMessages } />
         <div className='chats-container'>
           { this.renderChats() }
         </div>
+        
+        <CreateBoardModal />
       </div>
     );
   }
@@ -51,6 +55,9 @@ export default class TeamLayout extends React.Component {
         board: board,
       });
     }
+  }
+  openCreateBoardModal() {
+    $('#createBoardModal').modal('show');
   }
 }
 
