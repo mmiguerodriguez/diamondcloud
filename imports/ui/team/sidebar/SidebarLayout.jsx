@@ -41,7 +41,8 @@ export default class SidebarLayout extends React.Component {
           boards={ this.props.boards }
           directChats={ this.props.directChats }
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
-          getMessages={ this.props.getMessages } />
+          getMessages={ this.props.getMessages }
+          openCreateChatModal={ this.props.openCreateChatModal } />
       </div>
     );
   }
@@ -133,4 +134,5 @@ SidebarLayout.propTypes = {
   getMessages: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
   openCreateBoardModal: React.PropTypes.func.isRequired,
+  openCreateChatModal: React.PropTypes.func.isRequired,
 };

@@ -1,5 +1,5 @@
-import { Meteor } from 'meteor/meteor';
-import React from 'react';
+import { Meteor }         from 'meteor/meteor';
+import React              from 'react';
 import { browserHistory } from 'react-router';
 
 import Modal     from '../Modal.jsx';

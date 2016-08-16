@@ -38,12 +38,14 @@ export default class Team extends React.Component {
       }
     }
   }
+  /* todo: Fix when team isn't found (not working)
   componentDidMount() {
-    if(!this.props.team) {
+    if(this.props.team === undefined) {
       // If team doesn't exists go to a not-found route
       browserHistory.push('/404');
     }
   }
+  */
   getMessages(obj) {
     let subscriptions = this.state.subscriptions;
     let isSubscribed = false;
