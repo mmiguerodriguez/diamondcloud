@@ -1,6 +1,8 @@
 import { Meteor }          from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
+
 import React               from 'react';
+import { browserHistory }  from 'react-router';
 
 import { Teams }           from '../../api/teams/teams.js';
 import { Boards }          from '../../api/boards/boards.js';
@@ -18,21 +20,30 @@ export default class Team extends React.Component {
   }
   render() {
     if(this.props.loading) {
-      return null;
+      return ( null );
     } else {
-      return (
-        <TeamLayout
-          team={ this.props.team }
-          boards={ this.props.boards }
-          directChats={ this.props.directChats }
-          chats={ this.formatChats() }
-          getMessages={ this.getMessages.bind(this) }
-          removeChat={ this.removeChat.bind(this) }
-        />
-      );
+      if(this.props.team) {
+        return (
+          <TeamLayout
+            team={ this.props.team }
+            boards={ this.props.boards }
+            directChats={ this.props.directChats }
+            chats={ this.formatChats() }
+            getMessages={ this.getMessages.bind(this) }
+            removeChat={ this.removeChat.bind(this) }
+          />
+        );
+      } else {
+        return ( null );
+      }
     }
   }
-
+  componentDidMount() {
+    if(!this.props.team) {
+      // If team doesn't exists go to a not-found route
+      browserHistory.push('/404');
+    }
+  }
   getMessages(obj) {
     let subscriptions = this.state.subscriptions;
     let isSubscribed = false;
@@ -125,7 +136,7 @@ export default class Team extends React.Component {
         }
       });
     }
-    
+
     // update state
     this.setState({
       subscriptions: subscriptions,

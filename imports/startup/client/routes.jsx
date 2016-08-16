@@ -15,14 +15,14 @@ export const renderRoutes = () => (
   <Router history={ browserHistory }>
     <Route path="/" component={ App }>
       <IndexRoute component={ Landing }/>
-      
+
       <Route path="/dashboard" component={ Dashboard } />
       <Route path="/team/:teamId" component={ Team } />
       <Route path="/pricing" component={ Pricing } />
       <Route path="/help" component={ Help } />
       <Route path="/about" component={ About } />
 
-      <Route path="*" component={ NotFound }/>
+      <Route path="*" component={ NotFound } />
     </Route>
   </Router>
 );
