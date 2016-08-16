@@ -62,7 +62,7 @@ OrganizationModule = {
 //needs mongo 3.2 to run
 //Get every todo in some board
 
-JSON.stringify(db.modules.aggregate(
+JSON.stringify(db.moduleInstances.aggregate(
   [
     {
       $project: {
@@ -93,6 +93,48 @@ JSON.stringify(db.modules.aggregate(
     }
   ]
 )._batch, null, 4);
+
+// Get all todos of some categories and some categories
+JSON.stringify(db.moduleInstances.aggregate([
+  {
+    $project: {
+      categories: '$data.categories',
+      todos: '$data.todos'
+    }
+  },
+  {
+    $project: {
+      categories: {
+        $filter: {
+          input: '$categories',
+          as: 'element',
+          cond: {
+            $eq: ['$$element.color', 'red']
+          }
+        }
+      },
+      todos: '$todos'
+    }
+  },
+  {
+    $project: {
+      categories: '$categories',
+      todos: {
+        $filter: {
+          input: '$todos',
+          as: 'element',
+          cond: {
+            categories: {
+              $elemMatch: {
+                _id: '$$element.categoryId'
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+]));
 
 //insert new todo
 let moduleInstanceId = 'organizationModuleInstance1Id',
