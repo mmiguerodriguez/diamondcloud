@@ -56,6 +56,9 @@
     background-image: linear-gradient(to bottom, #dadada, #c4c4c4);
     overflow-y: auto;
     overflow-x: hidden;
+    .message-input {
+      margin-top: 0px !important;
+    }
   }
   
   .chat-footer {

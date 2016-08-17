@@ -60,7 +60,7 @@ export default class ChatLayout extends React.Component {
           <div className='chat-footer col-xs-12'>
             <input
               value={ this.state.message }
-              className='form-control'
+              className='form-control message-input'
               type='text'
               placeholder='Escriba el mensaje'
               onKeyDown={ this.handleKey.bind(this) }
