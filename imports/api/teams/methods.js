@@ -52,7 +52,7 @@ export const createTeam = new ValidatedMethod({
 
         team.boards.push({ _id: res._id });
         team._id = teamId;
-        
+
         future.return(team);
       });
     });
@@ -97,7 +97,11 @@ export const shareTeam = new ValidatedMethod({
       throw new Meteor.Error('Teams.methods.share.notLoggedIn',
       'Must be logged in to edit a team.');
     }
-
+    let team = Teams.findOne(teamId);
+    if(Meteor.user().emails[0].address !== team.owner()){
+      throw new Meteor.Error('Teams.methods.share.notOwner',
+      "Must be team's owner to share");
+    }
     let user = { email, permission: 'member' };
 
     Teams.addUser(teamId, user);
@@ -118,6 +122,11 @@ export const removeUserFromTeam = new ValidatedMethod({
     if (!Meteor.user()) {
       throw new Meteor.Error('Teams.methods.removeUser.notLoggedIn',
       'Must be logged in to edit a team.');
+    }
+    let team = Teams.findOne(teamId);
+    if(Meteor.user().emails[0].address !== team.owner()){
+      throw new Meteor.Error('Teams.methods.removeUser.notOwner',
+      "Must be team's owner to remove user");
     }
     Teams.removeUser(teamId, email);
     // Testing purposes
