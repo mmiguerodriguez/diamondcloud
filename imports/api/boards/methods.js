@@ -25,6 +25,7 @@ export const createBoard = new ValidatedMethod({
     users = users || [];
 
     if(users.length > 0 && isPrivate) {
+      users.push({ _id: Meteor.userId() });
       users.forEach((user) => {
         if (!team.hasUser({ _id: user._id })) {
           throw new Meteor.Error('Branches.methods.createBoard.userNotInTeam',
