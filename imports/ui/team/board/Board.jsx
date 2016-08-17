@@ -10,14 +10,14 @@ export default class Board extends React.Component {
           <div className='sub-header-data'>
             <h4 className="title">{ this.props.board.name }</h4>
             <h4 className="members">
-              Miembros: 
+              Miembros:
               { this.renderUsers() }
             </h4>
           </div>
           <span>
-            <img  src="/img/sidebar/messages.svg" 
+            <img  src="/img/sidebar/messages.svg"
                   className="message-icon"
-                  width="28px" 
+                  width="28px"
                   onClick={ this.props.getMessages.bind(null, { boardId: this.props.board._id }) }/>
           </span>
         </div>
@@ -25,22 +25,35 @@ export default class Board extends React.Component {
       </div>
     );
   }
-  
+
   renderUsers() {
     let arr = [];
-    
-    this.props.users.map((_user) => {
-      let user = Meteor.users.findOne({ 'emails.address': _user.email });
-      arr.push(
-        <img  key={ user._id }
-              className='img-circle shared-people'
-              src={ user.profile.picture }
-              alt={ user.profile.name }
-              title={ user.profile.name }
-              width='32px' />
-      );
-    });
-    
+    if(this.props.board.users !== undefined) {
+      this.props.board.users.map((_user) => {
+        let user = Meteor.users.findOne(_user._id);
+        arr.push(
+          <img  key={ user._id }
+            className='img-circle shared-people'
+            src={ user.profile.picture }
+            alt={ user.profile.name }
+            title={ user.profile.name }
+            width='32px' />
+        );
+      });
+    } else {
+      this.props.users.map((_user) => {
+        let user = Meteor.users.findOne({ 'emails.address': _user.email });
+        arr.push(
+          <img  key={ user._id }
+                className='img-circle shared-people'
+                src={ user.profile.picture }
+                alt={ user.profile.name }
+                title={ user.profile.name }
+                width='32px' />
+        );
+      });
+    }
+
     return arr;
   }
 }

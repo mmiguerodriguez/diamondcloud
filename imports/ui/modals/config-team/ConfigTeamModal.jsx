@@ -43,8 +43,8 @@ export default class ConfigTeamModal extends React.Component {
                     class="form-control"
                     placeholder="Nombre del equipo"
                     value={ this.state.name }
-                    required={true}
-                    minCharacters={3}
+                    required={ true }
+                    minCharacters={ 3 }
                     onChange={ this.handleChange.bind(this, 'name') }
                     errorMessage="El nombre no es válido"
                     emptyMessage="Es obligatorio poner un nombre"

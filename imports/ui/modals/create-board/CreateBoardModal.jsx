@@ -1,9 +1,7 @@
 import React     from 'react';
-import Select from 'react-select';
-import 'react-select/dist/react-select.css';
+import Select    from 'react-select';
 
 import Modal     from '../Modal.jsx';
-
 import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
 
 export default class CreateBoardModal extends React.Component {
@@ -12,6 +10,7 @@ export default class CreateBoardModal extends React.Component {
     this.state = {
       name: '',
       isPrivate: false,
+      users: [],
     };
   }
 
@@ -54,9 +53,7 @@ export default class CreateBoardModal extends React.Component {
               <form className="form-inline col-xs-8 col-xs-offset-4">
                 <div className="radio board-type">
                   <label>
-                    <input  id="public"
-                            type="radio"
-                            name="optionsRadios"
+                    <input  type="radio"
                             value={ false }
                             onChange={ this.handleChange.bind(this, 'isPrivate') }
                             defaultChecked />
@@ -65,9 +62,7 @@ export default class CreateBoardModal extends React.Component {
                 </div>
                 <div className="radio board-type">
                   <label>
-                    <input  id="private" 
-                            type="radio"
-                            name="optionsRadios"
+                    <input  type="radio"
                             value={ true }
                             onChange={ this.handleChange.bind(this, 'isPrivate') } />
                     Privado
@@ -75,18 +70,20 @@ export default class CreateBoardModal extends React.Component {
                 </div>
               </form>
             </div>
-            <div className='row'>
-              <Select
-                name="form-field-name"
-                options={[
-                  { value: 'one', label: 'One' },
-                  { value: 'two', label: 'Two' }
-                ]}
-                multi={true}
-              />
-            </div>
-            { /* todo: implement UsersLists */ }
-          </div>
+            {
+              this.state.isPrivate ? (
+                <Select
+                  name="form-field-name"
+                  placeholder="Seleccioná los usuarios"
+                  multi={ true }
+                  simpleValue={ true }
+                  disabled={ false }
+                  options={ this.teamUsers() }
+                  value={ this.state.users }
+                  onChange={ this.handleSelectChange.bind(this) } />
+              ) : ( null )
+            }
+        </div>
         }
         footer={
           <div>
@@ -108,16 +105,66 @@ export default class CreateBoardModal extends React.Component {
       />
     );
   }
+  teamUsers() {
+    let arr = [];
+
+    this.props.team.users.map((_user) => {
+      let user = Meteor.users.findOne({ 'emails.address': _user.email });
+      arr.push({
+        label: user.profile.name,
+        value: user._id,
+      })
+    });
+
+    return arr;
+  }
   handleChange(index, event) {
+    let val = event.target.value;
+    if(index === 'isPrivate')  {
+      val = val === 'true' ? true : false;
+    }
+
     this.setState({
-      [index]: event.target.value,
+      [index]: val,
+    });
+  }
+  handleSelectChange(value) {
+    this.setState({
+      users: value,
     });
   }
   createBoard() {
-    // todo: create the board
+    let board = {
+      teamId: this.props.team._id,
+      ...this.state
+    };
+
+    if(board.isPrivate) {
+      let arr = [];
+      board.users.split(',').map((userId) => {
+        arr.push({ _id: userId });
+      });
+      board.users = arr;
+    } else {
+      board.users = [];
+    }
+
+    Meteor.call('Boards.methods.create', board, (error, response) => {
+      if(error) {
+        throw new Meteor.Error(error);
+      } else {
+        this.setState({
+          name: '',
+          isPrivate: false,
+          users: [],
+        });
+
+        $('#createBoardModal').modal('hide');
+      }
+    });
   }
 }
 
 CreateBoardModal.propTypes = {
-  
+  team: React.PropTypes.object.isRequired,
 };

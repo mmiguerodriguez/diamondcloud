@@ -1,17 +1,14 @@
 import React     from 'react';
 import Select    from 'react-select';
-import 'react-select/dist/react-select.css';
 
 import Modal     from '../Modal.jsx';
-
 import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
 
 export default class CreateChatModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
-      isPrivate: false,
+      userId: '',
     };
   }
 
@@ -29,7 +26,14 @@ export default class CreateChatModal extends React.Component {
         }
         body={
           <div>
-            { /* todo: implement UsersLists */ }
+            <Select
+              name="form-field-name"
+              placeholder="Seleccioná los usuarios"
+              simpleValue={ true }
+              disabled={ false }
+              options={ this.teamUsers() }
+              value={ this.state.userId }
+              onChange={ this.handleSelectChange.bind(this) } />
           </div>
         }
         footer={
@@ -52,16 +56,41 @@ export default class CreateChatModal extends React.Component {
       />
     );
   }
-  handleChange(index, event) {
+  teamUsers() {
+    let arr = [];
+
+    this.props.team.users.map((_user) => {
+      let user = Meteor.users.findOne({ 'emails.address': _user.email });
+      arr.push({
+        label: user.profile.name,
+        value: user._id,
+      })
+    });
+
+    return arr;
+  }
+  handleSelectChange(value) {
     this.setState({
-      [index]: event.target.value,
+      userId: value,
     });
   }
   createChat() {
-    // todo: create the chat
+    let chat = {
+      teamId: this.props.team._id,
+      ...this.state
+    };
+
+    Meteor.call('DirectChats.methods.create', chat, (error, response) => {
+      if(error) {
+        throw new Meteor.Error(error);
+      } else {
+        console.log(response);
+        $('#createChatModal').modal('hide');
+      }
+    });
   }
 }
 
 CreateChatModal.propTypes = {
-  
+  team: React.PropTypes.object.isRequired,
 };

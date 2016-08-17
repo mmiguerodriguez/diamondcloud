@@ -5,6 +5,7 @@ import { browserHistory } from 'react-router';
 import Modal     from '../Modal.jsx';
 import UsersList from '../users-list/UsersList.jsx';
 import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
+
 export default class CreateTeamModal extends React.Component {
   constructor(props) {
     super(props);
@@ -85,7 +86,7 @@ export default class CreateTeamModal extends React.Component {
                           class="form-control"
                           placeholder="Tipo de equipo"
                           onChange={ this.handleChange.bind(this, 'otherType') }
-                          required={ false }/>
+                          required={ false } />
                       </div>
                     ) : ( null )
                   }

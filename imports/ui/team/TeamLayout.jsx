@@ -16,21 +16,21 @@ export default class TeamLayout extends React.Component {
   render() {
     return (
       <div>
-        <SidebarLayout 
-          { ...this.props } 
-          changeBoard={ this.changeBoard.bind(this) } 
+        <SidebarLayout
+          { ...this.props }
+          changeBoard={ this.changeBoard.bind(this) }
           openCreateBoardModal={ this.openCreateBoardModal }
           openCreateChatModal={ this.openCreateChatModal } />
-        <Board 
-          board={ this.state.board } 
-          users={ this.props.team.users } 
+        <Board
+          board={ this.state.board }
+          users={ this.props.team.users }
           getMessages={ this.props.getMessages } />
         <div className='chats-container'>
           { this.renderChats() }
         </div>
-        
-        <CreateBoardModal />
-        <CreateChatModal />
+
+        <CreateBoardModal team={ this.props.team } />
+        <CreateChatModal team={ this.props.team } />
       </div>
     );
   }
@@ -46,7 +46,7 @@ export default class TeamLayout extends React.Component {
           users={ this.props.team.users }
           boards={ this.props.boards }
           directChats={ this.props.directChats }
-          position={ 'medium' } 
+          position={ 'medium' }
           removeChat={ this.props.removeChat }/>
       );
     });
