@@ -118,5 +118,7 @@ export const apiInsert = new ValidatedMethod({
       throw new Meteor.Error('ModuleInstances.methods.apiInsert.notLoggedIn',
       'Must be logged in to use a module.');
     }
+    let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+    if(moduleInstance.board().hasUser())
   }
 });
