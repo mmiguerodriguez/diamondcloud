@@ -25,7 +25,7 @@ export default class CreateChatModal extends React.Component {
           </div>
         }
         body={
-          <div>
+          <div className='modal-body-fixed'>
             <Select
               name="form-field-name"
               placeholder="Seleccioná los usuarios"
@@ -61,10 +61,12 @@ export default class CreateChatModal extends React.Component {
 
     this.props.team.users.map((_user) => {
       let user = Meteor.users.findOne({ 'emails.address': _user.email });
-      arr.push({
-        label: user.profile.name,
-        value: user._id,
-      })
+      if(user._id !== Meteor.userId()) {
+        arr.push({
+          label: user.profile.name,
+          value: user._id,
+        });
+      }
     });
 
     return arr;
@@ -85,6 +87,7 @@ export default class CreateChatModal extends React.Component {
         throw new Meteor.Error(error);
       } else {
         this.props.getMessages({ directChatId: response._id });
+        
         $('#createChatModal').modal('hide');
       }
     });

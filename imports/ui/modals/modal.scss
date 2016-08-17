@@ -10,6 +10,11 @@
 }
 .modal-body {
   overflow: auto;
+  .modal-body-fixed {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    min-height: 300px;
+  }
 }
 .modal-content {
   border-radius: 3px !important;

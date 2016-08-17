@@ -27,14 +27,14 @@ export default class CreateBoardModal extends React.Component {
           </div>
         }
         body={
-          <div>
-            <div className="row">
+          <div className='modal-body-fixed'>
+            <div className="">
               <div className="name-input">
                 <label  htmlFor="projectName"
-                        className="col-xs-2 col-sm-offset-2 control-label left-align">
+                        className="col-xs-12 control-label left-align">
                   Nombre
                 </label>
-                <div className="col-xs-12 col-sm-6">
+                <div className="">
                   <TextInput
                     id="boardName"
                     class="form-control"
@@ -49,38 +49,51 @@ export default class CreateBoardModal extends React.Component {
                 </div>
               </div>
             </div>
-            <div className='row'>
-              <form className="form-inline col-xs-8 col-xs-offset-4">
+            <div className='' style={ { overflow: 'auto' } }>
+              <label  htmlFor="projectType"
+                      className="col-xs-12 control-label left-align">
+                Tipo
+              </label>
+              <form id='projectType' className="form-inline col-xs-12">
                 <div className="radio board-type">
                   <label>
-                    <input  type="radio"
+                    <input  name="board-type-radio"
+                            type="radio"
                             value={ false }
                             onChange={ this.handleChange.bind(this, 'isPrivate') }
                             defaultChecked />
-                    Publico
+                     Publico
                   </label>
                 </div>
                 <div className="radio board-type">
                   <label>
-                    <input  type="radio"
+                    <input  name="board-type-radio"
+                            type="radio"
                             value={ true }
                             onChange={ this.handleChange.bind(this, 'isPrivate') } />
-                    Privado
+                     Privado
                   </label>
                 </div>
               </form>
             </div>
             {
               this.state.isPrivate ? (
-                <Select
-                  name="form-field-name"
-                  placeholder="Seleccioná los usuarios"
-                  multi={ true }
-                  simpleValue={ true }
-                  disabled={ false }
-                  options={ this.teamUsers() }
-                  value={ this.state.users }
-                  onChange={ this.handleSelectChange.bind(this) } />
+                <div className=''>
+                  <label  htmlFor="form-field-name"
+                          className="col-xs-12 control-label left-align">
+                    Compartir con otros
+                  </label>
+                  <Select
+                    name="form-field-name"
+                    className=''
+                    placeholder="Ingrese nombre o mail..."
+                    multi={ true }
+                    simpleValue={ true }
+                    disabled={ false }
+                    options={ this.teamUsers() }
+                    value={ this.state.users }
+                    onChange={ this.handleSelectChange.bind(this) } />
+                </div>
               ) : ( null )
             }
         </div>
@@ -90,7 +103,8 @@ export default class CreateBoardModal extends React.Component {
             <div className="row">
               <button type="button"
                       className="btn btn-cancel btn-hover"
-                      data-dismiss="modal">
+                      data-dismiss="modal"
+                      onClick={ this.clearData.bind(this) }>
                 Cancelar
               </button>
               <button type="button"
@@ -110,10 +124,12 @@ export default class CreateBoardModal extends React.Component {
 
     this.props.team.users.map((_user) => {
       let user = Meteor.users.findOne({ 'emails.address': _user.email });
-      arr.push({
-        label: user.profile.name,
-        value: user._id,
-      })
+      if(user._id !== Meteor.userId()) {
+        arr.push({
+          label: user.profile.name,
+          value: user._id,
+        });
+      }
     });
 
     return arr;
@@ -153,14 +169,17 @@ export default class CreateBoardModal extends React.Component {
       if(error) {
         throw new Meteor.Error(error);
       } else {
-        this.setState({
-          name: '',
-          isPrivate: false,
-          users: [],
-        });
+        this.clearData();
 
         $('#createBoardModal').modal('hide');
       }
+    });
+  }
+  clearData() {
+    this.setState({
+      name: '',
+      isPrivate: false,
+      users: [],
     });
   }
 }
