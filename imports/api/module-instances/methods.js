@@ -90,7 +90,7 @@ export const dearchiveModuleInstance = new ValidatedMethod({
   validate: new SimpleSchema({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
   }).validator(),
-  run({ moduleInstanceId }){
+  run({ moduleInstanceId }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('ModuleInstances.methods.dearchive.notLoggedIn',
       'Must be logged in to dearchive a module instance.');
@@ -112,7 +112,7 @@ export const apiInsert = new ValidatedMethod({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
     collection: { type: String },
     obj: { type: Object },
-  }),
+  }).validator(),
   run({ moduleInstanceId, collection, obj }) {
     if(!Meteor.user()) {
       throw new Meteor.Error('ModuleInstances.methods.apiInsert.notLoggedIn',
