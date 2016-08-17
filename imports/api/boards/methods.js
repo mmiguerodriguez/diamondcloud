@@ -25,7 +25,13 @@ export const createBoard = new ValidatedMethod({
     users = users || [];
 
     if(users.length > 0 && isPrivate) {
-      users.push({ _id: Meteor.userId() });
+      if (team.hasUser({ _id: Meteor.userId() })) {
+        users.push({ _id: Meteor.userId() });
+      } else {
+        throw new Meteor.Error('Branches.methods.createBoard.userNotInTeam',
+        'You cannot add yourself to a board when you are not part of the team.');
+      }
+      
       users.forEach((user) => {
         if (!team.hasUser({ _id: user._id })) {
           throw new Meteor.Error('Branches.methods.createBoard.userNotInTeam',
