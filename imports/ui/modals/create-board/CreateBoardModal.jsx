@@ -27,11 +27,11 @@ export default class CreateBoardModal extends React.Component {
           </div>
         }
         body={
-          <div className='modal-body-fixed'>
+          <div className='modal-body-fixed container-fluid'>
             <div className="">
               <div className="name-input">
                 <label  htmlFor="projectName"
-                        className="col-xs-12 control-label left-align">
+                        className="control-label left-align">
                   Nombre
                 </label>
                 <div className="">
@@ -51,10 +51,10 @@ export default class CreateBoardModal extends React.Component {
             </div>
             <div className='' style={ { overflow: 'auto' } }>
               <label  htmlFor="projectType"
-                      className="col-xs-12 control-label left-align">
+                      className="control-label left-align">
                 Tipo
               </label>
-              <form id='projectType' className="form-inline col-xs-12">
+              <form id='projectType' className="form-inline">
                 <div className="radio board-type">
                   <label>
                     <input  name="board-type-radio"
@@ -62,7 +62,7 @@ export default class CreateBoardModal extends React.Component {
                             value={ false }
                             onChange={ this.handleChange.bind(this, 'isPrivate') }
                             defaultChecked />
-                     Publico
+                    Publico
                   </label>
                 </div>
                 <div className="radio board-type">
@@ -71,16 +71,16 @@ export default class CreateBoardModal extends React.Component {
                             type="radio"
                             value={ true }
                             onChange={ this.handleChange.bind(this, 'isPrivate') } />
-                     Privado
+                    Privado
                   </label>
                 </div>
               </form>
             </div>
             {
               this.state.isPrivate ? (
-                <div className=''>
+                <div className='share-board'>
                   <label  htmlFor="form-field-name"
-                          className="col-xs-12 control-label left-align">
+                          className="control-label left-align">
                     Compartir con otros
                   </label>
                   <Select
@@ -165,12 +165,15 @@ export default class CreateBoardModal extends React.Component {
       board.users = [];
     }
 
-    Meteor.call('Boards.methods.create', board, (error, response) => {
+    Meteor.call('Boards.methods.create', board, (error, board) => {
       if(error) {
         throw new Meteor.Error(error);
       } else {
+        this.props.toggleCollapsible('boards');
+        this.props.changeBoard(board._id);
+        this.props.getMessages({ boardId: board._id });
+        
         this.clearData();
-
         $('#createBoardModal').modal('hide');
       }
     });
@@ -186,4 +189,7 @@ export default class CreateBoardModal extends React.Component {
 
 CreateBoardModal.propTypes = {
   team: React.PropTypes.object.isRequired,
+  getMessages: React.PropTypes.func.isRequired,
+  changeBoard: React.PropTypes.func.isRequired,
+  toggleCollapsible: React.PropTypes.func.isRequired,
 };

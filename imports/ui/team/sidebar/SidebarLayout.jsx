@@ -3,7 +3,8 @@ import React from 'react';
 import ModulesCollapsible from './collapsible/modules/ModulesCollapsible.jsx';
 import BoardsCollapsible  from './collapsible/boards/BoardsCollapsible.jsx';
 import ChatsCollapsible   from './collapsible/chats/ChatsCollapsible.jsx';
-
+import CreateBoardModal   from '../../modals/create-board/CreateBoardModal.jsx';
+import CreateChatModal    from '../../modals/create-chat/CreateChatModal.jsx';
 export default class SidebarLayout extends React.Component {
   render() {
     return (
@@ -37,13 +38,28 @@ export default class SidebarLayout extends React.Component {
           team={ this.props.team }
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
           changeBoard={ this.props.changeBoard }
-          openCreateBoardModal={ this.props.openCreateBoardModal } />
+          openCreateBoardModal={ this.openCreateBoardModal } />
         <ChatsCollapsible
           boards={ this.props.boards }
           directChats={ this.props.directChats }
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
           getMessages={ this.props.getMessages }
-          openCreateChatModal={ this.props.openCreateChatModal } />
+          openCreateChatModal={ this.openCreateChatModal } />
+          
+        {
+          this.props.team.owner() === Meteor.user().emails[0].address ? (
+            <CreateBoardModal 
+              team={ this.props.team }
+              getMessages={ this.props.getMessages }
+              changeBoard={ this.props.changeBoard } 
+              toggleCollapsible={ this.toggleCollapsible.bind(this) } />
+          ) : ( null )
+        }
+        <CreateChatModal 
+          team={ this.props.team } 
+          getMessages={ this.props.getMessages } 
+          toggleCollapsible={ this.toggleCollapsible.bind(this) } />
+          
       </div>
     );
   }
@@ -126,6 +142,13 @@ export default class SidebarLayout extends React.Component {
       }
     });
   }
+  
+  openCreateBoardModal() {
+    $('#createBoardModal').modal('show');
+  }
+  openCreateChatModal() {
+    $('#createChatModal').modal('show');
+  }
 }
 
 SidebarLayout.propTypes = {
@@ -134,6 +157,4 @@ SidebarLayout.propTypes = {
   directChats: React.PropTypes.array.isRequired,
   getMessages: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
-  openCreateBoardModal: React.PropTypes.func.isRequired,
-  openCreateChatModal: React.PropTypes.func.isRequired,
 };

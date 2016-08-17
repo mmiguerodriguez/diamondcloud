@@ -41,7 +41,8 @@ export default class CreateChatModal extends React.Component {
             <div className="row">
               <button type="button"
                       className="btn btn-cancel btn-hover"
-                      data-dismiss="modal">
+                      data-dismiss="modal"
+                      onClick={ this.clearData }>
                 Cancelar
               </button>
               <button type="button"
@@ -87,9 +88,16 @@ export default class CreateChatModal extends React.Component {
         throw new Meteor.Error(error);
       } else {
         this.props.getMessages({ directChatId: response._id });
+        this.props.toggleCollapsible('chats');
         
+        this.clearData();
         $('#createChatModal').modal('hide');
       }
+    });
+  }
+  clearData() {
+    this.setState({
+      userId: '',
     });
   }
 }
@@ -97,4 +105,5 @@ export default class CreateChatModal extends React.Component {
 CreateChatModal.propTypes = {
   team: React.PropTypes.object.isRequired,
   getMessages: React.PropTypes.func.isRequired,
+  toggleCollapsible: React.PropTypes.func.isRequired,
 };
