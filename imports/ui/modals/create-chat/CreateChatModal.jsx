@@ -85,6 +85,7 @@ export default class CreateChatModal extends React.Component {
         throw new Meteor.Error(error);
       } else {
         console.log(response);
+        this.props.getMessages({ directChatId: response._id });
         $('#createChatModal').modal('hide');
       }
     });
@@ -93,4 +94,5 @@ export default class CreateChatModal extends React.Component {
 
 CreateChatModal.propTypes = {
   team: React.PropTypes.object.isRequired,
+  getMessages: React.PropTypes.func.isRequired,
 };
