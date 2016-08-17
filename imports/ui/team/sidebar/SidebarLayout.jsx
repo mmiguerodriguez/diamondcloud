@@ -34,8 +34,9 @@ export default class SidebarLayout extends React.Component {
           toggleCollapsible={ this.toggleCollapsible.bind(this) } />
         <BoardsCollapsible
           boards={ this.props.boards }
+          team={ this.props.team }
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
-          changeBoard={ this.props.changeBoard } 
+          changeBoard={ this.props.changeBoard }
           openCreateBoardModal={ this.props.openCreateBoardModal } />
         <ChatsCollapsible
           boards={ this.props.boards }

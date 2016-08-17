@@ -1,5 +1,3 @@
-import { Meteor }   from 'meteor/meteor';
-
 import React        from 'react';
 
 import Message      from './message/Message.jsx';

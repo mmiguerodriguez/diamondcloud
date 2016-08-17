@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import React from 'react';
 
 export default class DirectChat extends React.Component {
@@ -20,13 +18,13 @@ export default class DirectChat extends React.Component {
   }
   getUserName() {
     let name = '';
-    
+
     this.props.directChat.users.map((user) => {
       if(user._id !== Meteor.userId()) {
         name = Meteor.users.findOne(user._id).profile.name;
       }
     });
-    
+
     return name;
   }
 }

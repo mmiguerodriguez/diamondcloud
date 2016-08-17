@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import React from 'react';
 
 export default class Message extends React.Component {
@@ -12,7 +10,7 @@ export default class Message extends React.Component {
               <p className='message-text'>{ this.props.message.content }</p>
             </div>
             <div className='col-xs-2 message-user-image'>
-              <img className='img-rounded' src={ Meteor.user().profile.picture } width='32px' /> 
+              <img className='img-rounded' src={ Meteor.user().profile.picture } width='32px' />
             </div>
           </div>
         );
@@ -20,7 +18,7 @@ export default class Message extends React.Component {
         return (
           <div className='message-other'>
             <div className='col-xs-2 message-user-image'>
-              <img className='img-rounded' src={ Meteor.users.findOne(this.props.message.senderId).profile.picture } width='32px' /> 
+              <img className='img-rounded' src={ Meteor.users.findOne(this.props.message.senderId).profile.picture } width='32px' />
             </div>
             <div className='col-xs-9 message-text-container'>
               <p className='message-text'>{ this.props.message.content }</p>

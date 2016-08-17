@@ -28,8 +28,12 @@ export default class TeamLayout extends React.Component {
         <div className='chats-container'>
           { this.renderChats() }
         </div>
-
-        <CreateBoardModal team={ this.props.team } />
+        
+        {
+          this.props.team.owner() === Meteor.user().emails[0].address ? (
+            <CreateBoardModal team={ this.props.team } />
+          ) : ( null )
+        }
         <CreateChatModal team={ this.props.team } />
       </div>
     );
