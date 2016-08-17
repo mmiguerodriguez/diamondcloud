@@ -4,21 +4,23 @@ export default class Message extends React.Component {
   render() {
     if(this.props.position === 'medium') {
       if(this.props.isSender) {
+        let user = Meteor.user();
         return (
           <div className='message-me'>
             <div className='col-xs-9 message-text-container'>
               <p className='message-text'>{ this.props.message.content }</p>
             </div>
-            <div className='col-xs-2 message-user-image'>
-              <img className='img-rounded' src={ Meteor.user().profile.picture } width='32px' />
+            <div className='col-xs-2 message-user-image' title={ user.profile.name }>
+              <img className='img-rounded' src={ user.profile.picture } width='32px' />
             </div>
           </div>
         );
       } else {
+        let otherUser = Meteor.users.findOne(this.props.message.senderId);
         return (
           <div className='message-other'>
-            <div className='col-xs-2 message-user-image'>
-              <img className='img-rounded' src={ Meteor.users.findOne(this.props.message.senderId).profile.picture } width='32px' />
+            <div className='col-xs-2 message-user-image' title={ otherUser.profile.name }>
+              <img className='img-rounded' src={ otherUser.profile.picture } width='32px' />
             </div>
             <div className='col-xs-9 message-text-container'>
               <p className='message-text'>{ this.props.message.content }</p>
