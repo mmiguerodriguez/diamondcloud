@@ -111,24 +111,29 @@ JSON.stringify(db.moduleInstances.aggregate([
           cond: {
             $eq: ['$$element.color', 'red']
           }
+        },
+        children: {
+          //children.filter(condition)
         }
       },
-      todos: '$todos'
+      todos: 1
     }
   },
   {
     $project: {
-      categories: '$categories',
+      categories: 1,
       todos: {
         $filter: {
           input: '$todos',
           as: 'element',
           cond: {
+            /*
             categories: {
               $elemMatch: {
                 _id: '$$element.categoryId'
               }
             }
+            */
           }
         }
       }
