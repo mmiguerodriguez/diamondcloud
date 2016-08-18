@@ -134,17 +134,33 @@ if(Meteor.isServer){
     it('should should create a collection and an entry in module data', function() {
       let args, expect, result;
       args = {
+        collection: 'todos',
+        obj: {
+          prop1: 'val1',
+        },
+        visibleBy: [
+          { userId: 'userId' },
+        ],
         moduleInstanceId: module._id,
       };
 
-      dearchiveModuleInstance.call(args, (err, res) => {
+      apiInsert.call(args, (err, res) => {
         if(err) throw new Meteor.Error(err);
         result = res;
       });
 
-      expect = false;
+      expect = {
+        todos: [
+          {
+            prop1: 'val1',
+            visibleBy: [
+              { userId: 'userId' },
+            ]
+          }
+        ],
+      };
 
-      chai.assert.isTrue(expect === result.archived);
+      chai.assert.deepEqual(ModuleInstances.findOne(module._id).data, expect);
     });
   });
 }
