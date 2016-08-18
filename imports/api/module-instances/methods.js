@@ -112,13 +112,33 @@ export const apiInsert = new ValidatedMethod({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
     collection: { type: String },
     obj: { type: Object },
+    visibleBy: { type: Array },
   }).validator(),
-  run({ moduleInstanceId, collection, obj }) {
+  run({ moduleInstanceId, collection, obj, visibleBy }) {
     if(!Meteor.user()) {
       throw new Meteor.Error('ModuleInstances.methods.apiInsert.notLoggedIn',
       'Must be logged in to use a module.');
     }
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-    if(moduleInstance.board().hasUser())
+    if(!moduleInstance.board().hasUser(Meteor.user().emails[0].address)) {
+      throw new Meteor.Error('ModuleInstances.methods.apiInsert.boardAccessDenied',
+      'Must be part of a board to access its modules.');
+    }
+
+    let entry = obj;
+    entry.visibleBy = visibleBy;
+
+    if(!moduleInstance.data[collection]){
+      moduleInstance.data[collection] = [entry];
+    }
+    else{
+      moduleInstance.data[collection].push(entry);
+    }
+
+    ModuleInstances.update(moduleInstanceId, {
+      $set: {
+        data: moduleInstance.data,
+      }
+    });
   }
 });

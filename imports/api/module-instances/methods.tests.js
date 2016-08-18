@@ -130,5 +130,21 @@ if(Meteor.isServer){
 
       chai.assert.isTrue(expect === result.archived);
     });
+
+    it('should should create a collection and an entry in module data', function() {
+      let args, expect, result;
+      args = {
+        moduleInstanceId: module._id,
+      };
+
+      dearchiveModuleInstance.call(args, (err, res) => {
+        if(err) throw new Meteor.Error(err);
+        result = res;
+      });
+
+      expect = false;
+
+      chai.assert.isTrue(expect === result.archived);
+    });
   });
 }
