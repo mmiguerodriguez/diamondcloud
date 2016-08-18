@@ -10,6 +10,7 @@ export default class ChatLayout extends React.Component {
       chat: this.props.chat,
       position: this.props.position,
       message: '',
+      chatType: {},
     };
 
     this.refs = {
@@ -18,13 +19,6 @@ export default class ChatLayout extends React.Component {
   }
   render() {
     if (this.state.position === 'minimized') {
-      let obj;
-      if(this.props.chat.boardId) {
-        obj = { boardId: this.props.chat.boardId };
-      } else if(this.props.chat.directChatId) {
-        obj = { directChatId: this.props.chat.directChatId };
-      }
-
       return (
         <div className='chat minimized'>
           <p  className='col-xs-10 chat-text'
@@ -32,7 +26,7 @@ export default class ChatLayout extends React.Component {
             <b>{ this.getName() }</b>
           </p>
           <div  className='col-xs-2 chat-image'
-                onClick={ this.props.removeChat.bind(this, obj) }>
+                onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
             <img  className='close-image'
                   src='/img/chat/close.svg'
                   width='16px' />
@@ -104,6 +98,18 @@ export default class ChatLayout extends React.Component {
       return ( null );
     }
   }
+  componentWillMount() {
+    let type;
+    if(this.props.chat.boardId) {
+      type = { boardId: this.props.chat.boardId };
+    } else if(this.props.chat.directChatId) {
+      type = { directChatId: this.props.chat.directChatId };
+    }
+
+    this.setState({
+      chatType: type,
+    });
+  }
   componentDidUpdate(prevProps, prevState) {
     // Scroll to bottom if a new message is sent or received
     if(this.props.chat.messages.length > prevProps.chat.messages.length) {
@@ -114,9 +120,13 @@ export default class ChatLayout extends React.Component {
       }
     }
   }
+
   handleKey(event){
     if(event.which === 13) {
       this.sendMessage();
+    } else if(event.which === 27) {
+      this.props.removeChat(this.state.chatType);
+      // this.togglePosition('minimized');
     }
   }
   changeText(event) {
