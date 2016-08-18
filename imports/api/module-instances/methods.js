@@ -111,8 +111,8 @@ export const apiInsert = new ValidatedMethod({
   validate: new SimpleSchema({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
     collection: { type: String },
-    obj: { type: Object },
-    visibleBy: { type: Array },
+    obj: { type: Object, blackbox: true },
+    visibleBy: { type: [Object], blackbox: true },
   }).validator(),
   run({ moduleInstanceId, collection, obj, visibleBy }) {
     if(!Meteor.user()) {

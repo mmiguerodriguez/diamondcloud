@@ -11,6 +11,7 @@ import {
   editModuleInstance,
   archiveModuleInstance,
   dearchiveModuleInstance,
+  apiInsert,
 }                        from './methods.js';
 
 import '../factories/factories.js';
@@ -148,7 +149,7 @@ if(Meteor.isServer){
         if(err) throw new Meteor.Error(err);
         result = res;
       });
-
+      console.log(result);
       expect = {
         todos: [
           {
