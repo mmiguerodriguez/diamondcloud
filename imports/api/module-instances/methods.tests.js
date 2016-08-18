@@ -19,7 +19,7 @@ import '../factories/factories.js';
 if(Meteor.isServer){
   describe('ModuleInstances', function(){
 
-    let module, user;
+    let module, user, board;
 
     beforeEach(function() {
       resetDatabase();

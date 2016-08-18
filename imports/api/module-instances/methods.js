@@ -120,6 +120,7 @@ export const apiInsert = new ValidatedMethod({
       'Must be logged in to use a module.');
     }
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+    console.log(moduleInstance);
     if(!moduleInstance.board().hasUser(Meteor.user().emails[0].address)) {
       throw new Meteor.Error('ModuleInstances.methods.apiInsert.boardAccessDenied',
       'Must be part of a board to access its modules.');
