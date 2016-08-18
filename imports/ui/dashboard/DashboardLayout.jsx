@@ -17,15 +17,20 @@ export default class DashboardLayout extends React.Component {
     let hasTeams = this.props.teams.length > 0 ? true : false;
     return (
       <div>
-        <WelcomeCard hasTeams={ hasTeams } />
-        <TeamsLayout  hasTeams={ hasTeams }
-                      teams={ this.props.teams }
-                      openCreateTeamModal={ this.openCreateTeamModal }
-                      openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
+        <WelcomeCard 
+          hasTeams={ hasTeams }
+          openCreateTeamModal={ this.openCreateTeamModal } />
+        <TeamsLayout 
+          hasTeams={ hasTeams }
+          teams={ this.props.teams }
+          openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
         <CreateTeamModal /> { /* props: users(image, name, id (to send message) ) */ }
         {
           (this.state.team) ? (
-            <ConfigTeamModal key={ this.state.team._id } team={ this.state.team } loadTeam={ this.loadTeam.bind(this) }/>
+            <ConfigTeamModal 
+              key={ this.state.team._id } 
+              team={ this.state.team } 
+              loadTeam={ this.loadTeam.bind(this) } />
           ) : ( null )
         }
       </div>

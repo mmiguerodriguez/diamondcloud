@@ -7,17 +7,19 @@ export default class UsersList extends React.Component {
         <div className="col-xs-1">
           <img  className="contact-list-photo"
                 alt="User"
-                src={ this.props.user.picture || null } />
+                src={ this.props.user.profile.picture || null } />
         </div>
-        <div className="col-xs-6">
+        <div className="col-xs-9">
           <p className="contact-list-name">{ this.props.user.profile.name }</p>
         </div>
-        <div className="col-xs-3"></div>
-        <div className="col-xs-1">
-          <div className="close" onClick={ this.props.removeUser.bind(null, this.props.user.emails[0].address) }>
-            <img src="/img/close-modal-icon.svg" width="16px" />
+        { (!this.props.user.isOwner && this.props.isOwner) ? (
+          <div className="col-xs-1">
+            <div className="close" onClick={ this.props.removeUser.bind(null, this.props.user.emails[0].address) }>
+              <img src="/img/close-modal-icon.svg" width="16px" />
+            </div>
           </div>
-        </div>
+        ) : null }
+
       </div>
     );
   }
@@ -25,5 +27,6 @@ export default class UsersList extends React.Component {
 
 UsersList.propTypes = {
   user: React.PropTypes.object.isRequired,
+  isOwner: React.PropTypes.bool.isRequired,
   removeUser: React.PropTypes.func.isRequired,
 };

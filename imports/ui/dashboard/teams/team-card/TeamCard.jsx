@@ -6,8 +6,14 @@ export default class TeamCard extends React.Component {
     return (
       this.props.hasTeams === true ? (
         <div className="col-md-3 teams">
+          <div className='row team-image'>
+            <a role="button"
+               onClick={ this.props.openConfigTeamModal.bind(null, this.props.team) }>
+              <img src="/img/teamconfig.svg" className="config-icon" />
+            </a>
+          </div>
           <div className="row team-data">
-            <div className="col-xs-8">
+            <div className="col-xs-12">
               <h4>
                 <b>{ this.props.team.name }</b>
               </h4>
@@ -23,12 +29,6 @@ export default class TeamCard extends React.Component {
                   <h5>Miembros: { this.props.team.users.length }/5</h5>
                 )
               }
-            </div>
-            <div className="col-xs-4">
-              <a role="button"
-                 onClick={ this.props.openConfigTeamModal.bind(null, this.props.team) }>
-                <img src="img/config.svg" className="config-icon" />
-              </a>
             </div>
           </div>
           <Link to={ "/team/" + this.props.team._id }
