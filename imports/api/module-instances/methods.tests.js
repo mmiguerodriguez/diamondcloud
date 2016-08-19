@@ -15,7 +15,6 @@ import {
 
 import '../factories/factories.js';
 
-/*
 if(Meteor.isServer){
   describe('ModuleInstances', function(){
 
@@ -49,7 +48,7 @@ if(Meteor.isServer){
         y: module.y,
         width: module.width,
         height: module.height,
-        vars: module.vars,
+        data: module.data,
       };
 
       createModuleInstance.call(args, (err, res) => {
@@ -64,7 +63,7 @@ if(Meteor.isServer){
         y: args.y,
         width: args.width,
         height: args.height,
-        vars: args.vars,
+        data: args.data,
         archived: false,
       };
 
@@ -93,7 +92,7 @@ if(Meteor.isServer){
         y: args.y,
         width: args.width,
         height: args.height,
-        vars: module.vars,
+        data: module.data,
         archived: false,
       };
 
@@ -133,4 +132,3 @@ if(Meteor.isServer){
     });
   });
 }
-*/

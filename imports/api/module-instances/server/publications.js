@@ -9,69 +9,49 @@ let printObject = (obj) => {
   }, 4));
 };
 
-let generateTree = (params) => {
-  let children = [];
-  if (params.children) {
-    params.children.forEach((child) => {
-      children.push(generateTree(child));
-    });
-  }
-  let find = function() {
-    let parents = arguments;
-    let pipeline = [
-      {
-        $match: {
-          '_id': globalModuleInstanceId,
-        }
-      },
-      {
-        $project: {
-           [params.collection]: `$data.${params.collection}`,
-        }
-      },
+Meteor.publish('moduleInstances.data', function(moduleInstanceId, obj) {
+  let teamId = ModuleInstances.findOne(moduleInstanceId).board().team()._id;
+  boards = Meteor.user().boards(teamId, { _id: 1 }).map((board) => board._id);
 
-    ];
-    if (params.condition) pipeline.push(
-      {
-        $project: {
-          [params.collection]: {
-            $filter: {
-              input: `$${params.collection}`,
-              as: 'element',
-              cond: JSON.parse(params.condition)
-            }
+  let pipeline = [
+    {
+      $match: {
+        '_id': moduleInstanceId,
+      }
+    },
+    {
+      $project: {
+         [obj.collection]: `$data.${obj.collection}`,
+      }
+    },
+
+  ];
+
+  if (obj.condition) pipeline.push(
+    {
+      $project: {
+        [obj.collection]: {
+          $filter: {
+            input: `$${obj.collection}`,
+            as: 'element',
+            cond: obj.condition
           }
         }
       }
-    );
-    pipeline.push(
-      {
-        $match: {
-          $or: [
-            { 'todos.visibleBy': null },
-            { 'todos.visibleBy.userId': userId },
-            { 'todos.visibleBy.boardId': { $in: boards } }
-          ]
-        }
-      }
-    );
-    ModuleInstances.aggregate(pipeline);
-    // Return find del coso
-  };
-  let result = {
-    find
-  };
-  if (children.length) result.children = children;
-  return result;
-};
+    }
+  );
 
-Meteor.publishComposite('moduleInstances.data', function(moduleInstanceId, obj) {
-  sub = this;
-  let teamId = ModuleInstances.findOne(moduleInstanceId).board().team()._id;
-  boards = Meteor.user().boards(teamId, { _id: 1 }).map((board) => board._id);
-  globalModuleInstanceId = moduleInstanceId;
-  userId = this.userId;
-  let x = generateTree(obj);
-  //printObject(x);
-  return x;
+  pipeline.push(
+    {
+      $match: {
+        $or: [
+          { 'todos.visibleBy': null },
+          { 'todos.visibleBy.userId': this.userId },
+          { 'todos.visibleBy.boardId': { $in: boards } }
+        ]
+      }
+    }
+  );
+
+  ReactiveAggregate(this, ModuleInstances, pipeline);
 });

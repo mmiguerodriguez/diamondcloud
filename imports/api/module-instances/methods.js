@@ -12,9 +12,9 @@ export const createModuleInstance = new ValidatedMethod({
     y: { type: Number },
     width: { type: Number },
     height: { type: Number },
-    vars: { type: Object },
+    data: { type: Object },
   }).validator(),
-  run({ moduleId, x, y, width, height, vars }){
+  run({ moduleId, x, y, width, height, data }){
     if (!Meteor.user()) {
       throw new Meteor.Error('ModuleInstances.methods.create.notLoggedIn',
       'Must be logged in to make a module instance.');
@@ -26,7 +26,7 @@ export const createModuleInstance = new ValidatedMethod({
       y,
       width,
       height,
-      vars,
+      data,
       archived: false,
     };
 

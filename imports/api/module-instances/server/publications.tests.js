@@ -12,6 +12,12 @@ import { Boards }               from '../../boards/boards.js';
 import { Teams }                from '../../teams/teams.js';
 import { ModuleInstances }      from '../../module-instances/module-instances.js';
 
+let printObject = (obj) => {
+  console.log(JSON.stringify(obj, function(key, val) {
+    return (typeof val === 'function' ? val + '' : val);
+  }, 4));
+};
+
 if (Meteor.isServer) {
   describe('Modules API', function() {
     describe('Publication', function() {
@@ -37,28 +43,12 @@ if (Meteor.isServer) {
         ];
         board.moduleInstances.push({ _id: moduleInstances[0]._id });
 
-        requests = [
-          {
-            collection: 'todos',
-            condition: JSON.stringify({
-              $eq: ['$$element.boardId', 'designBoardId']
-            }),
+        request = {
+          collection: 'todos',
+          condition: {
+            $eq: ['$$element.boardId', 'designBoardId']
           },
-          {
-            collection: 'categories',
-            condition: JSON.stringify({
-              $eq: ['$$element.color', 'red']
-            }),
-            children: [
-              {
-                collection: 'todos',
-                condition: `{
-                  $eq: ['$$element.categoryId', parents[0]._id]
-                }`
-              }
-            ]
-          }
-        ];
+        };
 
         resetDatabase();
 
@@ -73,26 +63,12 @@ if (Meteor.isServer) {
         Meteor.user.restore();
       });
 
-      it('should publish the requested moduleInstance data when there are no childrens', function(done) {
+      it('should publish the requested moduleInstance data', function(done) {
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('moduleInstances.data', moduleInstances[0]._id, requests[0], (collections) => {
-          chai.assert.isDefined(collections.ModuleInstances[0]);
-          chai.assert.isUndefined(collections.ModuleInstances[1]);
-          chai.assert.isDefined(collections.ModuleInstances[0].todos[0]);
-          chai.assert.isUndefined(collections.ModuleInstances[0].todos[1]);
-          done();
-        });
-      });
-
-      it('should publish the requested moduleInstance data when there are childrens', function(done) {
-        const collector = new PublicationCollector({ userId: user._id });
-
-        collector.collect('moduleInstances.data', moduleInstances[0]._id, requests[1], (collections) => {
-          chai.assert.isDefined(collections.ModuleInstances[0]);
-          chai.assert.isUndefined(collections.ModuleInstances[1]);
-          chai.assert.isTrue(collections.ModuleInstances[0].categories.length == 2);
-          chai.assert.isTrue(collections.ModuleInstances[0].todos.length == 6);
+        collector.collect('moduleInstances.data', moduleInstances[0]._id, request, (collections) => {
+          chai.assert.isTrue(collections.ModuleInstances.length == 1);
+          chai.assert.isDefined(collections.ModuleInstances[0].todos.length == 1);
           done();
         });
       });

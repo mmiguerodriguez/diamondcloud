@@ -50,11 +50,13 @@ OrganizationModule = {
     categories: [
       {
         _id: 'categoryId1',
-        name: 'Lorem ipsum category'
+        name: 'Lorem ipsum category',
+        color: 'red'
       },
       {
         _id: 'categoryId2',
-        name: 'Another great category'
+        name: 'Another great category',
+        color: 'blue'
       },
     ],
   },
@@ -171,17 +173,7 @@ db.modules.update({ _id: 'organizationModuleInstance1Id' }, { $push: { 'data.tod
 
 DiamondAPI.subscribe('heyImMe123ImAnId', {
   collection: 'categories',
-  condition: {
-
-  },
-  children: [
-    {
-      collection: 'todos',
-      condition: `{
-        $eq: ['$$element.boardId', 'designBoardId']
-      }`
-    }
-  ]
+  condition: 'bla bla'
 }, (data) => {
   /* Do something with data */
 });

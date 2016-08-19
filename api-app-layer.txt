@@ -1,15 +1,11 @@
 var DiamondAPI;
 
-DiamondAPI.validationDFS = (obj) => {
-  if (obj.collection === null) return false;
-  let x = true;
-  if (obj.children) obj.children.forEach((child) => x = x && DiamondAPI.validationDFS(child));
-  return x;
-};
-
 DiamondAPI.subscribe = (moduleInstanceId, obj, callback) => {
   // Validation.
-  if (DiamondAPI.validationDFS(obj)) {
+  let validation = typeof obj.collection == 'string';
+  validation = validation && typeof obj.condition == 'object';
+  validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
+  if (validation) {
     // Subscribe to data
     Meteor.subscribe('moduleInstances.data', moduleInstanceId, obj, {
       onReady: callback,
