@@ -45,21 +45,21 @@ export default class SidebarLayout extends React.Component {
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
           getMessages={ this.props.getMessages }
           openCreateChatModal={ this.openCreateChatModal } />
-          
+
         {
           this.props.team.owner() === Meteor.user().emails[0].address ? (
-            <CreateBoardModal 
+            <CreateBoardModal
               team={ this.props.team }
               getMessages={ this.props.getMessages }
-              changeBoard={ this.props.changeBoard } 
+              changeBoard={ this.props.changeBoard }
               toggleCollapsible={ this.toggleCollapsible.bind(this) } />
           ) : ( null )
         }
-        <CreateChatModal 
-          team={ this.props.team } 
-          getMessages={ this.props.getMessages } 
+        <CreateChatModal
+          team={ this.props.team }
+          getMessages={ this.props.getMessages }
           toggleCollapsible={ this.toggleCollapsible.bind(this) } />
-          
+
       </div>
     );
   }
@@ -73,14 +73,14 @@ export default class SidebarLayout extends React.Component {
 
     if(active) {
       this.hideActive();
+      this.toggleSubHeader();
     } else {
       this.hideActive(() => {
-        $('#' + elem).effect('slide', {
-          direction: 'left',
-          mode: 'show',
-        }, 350);
+        let collapsible = $('#' + elem);
+        this.effect(collapsible, 'slide', 'left', 'show', 350);
 
-        this.showBackground($('#' + name + '-' + 'item'));
+        let item = $('#' + name + '-' + 'item');
+        this.showBackground(item);
       });
     }
   }
@@ -109,12 +109,10 @@ export default class SidebarLayout extends React.Component {
     });
 
     if(!!activeElement) {
-      activeElement.effect('slide', {
-        direction: 'left',
-        mode: 'hide',
-      }, 350, callback);
+      this.effect(activeElement, 'slide', 'left', 'hide', 350, callback);
     } else {
       callback();
+      this.toggleSubHeader();
     }
   }
 
@@ -142,7 +140,19 @@ export default class SidebarLayout extends React.Component {
       }
     });
   }
-  
+
+  // helpers
+  effect(element, type, direction, mode, time, callback) {
+    element.effect(type, {
+      direction,
+      mode,
+    }, time, callback);
+  }
+  toggleSubHeader() {
+    $('.sub-header').toggleClass('sub-header-collapsed');
+  }
+
+  // open modals
   openCreateBoardModal() {
     $('#createBoardModal').modal('show');
   }

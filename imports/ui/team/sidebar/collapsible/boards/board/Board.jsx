@@ -16,8 +16,8 @@ export default class Board extends React.Component {
     );
   }
   setBoard() {
+    this.props.toggleCollapsible('boards');
     this.props.changeBoard(this.props.board._id);
-    this.props.toggleCollapsible('board');
   }
 }
 
