@@ -28,6 +28,7 @@ export default class Team extends React.Component {
             team={ this.props.team }
             boards={ this.props.boards }
             directChats={ this.props.directChats }
+            owner={ this.props.team.owner() === Meteor.user().emails[0].address }
             chats={ this.formatChats() }
             getMessages={ this.getMessages.bind(this) }
             removeChat={ this.removeChat.bind(this) }

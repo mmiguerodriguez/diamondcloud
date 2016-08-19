@@ -7,10 +7,14 @@ export default class TeamCard extends React.Component {
       this.props.hasTeams === true ? (
         <div className="col-md-3 teams">
           <div className='row team-image'>
-            <a role="button"
-               onClick={ this.props.openConfigTeamModal.bind(null, this.props.team) }>
-              <img src="/img/teamconfig.svg" className="config-icon" />
-            </a>
+            { 
+              this.props.owner === true ? (
+                <a role="button"
+                   onClick={ this.props.openConfigTeamModal.bind(null, this.props.team) }>
+                  <img src="/img/teamconfig.svg" className="config-icon" />
+                </a>
+              ) : ( null )
+            }
           </div>
           <div className="row team-data">
             <div className="col-xs-12">
@@ -51,5 +55,6 @@ export default class TeamCard extends React.Component {
 TeamCard.propTypes = {
   team: React.PropTypes.object.isRequired,
   hasTeams: React.PropTypes.bool.isRequired,
+  owner: React.PropTypes.bool.isRequired,
   openConfigTeamModal: React.PropTypes.func.isRequired,
 };
