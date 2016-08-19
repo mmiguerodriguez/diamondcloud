@@ -3,12 +3,6 @@ import { ModuleInstances } from '../module-instances.js';
 
 let globalModuleInstanceId, userId, boards, sub;
 
-let printObject = (obj) => {
-  console.log(JSON.stringify(obj, function(key, val) {
-    return (typeof val === 'function' ? val + '' : val);
-  }, 4));
-};
-
 Meteor.publish('moduleInstances.data', function(moduleInstanceId, obj) {
   let teamId = ModuleInstances.findOne(moduleInstanceId).board().team()._id;
   boards = Meteor.user().boards(teamId, { _id: 1 }).map((board) => board._id);

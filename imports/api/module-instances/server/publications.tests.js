@@ -7,16 +7,11 @@ import { Random }               from 'meteor/random';
 import   faker                  from 'faker';
 import                               './publications.js';
 import '../../factories/factories.js';
+import { printObject } from '../../helpers/print-objects.js';
 
 import { Boards }               from '../../boards/boards.js';
 import { Teams }                from '../../teams/teams.js';
 import { ModuleInstances }      from '../../module-instances/module-instances.js';
-
-let printObject = (obj) => {
-  console.log(JSON.stringify(obj, function(key, val) {
-    return (typeof val === 'function' ? val + '' : val);
-  }, 4));
-};
 
 if (Meteor.isServer) {
   describe('Modules API', function() {
@@ -67,6 +62,7 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('moduleInstances.data', moduleInstances[0]._id, request, (collections) => {
+          printObject({ migue: () => { return 5; }, michael: 'hola' });
           chai.assert.isTrue(collections.ModuleInstances.length == 1);
           chai.assert.isDefined(collections.ModuleInstances[0].todos.length == 1);
           done();
