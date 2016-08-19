@@ -3,6 +3,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
 import { ModuleInstances } from './module-instances.js';
+import { Boards } from '../boards/boards.js';
 
 export const createModuleInstance = new ValidatedMethod({
   name: 'ModuleInstances.methods.create',
@@ -12,9 +13,9 @@ export const createModuleInstance = new ValidatedMethod({
     y: { type: Number },
     width: { type: Number },
     height: { type: Number },
-    vars: { type: Object },
+    data: { type: Object },
   }).validator(),
-  run({ moduleId, x, y, width, height, vars }){
+  run({ moduleId, x, y, width, height, data }){
     if (!Meteor.user()) {
       throw new Meteor.Error('ModuleInstances.methods.create.notLoggedIn',
       'Must be logged in to make a module instance.');
@@ -26,7 +27,7 @@ export const createModuleInstance = new ValidatedMethod({
       y,
       width,
       height,
-      vars,
+      data,
       archived: false,
     };
 
@@ -120,8 +121,7 @@ export const apiInsert = new ValidatedMethod({
       'Must be logged in to use a module.');
     }
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-    console.log(moduleInstance);
-    if(!moduleInstance.board().hasUser(Meteor.user().emails[0].address)) {
+    if(!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('ModuleInstances.methods.apiInsert.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }

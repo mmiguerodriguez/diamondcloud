@@ -6,6 +6,7 @@ import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
 import { ModuleInstances }         from './module-instances.js';
+import { Boards }         from '../boards/boards.js';
 import {
   createModuleInstance,
   editModuleInstance,
@@ -23,22 +24,25 @@ if(Meteor.isServer){
 
     beforeEach(function() {
       resetDatabase();
-
+      board = Factory.create('publicBoard');
       module = Factory.create('moduleInstance');
       module._id = Random.id();
+      board.moduleInstances.push({ _id: module._id });
 
       user = Factory.create('user');
 
       resetDatabase();
-
+      Boards.insert(board);
       ModuleInstances.insert(module);
       Meteor.users.insert(user);
 
       sinon.stub(Meteor, 'user', () => user);
+      sinon.stub(Boards, 'isValid', () => true);
     });
 
     afterEach(function() {
       Meteor.user.restore();
+      Boards.isValid.restore();
     });
 
     it('should create a module instance', function() {
@@ -49,7 +53,7 @@ if(Meteor.isServer){
         y: module.y,
         width: module.width,
         height: module.height,
-        vars: module.vars,
+        data: module.data,
       };
 
       createModuleInstance.call(args, (err, res) => {
@@ -64,7 +68,7 @@ if(Meteor.isServer){
         y: args.y,
         width: args.width,
         height: args.height,
-        vars: args.vars,
+        data: args.data,
         archived: false,
       };
 
@@ -93,7 +97,7 @@ if(Meteor.isServer){
         y: args.y,
         width: args.width,
         height: args.height,
-        vars: module.vars,
+        data: module.data,
         archived: false,
       };
 

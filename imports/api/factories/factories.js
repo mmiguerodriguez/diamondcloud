@@ -72,6 +72,6 @@ Factory.define('moduleInstance', ModuleInstances, {
 	y: faker.random.number(),
 	width: faker.random.number({ min: 0, max: 1920 }),
 	height: faker.random.number({ min: 0, max: 1080 }),
-	vars: {},
+	data: {},
 	archived: false,
 });
