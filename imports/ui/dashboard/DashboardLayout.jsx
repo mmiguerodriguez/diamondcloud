@@ -1,8 +1,9 @@
-import React from 'react';
+import React           from 'react';
 
-import { Teams } from '../../api/teams/teams.js';
-import WelcomeCard from './welcome-card/WelcomeCard.jsx';
-import TeamsLayout from './teams/TeamsLayout.jsx';
+import { Teams }       from '../../api/teams/teams.js';
+
+import WelcomeCard     from './welcome-card/WelcomeCard.jsx';
+import TeamsLayout     from './teams/TeamsLayout.jsx';
 import CreateTeamModal from '../modals/create-team/CreateTeamModal.jsx';
 import ConfigTeamModal from '../modals/config-team/ConfigTeamModal.jsx';
 
@@ -17,10 +18,10 @@ export default class DashboardLayout extends React.Component {
     let hasTeams = this.props.teams.length > 0 ? true : false;
     return (
       <div>
-        <WelcomeCard 
+        <WelcomeCard
           hasTeams={ hasTeams }
           openCreateTeamModal={ this.openCreateTeamModal } />
-        <TeamsLayout 
+        <TeamsLayout
           hasTeams={ hasTeams }
           teams={ this.props.teams }
           openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
@@ -28,9 +29,9 @@ export default class DashboardLayout extends React.Component {
         {
           (this.state.team) ? (
             (this.state.team.owner() === Meteor.user().emails[0].address) ? (
-              <ConfigTeamModal 
-                key={ this.state.team._id } 
-                team={ this.state.team } 
+              <ConfigTeamModal
+                key={ this.state.team._id }
+                team={ this.state.team }
                 loadTeam={ this.loadTeam.bind(this) } />
             ) : ( null )
           ) : ( null )
