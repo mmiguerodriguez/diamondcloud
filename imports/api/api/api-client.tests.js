@@ -13,7 +13,8 @@ import { generateApi }           from './api-client.js';
 if (Meteor.isClient) {
   describe('Modules API', () => {
     describe('Client subscriptions', () => {
-      let user, moduleInstances, requests, callback, reactiveData;
+      let user, moduleInstances, requests, callback,
+          reactiveData, name, params, myCallback;
 
       beforeEach(function() {
         resetDatabase();
@@ -40,7 +41,7 @@ if (Meteor.isClient) {
           },
         ];
 
-        callback = (data) => reactiveData = data;
+        callback = (data) => { reactiveData = data; };
 
         resetDatabase();
 
@@ -79,10 +80,17 @@ if (Meteor.isClient) {
             callbackFunctions.onReady();
           }
         });
+        sinon.stub(Meteor, 'call', (_name, _params, _callback) => {
+          name = _name;
+          params = _params;
+          myCallback = _callback;
+        });
       });
 
       afterEach(function() {
         Meteor.user.restore();
+        Meteor.subscribe.restore();
+        Meteor.call.restore();
       });
 
       it('should get the requested data when subscribing', (done) => {
@@ -91,6 +99,37 @@ if (Meteor.isClient) {
         DiamondAPI.subscribe(requests[0], callback);
         // Checking everything works
         done();
+      });
+      it('should insert object to a module instance data', () => {
+        let DiamondAPI = generateApi(moduleInstances[1]._id);
+        // Here comes the code that an API consumer would write.
+        DiamondAPI.subscribe(requests[0], callback);
+        DiamondAPI.insert({
+          collection: 'testCollection',
+          obj: {
+            prop1: 'val1',
+            prop2: 'val2',
+          },
+          visibleBy: [
+            { userId: 'userId' },
+          ],
+          callback: () => {
+            return "value";
+          },
+        });
+        chai.assert.equal(name, 'ModuleInstances.methods.apiInsert');
+        chai.assert.deepEqual(params, {
+          moduleInstanceId: moduleInstances[1]._id,
+          collection: 'testCollection',
+          obj: {
+            prop1: 'val1',
+            prop2: 'val2',
+          },
+          visibleBy: [
+            { userId: 'userId' },
+          ],
+        });
+        chai.assert.equal(myCallback(), 'value');
       });
     });
   });
