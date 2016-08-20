@@ -25,16 +25,16 @@ export default class SidebarLayout extends React.Component {
           <img src="/img/sidebar/modules.svg" width="32px" />
           <p className="text item-title">Módulos</p>
         </div>
-        <div  id="chats-item" 
-              className="item" 
+        <div  id="chats-item"
+              className="item"
               onClick={ this.toggleCollapsible.bind(this, 'chats') }>
           <img src="/img/sidebar/messages.svg" width="32px" />
           <p className="text item-title">Mensajes</p>
         </div>
         {
-          this.props.owner === true ? (
+          this.props.owner ? (
             <div  id='settings-item'
-                  className="item bottom"  
+                  className="item bottom"
                   onClick={ this.openConfigTeamModal.bind(this) }>
               <img src="/img/sidebar/config.svg" width="32px" />
             </div>
@@ -46,6 +46,7 @@ export default class SidebarLayout extends React.Component {
         <BoardsCollapsible
           boards={ this.props.boards }
           team={ this.props.team }
+          owner={ this.props.owner }
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
           changeBoard={ this.props.changeBoard }
           openCreateBoardModal={ this.openCreateBoardModal } />
@@ -57,7 +58,7 @@ export default class SidebarLayout extends React.Component {
           openCreateChatModal={ this.openCreateChatModal } />
 
         {
-          this.props.owner === true ? (
+          this.props.owner ? (
             <div>
               <CreateBoardModal
                 team={ this.props.team }

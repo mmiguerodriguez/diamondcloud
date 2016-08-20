@@ -22,7 +22,7 @@ export default class BoardsCollapsible extends React.Component {
           this.renderBoards()
         }
         footer={
-          this.props.team.owner() === Meteor.user().emails[0].address ? (
+          this.props.owner ? (
             <a className="btn btn-default footer-btn" role="button" onClick={ this.props.openCreateBoardModal }>
               CREAR BOARD
             </a>
@@ -52,6 +52,7 @@ export default class BoardsCollapsible extends React.Component {
 BoardsCollapsible.propTypes = {
   boards: React.PropTypes.array.isRequired,
   team: React.PropTypes.object.isRequired,
+  owner: React.PropTypes.bool.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
   openCreateBoardModal: React.PropTypes.func.isRequired,

@@ -7,8 +7,8 @@ export default class TeamCard extends React.Component {
       this.props.hasTeams === true ? (
         <div className="col-md-3 teams">
           <div className='row team-image'>
-            { 
-              this.props.owner === true ? (
+            {
+              this.props.owner ? (
                 <a role="button"
                    onClick={ this.props.openConfigTeamModal.bind(null, this.props.team) }>
                   <img src="/img/teamconfig.svg" className="config-icon" />
