@@ -11,29 +11,29 @@ export default class TeamsLayout extends React.Component {
   }
   render() {
     return (
-      <div className="container team-container">
-        <div className="row">
-          <div className="col-md-6">
+      <div className='container team-container'>
+        <div className='row'>
+          <div className='col-md-6'>
             <h3>
               <b>Equipos</b>
             </h3>
           </div>
-          <div className="col-md-6">
-            <div className="input-group col-md-6 search-teams" role="button">
-              <input  id="searchTeams"
+          <div className='col-md-6'>
+            <div className='input-group col-md-6 search-teams' role='button'>
+              <input  id='searchTeams'
                       value={ this.state.search }
-                      className="form-control input"
-                      placeholder="Busca tus equipos"
-                      type="search"
+                      className='form-control input'
+                      placeholder='Busca tus equipos'
+                      type='search'
                       onChange={ this.handleChange.bind(this) }/>
-              <div className="input-group-addon icon">
-                <img src="/img/search.svg"
-                     width="24px" />
+              <div className='input-group-addon icon'>
+                <img src='/img/search.svg'
+                     width='24px' />
               </div>
             </div>
           </div>
         </div>
-        <div className="row">
+        <div className='row'>
           { this.renderTeams() }
         </div>
       </div>

@@ -10,12 +10,12 @@ export default class BoardsCollapsible extends React.Component {
         id={ 'boards-collapsible' }
         header={
           <div>
-            <div  type="button"
-                  className="close col-xs-2"
+            <div  type='button'
+                  className='close col-xs-2'
                   onClick={ this.props.toggleCollapsible.bind(null, 'boards') }>
-              <img src="/img/close-modal-icon.svg" width="18px" />
+              <img src='/img/close-modal-icon.svg' width='18px' />
             </div>
-            <h3 className="col-xs-10 title">Boards</h3>
+            <h3 className='col-xs-10 title'>Boards</h3>
           </div>
         }
         body={
@@ -23,7 +23,7 @@ export default class BoardsCollapsible extends React.Component {
         }
         footer={
           this.props.owner ? (
-            <a className="btn btn-default footer-btn" role="button" onClick={ this.props.openCreateBoardModal }>
+            <a className='btn btn-default footer-btn' role='button' onClick={ this.props.openCreateBoardModal }>
               CREAR BOARD
             </a>
           ) : ( null )

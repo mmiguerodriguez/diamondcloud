@@ -18,17 +18,17 @@ export default class CreateChatModal extends React.Component {
         id={ 'createChatModal' }
         header={
           <div>
-            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-              <img src="/img/close-modal-icon.svg" width="18px" />
+            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+              <img src='/img/close-modal-icon.svg' width='18px' />
             </button>
-            <h4 className="modal-title">Crear un chat</h4>
+            <h4 className='modal-title'>Crear un chat</h4>
           </div>
         }
         body={
           <div className='modal-body-fixed'>
             <Select
-              name="form-field-name"
-              placeholder="Seleccioná los usuarios"
+              name='form-field-name'
+              placeholder='Seleccioná los usuarios'
               simpleValue={ true }
               disabled={ false }
               options={ this.teamUsers() }
@@ -38,16 +38,16 @@ export default class CreateChatModal extends React.Component {
         }
         footer={
           <div>
-            <div className="row">
-              <button type="button"
-                      className="btn btn-cancel btn-hover"
-                      data-dismiss="modal"
+            <div className='row'>
+              <button type='button'
+                      className='btn btn-cancel btn-hover'
+                      data-dismiss='modal'
                       onClick={ this.clearData }>
                 Cancelar
               </button>
-              <button type="button"
-                      className="btn btn-accept btn-hover"
-                      data-dismiss="modal"
+              <button type='button'
+                      className='btn btn-accept btn-hover'
+                      data-dismiss='modal'
                       onClick={ this.createChat.bind(this) }>
                 Crear
               </button>
@@ -89,7 +89,7 @@ export default class CreateChatModal extends React.Component {
       } else {
         this.props.getMessages({ directChatId: response._id });
         this.props.toggleCollapsible('chats');
-        
+
         this.clearData();
         $('#createChatModal').modal('hide');
       }

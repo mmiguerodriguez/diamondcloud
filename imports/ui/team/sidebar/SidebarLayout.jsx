@@ -12,31 +12,31 @@ import ConfigTeamModal    from '../../modals/config-team/ConfigTeamModal.jsx';
 export default class SidebarLayout extends React.Component {
   render() {
     return (
-      <div className="sidebar">
-        <div  id="boards-item"
-              className="item no-margin"
+      <div className='sidebar'>
+        <div  id='boards-item'
+              className='item no-margin'
               onClick={ this.toggleCollapsible.bind(this, 'boards') }>
-          <img src="/img/sidebar/boards.svg" width="32px" />
-          <p className="text item-title">Boards</p>
+          <img src='/img/sidebar/boards.svg' width='32px' />
+          <p className='text item-title'>Boards</p>
         </div>
-        <div  id="modules-item"
-              className="item"
+        <div  id='modules-item'
+              className='item'
               onClick={ this.toggleCollapsible.bind(this, 'modules') }>
-          <img src="/img/sidebar/modules.svg" width="32px" />
-          <p className="text item-title">Módulos</p>
+          <img src='/img/sidebar/modules.svg' width='32px' />
+          <p className='text item-title'>Módulos</p>
         </div>
-        <div  id="chats-item"
-              className="item"
+        <div  id='chats-item'
+              className='item'
               onClick={ this.toggleCollapsible.bind(this, 'chats') }>
-          <img src="/img/sidebar/messages.svg" width="32px" />
-          <p className="text item-title">Mensajes</p>
+          <img src='/img/sidebar/messages.svg' width='32px' />
+          <p className='text item-title'>Mensajes</p>
         </div>
         {
           this.props.owner ? (
             <div  id='settings-item'
-                  className="item bottom"
+                  className='item bottom'
                   onClick={ this.openConfigTeamModal.bind(this) }>
-              <img src="/img/sidebar/config.svg" width="32px" />
+              <img src='/img/sidebar/config.svg' width='32px' />
             </div>
           ) : ( null )
         }

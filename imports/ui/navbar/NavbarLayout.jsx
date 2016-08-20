@@ -8,29 +8,28 @@ import Popover from './popover/Popover.jsx';
 
 export default class NavbarLayout extends React.Component {
   render() {
-    let { user } = this.props;
     return (
-      <nav className="navbar header">
-        <div className="container-fluid">
-          <div className="navbar-header">
-            <button className="navbar-toggle collapsed"
-                    type="button"
-                    data-toggle="collapse"
-                    data-target="#navbar"
-                    aria-expanded="false">
-              <span className="sr-only">Toggle navigation</span>
-              <span className="icon-bar"></span>
-              <span className="icon-bar"></span>
-              <span className="icon-bar"></span>
+      <nav className='navbar header'>
+        <div className='container-fluid'>
+          <div className='navbar-header'>
+            <button className='navbar-toggle collapsed'
+                    type='button'
+                    data-toggle='collapse'
+                    data-target='#navbar'
+                    aria-expanded='false'>
+              <span className='sr-only'>Toggle navigation</span>
+              <span className='icon-bar'></span>
+              <span className='icon-bar'></span>
+              <span className='icon-bar'></span>
             </button>
             <a>
-              <img src="/img/logo.svg" className="logo-photo"/>
+              <img src='/img/logo.svg' className='logo-photo'/>
             </a>
           </div>
-          <div className="collapse navbar-collapse" id="navbar">
-            <ul className="nav navbar-nav">
+          <div className='collapse navbar-collapse' id='navbar'>
+            <ul className='nav navbar-nav'>
               {
-                user ? (
+                this.props.user ? (
                   <NavbarLink
                     active={ this.props.path === '/dashboard' ? true : false }
                     link={ '/dashboard' }
@@ -43,15 +42,15 @@ export default class NavbarLayout extends React.Component {
                 link={ '/help' }
                 name={ 'Help' } />
             </ul>
-            <ul className="nav navbar-nav navbar-right">
+            <ul className='nav navbar-nav navbar-right'>
             {
-              user ? (
-                <a className="UserPhotoPopover"
-                  data-container="body"
-                  data-toggle="popover"
-                  data-placement="bottom"
-                  data-content="">
-                  <Profile picture={ user.profile.picture } />
+              this.props.user ? (
+                <a className='UserPhotoPopover'
+                  data-container='body'
+                  data-toggle='popover'
+                  data-placement='bottom'
+                  data-content=''>
+                  <Profile picture={ this.props.user.profile.picture } />
                 </a>
               ) : ( null )
             }

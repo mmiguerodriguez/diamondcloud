@@ -3,12 +3,11 @@ import { Link } from 'react-router';
 
 export default class NavbarLink extends React.Component {
   render() {
-    let { active, link, name } = this.props;
-    active = active === true ? 'active' : '';
-    
+    active = this.props.active ? 'active' : '';
+
     return (
       <li className={ active }>
-        <Link to={ link } className="li-navbar-text">{ name }</Link>
+        <Link to={ this.props.link } className='li-navbar-text'>{ this.props.name }</Link>
       </li>
     );
   }

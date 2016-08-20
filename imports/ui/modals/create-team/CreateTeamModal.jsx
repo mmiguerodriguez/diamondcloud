@@ -24,46 +24,46 @@ export default class CreateTeamModal extends React.Component {
         id={ 'createTeamModal' }
         header={
           <div>
-            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-              <img src="/img/close-modal-icon.svg" width="18px" />
+            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+              <img src='/img/close-modal-icon.svg' width='18px' />
             </button>
-            <h4 className="modal-title">Crear equipo</h4>
+            <h4 className='modal-title'>Crear equipo</h4>
           </div>
         }
         body={
           <div>
-              <div  id="create-team-page-1"
-                    className="name"
+              <div  id='create-team-page-1'
+                    className='name'
                     style={{ display: 'block' }}>
-                <div className="row">
-                  <div className="name-input">
-                    <label  htmlFor="projectName"
-                            className="col-xs-2 col-sm-offset-2 control-label left-align">
+                <div className='row'>
+                  <div className='name-input'>
+                    <label  htmlFor='projectName'
+                            className='col-xs-2 col-sm-offset-2 control-label left-align'>
                       Nombre
                     </label>
-                    <div className="col-xs-12 col-sm-6">
+                    <div className='col-xs-12 col-sm-6'>
                       <TextInput
-                        id="projectName"
-                        class="form-control"
-                        placeholder="Nombre del equipo"
+                        id='projectName'
+                        class='form-control'
+                        placeholder='Nombre del equipo'
                         required={ true }
                         minCharacters={ 3 }
                         onChange={ this.handleChange.bind(this, 'name') }
-                        errorMessage="El nombre no es válido"
-                        emptyMessage="Es obligatorio poner un nombre"
-                        minCharactersMessage="El nombre debe tener 3 o más caracteres"/>
+                        errorMessage='El nombre no es válido'
+                        emptyMessage='Es obligatorio poner un nombre'
+                        minCharactersMessage='El nombre debe tener 3 o más caracteres'/>
                     </div>
                   </div>
-                  <div className="name-input">
-                    <label  htmlFor="projectType"
-                            className="col-xs-2 col-sm-offset-2 control-label left-align">
+                  <div className='name-input'>
+                    <label  htmlFor='projectType'
+                            className='col-xs-2 col-sm-offset-2 control-label left-align'>
                       Tipo
                     </label>
-                    <div className="col-xs-12 col-sm-6">
+                    <div className='col-xs-12 col-sm-6'>
                       <SelectInput
-                        id="projectType"
-                        class="form-control"
-                        placeholder="Tipo de equipo"
+                        id='projectType'
+                        class='form-control'
+                        placeholder='Tipo de equipo'
                         onChange={this.handleChange.bind(this, 'type')}
                         options={
                           [
@@ -79,28 +79,28 @@ export default class CreateTeamModal extends React.Component {
                   </div>
                   {
                     this.state.type === 'Otro' ? (
-                      <div  id="otherProjectType"
-                            className="col-xs-12 col-sm-6 col-sm-offset-4">
+                      <div  id='otherProjectType'
+                            className='col-xs-12 col-sm-6 col-sm-offset-4'>
                         <TextInput
-                          id="projectType"
-                          class="form-control"
-                          placeholder="Tipo de equipo"
+                          id='projectType'
+                          class='form-control'
+                          placeholder='Tipo de equipo'
                           onChange={ this.handleChange.bind(this, 'otherType') }
                           required={ false }
-                          errorMessage="El tipo de proyecto no es válido"/>
+                          errorMessage='El tipo de proyecto no es válido'/>
                       </div>
                     ) : ( null )
                   }
                 </div>
               </div>
-              <div  id="create-team-page-2"
-                    className="plan"
+              <div  id='create-team-page-2'
+                    className='plan'
                     style={{ display: 'none' }}>
-                <div className="row">
-                  <div className="free col-xs-5 col-xs-offset-1">
-                    <div className="free-card">
-                      <h3 className="plan-card-title">Free</h3>
-                      <div className="row">
+                <div className='row'>
+                  <div className='free col-xs-5 col-xs-offset-1'>
+                    <div className='free-card'>
+                      <h3 className='plan-card-title'>Free</h3>
+                      <div className='row'>
                         <ul>
                           <li>12 branches</li>
                           <li>5 módulos</li>
@@ -108,15 +108,15 @@ export default class CreateTeamModal extends React.Component {
                         </ul>
                       </div>
                     </div>
-                    <div className="btn btn-free col-xs-12"
+                    <div className='btn btn-free col-xs-12'
                             onClick={ this.choosePlan.bind(this, 'free') }>
                       Elegir plan Free
                     </div>
                   </div>
-                  <div className="premium col-xs-5">
-                    <div className="premium-card">
-                      <h3 className="plan-card-title">Premium</h3>
-                      <div className="row">
+                  <div className='premium col-xs-5'>
+                    <div className='premium-card'>
+                      <h3 className='plan-card-title'>Premium</h3>
+                      <div className='row'>
                         <ul>
                           <li>Infinitas branches</li>
                           <li>Módulos infinitos</li>
@@ -124,42 +124,42 @@ export default class CreateTeamModal extends React.Component {
                         </ul>
                       </div>
                       <br />
-                      <div className="row premium-card-price">
-                        <h4 className="premium-price">$2.99</h4>
+                      <div className='row premium-card-price'>
+                        <h4 className='premium-price'>$2.99</h4>
                         <p>por usuario/mes</p>
                       </div>
                     </div>
-                    <div className="btn btn-premium col-xs-12">
+                    <div className='btn btn-premium col-xs-12'>
                       Próximamente...
                     </div>
                   </div>
                 </div>
               </div>
-              <div  id="create-team-page-3"
-                    className="share"
+              <div  id='create-team-page-3'
+                    className='share'
                     style={{ display: 'none' }}>
                 <UsersList usersEmails={ this.state.usersEmails } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
               </div>
           </div>
         }
         footer={
-          <div className="row">
-            <div className="col-xs-1">
-              <p className="create-modal-page">
-                <span id="actual-page">1</span>
+          <div className='row'>
+            <div className='col-xs-1'>
+              <p className='create-modal-page'>
+                <span id='actual-page'>1</span>
                 <span>/3</span>
               </p>
             </div>
-            <div className="col-xs-11">
-              <button type="button"
-                      id="back-page-btn"
-                      className="btn btn-cancel btn-hover"
+            <div className='col-xs-11'>
+              <button type='button'
+                      id='back-page-btn'
+                      className='btn btn-cancel btn-hover'
                       onClick={ this.backPage.bind(this) }>
                 Atrás
               </button>
-              <button type="button"
-                      id="next-page-btn"
-                      className="btn btn-accept btn-hover"
+              <button type='button'
+                      id='next-page-btn'
+                      className='btn btn-accept btn-hover'
                       onClick={ this.nextPage.bind(this) }>
                 Siguiente
               </button>

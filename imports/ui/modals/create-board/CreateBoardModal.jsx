@@ -20,55 +20,55 @@ export default class CreateBoardModal extends React.Component {
         id={ 'createBoardModal' }
         header={
           <div>
-            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-              <img src="/img/close-modal-icon.svg" width="18px" />
+            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+              <img src='/img/close-modal-icon.svg' width='18px' />
             </button>
-            <h4 className="modal-title">Crear un board</h4>
+            <h4 className='modal-title'>Crear un board</h4>
           </div>
         }
         body={
           <div className='modal-body-fixed container-fluid'>
-            <div className="">
-              <div className="name-input">
-                <label  htmlFor="projectName"
-                        className="control-label left-align">
+            <div className=''>
+              <div className='name-input'>
+                <label  htmlFor='projectName'
+                        className='control-label left-align'>
                   Nombre
                 </label>
-                <div className="">
+                <div className=''>
                   <TextInput
-                    id="boardName"
-                    class="form-control"
-                    placeholder="Nombre del board"
+                    id='boardName'
+                    class='form-control'
+                    placeholder='Nombre del board'
                     value={ this.state.name }
                     required={ true }
                     minCharacters={ 3 }
                     onChange={ this.handleChange.bind(this, 'name') }
-                    errorMessage="El nombre no es válido"
-                    emptyMessage="Es obligatorio poner un nombre"
-                    minCharactersMessage="El nombre debe tener 3 o más caracteres"/>
+                    errorMessage='El nombre no es válido'
+                    emptyMessage='Es obligatorio poner un nombre'
+                    minCharactersMessage='El nombre debe tener 3 o más caracteres'/>
                 </div>
               </div>
             </div>
             <div className='' style={ { overflow: 'auto' } }>
-              <label  htmlFor="projectType"
-                      className="control-label left-align">
+              <label  htmlFor='projectType'
+                      className='control-label left-align'>
                 Tipo
               </label>
-              <form id='projectType' className="form-inline">
-                <div className="radio board-type">
+              <form id='projectType' className='form-inline'>
+                <div className='radio board-type'>
                   <label>
-                    <input  name="board-type-radio"
-                            type="radio"
+                    <input  name='board-type-radio'
+                            type='radio'
                             value={ false }
                             onChange={ this.handleChange.bind(this, 'isPrivate') }
                             defaultChecked />
                     Publico
                   </label>
                 </div>
-                <div className="radio board-type">
+                <div className='radio board-type'>
                   <label>
-                    <input  name="board-type-radio"
-                            type="radio"
+                    <input  name='board-type-radio'
+                            type='radio'
                             value={ true }
                             onChange={ this.handleChange.bind(this, 'isPrivate') } />
                     Privado
@@ -79,14 +79,14 @@ export default class CreateBoardModal extends React.Component {
             {
               this.state.isPrivate ? (
                 <div className='share-board'>
-                  <label  htmlFor="form-field-name"
-                          className="control-label left-align">
+                  <label  htmlFor='form-field-name'
+                          className='control-label left-align'>
                     Compartir con otros
                   </label>
                   <Select
-                    name="form-field-name"
+                    name='form-field-name'
                     className=''
-                    placeholder="Ingrese nombre o mail..."
+                    placeholder='Ingrese nombre o mail...'
                     multi={ true }
                     simpleValue={ true }
                     disabled={ false }
@@ -100,16 +100,16 @@ export default class CreateBoardModal extends React.Component {
         }
         footer={
           <div>
-            <div className="row">
-              <button type="button"
-                      className="btn btn-cancel btn-hover"
-                      data-dismiss="modal"
+            <div className='row'>
+              <button type='button'
+                      className='btn btn-cancel btn-hover'
+                      data-dismiss='modal'
                       onClick={ this.clearData.bind(this) }>
                 Cancelar
               </button>
-              <button type="button"
-                      className="btn btn-accept btn-hover"
-                      data-dismiss="modal"
+              <button type='button'
+                      className='btn btn-accept btn-hover'
+                      data-dismiss='modal'
                       onClick={ this.createBoard.bind(this) }>
                 Crear
               </button>
@@ -172,7 +172,7 @@ export default class CreateBoardModal extends React.Component {
         this.props.toggleCollapsible('boards');
         this.props.changeBoard(board._id);
         this.props.getMessages({ boardId: board._id });
-        
+
         this.clearData();
         $('#createBoardModal').modal('hide');
       }
