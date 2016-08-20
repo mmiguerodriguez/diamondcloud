@@ -28,6 +28,7 @@ export default class CreateChatModal extends React.Component {
           <div className='modal-body-fixed'>
             <Select
               name='form-field-name'
+              className='create-chat-user-select'
               placeholder='Seleccioná los usuarios'
               simpleValue={ true }
               disabled={ false }
@@ -47,7 +48,6 @@ export default class CreateChatModal extends React.Component {
               </button>
               <button type='button'
                       className='btn btn-accept btn-hover'
-                      data-dismiss='modal'
                       onClick={ this.createChat.bind(this) }>
                 Crear
               </button>
@@ -72,28 +72,43 @@ export default class CreateChatModal extends React.Component {
 
     return arr;
   }
-  handleSelectChange(value) {
-    this.setState({
-      userId: value,
-    });
-  }
   createChat() {
     let chat = {
       teamId: this.props.team._id,
       ...this.state
     };
 
-    Meteor.call('DirectChats.methods.create', chat, (error, response) => {
-      if(error) {
-        throw new Meteor.Error(error);
-      } else {
-        this.props.getMessages({ directChatId: response._id });
-        this.props.toggleCollapsible('chats');
+    if(chat.userId != '') {
+      Meteor.call('DirectChats.methods.create', chat, (error, response) => {
+        if(error) {
+          throw new Meteor.Error(error);
+        } else {
+          this.props.getMessages({ directChatId: response._id });
+          this.props.toggleCollapsible('chats');
 
-        this.clearData();
-        $('#createChatModal').modal('hide');
-      }
+          this.clearData();
+          this.closeModal();
+        }
+      });
+    } else {
+      this.errorBorder($('.create-chat-user-select'));
+    }
+  }
+
+  // helpers
+  errorBorder(element) {
+    $(element).css('border-color', 'red');
+    setTimeout(() => {
+      $(element).css('border-color', '#d9d9d9 #ccc #b3b3b3');
+    }, 500);
+  }
+  handleSelectChange(value) {
+    this.setState({
+      userId: value,
     });
+  }
+  closeModal() {
+    $('#createChatModal').modal('hide');
   }
   clearData() {
     this.setState({
