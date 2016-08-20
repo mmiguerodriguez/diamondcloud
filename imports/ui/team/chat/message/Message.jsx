@@ -2,13 +2,6 @@ import React from 'react';
 
 export default class Message extends React.Component {
   render() {
-<<<<<<< HEAD
-    console.log('Message -> render -> message', this.props.message);
-    return (
-      <div>
-      </div>
-    );
-=======
     if(this.props.position === 'medium') {
       if(this.props.isSender) {
         let user = Meteor.user();
@@ -46,7 +39,6 @@ export default class Message extends React.Component {
         );
       }
     }
->>>>>>> 4f364e13d2b89c5e5194ae8171a5f151c6b200e8
   }
 }
 
