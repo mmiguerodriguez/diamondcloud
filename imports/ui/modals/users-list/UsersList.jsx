@@ -29,7 +29,7 @@ export default class UsersList extends React.Component {
                       value={ email }
                       onChange={ this.handleChange.bind(this, 'email') }/>
               <div className="input-group-addon search-input" onClick={ this.handleSubmit.bind(this) }>
-                <img src="img/add-people-icon.svg"
+                <img src="/img/add-people-icon.svg"
                      width="24px" />
               </div>
             </div>
