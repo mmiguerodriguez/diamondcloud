@@ -36,10 +36,7 @@ export let generateApi = (moduleInstanceId) => {
           moduleInstanceId: algo,
 
         });
-      }
-      else{
-        throw console.error('The provided data is wrong.');
-      }
+      } else throw console.error('The provided data is wrong.');
     },
   };
 };

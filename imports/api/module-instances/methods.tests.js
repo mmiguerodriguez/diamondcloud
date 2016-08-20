@@ -120,7 +120,7 @@ if(Meteor.isServer){
       chai.assert.isTrue(expect === result.archived);
     });
 
-    it('should archive a module instance', function() {
+    it('should dearchive a module instance', function() {
       let args, expect, result;
       args = {
         moduleInstanceId: module._id,
