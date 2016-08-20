@@ -5,9 +5,10 @@ import { sinon }                from 'meteor/practicalmeteor:sinon';
 import { chai }                 from 'meteor/practicalmeteor:chai';
 import { Random }               from 'meteor/random';
 import   faker                  from 'faker';
+
+import { printObject }          from '../../helpers/print-objects.js';
 import                               './publications.js';
-import '../../factories/factories.js';
-import { printObject } from '../../helpers/print-objects.js';
+import                               '../../factories/factories.js';
 
 import { Boards }               from '../../boards/boards.js';
 import { Teams }                from '../../teams/teams.js';
@@ -62,7 +63,6 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('moduleInstances.data', moduleInstances[0]._id, request, (collections) => {
-          printObject({ migue: () => { return 5; }, michael: 'hola' });
           chai.assert.isTrue(collections.ModuleInstances.length == 1);
           chai.assert.isDefined(collections.ModuleInstances[0].todos.length == 1);
           done();

@@ -15,3 +15,5 @@ DiamondAPI.subscribe = (moduleInstanceId, obj, callback) => {
     });
   } else throw console.error('The provided data is wrong.');
 };
+
+window.DiamondAPI = DiamondAPI;
