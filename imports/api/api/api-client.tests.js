@@ -8,7 +8,7 @@ import   faker                  from 'faker';
 
 import { ModuleInstances }      from '../module-instances/module-instances.js';
 
-import { DiamondAPI }           from './api-client.js';
+import { generateApi }           from './api-client.js';
 
 if (Meteor.isClient) {
   describe('Modules API', () => {
@@ -73,8 +73,9 @@ if (Meteor.isClient) {
       });
 
       it('should get the requested data when subscribing', (done) => {
+        let DiamondAPI = generateApi(moduleInstances[0]._id);
         // Here comes the code that an API consumer would write.
-        DiamondAPI.subscribe(moduleInstances[0]._id, requests[0], callbacks[0]);
+        DiamondAPI.subscribe(requests[0], callbacks[0]);
         // Checking everything works
         done();
       });
