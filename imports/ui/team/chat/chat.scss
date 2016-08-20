@@ -1,0 +1,112 @@
+@import 'message/message';
+
+.minimized {
+  height: 30px;
+  width: 250px;
+  background-color: #f1f2f3;
+  float: right;
+  cursor: pointer;
+  margin: 238px 0px 0px 24px;
+  border: 1px solid #CCC;
+  .chat-text {
+    padding: 5px 10px 0px 10px !important;
+    margin-bottom: 0px;
+  }
+  .chat-image {
+    margin-top: 4px;
+    .close-image {
+      margin: 0 !important;
+      opacity: 0.3;
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+}
+.medium {
+  background-color: #ddd;
+  width: 250px;
+  float: right;
+  margin-left: 24px;
+  .chat-header {
+    height: 30px;
+    background-color: $peter-river;
+    color: $white;
+    cursor: pointer;
+    .chat-text {
+      padding: 5px 10px 0px 10px !important;
+      margin-bottom: 0px;
+    }
+    .chat-image {
+      margin-top: 4px;
+      .maximize-image {
+        opacity: 0.5;
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+  
+  .chat-body {
+    height: 200px;
+    max-height: 200px;
+    width: 100%;
+    background-color: #a9a9a9;
+    background-image: linear-gradient(to bottom, #dadada, #c4c4c4);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .chat-footer {
+    background-color: #e6e6fa;
+    padding: 0px !important;
+    .send-message {
+      padding: 0px 0px 0px 5px;
+      margin-top: 6px;
+    }
+  }
+}
+.maximized {
+  background-color: #ddd;
+  width: 250px;
+  float: right;
+  margin-left: 24px;
+  .chat-header {
+    height: 30px;
+    background-color: #ccc;
+    cursor: pointer;
+    .chat-text {
+      padding: 5px 10px 0px 10px !important;
+      margin-bottom: 0px;
+    }
+    .chat-image {
+      margin-top: 3px;
+      .exit-maximize-image {
+        opacity: 0.3;
+      }
+      .exit-maximize-image:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+  
+  .chat-body {
+    height: 200px;
+    max-height: 200px;
+    width: 100%;
+    background-color: #a9a9a9;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  
+  .chat-footer {
+    height: 50px;
+    padding-top: 6px;
+    background-color: #e6e6fa;
+    .send-message {
+      padding: 0px 0px 0px 5px;
+      margin-top: 6px;
+    }
+  }
+}

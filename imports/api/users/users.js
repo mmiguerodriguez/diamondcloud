@@ -8,19 +8,20 @@ Meteor.users.helpers({
     fields = fields || {};
 
     let teams = Teams.find({
-
       users: {
         $elemMatch: {
           email: this.emails[0].address,
         }
       },
       archived: false,
-    }, { fields }); // translates to -> { fields: { name: 1 } }
+    }, {
+      fields,
+    });
 
     if(teams)
       return teams;
   },
-  boards(teamId, fields){
+  boards(teamId, fields) {
     fields = fields || {};
     let team = Teams.findOne(teamId);
     if(!team){
@@ -34,6 +35,23 @@ Meteor.users.helpers({
     return Boards.getBoards(team.boards, this._id);
   }
 });
+
+Meteor.users.dashboardFields = {
+  profile: 1,
+  emails: 1,
+};
+
+Meteor.users.findByEmail = (emails, fields) => {
+  if(typeof emails === 'string') {
+    emails = [emails];
+  }
+  
+  return Meteor.users.find({
+    'emails.address': {
+      $in: emails,
+    },
+  }, { fields });
+};
 
 Meteor.users.deny({
   update() { return true; }

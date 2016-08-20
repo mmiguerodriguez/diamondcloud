@@ -5,13 +5,10 @@ import { Boards } from '../boards/boards.js';
 export let ModuleInstances = new Mongo.Collection('ModuleInstances');
 
 ModuleInstances.helpers({
-  board() {
+  board(fields) {
+    fields = fields || {};
     return Boards.findOne({
-      moduleInstances: {
-        $elemMatch: {
-          _id: this._id,
-        },
-      },
-    });
+      'moduleInstances._id': this._id,
+    }, { fields });
   }
 });

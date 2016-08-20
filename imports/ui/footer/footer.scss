@@ -1,0 +1,17 @@
+.footer {
+  position: fixed;
+  background-color: $footer-color;
+  padding-top: 14px;
+  bottom: 0;
+  height: 48px;
+  width: 100%;
+  border-top: rgba(0, 0, 0, 0.1) 1px solid;
+  text-decoration: none; // esto no funca.. ?
+}
+.footer-link {
+  color: #000;
+  &:hover, &:focus {
+    text-decoration: none;
+    color: #000;
+  }
+}

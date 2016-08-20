@@ -1,0 +1,56 @@
+/* Name */
+.name-input {
+  margin-bottom: 15px;
+  overflow: auto;
+}
+/* End Name */
+/* Plan */
+.free-card, .premium-card {
+  height: 200px;
+  margin-bottom: 15px;
+}
+.premium, .free {
+  transition: all 0.3s ease;
+}
+
+.card-active {
+  box-shadow: 0 0 20px 2px rgba(0,0,0,.5);
+  color: $white;
+}
+.free-card-active {
+  background-color: $free-card-active;
+  @extend .card-active;
+}
+.premium-card-active {
+  background-color: $premium-card-active;
+  @extend .card-active;
+}
+
+.btn-free, .btn-premium {
+  background-color: $grey-btn !important;
+  color: #000 !important;
+  margin-bottom: 20px !important;
+}
+
+.plan-card-title {
+  padding-top: 5px;
+  text-align: center;
+}
+.premium-card-price {
+  text-align: center;
+  .premium-price {
+    margin: 0;
+  }
+}
+/* End Plan */
+
+.create-modal-page {
+  margin-top: 10px;
+}
+.modal-body {
+  #create-team-page-1,
+  #create-team-page-2,
+  #create-team-page-3 {
+    height: 300px !important;
+  }
+}

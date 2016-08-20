@@ -9,6 +9,7 @@ import { ModuleInstances } from '../module-instances/module-instances.js';
 
 Factory.define('user', Meteor.users, {
 	emails: [ { address: faker.internet.email() } ],
+	profile: 'profile',
 });
 
 Factory.define('board', Boards, {

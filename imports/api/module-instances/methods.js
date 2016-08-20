@@ -3,6 +3,7 @@ import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
 import { ModuleInstances } from './module-instances.js';
+import { Boards } from '../boards/boards.js';
 
 export const createModuleInstance = new ValidatedMethod({
   name: 'ModuleInstances.methods.create',
@@ -90,7 +91,7 @@ export const dearchiveModuleInstance = new ValidatedMethod({
   validate: new SimpleSchema({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
   }).validator(),
-  run({ moduleInstanceId }){
+  run({ moduleInstanceId }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('ModuleInstances.methods.dearchive.notLoggedIn',
       'Must be logged in to dearchive a module instance.');
@@ -103,5 +104,42 @@ export const dearchiveModuleInstance = new ValidatedMethod({
     });
 
     return ModuleInstances.findOne(moduleInstanceId);
+  }
+});
+
+export const apiInsert = new ValidatedMethod({
+  name: 'ModuleInstances.methods.apiInsert',
+  validate: new SimpleSchema({
+    moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    collection: { type: String },
+    obj: { type: Object, blackbox: true },
+    visibleBy: { type: [Object], blackbox: true },
+  }).validator(),
+  run({ moduleInstanceId, collection, obj, visibleBy }) {
+    if(!Meteor.user()) {
+      throw new Meteor.Error('ModuleInstances.methods.apiInsert.notLoggedIn',
+      'Must be logged in to use a module.');
+    }
+    let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+    if(!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
+      throw new Meteor.Error('ModuleInstances.methods.apiInsert.boardAccessDenied',
+      'Must be part of a board to access its modules.');
+    }
+
+    let entry = obj;
+    entry.visibleBy = visibleBy;
+
+    if(!moduleInstance.data[collection]){
+      moduleInstance.data[collection] = [entry];
+    }
+    else{
+      moduleInstance.data[collection].push(entry);
+    }
+
+    ModuleInstances.update(moduleInstanceId, {
+      $set: {
+        data: moduleInstance.data,
+      }
+    });
   }
 });

@@ -8,14 +8,20 @@ import DashboardLayout from './DashboardLayout.jsx';
 
 export default class Dashboard extends React.Component {
   render() {
-    return (<DashboardLayout teams={ this.props.teams } />);
+    if (this.props.loading) {
+      return null;
+    } else {
+      return (<DashboardLayout teams={ this.props.teams } />);
+    }
   }
 }
 
 export default DashboardPageContainer = createContainer(() => {
-  Meteor.subscribe('teams.dashboard');
+  const teamsHandle = Meteor.subscribe('teams.dashboard');
+  const loading = !teamsHandle.ready();
 
   return {
+    loading,
     teams: Teams.find().fetch(),
   };
 }, Dashboard);

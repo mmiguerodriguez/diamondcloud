@@ -1,0 +1,57 @@
+.team-false {
+  height: 250px;
+  border: 2px #d5d8d9 solid;
+  border-radius: 5px;
+  color: $team-false;
+  margin: 2.075% 4.15%;
+}
+.block-data-1 {
+  height: 15px;
+  background-color: $team-false;
+  width: 50%;
+  border-radius: 2px;
+}
+.block-data-2 {
+  height: 15px;
+  background-color: $team-false;
+  width: 35%;
+  border-radius: 2px;
+  margin-top: 2px;
+}
+.teams {
+  margin: 2.075% 4.15%;
+  height: 250px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  margin-top: 20px;
+  background-color: $white;
+}
+.config-icon {
+  width: 32px;
+  float: right;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+.team-image {
+  height: 90px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-image: url(/img/dashboard.png);
+  background-size: 100%;
+}
+.team-data {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.open-team-btn {
+  position: absolute !important;
+  bottom: 20px;
+  right: 20px;
+  float: right;
+  border-radius: 2px;
+  border: none !important;
+  padding: 10px 20px !important;
+  background-color: $green-btn !important;
+  color: #000 !important;
+  width: auto;
+}

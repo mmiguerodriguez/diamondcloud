@@ -20,7 +20,7 @@ Teams.helpers({
     }
     return owner;
   },
-  hasUser(obj){
+  hasUser(obj) {
     // If obj.mail exists then use it, if not, use the id
     if(typeof(obj) === "string"){
       obj = Meteor.users.findOne(obj);
@@ -34,6 +34,13 @@ Teams.helpers({
     });
 
     return found;
+  },
+  getUsers(fields) {
+    let emails = JSON.parse(JSON.stringify(this.users));
+    emails.forEach((email, index) => {
+      emails[index] = email.email;
+    });
+    return Meteor.users.findByEmail(emails, fields);
   }
 });
 
@@ -43,6 +50,17 @@ Teams.dashboardFields = {
   plan: 1,
   type: 1,
   users: 1,
+  boards: 1,
+};
+
+Teams.dashboardUsersFields = {
+  profile: 1,
+  emails: 1,
+};
+
+Teams.teamUsersFields = {
+  profile: 1,
+  emails: 1,
 };
 
 // Fields that are shown in the team page (/team)
@@ -57,7 +75,7 @@ Teams.teamFields = {
 Teams.addUser = (teamId, user) => {
   Teams.update({ _id: teamId }, {
     $push: {
-      users: user
+      users: user,
     }
   });
 };
@@ -76,11 +94,7 @@ Teams.getTeam = (teamId, userEmail, fields) => {
   fields = fields || { _id: 1, name: 1 };
   return Teams.find({
     _id: teamId,
-    users: {
-      $elemMatch: {
-        email: userEmail,
-      }
-    },
+    'users.email': userEmail,
     archived: false,
   }, {
     fields

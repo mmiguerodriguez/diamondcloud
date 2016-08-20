@@ -1,0 +1,17 @@
+@import 'team-card/team-card';
+
+.search-teams {
+  float: right !important;
+  margin-top: 15px;
+  .input {
+    z-index: 0 !important;
+    border-bottom-left-radius: 4px !important;
+  }
+  .icon {
+    border-bottom-right-radius: 4px !important;
+  }
+}
+
+.team-container {
+  margin-bottom: 50px;
+}
