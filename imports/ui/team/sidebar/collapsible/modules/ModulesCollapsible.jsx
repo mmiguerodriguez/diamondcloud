@@ -10,20 +10,20 @@ export default class ModulesCollapsible extends React.Component {
         id={ 'modules-collapsible' }
         header={
           <div>
-            <div  type="button"
-                  className="close col-xs-2"
+            <div  type='button'
+                  className='close col-xs-2'
                   onClick={ this.props.toggleCollapsible.bind(null, 'modules') }>
-              <img src="/img/close-modal-icon.svg" width="18px" />
+              <img src='/img/close-modal-icon.svg' width='18px' />
             </div>
-            <h3 className="col-xs-10 title">Módulos</h3>
+            <h3 className='col-xs-10 title'>Módulos</h3>
           </div>
         }
         body={
           this.renderModules()
         }
         footer={
-          <a className="btn btn-default footer-btn" role="button">
-            <img src="/img/sidebar/shop-cart.svg" width="32px" />
+          <a className='btn btn-default footer-btn' role='button'>
+            <img src='/img/sidebar/shop-cart.svg' width='32px' />
           </a>
         }
       />

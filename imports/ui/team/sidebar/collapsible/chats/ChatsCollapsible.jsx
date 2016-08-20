@@ -11,12 +11,12 @@ export default class ChatsCollapsible extends React.Component {
         id={ 'chats-collapsible' }
         header={
           <div>
-            <div  type="button"
-                  className="close col-xs-2"
+            <div  type='button'
+                  className='close col-xs-2'
                   onClick={ this.props.toggleCollapsible.bind(null, 'chats') }>
-              <img src="/img/close-modal-icon.svg" width="18px" />
+              <img src='/img/close-modal-icon.svg' width='18px' />
             </div>
-            <h3 className="col-xs-10 title">Mensajes</h3>
+            <h3 className='col-xs-10 title'>Mensajes</h3>
           </div>
         }
         body={
@@ -30,8 +30,8 @@ export default class ChatsCollapsible extends React.Component {
           </div>
         }
         footer={
-          <a className='btn btn-default footer-btn' role='button'>
-            <img src='/img/add-people-icon.svg' style={{ 'WebkitFilter': 'invert(1)' }} width="32px" />
+          <a className='btn btn-default footer-btn' role='button' onClick={ this.props.openCreateChatModal }>
+            <img src='/img/add-people-icon.svg' style={{ 'WebkitFilter': 'invert(1)' }} width='32px' />
           </a>
         }
       />
@@ -44,4 +44,5 @@ ChatsCollapsible.propTypes = {
   directChats: React.PropTypes.array.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
   getMessages: React.PropTypes.func.isRequired,
+  openCreateChatModal: React.PropTypes.func.isRequired,
 };

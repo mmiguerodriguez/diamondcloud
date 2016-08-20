@@ -1,6 +1,8 @@
 import { Meteor }          from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
+
 import React               from 'react';
+import { browserHistory }  from 'react-router';
 
 import { Teams }           from '../../api/teams/teams.js';
 import { Boards }          from '../../api/boards/boards.js';
@@ -18,20 +20,33 @@ export default class Team extends React.Component {
   }
   render() {
     if(this.props.loading) {
-      return null;
+      return ( null );
     } else {
-      return (
-        <TeamLayout
-          team={ this.props.team }
-          boards={ this.props.boards }
-          directChats={ this.props.directChats }
-          chats={ this.formatChats() }
-          getMessages= { this.getMessages.bind(this) }
-        />
-      );
+      if(this.props.team) {
+        return (
+          <TeamLayout
+            team={ this.props.team }
+            boards={ this.props.boards }
+            directChats={ this.props.directChats }
+            owner={ this.props.team.owner() === Meteor.user().emails[0].address }
+            chats={ this.formatChats() }
+            getMessages={ this.getMessages.bind(this) }
+            removeChat={ this.removeChat.bind(this) }
+          />
+        );
+      } else {
+        return ( null );
+      }
     }
   }
-
+  /* todo: Fix when team isn't found (not working)
+  componentDidMount() {
+    if(this.props.team === undefined) {
+      // If team doesn't exists go to a not-found route
+      browserHistory.push('/404');
+    }
+  }
+  */
   getMessages(obj) {
     let subscriptions = this.state.subscriptions;
     let isSubscribed = false;
@@ -66,7 +81,7 @@ export default class Team extends React.Component {
         },
         onError: (error) => {
           throw new Meteor.Error(error);
-        },
+        }
       });
     }
   }
@@ -106,6 +121,29 @@ export default class Team extends React.Component {
     }
 
     return chats;
+  }
+  removeChat(obj) {
+    let subscriptions = this.state.subscriptions;
+    if(obj.directChatId) { // check if it is a direct-chat or a board
+      subscriptions.map((sub, index) => {
+        if(sub.directChatId === obj.directChatId) {
+          sub.subscription.stop(); // stop subscription
+          subscriptions.splice(index, 1); // remove element from array
+        }
+      });
+    } else if(obj.boardId) {
+      subscriptions.map((sub, index) => {
+        if(sub.boardId === obj.boardId) {
+          sub.subscription.stop();
+          subscriptions.splice(index, 1);
+        }
+      });
+    }
+
+    // update state
+    this.setState({
+      subscriptions: subscriptions,
+    });
   }
 }
 

@@ -6,7 +6,7 @@ import AppLayout from './AppLayout.jsx';
 export default class App extends React.Component {
   render() {
     if (this.props.user === undefined) {
-      return null;
+      return ( null );
     } else {
       return (<AppLayout { ...this.props } />);
     }

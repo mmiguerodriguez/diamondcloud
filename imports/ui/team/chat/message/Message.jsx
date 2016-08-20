@@ -11,21 +11,23 @@ export default class Message extends React.Component {
 =======
     if(this.props.position === 'medium') {
       if(this.props.isSender) {
+        let user = Meteor.user();
         return (
           <div className='message-me'>
             <div className='col-xs-9 message-text-container'>
               <p className='message-text'>{ this.props.message.content }</p>
             </div>
-            <div className='col-xs-2 message-user-image'>
-              <img className='img-circle' src='//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg' width='40px' /> 
+            <div className='col-xs-2 message-user-image' title={ user.profile.name }>
+              <img className='img-rounded' src={ user.profile.picture } width='32px' />
             </div>
           </div>
         );
       } else {
+        let otherUser = Meteor.users.findOne(this.props.message.senderId);
         return (
           <div className='message-other'>
-            <div className='col-xs-2 message-user-image'>
-              <img className='img-circle' src='//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg' width='40px' /> 
+            <div className='col-xs-2 message-user-image' title={ otherUser.profile.name }>
+              <img className='img-rounded' src={ otherUser.profile.picture } width='32px' />
             </div>
             <div className='col-xs-9 message-text-container'>
               <p className='message-text'>{ this.props.message.content }</p>

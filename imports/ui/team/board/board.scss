@@ -3,18 +3,21 @@
   width: calc(100% - 64px);
   position: absolute;
   right: 0;
-  
+
   .board-name {
-    
+
   }
 }
 .sub-header {
   display: flex;
   height: 40px;
+  width: 100%;
   background-color: #c4c4c4;
   margin-right: 0px !important;
   margin-left: 0px !important;
-  
+  float: right;
+  transition: all $sidebar-speed ease-in-out;
+
   .sub-header-data {
     display: flex;
   }
@@ -39,4 +42,7 @@
     cursor: pointer;
     -webkit-filter: invert(0.855);
   }
+}
+.sub-header-collapsed {
+  width: calc(100% - 250px);
 }

@@ -1,6 +1,8 @@
-import React from 'react';
+import React     from 'react';
 
-import Modal from '../Modal.jsx';
+import Modal     from '../Modal.jsx';
+import UsersList from '../users-list/UsersList.jsx';
+import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
 
 export default class ConfigTeamModal extends React.Component {
   constructor(props) {
@@ -13,114 +15,73 @@ export default class ConfigTeamModal extends React.Component {
       type: this.props.team.type,
     };
   }
-  componentWillReceiveProps(props) {
-    // Fixes issues when component receives
-    // new props
-    this.setState({
-      name: props.team.name,
-      plan: props.team.plan,
-      type: props.team.type,
-    });
-  }
+
   render() {
     return (
       <Modal
         id={ 'configTeamModal' }
         header={
           <div>
-            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-              <img src="/img/close-modal-icon.svg" width="18px" />
+            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+              <img src='/img/close-modal-icon.svg' width='18px' />
             </button>
-            <h4 className="modal-title">Configuración del equipo</h4>
+            <h4 className='modal-title'>Configuración del equipo</h4>
           </div>
         }
         body={
           <div>
-            <h4 className="configuration-title">Equipo</h4>
-            <div className="row">
-              <div className="name-input">
-                <label  htmlFor="projectName"
-                        className="col-xs-2 col-sm-offset-2 control-label left-align">
+            <h4 className='configuration-title'>Equipo</h4>
+            <div className='row'>
+              <div className='name-input'>
+                <label  htmlFor='projectName'
+                        className='col-xs-2 col-sm-offset-2 control-label left-align'>
                   Nombre
                 </label>
-                <div className="col-xs-12 col-sm-6">
-                  <input  id="projectName"
-                          className="form-control"
-                          placeholder="Nombre del proyecto"
-                          type="text"
-                          value={ this.state.name }
-                          onChange={ this.handleChange.bind(this, 'name') }/>
+                <div className='col-xs-12 col-sm-6'>
+                  <TextInput
+                    id='projectName'
+                    class='form-control'
+                    placeholder='Nombre del equipo'
+                    value={ this.state.name }
+                    required={ true }
+                    minCharacters={ 3 }
+                    onChange={ this.handleChange.bind(this, 'name') }
+                    errorMessage='El nombre no es válido'
+                    emptyMessage='Es obligatorio poner un nombre'
+                    minCharactersMessage='El nombre debe tener 3 o más caracteres'/>
                 </div>
               </div>
-              <div className="name-input">
-                <label  htmlFor="projectType"
-                        className="col-xs-2 col-sm-offset-2 control-label left-align">
+              <div className='name-input'>
+                <label  htmlFor='projectType'
+                        className='col-xs-2 col-sm-offset-2 control-label left-align'>
                   Tipo
                 </label>
-                <div  id="otherProjectType"
-                      className="col-xs-12 col-sm-6">
-                  <input  id="projectType"
-                          className="form-control"
-                          placeholder="Tipo de proyecto"
-                          type="text"
-                          value={ this.state.type }
-                          onChange={ this.handleChange.bind(this, 'type') }/>
+                <div  id='otherProjectType'
+                      className='col-xs-12 col-sm-6'>
+                  <TextInput
+                    id='projectType'
+                    class='form-control'
+                    placeholder='Tipo de equipo'
+                    value={ this.state.type }
+                    onChange={ this.handleChange.bind(this, 'otherType') }
+                    required={ false }
+                    errorMessage='El tipo de equipo no es válido'/>
                 </div>
               </div>
             </div>
             <hr />
-            <h4 className="configuration-title">Miembros</h4>
-            <div className="row contacts-list-row">
-              <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-                <input  id="searchUsers"
-                        className="form-control"
-                        placeholder="Buscá entre los integrantes"
-                        type="text"/>
-                <div className="input-group-addon search-input">
-                  <img src="/img/search-people-icon.svg" width="20px" />
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="contacts-list col-sm-6 col-xs-12 col-sm-offset-3">
-                <div className="row">
-                  <div className="col-xs-1">
-                    <img alt="User" src="//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg" className="navbar-photo contact-list-photo" />
-                  </div>
-                  <div className="col-xs-6">
-                    <p className="contact-list-name">Gomito Gomez</p>
-                  </div>
-                  <div className="col-xs-3"></div>
-                  <div className="col-xs-1">
-                    <div className="close">
-                      <img src="/img/close-modal-icon.svg" width="16px" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <br />
-            <div className="row">
-              <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-                <input  id="shareTeam"
-                        className="form-control"
-                        placeholder="Compartir equipo"
-                        type="text" />
-                <div className="input-group-addon search-input">
-                  <img src="/img/add-people-icon.svg" width="20px" />
-                </div>
-              </div>
-            </div>
+            <h4 className='configuration-title'>Miembros</h4>
+            <UsersList team={ this.props.team } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
             <hr />
-            <h4 className="configuration-title">Plan</h4>
-            <div className="row">
-              <div className="col-sm-6 col-sm-offset-2 col-xs-12">
+            <h4 className='configuration-title'>Plan</h4>
+            <div className='row'>
+              <div className='col-sm-6 col-sm-offset-2 col-xs-12'>
                 <p>
                   Plan actual: { this.props.team.plan }
                   {
                     this.props.team.plan === 'free' ? (
-                      <button type="button"
-                              className="btn btn-add btn-upgrade">
+                      <button type='button'
+                              className='btn btn-add btn-upgrade'>
                         Upgrade
                       </button>
                     ) : ( null )
@@ -133,15 +94,15 @@ export default class ConfigTeamModal extends React.Component {
           </div>
         }
         footer={
-          <div className="row">
-            <button type="button"
-                    className="btn btn-cancel btn-hover"
-                    data-dismiss="modal">
+          <div className='row'>
+            <button type='button'
+                    className='btn btn-cancel btn-hover'
+                    data-dismiss='modal'>
               Cancelar
             </button>
-            <button type="button"
-                    className="btn btn-accept btn-hover"
-                    data-dismiss="modal"
+            <button type='button'
+                    className='btn btn-accept btn-hover'
+                    data-dismiss='modal'
                     onClick={ this.saveTeam.bind(this) }>
               Guardar
             </button>
@@ -156,21 +117,43 @@ export default class ConfigTeamModal extends React.Component {
     });
   }
   saveTeam() {
-    let teamId = this.props.team._id;
     let team = {
       ...this.state,
     };
 
-    Meteor.call('Teams.methods.edit', { teamId, team }, (error, result) => {
+    Meteor.call('Teams.methods.edit', { teamId: this.props.team._id, team }, (error, result) => {
       if(error) {
         throw new Meteor.Error(error);
-      } else {
-        // ... what shall we do?
+      }
+    });
+  }
+
+  addUser(user) {
+    Meteor.call('Teams.methods.share', { teamId: this.props.team._id, email: user }, (error, result) => {
+      if(error){
+        throw new Meteor.Error(error);
+      }
+      else {
+        this.props.loadTeam(this.props.team._id);
+        // todo: show success message
+      }
+    });
+  }
+
+  removeUser(user){
+    Meteor.call('Teams.methods.removeUser', { teamId: this.props.team._id, email: user }, (error, result) => {
+      if(error){
+        throw new Meteor.Error(error);
+      }
+      else {
+        this.props.loadTeam(this.props.team._id);
+        // todo: show success message
       }
     });
   }
 }
 
 ConfigTeamModal.propTypes = {
-  team: React.PropTypes.any,
+  team: React.PropTypes.any.isRequired,
+  loadTeam: React.PropTypes.func.isRequired,
 }

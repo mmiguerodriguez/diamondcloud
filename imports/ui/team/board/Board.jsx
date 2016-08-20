@@ -1,3 +1,5 @@
+import { Meteor } from 'meteor/meteor';
+
 import React from 'react';
 
 export default class Board extends React.Component {
@@ -6,18 +8,16 @@ export default class Board extends React.Component {
       <div className='board-container'>
         <div className='sub-header'>
           <div className='sub-header-data'>
-            <h4 className="title">{ this.props.board.name }</h4>
-            <h4 className="members">
-              Miembros: 
-              <img className='img-circle shared-people'
-                   src='//lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAAAA/AOtt-yFL9aGQYz1k-cA0Am2Po4dKzi76pA/s96-c-mo/photo.jpg'
-                   width='32px' />
+            <h4 className='title'>{ this.props.board.name }</h4>
+            <h4 className='members'>
+              Miembros:
+              { this.renderUsers() }
             </h4>
           </div>
           <span>
-            <img  src="/img/sidebar/messages.svg" 
-                  className="message-icon"
-                  width="28px" 
+            <img  src='/img/sidebar/messages.svg'
+                  className='message-icon'
+                  width='28px'
                   onClick={ this.props.getMessages.bind(null, { boardId: this.props.board._id }) }/>
           </span>
         </div>
@@ -25,9 +25,41 @@ export default class Board extends React.Component {
       </div>
     );
   }
+
+  renderUsers() {
+    let arr = [];
+    if(this.props.board.users !== undefined) {
+      this.props.board.users.map((_user) => {
+        let user = Meteor.users.findOne(_user._id);
+        arr.push(
+          <img  key={ user._id }
+            className='img-circle shared-people'
+            src={ user.profile.picture }
+            alt={ user.profile.name }
+            title={ user.profile.name }
+            width='32px' />
+        );
+      });
+    } else {
+      this.props.users.map((_user) => {
+        let user = Meteor.users.findOne({ 'emails.address': _user.email });
+        arr.push(
+          <img  key={ user._id }
+                className='img-circle shared-people'
+                src={ user.profile.picture }
+                alt={ user.profile.name }
+                title={ user.profile.name }
+                width='32px' />
+        );
+      });
+    }
+
+    return arr;
+  }
 }
 
 Board.propTypes = {
   board: React.PropTypes.object.isRequired,
+  users: React.PropTypes.array.isRequired,
   getMessages: React.PropTypes.func.isRequired,
 };

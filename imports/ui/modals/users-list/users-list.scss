@@ -1,0 +1,32 @@
+@import 'user/user';
+
+.share {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.input-group .form-control:first-child, .input-group-addon:first-child, .input-group-btn:first-child>.btn, .input-group-btn:first-child>.btn-group>.btn, .input-group-btn:first-child>.dropdown-toggle, .input-group-btn:last-child>.btn-group:not(:last-child)>.btn, .input-group-btn:last-child>.btn:not(:last-child):not(.dropdown-toggle) {
+  border-bottom-left-radius: 0px;
+}
+.input-group .form-control:last-child, .input-group-addon:last-child, .input-group-btn:first-child>.btn-group:not(:first-child)>.btn, .input-group-btn:first-child>.btn:not(:first-child), .input-group-btn:last-child>.btn, .input-group-btn:last-child>.btn-group>.btn, .input-group-btn:last-child>.dropdown-toggle {
+  border-bottom-right-radius: 0px;
+}
+.contacts-list {
+  border-bottom-right-radius: 5px !important;
+  border-bottom-left-radius: 5px !important;
+  border: solid #ccc 1px;
+  padding: 10px;
+  max-height: 265px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-top: none;
+}
+.form-control {
+  height: 38px !important;
+}
+.send-message-icon {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.contacts-list-row {
+  margin-top: -1px;
+}

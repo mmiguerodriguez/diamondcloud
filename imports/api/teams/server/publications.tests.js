@@ -34,11 +34,12 @@ if (Meteor.isServer) {
         ];
         boards[2].users[0]._id = user._id;
 
-        teams[0].users[0].email = user.emails[0].address;
-        teams[1].users[0].email = user.emails[0].address;
+        teams[0].users[0] = { email: user.emails[0].address, permission: 'owner' };
+        teams[1].users[0] = { email: user.emails[0].address, permission: 'owner' };
+        teams[2].users[0] = { email: Random.id(), permission: 'owner' };
 
         boards.forEach((board) => {
-          teams[0].boards.push(board);
+          teams[0].boards.push({ _id: board._id });
         });
         resetDatabase();
         Meteor.users.insert(user);
@@ -55,31 +56,27 @@ if (Meteor.isServer) {
         Meteor.user.restore();
       });
 
-      it('should publish dashboard data', function(done) {
+      it('should publish dashboard data', function(done) {//todo: remove exceptions in terminal
         const collector = new PublicationCollector({ userId: user._id });
         collector.collect('teams.dashboard', (collections) => {
           chai.assert.equal(collections.Teams.length, 1);
-
-          collections.Teams.forEach((team, index) => {
-            /*
-            chai.assert.isTrue(team.name === teams[index].name);
-            chai.assert.isTrue(team.plan === teams[index].plan);
-            chai.assert.isTrue(team.type === teams[index].type);
-            chai.assert.isTrue(JSON.stringify(team.users) === JSON.stringify(teams[index].users));
-            */
-            chai.assert.isDefined(team.name);
-            chai.assert.isDefined(team.plan);
-            chai.assert.isDefined(team.type);
-            chai.assert.isDefined(team.users);
-            chai.assert.isDefined(team.boards);
-            chai.assert.isUndefined(team.directChats);
-          });
+          chai.assert.equal(collections.users.length, 1);
+          let _team = collections.Teams[0];
+          chai.assert.isDefined(_team.name);
+          chai.assert.isDefined(_team.plan);
+          chai.assert.isDefined(_team.type);
+          chai.assert.isDefined(_team.users);
+          chai.assert.isDefined(_team.boards);
+          chai.assert.isUndefined(_team.directChats);
+          let _user = collections.users[0];
+          chai.assert.isDefined(_user.emails);
+          chai.assert.isDefined(_user.profile);
           done();
         });
       });
       it('should not publish team data if the team is archived', function(done){
         const collector = new PublicationCollector({ userId: user._id });
-        
+
         collector.collect('teams.team', teams[1]._id, (collections) => {//pass the id of an archived team
           chai.assert.isUndefined(collections.Teams);//assert it does not return any team
           done();
@@ -87,15 +84,15 @@ if (Meteor.isServer) {
       });
       it('should not publish team data if the user is not in the team', function(done){
         const collector = new PublicationCollector({ userId: user._id });
-        
+
         collector.collect('teams.team', teams[2]._id, (collections) => {//pass the id of a team the user is not in
           chai.assert.isUndefined(collections.Teams);//assert it does not return any team
           done();
         });
       });
-      it('should publish the correct boards and direct chats data', function(done){
+      it('should publish the correct boards, direct chats and users data', function(done){
         const collector = new PublicationCollector({ userId: user._id });
-        
+
         collector.collect('teams.team', teams[0]._id, (collections) => {
           chai.assert.equal(collections.Teams.length, 1);
           chai.assert.equal(collections.Teams[0].name, teams[0].name);
@@ -104,6 +101,10 @@ if (Meteor.isServer) {
           chai.assert.deepEqual(collections.Teams[0].users, teams[0].users);
 
           chai.assert.equal(collections.Boards.length, 2);
+          
+          chai.assert.isDefined(collections.users);
+          chai.assert.isDefined(collections.users[0].emails);
+          chai.assert.isDefined(collections.users[0].profile);
           done();
         });
       });

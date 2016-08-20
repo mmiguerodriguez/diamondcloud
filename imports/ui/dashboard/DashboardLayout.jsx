@@ -1,7 +1,9 @@
-import React from 'react';
+import React           from 'react';
 
-import WelcomeCard from './welcome-card/WelcomeCard.jsx';
-import TeamsLayout from './teams/TeamsLayout.jsx';
+import { Teams }       from '../../api/teams/teams.js';
+
+import WelcomeCard     from './welcome-card/WelcomeCard.jsx';
+import TeamsLayout     from './teams/TeamsLayout.jsx';
 import CreateTeamModal from '../modals/create-team/CreateTeamModal.jsx';
 import ConfigTeamModal from '../modals/config-team/ConfigTeamModal.jsx';
 
@@ -13,20 +15,25 @@ export default class DashboardLayout extends React.Component {
     };
   }
   render() {
-    let { teams } = this.props;
-    let hasTeams = teams.length > 0 ? true : false;
-
+    let hasTeams = this.props.teams.length > 0 ? true : false;
     return (
       <div>
-        <WelcomeCard hasTeams={ hasTeams } />
-        <TeamsLayout  hasTeams={ hasTeams }
-                      teams={ teams }
-                      openCreateTeamModal={ this.openCreateTeamModal }
-                      openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
-        <CreateTeamModal /> { /* props: users(image, name, id (to send message) ) */ }
+        <WelcomeCard
+          hasTeams={ hasTeams }
+          openCreateTeamModal={ this.openCreateTeamModal } />
+        <TeamsLayout
+          hasTeams={ hasTeams }
+          teams={ this.props.teams }
+          openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
+        <CreateTeamModal />
         {
           (this.state.team) ? (
-            <ConfigTeamModal team={ this.state.team }/>
+            (this.state.team.owner() === Meteor.user().emails[0].address) ? (
+              <ConfigTeamModal
+                key={ this.state.team._id }
+                team={ this.state.team }
+                loadTeam={ this.loadTeam.bind(this) } />
+            ) : ( null )
           ) : ( null )
         }
       </div>
@@ -37,12 +44,14 @@ export default class DashboardLayout extends React.Component {
     $('#createTeamModal').modal('show');
   }
   openConfigTeamModal(team) {
-    this.setState({ team: team });
-    // Fixes modal not opening on the
-    // first click
-    setTimeout(() => {
-      $('#configTeamModal').modal('show');
-    }, 0);
+    this.loadTeam(team._id, () => {
+      $('#configTeamModal').modal('show');//show modal once state is updated
+    });
+  }
+  loadTeam(id, callback){
+    this.setState({
+      team: Teams.findOne(id)
+    }, callback);
   }
 }
 

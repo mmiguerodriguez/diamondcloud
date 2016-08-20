@@ -1,5 +1,8 @@
 @import 'create-team/create-team-modal';
 @import 'config-team/config-team-modal';
+@import 'create-board/create-board-modal';
+@import 'users-list/users-list';
+@import 'create-chat/create-chat-modal';
 
 .modal-header, .modal-footer {
   padding: 24px !important;
@@ -7,6 +10,11 @@
 }
 .modal-body {
   overflow: auto;
+  .modal-body-fixed {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    min-height: 300px;
+  }
 }
 .modal-content {
   border-radius: 3px !important;
