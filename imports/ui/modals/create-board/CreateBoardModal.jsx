@@ -109,7 +109,6 @@ export default class CreateBoardModal extends React.Component {
               </button>
               <button type='button'
                       className='btn btn-accept btn-hover'
-                      data-dismiss='modal'
                       onClick={ this.createBoard.bind(this) }>
                 Crear
               </button>
@@ -134,21 +133,6 @@ export default class CreateBoardModal extends React.Component {
 
     return arr;
   }
-  handleChange(index, event) {
-    let val = event.target.value;
-    if(index === 'isPrivate')  {
-      val = val === 'true' ? true : false;
-    }
-
-    this.setState({
-      [index]: val,
-    });
-  }
-  handleSelectChange(value) {
-    this.setState({
-      users: value,
-    });
-  }
   createBoard() {
     let board = {
       teamId: this.props.team._id,
@@ -165,18 +149,49 @@ export default class CreateBoardModal extends React.Component {
       board.users = [];
     }
 
-    Meteor.call('Boards.methods.create', board, (error, board) => {
-      if(error) {
-        throw new Meteor.Error(error);
-      } else {
-        this.props.toggleCollapsible('boards');
-        this.props.changeBoard(board._id);
-        this.props.getMessages({ boardId: board._id });
+    if(board.name != '' && board.name.length >= 3) {
+      Meteor.call('Boards.methods.create', board, (error, board) => {
+        if(error) {
+          throw new Meteor.Error(error);
+        } else {
+          this.props.toggleCollapsible('boards');
+          this.props.changeBoard(board._id);
+          this.props.getMessages({ boardId: board._id });
 
-        this.clearData();
-        $('#createBoardModal').modal('hide');
-      }
+          this.clearData();
+          this.closeModal();
+        }
+      });
+    } else {
+      this.errorBorder($('#boardName'));
+    }
+  }
+
+  // helpers
+  handleChange(index, event) {
+    let val = event.target.value;
+    if(index === 'isPrivate')  {
+      val = val === 'true' ? true : false;
+    }
+
+    this.setState({
+      [index]: val,
     });
+  }
+  handleSelectChange(value) {
+    this.setState({
+      users: value,
+    });
+  }
+  errorBorder(element) {
+    $(element).css('transition', 'border-color 500ms');
+    $(element).css('border-color', 'red');
+    setTimeout(() => {
+      $(element).css('border-color', '#ccc');
+    }, 500);
+  }
+  closeModal() {
+    $('#createBoardModal').modal('hide');
   }
   clearData() {
     this.setState({
