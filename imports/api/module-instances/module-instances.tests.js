@@ -14,6 +14,7 @@ if (Meteor.isServer) {
   describe('Module Instances', function() {
     describe('Helpers', function(){
       let board, moduleInstance;
+
       beforeEach(function() {
         resetDatabase();
         board = Factory.create('publicBoard');
@@ -27,7 +28,6 @@ if (Meteor.isServer) {
 
       it('should return board of a module instance', function() {
         let result = moduleInstance.board();
-
         chai.assert.deepEqual(result, board);
       });
     });
