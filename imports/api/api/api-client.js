@@ -15,5 +15,3 @@ export let DiamondAPI = {
     } else throw console.error('The provided data is wrong.');
   }
 };
-
-//window.DiamondAPI = DiamondAPI;
