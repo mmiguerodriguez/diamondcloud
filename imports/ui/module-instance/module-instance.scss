@@ -1,0 +1,19 @@
+.module-container {
+  position: absolute;
+  
+  .module-pin {
+    background-color: grey;
+    border: 5px outset grey;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin: auto;
+    position: absolute;
+    top: -16px;
+    left: calc(50% - 16px);
+  }
+  
+  .module {
+    border: none;
+  }
+}

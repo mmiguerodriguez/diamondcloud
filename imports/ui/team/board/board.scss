@@ -12,16 +12,6 @@
     height: calc(100% - 40px);
     margin-top: 40px;
     position: relative;
-    
-    .module-container {
-      overflow: auto;
-      display: table;
-      position: absolute;
-      
-      .module {
-        display: table-row;
-      }
-    }
   }
 }
 .sub-header {

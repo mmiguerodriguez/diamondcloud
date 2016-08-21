@@ -18,6 +18,7 @@ export default class ModuleInstance extends React.Component {
              top: this.props.moduleInstance.x,
              left: this.props.moduleInstance.y,
            }}>
+        <div className='module-pin'></div>
         <iframe className='module'
                 style={{
                   width: this.props.moduleInstance.width,
