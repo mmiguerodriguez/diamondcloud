@@ -9,6 +9,7 @@ export default class ModuleInstance extends React.Component {
       y: this.props.moduleInstance.y,
       width: this.props.moduleInstance.width,
       height: this.props.moduleInstance.height,
+      loading: true,
     };
   }
   render() {
@@ -18,8 +19,13 @@ export default class ModuleInstance extends React.Component {
              top: this.props.moduleInstance.x,
              left: this.props.moduleInstance.y,
            }}>
-        <div className='module-pin'></div>
-        <iframe className='module'
+        {
+          !this.state.loading ? (
+            <div className='module-pin'></div>
+          ) : ( null )
+        }
+        <iframe id={ this.props.moduleInstance._id }
+                className='module' 
                 style={{
                   width: this.props.moduleInstance.width,
                   height: this.props.moduleInstance.height,
@@ -29,6 +35,14 @@ export default class ModuleInstance extends React.Component {
         </iframe>
       </div>
     );
+  }
+  componentDidMount() {
+    $('#' + this.props.moduleInstance._id).load(this.iframeLoaded.bind(this));
+  }
+  iframeLoaded() {
+    this.setState({
+      loading: false,
+    });
   }
   editModuleInstance() {
 
