@@ -15,8 +15,8 @@ export default class Team extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      board: undefined,
       subscriptions: [],
+      board: undefined,
       boardSub: undefined,
     };
   }
