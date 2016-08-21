@@ -1,6 +1,6 @@
-import { Meteor } from 'meteor/meteor';
+import React          from 'react';
 
-import React from 'react';
+import ModuleInstance from '../../module-instance/ModuleInstance.jsx';
 
 export default class Board extends React.Component {
   render() {
@@ -21,14 +21,31 @@ export default class Board extends React.Component {
                   onClick={ this.props.getMessages.bind(null, { boardId: this.props.board._id }) }/>
           </span>
         </div>
-        <div>{ /* main board */ }</div>
+        <div className='board'>
+          { this.renderModules() }
+        </div>
       </div>
     );
   }
+  renderModules() {
+    let arr = [];
 
+    if(this.props.board.moduleInstances) {
+      this.props.board.moduleInstances.map((moduleInstance) => {
+        arr.push(
+          <ModuleInstance
+            key={ moduleInstance._id }
+            moduleInstance={ moduleInstance } />
+        );
+      });
+    }
+    
+    return arr;
+  }
   renderUsers() {
     let arr = [];
-    if(this.props.board.users !== undefined) {
+    
+    if(this.props.board.isPrivate) {
       this.props.board.users.map((_user) => {
         let user = Meteor.users.findOne(_user._id);
         arr.push(

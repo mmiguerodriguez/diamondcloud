@@ -15,7 +15,9 @@ export default class Team extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      board: undefined,
       subscriptions: [],
+      boardSub: undefined,
     };
   }
   render() {
@@ -27,11 +29,13 @@ export default class Team extends React.Component {
           <TeamLayout
             team={ this.props.team }
             boards={ this.props.boards }
+            board={ this.state.board || this.props.boards[0] }
             directChats={ this.props.directChats }
             owner={ this.props.team.owner() === Meteor.user().emails[0].address }
             chats={ this.formatChats() }
             getMessages={ this.getMessages.bind(this) }
             removeChat={ this.removeChat.bind(this) }
+            boardSubscribe={ this.boardSubscribe.bind(this) }
           />
         );
       } else {
@@ -143,6 +147,27 @@ export default class Team extends React.Component {
     // update state
     this.setState({
       subscriptions: subscriptions,
+    });
+  }
+  boardSubscribe(boardId) {
+    if(this.state.boardSub) {
+      this.state.boardSub.stop();
+    }
+    
+    let subscription = Meteor.subscribe('boards.board', boardId, {
+      onReady: () => {
+        this.setState({
+          board: Boards.findOne(boardId),
+        });
+
+      },
+      onError: (error) => {
+        throw new Meteor.Error(error);
+      }
+    });
+    
+    this.setState({
+      boardSub: subscription,
     });
   }
 }
