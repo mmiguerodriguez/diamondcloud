@@ -6,6 +6,7 @@ import { browserHistory }  from 'react-router';
 
 import { Teams }           from '../../api/teams/teams.js';
 import { Boards }          from '../../api/boards/boards.js';
+import { ModuleInstances } from '../../api/module-instances/module-instances.js';
 import { DirectChats }     from '../../api/direct-chats/direct-chats.js';
 import { Messages }        from '../../api/messages/messages.js';
 
@@ -28,15 +29,18 @@ export default class Team extends React.Component {
         return (
           <TeamLayout
             team={ this.props.team }
+            owner={ this.props.team.owner() === Meteor.user().emails[0].address }
+
             boards={ this.props.boards }
             board={ this.state.board || this.props.boards[0] }
+            moduleInstances={ this.props.moduleInstances }
+
             directChats={ this.props.directChats }
-            owner={ this.props.team.owner() === Meteor.user().emails[0].address }
             chats={ this.formatChats() }
+
             getMessages={ this.getMessages.bind(this) }
             removeChat={ this.removeChat.bind(this) }
-            boardSubscribe={ this.boardSubscribe.bind(this) }
-          />
+            boardSubscribe={ this.boardSubscribe.bind(this) } />
         );
       } else {
         return ( null );
@@ -184,5 +188,6 @@ export default TeamPageContainer = createContainer(({ params }) => {
     boards: Boards.find().fetch(),
     directChats: DirectChats.find().fetch(),
     messages: Messages.find().fetch(),
+    moduleInstances: ModuleInstances.find().fetch(),
   };
 }, Team);

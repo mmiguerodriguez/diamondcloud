@@ -3,18 +3,25 @@ import React from 'react';
 export default class ModuleInstance extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      x: this.props.moduleInstance.x,
+      y: this.props.moduleInstance.y,
+      width: this.props.moduleInstance.width,
+      height: this.props.moduleInstance.height,
+    };
   }
   render() {
     return (
       <div className='module-container'
            style={{
-             top: this.props.moduleInstance.x || 150,
-             left: this.props.moduleInstance.y || 150,
-        }}>
+             top: this.props.moduleInstance.x,
+             left: this.props.moduleInstance.y,
+           }}>
         <iframe className='module'
                 style={{
-                  width: this.props.moduleInstance.width || 250,
-                  height: this.props.moduleInstance.height || 400,
+                  width: this.props.moduleInstance.width,
+                  height: this.props.moduleInstance.height,
                 }}
                 src={ '/modules/' + this.props.moduleInstance._id + '/index.html' }>
 
@@ -22,6 +29,10 @@ export default class ModuleInstance extends React.Component {
       </div>
     );
   }
+  editModuleInstance() {
+
+  }
+
 }
 
 ModuleInstance.propTypes = {

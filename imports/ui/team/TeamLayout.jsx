@@ -16,6 +16,7 @@ export default class TeamLayout extends React.Component {
           changeBoard={ this.changeBoard.bind(this) } />
         <Board
           board={ this.props.board }
+          moduleInstances={ this.props.moduleInstances }
           users={ this.props.team.users }
           getMessages={ this.props.getMessages } />
         <div className='chats-container'>
@@ -47,20 +48,23 @@ export default class TeamLayout extends React.Component {
       let board = this.props.boards.find((board) => {
         return board._id === boardId;
       });
-    
+
       this.props.boardSubscribe(board._id);
     }
   }
-  
 }
 
 TeamLayout.propTypes = {
   team: React.PropTypes.object.isRequired,
+  owner: React.PropTypes.bool.isRequired,
+
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
+  moduleInstances: React.PropTypes.array,
+
   directChats: React.PropTypes.array.isRequired,
-  owner: React.PropTypes.bool.isRequired,
   chats: React.PropTypes.array.isRequired,
+  
   getMessages: React.PropTypes.func.isRequired,
   removeChat: React.PropTypes.func.isRequired,
   boardSubscribe: React.PropTypes.func.isRequired,

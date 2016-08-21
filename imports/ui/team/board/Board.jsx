@@ -30,8 +30,8 @@ export default class Board extends React.Component {
   renderModules() {
     let arr = [];
 
-    if(this.props.board.moduleInstances) {
-      this.props.board.moduleInstances.map((moduleInstance) => {
+    if(this.props.moduleInstances) {
+      this.props.moduleInstances.map((moduleInstance) => {
         arr.push(
           <ModuleInstance
             key={ moduleInstance._id }
@@ -39,12 +39,12 @@ export default class Board extends React.Component {
         );
       });
     }
-    
+
     return arr;
   }
   renderUsers() {
     let arr = [];
-    
+
     if(this.props.board.isPrivate) {
       this.props.board.users.map((_user) => {
         let user = Meteor.users.findOne(_user._id);
@@ -77,6 +77,7 @@ export default class Board extends React.Component {
 
 Board.propTypes = {
   board: React.PropTypes.object.isRequired,
+  moduleInstances: React.PropTypes.array,
   users: React.PropTypes.array.isRequired,
   getMessages: React.PropTypes.func.isRequired,
 };
