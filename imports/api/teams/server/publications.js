@@ -11,7 +11,7 @@ Meteor.publishComposite('teams.dashboard', function() {
   }
 
   let user = Meteor.users.findOne(this.userId);
-  return{
+  return {
     find: function() {
       return user.teams({
         fields: Teams.dashboardFields,
