@@ -23,7 +23,7 @@ export default class ModuleInstance extends React.Component {
                   width: this.props.moduleInstance.width,
                   height: this.props.moduleInstance.height,
                 }}
-                src={ '/modules/' + this.props.moduleInstance._id + '/index.html' }>
+                src={ '/modules/' + this.props.moduleInstance.moduleId + '/index.html' }>
 
         </iframe>
       </div>

@@ -47,6 +47,7 @@ Boards.moduleInstancesFields = {
   width: 1,
   height: 1,
   vars: 1, // change to 'data'
+  moduleId: 1,
   archived: 1,
 };
 
