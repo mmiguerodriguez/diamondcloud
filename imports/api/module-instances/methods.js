@@ -143,3 +143,40 @@ export const apiInsert = new ValidatedMethod({
     });
   }
 });
+
+export const apiUpdate = new ValidatedMethod({
+  name: 'ModuleInstances.methods.apiInsert',
+  validate: new SimpleSchema({
+    moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    collection: { type: String },
+    obj: { type: Object, blackbox: true },
+    visibleBy: { type: [Object], blackbox: true },
+  }).validator(),
+  run({ moduleInstanceId, collection, obj, visibleBy }) {
+    if(!Meteor.user()) {
+      throw new Meteor.Error('ModuleInstances.methods.apiInsert.notLoggedIn',
+      'Must be logged in to use a module.');
+    }
+    let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+    if(!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
+      throw new Meteor.Error('ModuleInstances.methods.apiInsert.boardAccessDenied',
+      'Must be part of a board to access its modules.');
+    }
+
+    let entry = obj;
+    entry.visibleBy = visibleBy;
+
+    if(!moduleInstance.data[collection]){
+      moduleInstance.data[collection] = [entry];
+    }
+    else{
+      moduleInstance.data[collection].push(entry);
+    }
+
+    ModuleInstances.update(moduleInstanceId, {
+      $set: {
+        data: moduleInstance.data,
+      }
+    });
+  }
+});
