@@ -51,6 +51,7 @@ export default class Team extends React.Component {
     }
   }
   */
+
   getMessages(obj) {
     let subscriptions = this.state.subscriptions;
     let isSubscribed = false;
@@ -149,23 +150,23 @@ export default class Team extends React.Component {
       subscriptions: subscriptions,
     });
   }
+
   boardSubscribe(boardId) {
     if(this.state.boardSub) {
       this.state.boardSub.stop();
     }
-    
+
     let subscription = Meteor.subscribe('boards.board', boardId, {
       onReady: () => {
         this.setState({
           board: Boards.findOne(boardId),
         });
-
       },
       onError: (error) => {
         throw new Meteor.Error(error);
       }
     });
-    
+
     this.setState({
       boardSub: subscription,
     });

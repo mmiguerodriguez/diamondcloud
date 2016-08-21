@@ -6,12 +6,22 @@ export default class ModuleInstance extends React.Component {
   }
   render() {
     return (
-      <div className='module-container'>
-        <iframe className='module' src={ '/modules/' + this.props.moduleInstance._id + '/index.html' }></iframe>
+      <div className='module-container'
+           style={{
+             top: this.props.moduleInstance.x || 150,
+             left: this.props.moduleInstance.y || 150,
+        }}>
+        <iframe className='module'
+                style={{
+                  width: this.props.moduleInstance.width || 250,
+                  height: this.props.moduleInstance.height || 400,
+                }}
+                src={ '/modules/' + this.props.moduleInstance._id + '/index.html' }>
+
+        </iframe>
       </div>
     );
   }
-  
 }
 
 ModuleInstance.propTypes = {
