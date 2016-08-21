@@ -60,7 +60,7 @@ Meteor.publishComposite('teams.team', function(teamId) {
       },
       {
         find: function(team) {
-          return Modules.find({}); // publish all modules
+          return Modules.find({ validated: true }); // publish all modules
         }
       }
     ]
