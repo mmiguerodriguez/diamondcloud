@@ -26,7 +26,7 @@ export default class BoardsCollapsible extends React.Component {
             <a className='btn btn-default footer-btn' role='button' onClick={ this.props.openCreateBoardModal }>
               CREAR BOARD
             </a>
-          ) : ( null )
+          ) : ( <div></div> )
         }
       />
     );
