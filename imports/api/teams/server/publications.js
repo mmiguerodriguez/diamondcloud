@@ -1,8 +1,9 @@
-import { Meteor } from 'meteor/meteor';
+import { Meteor }      from 'meteor/meteor';
 
-import { Teams } from '../teams.js';
+import { Teams }       from '../teams.js';
+import { Boards }      from '../../boards/boards.js';
+import { Modules }     from '../../modules/modules.js';
 import { DirectChats } from '../../direct-chats/direct-chats.js';
-import { Boards } from '../../boards/boards.js';
 
 Meteor.publishComposite('teams.dashboard', function() {
   if (!this.userId) {
@@ -55,6 +56,11 @@ Meteor.publishComposite('teams.team', function(teamId) {
       {
         find: function(team) {
           return team.getUsers(Teams.teamUsersFields);
+        }
+      },
+      {
+        find: function(team) {
+          return Modules.find({}); // publish all modules
         }
       }
     ]

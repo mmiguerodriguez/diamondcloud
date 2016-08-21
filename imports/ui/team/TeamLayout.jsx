@@ -61,10 +61,11 @@ TeamLayout.propTypes = {
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
   moduleInstances: React.PropTypes.array,
+  modules: React.PropTypes.array.isRequired,
 
   directChats: React.PropTypes.array.isRequired,
   chats: React.PropTypes.array.isRequired,
-  
+
   getMessages: React.PropTypes.func.isRequired,
   removeChat: React.PropTypes.func.isRequired,
   boardSubscribe: React.PropTypes.func.isRequired,
