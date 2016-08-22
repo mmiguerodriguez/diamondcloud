@@ -6,6 +6,8 @@ import Future                                  from 'fibers/future';
 import { ModuleInstances, generateMongoQuery } from './module-instances.js';
 import { Boards }                              from '../boards/boards.js';
 
+let sift = require('sift'); // Query arrays with mongo api
+
 export const createModuleInstance = new ValidatedMethod({
   name: 'ModuleInstances.methods.create',
   validate: new SimpleSchema({
@@ -129,6 +131,7 @@ export const apiInsert = new ValidatedMethod({
 
     let entry = obj;
     entry.visibleBy = visibleBy;
+    entry._id = (entry._id !== undefined) ? entry._id : new ObjectID();
 
     if(!moduleInstance.data[collection]){
       moduleInstance.data[collection] = [entry];
@@ -164,8 +167,30 @@ export const apiUpdate = new ValidatedMethod({
       'Must be part of a board to access its modules.');
     }
 
-    filter = generateMongoQuery(filter, collection);
-    updateQuery = generateMongoQuery(updateQuery, collection);
+    let newCollection  = moduleInstance.data[collection];
+    let boards = Meteor.user().boards(moduleInstance.board().team()._id, { _id: 1 });
+    boards.forEach((element, index) => {
+      boards[index] = element._id;
+    });
+
+    let selected = sift({
+      $and: [
+        {
+          $or: [
+            { 'visibleBy.userId': 1 },
+            { 'visibleBy.boardId': { $in: boards } },
+          ]
+        },
+        filter
+      ]
+    }, newCollection);
+
+    selected.forEach((element) => {
+      ModuleInstances.update({
+        [`data.${collection}._id`]: element._id,
+      }, generateMongoQuery(updateQuery));
+    });
+
     let future = new Future();
     ModuleInstances.update(filter, {
       $set: updateQuery,
@@ -176,15 +201,44 @@ export const apiUpdate = new ValidatedMethod({
   }
 });
 
+/*
+{
+  data: {
+    todos: [
+      {
+        _id: 1,
+        visibleBy: [
+          { userId: 1 },
+          { boardId: 1 }
+        ]
+      },
+      {
+        _id: 2,
+        visibleBy: [
+          { userId: 2 },
+        ]
+      }
+    ]
+  }
+}
+
+filter = {
+  _id: {
+    $in: [
+      1,
+      2
+    ]
+  }
+}
+
 {
   $and: [
-    { _id: 'id' },
-    { 'data.todos.name': { $in: ['todojaja', 'todo2'] } }
+    { 'data.todos': {$elemMatch: {id: { $in: [1, 2] }}}},
   ],
 },
 {
   $set: {
-    'data.todos.$.text' : 'asdasd'
+    'data.todos.$.text' : 'kha'
   }
 }
 
@@ -195,3 +249,5 @@ export const apiUpdate = new ValidatedMethod({
     }
   }
 }
+
+*/

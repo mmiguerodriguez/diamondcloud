@@ -141,6 +141,7 @@ if(Meteor.isServer){
       args = {
         collection: 'todos',
         obj: {
+          _id: 'id',
           prop1: 'val1',
         },
         visibleBy: [
@@ -149,14 +150,11 @@ if(Meteor.isServer){
         moduleInstanceId: module._id,
       };
 
-      apiInsert.call(args, (err, res) => {
-        if(err) throw new Meteor.Error(err);
-        result = res;
-      });
-      console.log(result);
+      apiInsert.call(args);
       expect = {
         todos: [
           {
+            _id: 'id',
             prop1: 'val1',
             visibleBy: [
               { userId: 'userId' },
