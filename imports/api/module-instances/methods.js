@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import Future from 'fibers/future';
 
 import { ModuleInstances } from './module-instances.js';
 
@@ -30,9 +31,16 @@ export const createModuleInstance = new ValidatedMethod({
       archived: false,
     };
 
-    ModuleInstances.insert(moduleInstance);
+    let future = new Future();
+    ModuleInstances.insert(moduleInstance, (err, res) => {
+      if(err) future.throw(err);
 
-    return ModuleInstances.findOne();
+      let moduleInstanceId = res;
+      let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+
+      future.return(moduleInstance);
+    });
+    return future.wait();
   }
 });
 
