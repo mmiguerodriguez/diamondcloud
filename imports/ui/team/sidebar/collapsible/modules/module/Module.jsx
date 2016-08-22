@@ -3,7 +3,7 @@ import React from 'react';
 export default class Module extends React.Component {
   render() {
     return (
-      <div className='module-item row'>
+      <div className='module-item row' role="button" data-module-id={ this.props.module._id }>
         <div className='col-xs-2'>
           <img src={ this.props.module.img } className='img module-preview' width='32px' />
         </div>
