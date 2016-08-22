@@ -141,6 +141,8 @@ export default class ChatLayout extends React.Component {
   }
   sendMessage() {
     let text = this.state.message;
+    text = text.trim();
+    
     let obj = {
       type: 'text',
       content: text,
@@ -153,7 +155,7 @@ export default class ChatLayout extends React.Component {
       obj.boardId = this.props.chat.boardId;
     }
 
-    if(text != '') {
+    if(text != '' && /\S/.test(text)) {
       Meteor.call('Messages.methods.send', obj, (error, response) => {
         if(error) {
           throw new Meteor.Error(error);

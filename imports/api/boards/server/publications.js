@@ -19,6 +19,13 @@ Meteor.publishComposite('boards.board', function(boardId) {
   return {
     find: function() {
       return Boards.getBoards([boardId], this.userId, Boards.boardFields);
-    }
+    },
+    children: [
+      {
+        find: function(board) {
+          return board.getModuleInstances(Boards.moduleInstancesFields);
+        }
+      }
+    ]
   };
 });

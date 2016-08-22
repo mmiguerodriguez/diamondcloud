@@ -7,9 +7,6 @@ import SidebarLayout    from './sidebar/SidebarLayout.jsx';
 export default class TeamLayout extends React.Component {
   constructor(props){
     super(props);
-    this.state = {
-      board: this.props.boards[0],
-    };
   }
   render() {
     return (
@@ -18,7 +15,8 @@ export default class TeamLayout extends React.Component {
           { ...this.props }
           changeBoard={ this.changeBoard.bind(this) } />
         <Board
-          board={ this.state.board }
+          board={ this.props.board }
+          moduleInstances={ this.props.moduleInstances }
           users={ this.props.team.users }
           getMessages={ this.props.getMessages } />
         <div className='chats-container'>
@@ -27,7 +25,6 @@ export default class TeamLayout extends React.Component {
       </div>
     );
   }
-
   renderChats() {
     let arr = [];
 
@@ -47,24 +44,29 @@ export default class TeamLayout extends React.Component {
     return arr;
   }
   changeBoard(boardId) {
-    if(boardId !== this.state.board._id) {
+    if(boardId !== this.props.board._id) {
       let board = this.props.boards.find((board) => {
         return board._id === boardId;
       });
 
-      this.setState({
-        board: board,
-      });
+      this.props.boardSubscribe(board._id);
     }
   }
 }
 
 TeamLayout.propTypes = {
   team: React.PropTypes.object.isRequired,
-  boards: React.PropTypes.array.isRequired,
-  directChats: React.PropTypes.array.isRequired,
   owner: React.PropTypes.bool.isRequired,
+
+  boards: React.PropTypes.array.isRequired,
+  board: React.PropTypes.object.isRequired,
+  moduleInstances: React.PropTypes.array,
+  modules: React.PropTypes.array.isRequired,
+
+  directChats: React.PropTypes.array.isRequired,
   chats: React.PropTypes.array.isRequired,
+
   getMessages: React.PropTypes.func.isRequired,
   removeChat: React.PropTypes.func.isRequired,
+  boardSubscribe: React.PropTypes.func.isRequired,
 };

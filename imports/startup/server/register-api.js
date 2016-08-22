@@ -18,3 +18,7 @@ import '../../api/teams/methods.js';
 
 // Users
 import '../../api/users/users.js';
+
+// Module-Instances
+import '../../api/module-instances/server/publications.js';
+import '../../api/module-instances/methods.js';

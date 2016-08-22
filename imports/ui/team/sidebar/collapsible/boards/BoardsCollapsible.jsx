@@ -10,23 +10,23 @@ export default class BoardsCollapsible extends React.Component {
         id={ 'boards-collapsible' }
         header={
           <div>
-            <div  type="button"
-                  className="close col-xs-2"
+            <div  type='button'
+                  className='close col-xs-2'
                   onClick={ this.props.toggleCollapsible.bind(null, 'boards') }>
-              <img src="/img/close-modal-icon.svg" width="18px" />
+              <img src='/img/close-modal-icon.svg' width='18px' />
             </div>
-            <h3 className="col-xs-10 title">Boards</h3>
+            <h3 className='col-xs-10 title'>Boards</h3>
           </div>
         }
         body={
           this.renderBoards()
         }
         footer={
-          this.props.team.owner() === Meteor.user().emails[0].address ? (
-            <a className="btn btn-default footer-btn" role="button" onClick={ this.props.openCreateBoardModal }>
+          this.props.owner ? (
+            <a className='btn btn-default footer-btn' role='button' onClick={ this.props.openCreateBoardModal }>
               CREAR BOARD
             </a>
-          ) : ( null )
+          ) : ( <div></div> )
         }
       />
     );
@@ -52,6 +52,7 @@ export default class BoardsCollapsible extends React.Component {
 BoardsCollapsible.propTypes = {
   boards: React.PropTypes.array.isRequired,
   team: React.PropTypes.object.isRequired,
+  owner: React.PropTypes.bool.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
   openCreateBoardModal: React.PropTypes.func.isRequired,

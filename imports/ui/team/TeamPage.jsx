@@ -6,6 +6,8 @@ import { browserHistory }  from 'react-router';
 
 import { Teams }           from '../../api/teams/teams.js';
 import { Boards }          from '../../api/boards/boards.js';
+import { ModuleInstances } from '../../api/module-instances/module-instances.js';
+import { Modules }         from '../../api/modules/modules.js';
 import { DirectChats }     from '../../api/direct-chats/direct-chats.js';
 import { Messages }        from '../../api/messages/messages.js';
 
@@ -14,8 +16,11 @@ import TeamLayout          from './TeamLayout.jsx';
 export default class Team extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       subscriptions: [],
+      board: undefined,
+      boardSub: undefined,
     };
   }
   render() {
@@ -26,13 +31,19 @@ export default class Team extends React.Component {
         return (
           <TeamLayout
             team={ this.props.team }
-            boards={ this.props.boards }
-            directChats={ this.props.directChats }
             owner={ this.props.team.owner() === Meteor.user().emails[0].address }
+
+            boards={ this.props.boards }
+            board={ this.state.board || this.props.boards[0] }
+            moduleInstances={ this.props.moduleInstances }
+            modules={ this.props.modules }
+
+            directChats={ this.props.directChats }
             chats={ this.formatChats() }
+
             getMessages={ this.getMessages.bind(this) }
             removeChat={ this.removeChat.bind(this) }
-          />
+            boardSubscribe={ this.boardSubscribe.bind(this) } />
         );
       } else {
         return ( null );
@@ -47,6 +58,7 @@ export default class Team extends React.Component {
     }
   }
   */
+
   getMessages(obj) {
     let subscriptions = this.state.subscriptions;
     let isSubscribed = false;
@@ -145,6 +157,27 @@ export default class Team extends React.Component {
       subscriptions: subscriptions,
     });
   }
+
+  boardSubscribe(boardId) {
+    if(this.state.boardSub) {
+      this.state.boardSub.stop();
+    }
+
+    let subscription = Meteor.subscribe('boards.board', boardId, {
+      onReady: () => {
+        this.setState({
+          board: Boards.findOne(boardId),
+        });
+      },
+      onError: (error) => {
+        throw new Meteor.Error(error);
+      }
+    });
+
+    this.setState({
+      boardSub: subscription,
+    });
+  }
 }
 
 export default TeamPageContainer = createContainer(({ params }) => {
@@ -158,5 +191,7 @@ export default TeamPageContainer = createContainer(({ params }) => {
     boards: Boards.find().fetch(),
     directChats: DirectChats.find().fetch(),
     messages: Messages.find().fetch(),
+    moduleInstances: ModuleInstances.find().fetch(),
+    modules: Modules.find().fetch(),
   };
 }, Team);

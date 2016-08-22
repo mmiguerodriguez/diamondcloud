@@ -7,6 +7,12 @@
   .board-name {
 
   }
+  
+  .board {
+    height: calc(100% - 40px);
+    margin-top: 40px;
+    position: relative;
+  }
 }
 .sub-header {
   display: flex;

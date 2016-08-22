@@ -18,17 +18,18 @@ export default class CreateChatModal extends React.Component {
         id={ 'createChatModal' }
         header={
           <div>
-            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-              <img src="/img/close-modal-icon.svg" width="18px" />
+            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+              <img src='/img/close-modal-icon.svg' width='18px' />
             </button>
-            <h4 className="modal-title">Crear un chat</h4>
+            <h4 className='modal-title'>Crear un chat</h4>
           </div>
         }
         body={
           <div className='modal-body-fixed'>
             <Select
-              name="form-field-name"
-              placeholder="Seleccioná los usuarios"
+              name='form-field-name'
+              className='create-chat-user-select'
+              placeholder='Seleccioná los usuarios'
               simpleValue={ true }
               disabled={ false }
               options={ this.teamUsers() }
@@ -38,16 +39,15 @@ export default class CreateChatModal extends React.Component {
         }
         footer={
           <div>
-            <div className="row">
-              <button type="button"
-                      className="btn btn-cancel btn-hover"
-                      data-dismiss="modal"
+            <div className='row'>
+              <button type='button'
+                      className='btn btn-cancel btn-hover'
+                      data-dismiss='modal'
                       onClick={ this.clearData }>
                 Cancelar
               </button>
-              <button type="button"
-                      className="btn btn-accept btn-hover"
-                      data-dismiss="modal"
+              <button type='button'
+                      className='btn btn-accept btn-hover'
                       onClick={ this.createChat.bind(this) }>
                 Crear
               </button>
@@ -72,28 +72,43 @@ export default class CreateChatModal extends React.Component {
 
     return arr;
   }
-  handleSelectChange(value) {
-    this.setState({
-      userId: value,
-    });
-  }
   createChat() {
     let chat = {
       teamId: this.props.team._id,
       ...this.state
     };
 
-    Meteor.call('DirectChats.methods.create', chat, (error, response) => {
-      if(error) {
-        throw new Meteor.Error(error);
-      } else {
-        this.props.getMessages({ directChatId: response._id });
-        this.props.toggleCollapsible('chats');
-        
-        this.clearData();
-        $('#createChatModal').modal('hide');
-      }
+    if(chat.userId != '') {
+      Meteor.call('DirectChats.methods.create', chat, (error, response) => {
+        if(error) {
+          throw new Meteor.Error(error);
+        } else {
+          this.props.getMessages({ directChatId: response._id });
+          this.props.toggleCollapsible('chats');
+
+          this.clearData();
+          this.closeModal();
+        }
+      });
+    } else {
+      this.errorBorder($('.create-chat-user-select'));
+    }
+  }
+
+  // helpers
+  errorBorder(element) {
+    $(element).css('border-color', 'red');
+    setTimeout(() => {
+      $(element).css('border-color', '#d9d9d9 #ccc #b3b3b3');
+    }, 500);
+  }
+  handleSelectChange(value) {
+    this.setState({
+      userId: value,
     });
+  }
+  closeModal() {
+    $('#createChatModal').modal('hide');
   }
   clearData() {
     this.setState({

@@ -25,7 +25,7 @@ export default class DashboardLayout extends React.Component {
           hasTeams={ hasTeams }
           teams={ this.props.teams }
           openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
-        <CreateTeamModal /> { /* props: users(image, name, id (to send message) ) */ }
+        <CreateTeamModal />
         {
           (this.state.team) ? (
             (this.state.team.owner() === Meteor.user().emails[0].address) ? (

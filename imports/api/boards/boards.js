@@ -1,6 +1,7 @@
-import { Mongo } from 'meteor/mongo';
+import { Mongo }           from 'meteor/mongo';
 
-import { Teams } from '../teams/teams';
+import { Teams }           from '../teams/teams';
+import { ModuleInstances } from '../module-instances/module-instances';
 
 export let Boards = new Mongo.Collection('Boards');
 
@@ -14,6 +15,22 @@ Boards.helpers({
       },
     });
   },
+  getModuleInstances(fields) {
+    let moduleInstances = [];
+
+    this.moduleInstances.map((moduleInstance) => {
+      moduleInstances.push(moduleInstance._id);
+    });
+
+    return ModuleInstances.find({
+      _id: {
+        $in: moduleInstances,
+      },
+      archived: false,
+    }, {
+      fields
+    });
+  }
 });
 
 Boards.boardFields = {
@@ -21,6 +38,16 @@ Boards.boardFields = {
   isPrivate: 1,
   users: 1,
   drawings: 1,
+  moduleInstances: 1,
+  archived: 1,
+};
+Boards.moduleInstancesFields = {
+  x: 1,
+  y: 1,
+  width: 1,
+  height: 1,
+  vars: 1, // change to 'data'
+  moduleId: 1,
   archived: 1,
 };
 
@@ -58,7 +85,6 @@ Boards.getBoards = (boardsIds, userId, fields) => {
     fields
   });
 };
-
 Boards.isValid = (boardId, userId) => {
   let board = Boards.findOne({
     _id: boardId,
@@ -73,10 +99,21 @@ Boards.isValid = (boardId, userId) => {
       }
     ],
   });
-  if(!board){
+  
+  if(!board) {
     return false;
-  }
-  else{
+  } else {
     return board.team().hasUser({ _id: userId });
   }
+};
+Boards.addModuleInstance = (boardId, moduleInstanceId) => {
+  Boards.update({
+    _id: boardId,
+  }, {
+    $push: {
+      moduleInstances: {
+        _id: moduleInstanceId,
+      }
+    }
+  });
 };

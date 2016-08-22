@@ -19,24 +19,26 @@ export default class UsersList extends React.Component {
     let isOwner = this.props.team ? this.props.team.owner() === Meteor.user().emails[0].address : true;
     return (
       <div>
-        { (isOwner) ? (
-          <div className="row">
-            <div className="input-group col-sm-6 col-xs-12 col-sm-offset-3">
-              <input  id="searchUsers"
-                      className="form-control"
-                      placeholder="Compartir proyecto"
-                      type="text"
-                      value={ email }
-                      onChange={ this.handleChange.bind(this, 'email') }/>
-              <div className="input-group-addon search-input" onClick={ this.handleSubmit.bind(this) }>
-                <img src="/img/add-people-icon.svg"
-                     width="24px" />
+        {
+          (isOwner) ? (
+            <div className='row'>
+              <div className='input-group col-sm-6 col-xs-12 col-sm-offset-3'>
+                <input  id='searchUsers'
+                        className='form-control'
+                        placeholder='Compartir proyecto'
+                        type='text'
+                        value={ email }
+                        onChange={ this.handleChange.bind(this, 'email') }/>
+                <div className='input-group-addon search-input' onClick={ this.handleSubmit.bind(this) }>
+                  <img src='/img/add-people-icon.svg'
+                       width='24px' />
+                </div>
               </div>
             </div>
-          </div>
-        ) : null }
-        <div className="row contacts-list-row">
-          <div className="contacts-list col-sm-6 col-xs-12 col-sm-offset-3">
+          ) : ( null )
+        }
+        <div className='row contacts-list-row'>
+          <div className='contacts-list col-sm-6 col-xs-12 col-sm-offset-3'>
             { this.renderUsers() }
           </div>
         </div>
@@ -108,7 +110,7 @@ export default class UsersList extends React.Component {
       });
     }
     users.map((user) => {
-      arr.push(<User key={ user._id } user={ user } removeUser={ this.props.removeUser } isOwner={isOwner} />);
+      arr.push(<User key={ user._id } user={ user } removeUser={ this.props.removeUser } isOwner={ isOwner } />);
     });
     return arr;
   }
