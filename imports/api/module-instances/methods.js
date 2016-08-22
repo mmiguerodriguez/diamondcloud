@@ -175,3 +175,23 @@ export const apiUpdate = new ValidatedMethod({
     return future.wait();
   }
 });
+
+{
+  $and: [
+    { _id: 'id' },
+    { 'data.todos.name': { $in: ['todojaja', 'todo2'] } }
+  ],
+},
+{
+  $set: {
+    'data.todos.$.text' : 'asdasd'
+  }
+}
+
+{
+  'data.todos': {
+    $elemMatch: {
+      name: 'todo1'
+    }
+  }
+}

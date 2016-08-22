@@ -136,7 +136,7 @@ if(Meteor.isServer){
       chai.assert.isTrue(expect === result.archived);
     });
 
-    it('should should create a collection and an entry in module data', function() {
+    it('should create a collection and an entry in module data', function() {
       let args, expect, result;
       args = {
         collection: 'todos',
@@ -166,6 +166,10 @@ if(Meteor.isServer){
       };
 
       chai.assert.deepEqual(ModuleInstances.findOne(module._id).data, expect);
+    });
+
+    it('should update an entry in module data', function() {
+
     });
   });
 }
