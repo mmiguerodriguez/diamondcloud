@@ -99,10 +99,21 @@ Boards.isValid = (boardId, userId) => {
       }
     ],
   });
-  if(!board){
+  
+  if(!board) {
     return false;
-  }
-  else{
+  } else {
     return board.team().hasUser({ _id: userId });
   }
+};
+Boards.addModuleInstance = (boardId, moduleInstanceId) => {
+  Boards.update({
+    _id: boardId,
+  }, {
+    $push: {
+      moduleInstances: {
+        _id: moduleInstanceId,
+      }
+    }
+  });
 };
