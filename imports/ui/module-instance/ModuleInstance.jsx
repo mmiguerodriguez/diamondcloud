@@ -22,7 +22,7 @@ export default class ModuleInstance extends React.Component {
            }}>
         {
           !this.state.loading ? (
-            <div className='module-pin'></div>
+            <div className='module-pin' role='button'></div>
           ) : ( null )
         }
         <iframe id={ this.props.moduleInstance._id }
@@ -42,20 +42,16 @@ export default class ModuleInstance extends React.Component {
   }
   iframeLoaded() {
     $('.module-container').draggable({
+      containment: 'parent',
       handle: '.module-pin',
+      cursor: 'pointer',
+      cursorAt: { top: -6 },
       iframeFix: true,
-    });
-    
-    $('.module-container').resizable({
-
     });
 
     this.setState({
       loading: false,
     });
-  }
-  editModuleInstance() {
-
   }
 }
 

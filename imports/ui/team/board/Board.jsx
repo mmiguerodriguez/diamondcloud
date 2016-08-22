@@ -62,14 +62,14 @@ export default class Board extends React.Component {
           });
         } else if(isContainer) {
           let moduleInstanceId = ui.draggable.data('moduleinstance-id');
-          let frame = ui.draggable.children('iframe');
+          let iframe = ui.draggable.children('iframe');
 
           Meteor.call('ModuleInstances.methods.edit', {
             moduleInstanceId,
             x: ui.position.top,
             y: ui.position.left,
-            width: frame.width(),
-            height: frame.height()
+            width: iframe.width(),
+            height: iframe.height()
           }, (error, result) => {
             if(error) {
               throw new Meteor.Error(error);
