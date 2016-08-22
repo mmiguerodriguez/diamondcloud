@@ -2,10 +2,10 @@
 1 verbose cli [ '/usr/local/bin/node',
 1 verbose cli   '/usr/local/bin/npm',
 1 verbose cli   'run',
-1 verbose cli   'tests-lcoal' ]
+1 verbose cli   'tests-localc' ]
 2 info using npm@2.15.1
 3 info using node@v4.4.4
-4 verbose stack Error: missing script: tests-lcoal
+4 verbose stack Error: missing script: tests-localc
 4 verbose stack     at run (/usr/local/lib/node_modules/npm/lib/run-script.js:142:19)
 4 verbose stack     at /usr/local/lib/node_modules/npm/lib/run-script.js:58:5
 4 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:345:5
@@ -16,11 +16,11 @@
 4 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/graceful-fs/graceful-fs.js:78:16
 4 verbose stack     at FSReqWrap.readFileAfterClose [as oncomplete] (fs.js:380:3)
 5 verbose cwd /Users/raikhen/cloud
-6 error Darwin 15.5.0
-7 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "run" "tests-lcoal"
+6 error Darwin 15.6.0
+7 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "run" "tests-localc"
 8 error node v4.4.4
 9 error npm  v2.15.1
-10 error missing script: tests-lcoal
+10 error missing script: tests-localc
 11 error If you need help, you may report this error at:
 11 error     <https://github.com/npm/npm/issues>
 12 verbose exit [ 1, true ]

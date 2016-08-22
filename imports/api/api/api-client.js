@@ -10,7 +10,8 @@ export let generateApi = (moduleInstanceId) => {
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         // Subscribe to data
-        Meteor.subscribe('moduleInstances.data', moduleInstanceId, request, {
+        console.log(ModuleInstances.findOne(moduleInstanceId));
+        Meteor.subscribe('moduleInstances.data', moduleInstanceId, request/*, {
           onReady: function() {
             let caller = (id, fields) => {
               callback(ModuleInstances.findOne(moduleInstanceId).fetch());
@@ -21,11 +22,12 @@ export let generateApi = (moduleInstanceId) => {
               changed: caller,
               removed: caller,
             });
+            callback('asd');
           },
           onError: (err) => {
             throw console.error('Error while subscribing.', err);
           },
-        });
+        }*/);
       } else {
         throw console.error('The provided data is wrong.');
       }
