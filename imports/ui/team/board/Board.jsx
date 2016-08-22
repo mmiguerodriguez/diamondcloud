@@ -28,27 +28,7 @@ export default class Board extends React.Component {
     );
   }
   componentDidMount() {
-    $('.board').droppable({
-      accept: '.module-item',
-      drop: (event, ui) => {
-        let moduleId = $($(ui.draggable[0])).data('module-id');
-
-        Meteor.call('ModuleInstances.methods.create', {
-          moduleId,
-          x: ui.position.top - 40,
-          y: ui.position.left,
-          width: 350, // must change to fixed
-          height: 400, // must change to fixed
-          vars: { },
-        }, (error, result) => {
-          if(error) {
-            throw new Meteor.Error(error);
-          } else {
-            console.log(result);
-          }
-        });
-      }
-    });
+    
   }
   renderModules() {
     let arr = [];

@@ -47,7 +47,6 @@ export default class ModuleInstance extends React.Component {
   editModuleInstance() {
 
   }
-
 }
 
 ModuleInstance.propTypes = {
