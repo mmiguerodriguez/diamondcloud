@@ -15,6 +15,7 @@ export default class ModuleInstance extends React.Component {
   render() {
     return (
       <div className='module-container'
+           data-moduleinstance-id={ this.props.moduleInstance._id }
            style={{
              top: this.props.moduleInstance.x,
              left: this.props.moduleInstance.y,
@@ -25,7 +26,7 @@ export default class ModuleInstance extends React.Component {
           ) : ( null )
         }
         <iframe id={ this.props.moduleInstance._id }
-                className='module' 
+                className='module'
                 style={{
                   width: this.props.moduleInstance.width,
                   height: this.props.moduleInstance.height,
@@ -40,6 +41,15 @@ export default class ModuleInstance extends React.Component {
     $('#' + this.props.moduleInstance._id).load(this.iframeLoaded.bind(this));
   }
   iframeLoaded() {
+    $('.module-container').draggable({
+      handle: '.module-pin',
+      iframeFix: true,
+    });
+    
+    $('.module-container').resizable({
+
+    });
+
     this.setState({
       loading: false,
     });

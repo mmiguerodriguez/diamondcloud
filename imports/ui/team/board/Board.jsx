@@ -28,7 +28,58 @@ export default class Board extends React.Component {
     );
   }
   componentDidMount() {
-    
+    let self = this;
+    $('.board').droppable({
+      accept(e) {
+        const validClasses = ['module-item', 'module-container'];
+        let valid = false;
+
+        validClasses.forEach((c) => (valid = e.hasClass(c) ? true : valid));
+        return valid;
+      },
+      drop(event, ui) {
+        let isItem = ui.draggable.hasClass('module-item');
+        let isContainer = ui.draggable.hasClass('module-container');
+
+        if(isItem) {
+          let boardId = self.props.board._id;
+          let moduleId = ui.draggable.data('module-id');
+
+          Meteor.call('ModuleInstances.methods.create', {
+            boardId,
+            moduleId,
+            x: ui.position.top - 40,
+            y: ui.position.left,
+            width: 350, // must change to fixed
+            height: 400, // must change to fixed
+            vars: { },
+          }, (error, result) => {
+            if(error) {
+              throw new Meteor.Error(error);
+            } else {
+              console.log(result);
+            }
+          });
+        } else if(isContainer) {
+          let moduleInstanceId = ui.draggable.data('moduleinstance-id');
+          let frame = ui.draggable.children('iframe');
+
+          Meteor.call('ModuleInstances.methods.edit', {
+            moduleInstanceId,
+            x: ui.position.top,
+            y: ui.position.left,
+            width: frame.width(),
+            height: frame.height()
+          }, (error, result) => {
+            if(error) {
+              throw new Meteor.Error(error);
+            } else {
+              console.log(result);
+            }
+          });
+        }
+      }
+    });
   }
   renderModules() {
     let arr = [];

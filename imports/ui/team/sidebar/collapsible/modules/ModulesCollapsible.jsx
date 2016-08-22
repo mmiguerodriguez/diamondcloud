@@ -30,7 +30,16 @@ export default class ModulesCollapsible extends React.Component {
     );
   }
   componentDidMount() {
-    
+    $('.module-item').each((index, item) => {
+      let src = $(item).children('.col-xs-2').children('img').attr('src');
+
+      $(item).draggable({
+        cursor: 'pointer',
+        helper(event) {
+          return $('<img src="' + src + '">');
+        }
+      });
+    });
   }
   renderModules() {
     let arr = [];
