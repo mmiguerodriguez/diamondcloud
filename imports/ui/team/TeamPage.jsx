@@ -13,6 +13,8 @@ import { Messages }        from '../../api/messages/messages.js';
 
 import TeamLayout          from './TeamLayout.jsx';
 
+let asdasd = false;
+
 export default class Team extends React.Component {
   constructor(props) {
     super(props);
@@ -36,7 +38,7 @@ export default class Team extends React.Component {
             board={ this.state.board || this.props.boards[0] }
             moduleInstances={ this.props.moduleInstances }
             modules={ this.props.modules }
-            
+
             directChats={ this.props.directChats }
             chats={ this.formatChats() }
 
@@ -57,7 +59,12 @@ export default class Team extends React.Component {
     }
   }
   */
-
+  componentDidUpdate() {
+    if(this.props.boards.length > 0 && !asdasd) {
+      asdasd = true;
+      Meteor.subscribe('boards.board', this.props.boards[0]._id);
+    }
+  }
   getMessages(obj) {
     let subscriptions = this.state.subscriptions;
     let isSubscribed = false;
