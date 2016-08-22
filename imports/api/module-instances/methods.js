@@ -1,9 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { Meteor }                              from 'meteor/meteor';
+import { ValidatedMethod }                     from 'meteor/mdg:validated-method';
+import { SimpleSchema }                        from 'meteor/aldeed:simple-schema';
+import Future                                  from 'fibers/future';
 
-import { ModuleInstances } from './module-instances.js';
-import { Boards } from '../boards/boards.js';
+import { ModuleInstances, generateMongoQuery } from './module-instances.js';
+import { Boards }                              from '../boards/boards.js';
 
 export const createModuleInstance = new ValidatedMethod({
   name: 'ModuleInstances.methods.create',
@@ -145,14 +146,14 @@ export const apiInsert = new ValidatedMethod({
 });
 
 export const apiUpdate = new ValidatedMethod({
-  name: 'ModuleInstances.methods.apiInsert',
+  name: 'ModuleInstances.methods.apiUpdate',
   validate: new SimpleSchema({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
     collection: { type: String },
-    obj: { type: Object, blackbox: true },
-    visibleBy: { type: [Object], blackbox: true },
+    filter: { type: Object, blackbox: true },
+    updateQuery: { type: [Object], blackbox: true },
   }).validator(),
-  run({ moduleInstanceId, collection, obj, visibleBy }) {
+  run({ moduleInstanceId, collection, filter, updateQuery }) {
     if(!Meteor.user()) {
       throw new Meteor.Error('ModuleInstances.methods.apiInsert.notLoggedIn',
       'Must be logged in to use a module.');
@@ -163,20 +164,14 @@ export const apiUpdate = new ValidatedMethod({
       'Must be part of a board to access its modules.');
     }
 
-    let entry = obj;
-    entry.visibleBy = visibleBy;
-
-    if(!moduleInstance.data[collection]){
-      moduleInstance.data[collection] = [entry];
-    }
-    else{
-      moduleInstance.data[collection].push(entry);
-    }
-
-    ModuleInstances.update(moduleInstanceId, {
-      $set: {
-        data: moduleInstance.data,
-      }
+    filter = generateMongoQuery(filter, collection);
+    updateQuery = generateMongoQuery(updateQuery, collection);
+    let future = new Future();
+    ModuleInstances.update(filter, {
+      $set: updateQuery,
+    }, (err, res) => {
+      future.return(err, res);
     });
+    return future.wait();
   }
 });

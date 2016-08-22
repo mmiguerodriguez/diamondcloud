@@ -13,7 +13,7 @@ ModuleInstances.helpers({
   }
 });
 
-let generateMongoQuery = (input, collection) => {
+export let generateMongoQuery = (input, collection) => {
   /*Example input:
   {
     prop1: 'val1',
