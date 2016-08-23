@@ -50,12 +50,11 @@ export const createBoard = new ValidatedMethod({
     };
 
     let future = new Future();
-    let boardId, _board;
     Boards.insert(board, (err, res) => {
       if(!!err) future.throw(err);
 
-      boardId = res;
-      _board = Boards.findOne(boardId);
+      let boardId = res;
+      let _board = Boards.findOne(boardId);
       
       Teams.update(teamId, {
         $push: {
