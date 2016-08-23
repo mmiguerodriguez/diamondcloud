@@ -130,7 +130,9 @@ export const apiInsert = new ValidatedMethod({
     }
 
     let entry = obj;
-    entry.visibleBy = visibleBy;
+    if(!_.isEmpty(visibleBy)) {
+      entry.visibleBy = visibleBy;
+    }
     entry._id = (entry._id !== undefined) ? entry._id : new ObjectID();
 
     if(!moduleInstance.data[collection]){
@@ -154,7 +156,7 @@ export const apiUpdate = new ValidatedMethod({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
     collection: { type: String },
     filter: { type: Object, blackbox: true },
-    updateQuery: { type: [Object], blackbox: true },
+    updateQuery: { type: Object, blackbox: true },
   }).validator(),
   run({ moduleInstanceId, collection, filter, updateQuery }) {
     if(!Meteor.user()) {
@@ -168,36 +170,28 @@ export const apiUpdate = new ValidatedMethod({
     }
 
     let newCollection  = moduleInstance.data[collection];
-    let boards = Meteor.user().boards(moduleInstance.board().team()._id, { _id: 1 });
+    let boards = Meteor.user().boards(moduleInstance.board().team()._id, { _id: 1 }).fetch();
     boards.forEach((element, index) => {
       boards[index] = element._id;
     });
-
     let selected = sift({
       $and: [
         {
           $or: [
-            { 'visibleBy.userId': 1 },
+            { 'visibleBy': { $exists: false } },
+            { 'visibleBy.userId': Meteor.userId() },
             { 'visibleBy.boardId': { $in: boards } },
           ]
         },
         filter
       ]
     }, newCollection);
-
     selected.forEach((element) => {
       ModuleInstances.update({
+        _id: moduleInstanceId,
         [`data.${collection}._id`]: element._id,
-      }, generateMongoQuery(updateQuery));
+      }, generateMongoQuery(updateQuery, collection));
     });
-
-    let future = new Future();
-    ModuleInstances.update(filter, {
-      $set: updateQuery,
-    }, (err, res) => {
-      future.return(err, res);
-    });
-    return future.wait();
   }
 });
 

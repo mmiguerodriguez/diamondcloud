@@ -6,6 +6,7 @@ import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
 import { ModuleInstances }         from './module-instances.js';
+import { Teams }         from '../teams/teams.js';
 import { Boards }         from '../boards/boards.js';
 import {
   createModuleInstance,
@@ -13,6 +14,7 @@ import {
   archiveModuleInstance,
   dearchiveModuleInstance,
   apiInsert,
+  apiUpdate,
 }                        from './methods.js';
 
 import '../factories/factories.js';
@@ -20,28 +22,33 @@ import '../factories/factories.js';
 if(Meteor.isServer){
   describe('ModuleInstances', function(){
 
-    let module, user, board;
+    let module, user, board, team;
 
     beforeEach(function() {
       resetDatabase();
+      user = Factory.create('user');
+      team = Factory.create('team');
       board = Factory.create('publicBoard');
       module = Factory.create('moduleInstance');
       module._id = Random.id();
+      team.boards.push({ _id: board._id });
+      team.users[0].email = user.emails[0].address;
       board.moduleInstances.push({ _id: module._id });
 
-      user = Factory.create('user');
-
       resetDatabase();
+      Teams.insert(team);
       Boards.insert(board);
       ModuleInstances.insert(module);
       Meteor.users.insert(user);
 
       sinon.stub(Meteor, 'user', () => user);
+      sinon.stub(Meteor, 'userId', () => user._id);
       sinon.stub(Boards, 'isValid', () => true);
     });
 
     afterEach(function() {
       Meteor.user.restore();
+      Meteor.userId.restore();
       Boards.isValid.restore();
     });
 
@@ -166,8 +173,63 @@ if(Meteor.isServer){
       chai.assert.deepEqual(ModuleInstances.findOne(module._id).data, expect);
     });
 
-    it('should update an entry in module data', function() {
+    it('should update an entry in module data', function(done) {
+      module.data = {
+        todos: [
+          {
+            _id: 1,
+            text: 'Todo 1',
+            color: 'Red',
+            visibleBy: [
+              { userId: user._id },
+            ]
+          },
+          {
+            _id: 2,
+            text: 'Todo 2',
+            color: 'Green',
+            visibleBy: [
+              { boardId: board._id },
+            ]
+          },
+          {
+            _id: 3,
+            text: 'Todo 3',
+            color: 'Red'
+          },
+          {
+            _id: 4,
+            text: 'Todo 4',
+            color: 'Red',
+            visibleBy: [
+              { userId: 'asd' },
+            ],
+          },
+        ],
+      };
+      ModuleInstances.update(module._id, module, () => {
+        apiUpdate.call({
+          moduleInstanceId: module._id,
+          collection: 'todos',
+          filter: {
+            color: {
+              $in: ['Red', 'Green'],
+            }
+          },
+          updateQuery: {
+            $set: {
+              color: 'Yellow',
+            }
+          }
+        });
+        expect = module.data;
+        expect.todos[0].color =  'Yellow'; // These are the modules that pass the filter
+        expect.todos[1].color =  'Yellow';
+        expect.todos[2].color =  'Yellow';
 
+        chai.assert.deepEqual(ModuleInstances.findOne(module._id).data, expect);
+        done();
+      });
     });
   });
 }

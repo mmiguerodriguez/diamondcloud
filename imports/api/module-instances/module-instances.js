@@ -47,19 +47,22 @@ export let generateMongoQuery = (input, collection) => {
     // If property starts with '$', it's an operator, so ignore it
     let isOperator = propertyName.charAt(0) === '$';
     if(!isOperator) {
-      result[`data.${collection}.${propertyName}`] = input[propertyName];
+      result[`data.${collection}.$.${propertyName}`] = input[propertyName];
     } else {
       result[propertyName] = input[propertyName];
     }
 
     if(Array.isArray(input[propertyName])) {
-      result[isOperator ? propertyName : `data.${collection}.${propertyName}`].forEach((element, index, array) => {
+      result[isOperator ? propertyName : `data.${collection}.$.${propertyName}`].forEach((element, index, array) => {
         if(typeof element === 'object') {
           array[index] = generateMongoQuery(element, collection);
         } else {
           array[index] = element;
         }
       });
+    } else if(typeof input[propertyName] === 'object') {
+      result[isOperator ? propertyName : `data.${collection}.${propertyName}`] =
+        generateMongoQuery(result[isOperator ? propertyName : `data.${collection}.$.${propertyName}`], collection);
     }
   }
   return result;
