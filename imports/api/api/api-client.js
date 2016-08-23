@@ -35,22 +35,22 @@ export let generateApi = (moduleInstanceId) => {
         throw console.error('The provided data is wrong.');
       }
     },
-    /*update: ({ collection, filter, updateQuery, callback }) => {
+    update: ({ collection, filter, updateQuery, callback }) => {
       // Validation.
       let validation = typeof collection == 'string';
       validation = validation && typeof filter == 'object';
       validation = validation && typeof updateQuery == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
-        Meteor.call('ModuleInstances.methods.apiInsert', {
+        Meteor.call('ModuleInstances.methods.apiUpdate', {
           moduleInstanceId,
           collection,
-          obj,
-          visibleBy,
+          filter,
+          updateQuery,
         }, callback);
       } else {
         throw console.error('The provided data is wrong.');
       }
-    },*/
+    },
   };
 };

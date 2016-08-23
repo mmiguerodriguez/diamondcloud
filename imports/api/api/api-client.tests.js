@@ -129,9 +129,37 @@ if (Meteor.isClient) {
         });
         chai.assert.equal(myCallback(), 'value');
       });
-      /*it('should update an entry in module instance data', () => {
-
-      });*/
+      it('should update an entry in module instance data', () => {
+        let DiamondAPI = generateApi(moduleInstances[0]._id);
+        DiamondAPI.update({
+          collection: 'categories',
+          filter: {
+            _id: 'categoryId1',
+          },
+          updateQuery: {
+            $set: {
+              color: 'Yellow',
+            }
+          },
+          callback: (err, res) => {
+            return 'value';
+          }
+        });
+        chai.assert.equal(name, 'ModuleInstances.methods.apiUpdate');
+        chai.assert.deepEqual(params, {
+          moduleInstanceId: moduleInstances[0]._id,
+          collection: 'categories',
+          filter: {
+            _id: 'categoryId1',
+          },
+          updateQuery: {
+            $set: {
+              color: 'Yellow',
+            }
+          },
+        });
+        chai.assert.equal(myCallback(), 'value');
+      });
     });
   });
 }
