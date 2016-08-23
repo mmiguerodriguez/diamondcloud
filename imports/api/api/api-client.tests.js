@@ -102,8 +102,6 @@ if (Meteor.isClient) {
       });
       it('should insert object to a module instance data', () => {
         let DiamondAPI = generateApi(moduleInstances[1]._id);
-        // Here comes the code that an API consumer would write.
-        DiamondAPI.subscribe(requests[0], callback);
         DiamondAPI.insert({
           collection: 'testCollection',
           obj: {
@@ -131,6 +129,9 @@ if (Meteor.isClient) {
         });
         chai.assert.equal(myCallback(), 'value');
       });
+      /*it('should update an entry in module instance data', () => {
+
+      });*/
     });
   });
 }
