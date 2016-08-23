@@ -23,12 +23,18 @@ export default class Board extends React.Component {
         </div>
         <div className='board'>
           { this.renderModules() }
+          <div className="trash" style={{ display: 'none' }}>
+            <div className="trash-img">
+              <img src="http://image.flaticon.com/icons/svg/60/60761.svg" width="48px" />
+            </div>
+          </div>
         </div>
       </div>
     );
   }
   componentDidMount() {
     let self = this;
+    
     $('.board').droppable({
       accept(e) {
         const validClasses = ['module-item', 'module-container'];
@@ -38,10 +44,10 @@ export default class Board extends React.Component {
         return valid;
       },
       drop(event, ui) {
-        let isItem = ui.draggable.hasClass('module-item');
-        let isContainer = ui.draggable.hasClass('module-container');
+        let item = ui.draggable.hasClass('module-item');
+        let container = ui.draggable.hasClass('module-container');
 
-        if(isItem) {
+        if(item) {
           let boardId = self.props.board._id;
           let moduleId = ui.draggable.data('module-id');
 
@@ -60,7 +66,7 @@ export default class Board extends React.Component {
               console.log(result);
             }
           });
-        } else if(isContainer) {
+        } else if(container) {
           let moduleInstanceId = ui.draggable.data('moduleinstance-id');
           let iframe = ui.draggable.children('iframe');
 
@@ -78,6 +84,33 @@ export default class Board extends React.Component {
             }
           });
         }
+      }
+    });
+    $('.trash').droppable({
+      accept: '.module-container',
+      tolerance: 'touch',
+      drop(event, ui) {
+        let moduleInstanceId = ui.draggable.data('moduleinstance-id');
+        
+        Meteor.call('ModuleInstances.methods.archive' , {
+          moduleInstanceId,
+        }, (error, result) => {
+          if(error) {
+            throw new Meteor.Error(error);
+          } else {
+            console.log(result);
+          }
+        });
+        
+        $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.3)');
+      },
+      over(event, ui) {
+        // let frameBody = ui.draggable.children('iframe').contents().find("body");
+        $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.6)');
+      },
+      out(event, ui) {
+        // let frameBody = ui.draggable.children('iframe').contents().find("body");
+        $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.3)');
       }
     });
   }

@@ -35,6 +35,7 @@ export default class ModulesCollapsible extends React.Component {
 
       $(item).draggable({
         cursor: 'pointer',
+        containment: $('.board'),
         helper(event) {
           return $('<img src="' + src + '">');
         }

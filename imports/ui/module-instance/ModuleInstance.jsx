@@ -46,7 +46,14 @@ export default class ModuleInstance extends React.Component {
       handle: '.module-pin',
       cursor: 'pointer',
       cursorAt: { top: -6 },
-      iframeFix: true,
+      iframeFix: true,      
+      
+      start(event, ui) {
+        $('.trash').css('display', 'block');
+      },
+      stop(event, ui) {
+        $('.trash').css('display', 'none');
+      }
     });
 
     this.setState({
