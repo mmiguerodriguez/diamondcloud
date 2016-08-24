@@ -59,6 +59,19 @@ export default class Team extends React.Component {
   }
   */
 
+  componentDidUpdate() {
+    console.log('me llamo componentDidUpdate');
+    console.log(this.props.boards);
+    if(!this.props.loading && !this.state.board && this.props.boards) {
+      this.setState({
+        board: true,
+      }, () => {
+        console.log('me suscribo');
+        this.boardSubscribe(this.props.boards[0]._id);
+      });
+    }
+  }
+
   getMessages(obj) {
     let subscriptions = this.state.subscriptions;
     let isSubscribed = false;
@@ -159,12 +172,15 @@ export default class Team extends React.Component {
   }
 
   boardSubscribe(boardId) {
+    console.log('me llamo boardSubscribe');
     if(this.state.boardSub) {
+      console.log('freno la subscripción');
       this.state.boardSub.stop();
     }
 
     let subscription = Meteor.subscribe('boards.board', boardId, {
       onReady: () => {
+        console.log('entro al onready');
         this.setState({
           board: Boards.findOne(boardId),
         });
