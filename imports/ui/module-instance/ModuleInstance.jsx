@@ -39,8 +39,6 @@ export default class ModuleInstance extends React.Component {
     $('#' + this.props.moduleInstance._id).load(this.iframeLoaded.bind(this));
   }
   iframeLoaded() {
-    let self = this;
-
     $('.module-container').draggable({
       containment: 'parent',
       handle: '.module-pin',
@@ -56,11 +54,13 @@ export default class ModuleInstance extends React.Component {
       }
     }).resizable({
       containment: 'parent',
+
       stop(event, ui) {
+        let moduleInstanceId = ui.helper.data('moduleinstance-id');
         let { width, height } = ui.size;
 
         Meteor.call('ModuleInstances.methods.edit', {
-          moduleInstanceId: self.props.moduleInstance._id,
+          moduleInstanceId,
           width,
           height,
         }, (error, result) => {
