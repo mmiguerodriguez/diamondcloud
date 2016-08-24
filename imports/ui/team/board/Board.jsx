@@ -76,6 +76,7 @@ export default class Board extends React.Component {
         } else if(container) {
           let moduleInstanceId = ui.draggable.data('moduleinstance-id');
           let iframe = ui.draggable.children('iframe');
+          // { width: iframe.width(), height: iframe.height() }
 
           let x = ui.position.top;
           let y = ui.position.left;
@@ -85,8 +86,6 @@ export default class Board extends React.Component {
               moduleInstanceId,
               x,
               y,
-              width: iframe.width(),
-              height: iframe.height()
             }, (error, result) => {
               if(error) {
                 throw new Meteor.Error(error);

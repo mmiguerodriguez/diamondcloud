@@ -62,6 +62,12 @@ export const editModuleInstance = new ValidatedMethod({
       'Must be logged in to edit a module instance.');
     }
 
+    let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+    x = x || moduleInstance.x;
+    y = y || moduleInstance.y;
+    width = width || moduleInstance.width;
+    height = height || moduleInstance.height;
+
     ModuleInstances.update(moduleInstanceId, {
       $set: {
         x,
