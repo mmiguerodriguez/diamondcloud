@@ -188,10 +188,10 @@ export default TeamPageContainer = createContainer(({ params }) => {
   return {
     loading,
     team: Teams.findOne(),
-    boards: Boards.find().fetch(),
+    boards: Boards.find({}, { sort: { name: -1 } }).fetch(),
     directChats: DirectChats.find().fetch(),
     messages: Messages.find().fetch(),
     moduleInstances: ModuleInstances.find().fetch(),
-    modules: Modules.find().fetch(),
+    modules: Modules.find({}, { sort: { name: -1 } }).fetch(),
   };
 }, Team);
