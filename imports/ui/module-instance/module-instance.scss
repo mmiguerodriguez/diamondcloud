@@ -1,9 +1,10 @@
 .module-container {
   position: absolute;
-  
+  -webkit-user-select: none;
+
   .module-pin {
-    background-color: grey;
-    border: 5px outset grey;
+    background-color: gray;
+    border: 5px outset gray;
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -12,7 +13,7 @@
     top: -16px;
     left: calc(50% - 16px);
   }
-  
+
   .module {
     border: none;
   }
