@@ -34,7 +34,7 @@ export default class Board extends React.Component {
   }
   componentDidMount() {
     let self = this;
-    
+
     $('.board').droppable({
       accept(e) {
         const validClasses = ['module-item', 'module-container'];
@@ -51,38 +51,52 @@ export default class Board extends React.Component {
           let boardId = self.props.board._id;
           let moduleId = ui.draggable.data('module-id');
 
-          Meteor.call('ModuleInstances.methods.create', {
-            boardId,
-            moduleId,
-            x: ui.position.top - 40,
-            y: ui.position.left,
-            width: 350, // must change to fixed
-            height: 400, // must change to fixed
-            vars: { },
-          }, (error, result) => {
-            if(error) {
-              throw new Meteor.Error(error);
-            } else {
-              console.log(result);
-            }
-          });
+          let x = ui.position.top - 40;
+          let y = ui.position.left;
+
+          if(x >= 0 && y >= 0) {
+            Meteor.call('ModuleInstances.methods.create', {
+              boardId,
+              moduleId,
+              x,
+              y,
+              width: 350, // must change to fixed
+              height: 400, // must change to fixed
+              vars: { },
+            }, (error, result) => {
+              if(error) {
+                throw new Meteor.Error(error);
+              } else {
+                console.log(result);
+              }
+            });
+          } else {
+            console.error('Can\'t create module on those coordinates.');
+          }
         } else if(container) {
           let moduleInstanceId = ui.draggable.data('moduleinstance-id');
           let iframe = ui.draggable.children('iframe');
 
-          Meteor.call('ModuleInstances.methods.edit', {
-            moduleInstanceId,
-            x: ui.position.top,
-            y: ui.position.left,
-            width: iframe.width(),
-            height: iframe.height()
-          }, (error, result) => {
-            if(error) {
-              throw new Meteor.Error(error);
-            } else {
-              console.log(result);
-            }
-          });
+          let x = ui.position.top;
+          let y = ui.position.left;
+
+          if(x >= 0 && y >= 0) {
+            Meteor.call('ModuleInstances.methods.edit', {
+              moduleInstanceId,
+              x,
+              y,
+              width: iframe.width(),
+              height: iframe.height()
+            }, (error, result) => {
+              if(error) {
+                throw new Meteor.Error(error);
+              } else {
+                console.log(result);
+              }
+            });
+          } else {
+            console.error('Can\'t create module on those coordinates.');
+          }
         }
       }
     });
@@ -91,7 +105,7 @@ export default class Board extends React.Component {
       tolerance: 'touch',
       drop(event, ui) {
         let moduleInstanceId = ui.draggable.data('moduleinstance-id');
-        
+
         Meteor.call('ModuleInstances.methods.archive' , {
           moduleInstanceId,
         }, (error, result) => {
@@ -101,7 +115,7 @@ export default class Board extends React.Component {
             console.log(result);
           }
         });
-        
+
         $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.3)');
       },
       over(event, ui) {
