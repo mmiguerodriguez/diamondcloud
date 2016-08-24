@@ -16,6 +16,7 @@ export default class Board extends React.Component {
           </div>
           <span>
             <img  src='/img/sidebar/messages.svg'
+                  title="Abrir chat del board"
                   className='message-icon'
                   width='28px'
                   onClick={ this.props.getMessages.bind(null, { boardId: this.props.board._id }) }/>
