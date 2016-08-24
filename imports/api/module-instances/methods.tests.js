@@ -15,6 +15,7 @@ import {
   dearchiveModuleInstance,
   apiInsert,
   apiUpdate,
+  apiGet,
 }                        from './methods.js';
 
 import '../factories/factories.js';
@@ -222,13 +223,66 @@ if(Meteor.isServer){
             }
           }
         });
-        expect = module.data;
+        let expect = module.data;
         expect.todos[0].color =  'Yellow'; // These are the modules that pass the filter
         expect.todos[1].color =  'Yellow';
         expect.todos[2].color =  'Yellow';
 
         chai.assert.deepEqual(ModuleInstances.findOne(module._id).data, expect);
         done();
+      });
+    });
+    it('should get an entry in module data', function(done) {
+      module.data = {
+        todos: [
+          {
+            _id: 1,
+            text: 'Todo 1',
+            color: 'Red',
+            visibleBy: [
+              { userId: user._id },
+            ]
+          },
+          {
+            _id: 2,
+            text: 'Todo 2',
+            color: 'Green',
+            visibleBy: [
+              { boardId: board._id },
+            ]
+          },
+          {
+            _id: 3,
+            text: 'Todo 3',
+            color: 'Red'
+          },
+          {
+            _id: 4,
+            text: 'Todo 4',
+            color: 'Red',
+            visibleBy: [
+              { userId: 'asd' },
+            ],
+          },
+        ],
+      };
+      ModuleInstances.update(module._id, module, () => {
+        apiGet.call({
+          moduleInstanceId: module._id,
+          collection: 'todos',
+          filter: {
+            color: {
+              $in: ['Red', 'Green'],
+            }
+          },
+        }, (err, res) => {
+          let expect = [];
+          expect.push(module.data.todos[0]);
+          expect.push(module.data.todos[1]);
+          expect.push(module.data.todos[2]);
+          chai.assert.deepEqual(res, expect);
+          done();
+        });
       });
     });
   });

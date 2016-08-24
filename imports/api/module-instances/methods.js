@@ -194,3 +194,42 @@ export const apiUpdate = new ValidatedMethod({
     });
   }
 });
+
+export const apiGet = new ValidatedMethod({
+  name: 'ModuleInstances.methods.apiGet',
+  validate: new SimpleSchema({
+    moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    collection: { type: String },
+    filter: { type: Object, blackbox: true },
+  }).validator(),
+  run({ moduleInstanceId, collection, filter }) {
+    if(!Meteor.user()) {
+      throw new Meteor.Error('ModuleInstances.methods.apiGet.notLoggedIn',
+      'Must be logged in to use a module.');
+    }
+    let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+    if(!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
+      throw new Meteor.Error('ModuleInstances.methods.apiGet.boardAccessDenied',
+      'Must be part of a board to access its modules.');
+    }
+
+    let result  = moduleInstance.data[collection];
+    let boards = Meteor.user().boards(moduleInstance.board().team()._id, { _id: 1 }).fetch();
+    boards.forEach((element, index) => {
+      boards[index] = element._id;
+    });
+    let selected = sift({
+      $and: [
+        {
+          $or: [
+            { 'visibleBy': { $exists: false } },
+            { 'visibleBy.userId': Meteor.userId() },
+            { 'visibleBy.boardId': { $in: boards } },
+          ]
+        },
+        filter
+      ]
+    }, result);
+    return selected;
+  }
+});
