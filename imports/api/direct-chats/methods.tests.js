@@ -59,7 +59,6 @@ if (Meteor.isServer) {
         teamId: team._id,
         userId: otherUser._id,
       };
-
       expect = {
         teamId: args.teamId,
         users: [
@@ -69,15 +68,20 @@ if (Meteor.isServer) {
       };
 
       createDirectChat.call(args, (err, res) => {
-        if (err) throw new Meteor.Error(err);
-
+        if(err) throw new Meteor.Error(err);
         result = res;
 
         expect._id = result._id;
-
-        chai.assert.equal(JSON.stringify(result), JSON.stringify(expect));
-        done();
       });
+
+      createDirectChat.call(args, (err, res) => {
+        if(err) {
+          chai.assert.equal(err.details, 'chat_exists');
+        }
+      });
+
+      chai.assert.equal(JSON.stringify(result), JSON.stringify(expect));
+      done();
     });
   });
 }
