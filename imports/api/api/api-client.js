@@ -52,5 +52,20 @@ export let generateApi = (moduleInstanceId) => {
         throw console.error('The provided data is wrong.');
       }
     },
+    get: ({ collection, filter, callback }) => {
+      // Validation.
+      let validation = typeof collection == 'string';
+      validation = validation && typeof filter == 'object';
+      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
+      if (validation) {
+        Meteor.call('ModuleInstances.methods.apiGet', {
+          moduleInstanceId,
+          collection,
+          filter,
+        }, callback);
+      } else {
+        throw console.error('The provided data is wrong.');
+      }
+    },
   };
 };
