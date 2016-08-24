@@ -7,6 +7,7 @@ import { Random }               from 'meteor/random';
 import   faker                  from 'faker';
 
 import { ModuleInstances }      from '../module-instances/module-instances.js';
+import { createModuleInstance } from '../module-instances/methods.js';
 
 import { generateApi }          from './api-client.js';
 
@@ -39,7 +40,7 @@ if (Meteor.isClient) {
 
       resetDatabase();
       Meteor.users.insert(user);
-      moduleInstances.forEach((moduleInstance) => ModuleInstances.insert(moduleInstance));
+      moduleInstances.forEach((moduleInstance) => createModuleInstance.call(moduleInstance));
       sinon.stub(Meteor, 'user', () => user);
     };
 

@@ -13,7 +13,8 @@ export const createModuleInstance = new ValidatedMethod({
     y: { type: Number },
     width: { type: Number },
     height: { type: Number },
-    data: { type: Object },
+    data: { type: Object, blackbox: true },
+    archived: { type: Boolean, optional: true }
   }).validator(),
   run({ moduleId, x, y, width, height, data }){
     if (!Meteor.user()) {
