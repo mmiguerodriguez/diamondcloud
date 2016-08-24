@@ -29,8 +29,6 @@ if(Meteor.isServer){
       user = Factory.create('user');
 
       module.boardId = board._id;
-      delete module._id;
-      delete module.archived;
 
       resetDatabase();
 
@@ -47,6 +45,10 @@ if(Meteor.isServer){
 
     it('should create a module instance', function() {
       let expect, result;
+
+      delete module._id;
+      delete module.archived;
+
       createModuleInstance.call(module, (err, res) => {
         if(err) throw new Meteor.Error(err);
         result = res;
@@ -82,6 +84,7 @@ if(Meteor.isServer){
       editModuleInstance.call(args, (err, res) => {
         if(err) throw new Meteor.Error(err);
         result = res;
+        delete result.boardId;
       });
 
       expect = {
@@ -95,11 +98,11 @@ if(Meteor.isServer){
         archived: false,
       };
 
-      chai.assert.isTrue(JSON.stringify(expect) === JSON.stringify(result));
+      chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
     });
 
     it('should archive a module instance', function() {
-      let args, expect, result;
+      let args, result;
       args = {
         moduleInstanceId: module._id,
       };
@@ -109,13 +112,11 @@ if(Meteor.isServer){
         result = res;
       });
 
-      expect = true;
-
-      chai.assert.isTrue(expect === result.archived);
+      chai.assert.isTrue(result.archived);
     });
 
-    it('should archive a module instance', function() {
-      let args, expect, result;
+    it('should dearchive a module instance', function() {
+      let args, result;
       args = {
         moduleInstanceId: module._id,
       };
@@ -125,9 +126,7 @@ if(Meteor.isServer){
         result = res;
       });
 
-      expect = false;
-
-      chai.assert.isTrue(expect === result.archived);
+      chai.assert.isFalse(result.archived);
     });
   });
 }
