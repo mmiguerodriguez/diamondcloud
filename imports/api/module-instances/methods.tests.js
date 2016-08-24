@@ -5,6 +5,7 @@ import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
+import { Boards }        from '../boards/boards.js';
 import { ModuleInstances }         from './module-instances.js';
 import {
   createModuleInstance,
@@ -18,18 +19,20 @@ import '../factories/factories.js';
 if(Meteor.isServer){
   describe('ModuleInstances', function(){
 
-    let module, user;
+    let board, module, user;
 
     beforeEach(function() {
       resetDatabase();
 
+      board = Factory.create('board');
       module = Factory.create('moduleInstance');
-      module._id = Random.id();
-
       user = Factory.create('user');
+
+      module.boardId = board._id;
 
       resetDatabase();
 
+      Boards.insert(board);
       ModuleInstances.insert(module);
       Meteor.users.insert(user);
 
@@ -41,33 +44,31 @@ if(Meteor.isServer){
     });
 
     it('should create a module instance', function() {
-      let args, expect, result;
-      args = {
-        moduleId: module.moduleId,
-        x: module.x,
-        y: module.y,
-        width: module.width,
-        height: module.height,
-        vars: module.vars,
-      };
+      let expect, result;
 
-      createModuleInstance.call(args, (err, res) => {
+      delete module._id;
+      delete module.archived;
+
+      createModuleInstance.call(module, (err, res) => {
         if(err) throw new Meteor.Error(err);
         result = res;
       });
 
       expect = {
         _id: result._id,
-        moduleId: args.moduleId,
-        x: args.x,
-        y: args.y,
-        width: args.width,
-        height: args.height,
-        vars: args.vars,
+        moduleId: module.moduleId,
+        x: module.x,
+        y: module.y,
+        width: module.width,
+        height: module.height,
+        vars: module.vars,
         archived: false,
       };
 
-      chai.assert.isTrue(JSON.stringify(expect) === JSON.stringify(result));
+      let _board = Boards.findOne(board._id);
+
+      chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
+      chai.assert.equal(_board.moduleInstances[0]._id, result._id);
     });
 
     it('should edit a module instance', function() {
@@ -83,6 +84,7 @@ if(Meteor.isServer){
       editModuleInstance.call(args, (err, res) => {
         if(err) throw new Meteor.Error(err);
         result = res;
+        delete result.boardId;
       });
 
       expect = {
@@ -96,11 +98,11 @@ if(Meteor.isServer){
         archived: false,
       };
 
-      chai.assert.isTrue(JSON.stringify(expect) === JSON.stringify(result));
+      chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
     });
 
     it('should archive a module instance', function() {
-      let args, expect, result;
+      let args, result;
       args = {
         moduleInstanceId: module._id,
       };
@@ -110,13 +112,11 @@ if(Meteor.isServer){
         result = res;
       });
 
-      expect = true;
-
-      chai.assert.isTrue(expect === result.archived);
+      chai.assert.isTrue(result.archived);
     });
 
-    it('should archive a module instance', function() {
-      let args, expect, result;
+    it('should dearchive a module instance', function() {
+      let args, result;
       args = {
         moduleInstanceId: module._id,
       };
@@ -126,9 +126,7 @@ if(Meteor.isServer){
         result = res;
       });
 
-      expect = false;
-
-      chai.assert.isTrue(expect === result.archived);
+      chai.assert.isFalse(result.archived);
     });
   });
 }

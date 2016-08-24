@@ -16,6 +16,7 @@ export default class Board extends React.Component {
           </div>
           <span>
             <img  src='/img/sidebar/messages.svg'
+                  title="Abrir chat del board"
                   className='message-icon'
                   width='28px'
                   onClick={ this.props.getMessages.bind(null, { boardId: this.props.board._id }) }/>
@@ -23,12 +24,18 @@ export default class Board extends React.Component {
         </div>
         <div className='board'>
           { this.renderModules() }
+          <div className="trash" style={{ display: 'none' }}>
+            <div className="trash-img">
+              <img src="http://image.flaticon.com/icons/svg/60/60761.svg" width="48px" />
+            </div>
+          </div>
         </div>
       </div>
     );
   }
   componentDidMount() {
     let self = this;
+
     $('.board').droppable({
       accept(e) {
         const validClasses = ['module-item', 'module-container'];
@@ -38,46 +45,84 @@ export default class Board extends React.Component {
         return valid;
       },
       drop(event, ui) {
-        let isItem = ui.draggable.hasClass('module-item');
-        let isContainer = ui.draggable.hasClass('module-container');
+        let item = ui.draggable.hasClass('module-item');
+        let container = ui.draggable.hasClass('module-container');
 
-        if(isItem) {
+        if(item) {
           let boardId = self.props.board._id;
           let moduleId = ui.draggable.data('module-id');
 
-          Meteor.call('ModuleInstances.methods.create', {
-            boardId,
-            moduleId,
-            x: ui.position.top - 40,
-            y: ui.position.left,
-            width: 350, // must change to fixed
-            height: 400, // must change to fixed
-            vars: { },
-          }, (error, result) => {
-            if(error) {
-              throw new Meteor.Error(error);
-            } else {
-              console.log(result);
-            }
-          });
-        } else if(isContainer) {
-          let moduleInstanceId = ui.draggable.data('moduleinstance-id');
-          let iframe = ui.draggable.children('iframe');
+          let x = ui.position.top - 40;
+          let y = ui.position.left;
 
-          Meteor.call('ModuleInstances.methods.edit', {
-            moduleInstanceId,
-            x: ui.position.top,
-            y: ui.position.left,
-            width: iframe.width(),
-            height: iframe.height()
-          }, (error, result) => {
-            if(error) {
-              throw new Meteor.Error(error);
-            } else {
-              console.log(result);
-            }
-          });
+          if(x >= 0 && y >= 0) {
+            Meteor.call('ModuleInstances.methods.create', {
+              boardId,
+              moduleId,
+              x,
+              y,
+              width: 350, // must change to fixed
+              height: 400, // must change to fixed
+              vars: { },
+            }, (error, result) => {
+              if(error) {
+                throw new Meteor.Error(error);
+              } else {
+                console.log(result);
+              }
+            });
+          } else {
+            console.error('Can\'t create module on those coordinates.');
+          }
+        } else if(container) {
+          let moduleInstanceId = ui.draggable.data('moduleinstance-id');
+
+          let x = ui.position.top;
+          let y = ui.position.left;
+
+          if(x >= 0 && y >= 0) {
+            Meteor.call('ModuleInstances.methods.edit', {
+              moduleInstanceId,
+              x,
+              y,
+            }, (error, result) => {
+              if(error) {
+                throw new Meteor.Error(error);
+              } else {
+                console.log(result);
+              }
+            });
+          } else {
+            console.error('Can\'t create module on those coordinates.');
+          }
         }
+      }
+    });
+    $('.trash').droppable({
+      accept: '.module-container',
+      tolerance: 'touch',
+      drop(event, ui) {
+        let moduleInstanceId = ui.draggable.data('moduleinstance-id');
+
+        Meteor.call('ModuleInstances.methods.archive' , {
+          moduleInstanceId,
+        }, (error, result) => {
+          if(error) {
+            throw new Meteor.Error(error);
+          } else {
+            console.log(result);
+          }
+        });
+
+        $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.3)');
+      },
+      over(event, ui) {
+        // let frameBody = ui.draggable.children('iframe').contents().find("body");
+        $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.6)');
+      },
+      out(event, ui) {
+        // let frameBody = ui.draggable.children('iframe').contents().find("body");
+        $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.3)');
       }
     });
   }

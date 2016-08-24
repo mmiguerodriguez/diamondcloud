@@ -11,8 +11,8 @@ export const createModuleInstance = new ValidatedMethod({
   validate: new SimpleSchema({
     boardId: { type: String, regEx: SimpleSchema.RegEx.Id },
     moduleId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    x: { type: Number },
-    y: { type: Number },
+    x: { type: Number, min: 0 },
+    y: { type: Number, min: 0 },
     width: { type: Number },
     height: { type: Number },
     vars: { type: Object },
@@ -39,7 +39,7 @@ export const createModuleInstance = new ValidatedMethod({
 
       let moduleInstanceId = res;
       Boards.addModuleInstance(boardId, moduleInstanceId);
-      
+
       let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
       future.return(moduleInstance);
     });
@@ -51,8 +51,8 @@ export const editModuleInstance = new ValidatedMethod({
   name: 'ModuleInstances.methods.edit',
   validate: new SimpleSchema({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    x: { type: Number, optional: true },
-    y: { type: Number, optional: true },
+    x: { type: Number, min: 0, optional: true },
+    y: { type: Number, min: 0, optional: true },
     width: { type: Number, optional: true },
     height: { type: Number, optional: true },
   }).validator(),
@@ -61,6 +61,12 @@ export const editModuleInstance = new ValidatedMethod({
       throw new Meteor.Error('ModuleInstances.methods.edit.notLoggedIn',
       'Must be logged in to edit a module instance.');
     }
+
+    let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+    x = x || moduleInstance.x;
+    y = y || moduleInstance.y;
+    width = width || moduleInstance.width;
+    height = height || moduleInstance.height;
 
     ModuleInstances.update(moduleInstanceId, {
       $set: {

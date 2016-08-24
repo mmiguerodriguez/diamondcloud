@@ -22,6 +22,6 @@ export default DashboardPageContainer = createContainer(() => {
 
   return {
     loading,
-    teams: Teams.find().fetch(),
+    teams: Teams.find({}, { sort: { name: -1 } }).fetch(),
   };
 }, Dashboard);

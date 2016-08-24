@@ -5,27 +5,33 @@ import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
-import { Teams }         from '../teams/teams.js';
-import { Boards }        from './boards.js';
+import { Teams }           from '../teams/teams.js';
+import { ModuleInstances } from '../module-instances/module-instances.js';
+import { Boards }          from './boards.js';
 
 import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Boards', function() {
     describe('Helpers', function() {
-      let teams, boards, user;
+      let teams, boards, user, moduleInstances;
 
       beforeEach(function() {
         resetDatabase();
 
         user = Factory.create('user');
-        boards = [
-          Factory.create('board'),
-          Factory.create('board')
-        ];
         teams = [
           Factory.create('team'),
           Factory.create('team'),
+        ];
+        boards = [
+          Factory.create('board'),
+          Factory.create('board'),
+          Factory.create('board'),
+        ];
+        moduleInstances = [
+          Factory.create('moduleInstance'),
+          Factory.create('moduleInstance'),
         ];
 
         teams[0].users.push({ email: user.emails[0].address, permission: 'owner' });
@@ -33,6 +39,7 @@ if (Meteor.isServer) {
         teams[1].users.push({ email: user.emails[0].address, permission: 'owner' });
 
         boards[0].users.push({ _id: user._id });
+        boards[2].moduleInstances.push({ _id: moduleInstances[0]._id });
 
         resetDatabase();
 
@@ -44,6 +51,10 @@ if (Meteor.isServer) {
 
         teams.forEach((team) => {
           Teams.insert(team);
+        });
+        
+        moduleInstances.forEach((moduleInstance) => {
+          ModuleInstances.insert(moduleInstance);
         });
 
         sinon.stub(Meteor, 'user', () => user);
@@ -63,6 +74,22 @@ if (Meteor.isServer) {
         let team = board.team();
 
         chai.assert.isUndefined(team);
+      });
+      it('should return the moduleInstances of a board', function() {
+        let board = Boards.findOne(boards[2]._id);
+        let result, expect;
+        
+        result = board.getModuleInstances(Boards.moduleInstancesFields).fetch()[0];
+        expect = moduleInstances[0];
+        
+        chai.assert.equal(expect._id, result._id);
+        chai.assert.equal(expect.moduleId, result.moduleId);
+        chai.assert.equal(expect.x, result.x);
+        chai.assert.equal(expect.y, result.y);
+        chai.assert.equal(expect.width, result.width);
+        chai.assert.equal(expect.height, result.height);
+        chai.assert.equal(expect.archived, result.archived);
+        chai.assert.isUndefined(result.data);
       });
     });
   });

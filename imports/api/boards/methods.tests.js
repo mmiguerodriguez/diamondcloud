@@ -25,8 +25,8 @@ if (Meteor.isServer) {
           name: faker.lorem.word(),
           isPrivate: false,
           users: [
-            { _id: usersIds[0] }, 
-            { _id: usersIds[1] }, 
+            { _id: usersIds[0] },
+            { _id: usersIds[1] },
             { _id: usersIds[2] }
           ],
           moduleInstances: [],
@@ -47,11 +47,12 @@ if (Meteor.isServer) {
           drawings: [],
           archived: false,
         };
-    
+
     beforeEach(function() {
       resetDatabase();
       sinon.stub(Meteor, 'user', () => user);
-      
+      sinon.stub(Meteor, 'userId', () => user._id);
+
       Meteor.users.insert(user);
       Meteor.users.insert({
         _id: usersIds[1],
@@ -61,14 +62,15 @@ if (Meteor.isServer) {
         _id: usersIds[2],
         emails: [{ address: emails[2] }],
       });
-      
+
       Teams.insert(team);
       Boards.insert(board);
     });
     afterEach(function() {
       Meteor.user.restore();
+      Meteor.userId.restore();
     });
-    
+
     it('should create a board', function(done) {
       let test_1,
           test_2,
@@ -76,7 +78,7 @@ if (Meteor.isServer) {
           result_2,
           expect_1,
           expect_2;
-      
+
       test_1 = {
         teamId: team._id,
         name: faker.lorem.word(),
@@ -87,14 +89,13 @@ if (Meteor.isServer) {
         name: faker.lorem.word(),
         isPrivate: true,
         users: [
-          { _id: usersIds[0] },
           { _id: usersIds[1] },
           { _id: usersIds[2] }
         ],
       };
       expect_1 = {
         name: test_1.name,
-        isPrivate: test_1.isPrivate, 
+        isPrivate: test_1.isPrivate,
         users: [],
         moduleInstances: [],
         drawings: [],
@@ -103,26 +104,26 @@ if (Meteor.isServer) {
       expect_2 = {
         name: test_2.name,
         isPrivate: test_2.isPrivate,
-        users: test_2.users,
+        users: [...test_2.users, { _id: user._id }],
         moduleInstances: [],
         drawings: [],
         archived: false,
       };
-      
+
       createBoard.call(test_1, (err, res) => {
         if(err) throw new Meteor.Error(err);
-        
+
         result_1 = res;
         delete result_1._id;
-        
+
         createBoard.call(test_2, (err, res) => {
           if(err) throw new Meteor.Error(err);
-          
+
           result_2 = res;
           delete result_2._id;
-          
-          chai.assert.isTrue(JSON.stringify(result_1) === JSON.stringify(expect_1));
-          chai.assert.isTrue(JSON.stringify(result_2) === JSON.stringify(expect_2));
+
+          chai.assert.equal(JSON.stringify(result_1), JSON.stringify(expect_1));
+          chai.assert.equal(JSON.stringify(result_2), JSON.stringify(expect_2));
           done();
         });
       });
@@ -130,13 +131,13 @@ if (Meteor.isServer) {
     it('should archive a board', function(done) {
       let result,
           expect = board;
-      
+
       archiveBoard.call({ _id: board._id }, (err, res) => {
         if(err) throw new Meteor.Error(err);
-        
+
         result = res;
         expect.archived = true;
-        
+
         chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
         done();
       });
@@ -144,13 +145,13 @@ if (Meteor.isServer) {
     it('should dearchive a board', function(done) {
       let result,
           expect = board;
-          
+
       dearchiveBoard.call({ _id: board._id }, (err, res) => {
         if(err) throw new Meteor.Error(err);
-        
+
         result = res;
         expect.archived = false;
-        
+
         chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
         done();
       });

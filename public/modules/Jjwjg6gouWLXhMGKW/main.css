@@ -8,7 +8,7 @@ input:focus {
 }
 
 .post-it {
-  background: #ffffa5;
+  
 }
 
 .post-it:before {
@@ -41,7 +41,7 @@ input:focus {
   width: 100%;
   border: none;
   border-bottom: 1px solid #ccc;
-  background: #ffffa5;
+  background: transparent;
   margin-top: 5px;
   resize: none;
   height: 100%;
