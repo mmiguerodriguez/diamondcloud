@@ -10,7 +10,8 @@ import { Teams }         from '../teams/teams.js';
 import { Boards }        from '../boards/boards.js';
 import { DirectChats }   from '../direct-chats/direct-chats.js';
 import { Messages }      from './messages.js';
-import { sendMessage }   from './methods.js';
+import { sendMessage,
+         seeMessage }    from './methods.js';
 
 if (Meteor.isServer) {
   describe('Messages', function() {
@@ -25,8 +26,8 @@ if (Meteor.isServer) {
           name: faker.lorem.word(),
           isPrivate: false,
           users: [
-            { _id: usersIds[0] }, 
-            { _id: usersIds[1] }, 
+            { _id: usersIds[0] },
+            { _id: usersIds[1] },
             { _id: usersIds[2] }
           ],
           moduleInstances: [],
@@ -51,12 +52,13 @@ if (Meteor.isServer) {
           _id: Random.id(),
           teamId: team._id,
           users: board.users,
-        };
-    
+        },
+        message = Factory.create('message');
+
     beforeEach(function(done) {
       resetDatabase();
       sinon.stub(Meteor, 'user', () => user);
-      
+
       Meteor.users.insert(user);
       Meteor.users.insert({
         _id: usersIds[1],
@@ -66,17 +68,18 @@ if (Meteor.isServer) {
         _id: usersIds[2],
         emails: [{ address: emails[2] }],
       });
-      
+
       Teams.insert(team);
       Boards.insert(board);
       DirectChats.insert(directChat);
-      
+      Messages.insert(message);
+
       done();
     });
     afterEach(function() {
       Meteor.user.restore();
     });
-    
+
     it('should send a message', function(done) {
       let test_1,
           test_2,
@@ -84,7 +87,7 @@ if (Meteor.isServer) {
           result_2,
           expect_1,
           expect_2;
-          
+
       test_1 = {
         boardId: board._id,
         type: 'text',
@@ -98,7 +101,7 @@ if (Meteor.isServer) {
         createdAt: test_1.createdAt,
         boardId: board._id,
       };
-      
+
       test_2 = {
         directChatId: directChat._id,
         type: 'text',
@@ -112,20 +115,26 @@ if (Meteor.isServer) {
         createdAt: test_2.createdAt,
         directChatId: directChat._id,
       };
-      
+
       sendMessage.call(test_1, (err, res) => {
         if(err) throw new Meteor.Error(err);
         result_1 = res;
-        
+
         sendMessage.call(test_2, (err, res) => {
           if(err) throw new Meteor.Error(err);
           result_2 = res;
-          
+
           chai.assert.isTrue(JSON.stringify(expect_1) == JSON.stringify(result_1));
           chai.assert.isTrue(JSON.stringify(expect_2) == JSON.stringify(result_2));
           done();
         });
       });
+    });
+
+    it('should see a message', function() {
+      let expected = message;
+      expected.seen = true;
+      seeMessage.call({ _id: message._id }, (err, res) => chai.assert.isTrue(JSON.stringify(res) === JSON.stringify(expected)));
     });
   });
 }

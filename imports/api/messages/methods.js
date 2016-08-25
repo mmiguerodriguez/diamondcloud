@@ -11,7 +11,7 @@ export const sendMessage = new ValidatedMethod({
     boardId: { type: String, optional: true },
     type: { type: String, allowedValues: ['text'] },
     content: { type: String },
-    createdAt: { type: Number },
+    createdAt: { type: Number }
   }).validator(),
   run({ directChatId, boardId, type, content, createdAt }) {
     if (!Meteor.user()) {
@@ -41,4 +41,26 @@ export const sendMessage = new ValidatedMethod({
     Messages.insert(message);
     return message;
   },
+});
+
+export const seeMessage = new ValidatedMethod({
+  name: 'Messages.methods.see',
+  validate: new SimpleSchema({
+    _id: { type: String, regEx: SimpleSchema.RegEx.Id, },
+  }).validator(),
+  run({ _id }) {
+    if (!Meteor.user()) {
+      throw new Meteor.Error('Messages.methods.see.notLoggedIn',
+      'Must be logged in to see a message.');
+    }
+
+    Messages.update(_id, {
+      $set: {
+        seen: true,
+      }
+    });
+
+    let message = Messages.findOne(_id);
+    return message;
+  }
 });
