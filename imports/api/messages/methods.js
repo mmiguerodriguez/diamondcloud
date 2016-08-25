@@ -29,11 +29,9 @@ export const sendMessage = new ValidatedMethod({
     // Check if board or directChat exists
     if (!!directChatId) {
       message.directChatId = directChatId;
-    }
-    else if (!!boardId) {
+    } else if (!!boardId) {
       message.boardId = boardId;
-    }
-    else {
+    } else {
       throw new Meteor.Error('Messages.methods.send.noDestination',
       'Must have a destination to send a message.');
     }
@@ -46,21 +44,21 @@ export const sendMessage = new ValidatedMethod({
 export const seeMessage = new ValidatedMethod({
   name: 'Messages.methods.see',
   validate: new SimpleSchema({
-    _id: { type: String, regEx: SimpleSchema.RegEx.Id, },
+    messageId: { type: String, regEx: SimpleSchema.RegEx.Id, },
   }).validator(),
-  run({ _id }) {
+  run({ messageId }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('Messages.methods.see.notLoggedIn',
       'Must be logged in to see a message.');
     }
 
-    Messages.update(_id, {
+    Messages.update(messageId, {
       $set: {
         seen: true,
       }
     });
 
-    let message = Messages.findOne(_id);
+    let message = Messages.findOne(messageId);
     return message;
   }
 });

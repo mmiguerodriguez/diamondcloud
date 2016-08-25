@@ -134,7 +134,10 @@ if (Meteor.isServer) {
     it('should see a message', function() {
       let expected = message;
       expected.seen = true;
-      seeMessage.call({ _id: message._id }, (err, res) => chai.assert.isTrue(JSON.stringify(res) === JSON.stringify(expected)));
+      
+      seeMessage.call({ messageId: message._id }, (err, res) => {
+        chai.assert.isTrue(JSON.stringify(res) === JSON.stringify(expected));
+      });
     });
   });
 }
