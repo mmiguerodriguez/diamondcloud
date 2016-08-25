@@ -233,3 +233,38 @@ export const apiGet = new ValidatedMethod({
     return selected;
   }
 });
+
+export const apiRemove = new ValidatedMethod({
+  name: 'ModuleInstances.methods.apiRemove',
+  validate: new SimpleSchema({
+    moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    collection: { type: String },
+    filter: { type: Object, blackbox: true },
+  }).validator(),
+  run({ moduleInstanceId, collection, filter }) {
+    if(!Meteor.user()) {
+      throw new Meteor.Error('ModuleInstances.methods.apiRemove.notLoggedIn',
+      'Must be logged in to use a module.');
+    }
+    let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+    if(!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
+      throw new Meteor.Error('ModuleInstances.methods.apiRemove.boardAccessDenied',
+      'Must be part of a board to access its modules.');
+    }
+    let future = new Future();
+    //todo: agregar validacion por visibleBy
+    ModuleInstances.update(moduleInstanceId, {
+      $pull: {
+        [`data.${collection}`]: filter,
+      }
+    }, { multi: true }, (err, res) => {
+      if(err) {
+        throw new Meteor.Error('ModuleInstances.methods.apiRemove.queryError',
+      'There was an error removing the entry.');
+      } else {
+        future.return(res);
+      }
+    });
+    return future.wait();
+  }
+});

@@ -16,6 +16,7 @@ import {
   apiInsert,
   apiUpdate,
   apiGet,
+  apiRemove,
 }                        from './methods.js';
 
 import '../factories/factories.js';
@@ -232,7 +233,8 @@ if(Meteor.isServer){
         done();
       });
     });
-    it('should get an entry in module data', function(done) {
+    
+    it('should get an entry from module data', function(done) {
       module.data = {
         todos: [
           {
@@ -268,6 +270,60 @@ if(Meteor.isServer){
       };
       ModuleInstances.update(module._id, module, () => {
         apiGet.call({
+          moduleInstanceId: module._id,
+          collection: 'todos',
+          filter: {
+            color: {
+              $in: ['Red', 'Green'],
+            }
+          },
+        }, (err, res) => {
+          let expect = [];
+          expect.push(module.data.todos[0]);
+          expect.push(module.data.todos[1]);
+          expect.push(module.data.todos[2]);
+          chai.assert.deepEqual(res, expect);
+          done();
+        });
+      });
+    });
+    
+    it('should remove an entry from module data', function(done) {
+      module.data = {
+        todos: [
+          {
+            _id: 1,
+            text: 'Todo 1',
+            color: 'Red',
+            visibleBy: [
+              { userId: user._id },
+            ]
+          },
+          {
+            _id: 2,
+            text: 'Todo 2',
+            color: 'Green',
+            visibleBy: [
+              { boardId: board._id },
+            ]
+          },
+          {
+            _id: 3,
+            text: 'Todo 3',
+            color: 'Red'
+          },
+          {
+            _id: 4,
+            text: 'Todo 4',
+            color: 'Red',
+            visibleBy: [
+              { userId: 'asd' },
+            ],
+          },
+        ],
+      };
+      ModuleInstances.update(module._id, module, () => {
+        apiRemove.call({
           moduleInstanceId: module._id,
           collection: 'todos',
           filter: {
