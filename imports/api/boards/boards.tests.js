@@ -20,6 +20,10 @@ if (Meteor.isServer) {
         resetDatabase();
 
         user = Factory.create('user');
+        boards = [
+          Factory.create('privateBoard'),
+          Factory.create('privateBoard')
+        ];
         teams = [
           Factory.create('team'),
           Factory.create('team'),

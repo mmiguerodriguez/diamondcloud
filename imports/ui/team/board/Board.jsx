@@ -63,7 +63,7 @@ export default class Board extends React.Component {
               y,
               width: 350, // must change to fixed
               height: 400, // must change to fixed
-              vars: { },
+              data: { },
             }, (error, result) => {
               if(error) {
                 throw new Meteor.Error(error);
