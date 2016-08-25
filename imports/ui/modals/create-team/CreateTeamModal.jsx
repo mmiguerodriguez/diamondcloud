@@ -222,9 +222,7 @@ export default class CreateTeamModal extends React.Component {
         this.errorBorder('#projectName');
         return;
       }
-    }
-
-    else if (page === 2) {
+    } else if (page === 2) {
       if(this.state.plan !== 'free'){
         this.errorBorder('.btn-free');
         return;
@@ -235,7 +233,7 @@ export default class CreateTeamModal extends React.Component {
       return;
     }
 
-    $('#create-team-page-' + (page + 1)).effect('slide', {
+    $('#createTeamModal #create-team-page-' + (page + 1)).effect('slide', {
       direction: 'right',
       mode: 'show',
     }, 500);
