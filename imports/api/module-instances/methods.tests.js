@@ -288,7 +288,7 @@ if(Meteor.isServer){
       });
     });
     
-    it('should remove an entry from module data', function(done) {
+    /*it('should remove an entry from module data', function(done) {
       module.data = {
         todos: [
           {
@@ -340,6 +340,6 @@ if(Meteor.isServer){
           done();
         });
       });
-    });
+    });*/
   });
 }

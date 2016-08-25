@@ -233,7 +233,7 @@ export const apiGet = new ValidatedMethod({
     return selected;
   }
 });
-
+/*
 export const apiRemove = new ValidatedMethod({
   name: 'ModuleInstances.methods.apiRemove',
   validate: new SimpleSchema({
@@ -267,4 +267,4 @@ export const apiRemove = new ValidatedMethod({
     });
     return future.wait();
   }
-});
+});*/
