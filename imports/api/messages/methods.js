@@ -10,22 +10,22 @@ export const sendMessage = new ValidatedMethod({
     directChatId: { type: String, optional: true },
     boardId: { type: String, optional: true },
     type: { type: String, allowedValues: ['text'] },
-    content: { type: String }, // any type, required, need to change; wouldn't it be any type?
-    createdAt: { type: Number }, // timestamp, new Date().getTime()
+    content: { type: String },
+    createdAt: { type: Number },
   }).validator(),
   run({ directChatId, boardId, type, content, createdAt }) {
     if (!Meteor.user()) {
-      throw new Meteor.Error('Messages.methods.send.notLoggedIn', 
+      throw new Meteor.Error('Messages.methods.send.notLoggedIn',
       'Must be logged in to send a message.');
     }
-    
+
     let message = {
       senderId: Meteor.user()._id,
       type,
       content,
       createdAt,
     };
-    
+
     // Check if board or directChat exists
     if (!!directChatId) {
       message.directChatId = directChatId;
@@ -34,10 +34,10 @@ export const sendMessage = new ValidatedMethod({
       message.boardId = boardId;
     }
     else {
-      throw new Meteor.Error('Messages.methods.send.noDestination', 
+      throw new Meteor.Error('Messages.methods.send.noDestination',
       'Must have a destination to send a message.');
     }
-    
+
     Messages.insert(message);
     return message;
   },
