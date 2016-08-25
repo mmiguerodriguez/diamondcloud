@@ -5,11 +5,11 @@ import AppLayout from './AppLayout.jsx';
 
 export default class App extends React.Component {
   render() {
-    if (this.props.user === undefined) {
+    if (!this.props.user) {
       return ( null );
-    } else {
-      return (<AppLayout { ...this.props } />);
     }
+
+    return (<AppLayout { ...this.props } />);
   }
 }
 
