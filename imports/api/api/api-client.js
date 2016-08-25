@@ -11,24 +11,27 @@ export let generateApi = (moduleInstanceId) => {
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         // Subscribe to data
-        console.log(ModuleInstances.findOne(moduleInstanceId));
-        Meteor.subscribe('moduleInstances.data', moduleInstanceId, request/*, {
-          onReady: function() {
-            let caller = (id, fields) => {
-              callback(ModuleInstances.findOne(moduleInstanceId).fetch());
-            };
 
-            ModuleInstances.findOne(moduleInstanceId).observeChanges({
-              added: caller,
-              changed: caller,
-              removed: caller,
-            });
-            callback('asd');
-          },
-          onError: (err) => {
-            throw console.error('Error while subscribing.', err);
-          },
-        }*/);
+        console.log(moduleInstanceId);
+
+        console.log(`I'm not subscribed`, ModuleInstances.find({}).fetch());
+
+        Meteor.subscribe('moduleInstances.data', moduleInstanceId, request);
+
+        console.log(`I'm subscribed`, ModuleInstances.find({}).fetch());
+        
+        let caller = (id, fields) => {
+          console.log('Data changed');
+          callback(ModuleInstances.findOne(moduleInstanceId).fetch());
+        };
+
+        ModuleInstances.findOne(moduleInstanceId).observeChanges({
+          added: caller,
+          changed: caller,
+          removed: caller,
+        });
+
+        callback('asd');
       } else {
         throw console.error('The provided data is wrong.');
       }

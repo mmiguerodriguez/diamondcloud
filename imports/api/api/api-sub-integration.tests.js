@@ -11,12 +11,16 @@ import { createModuleInstance } from '../module-instances/methods.js';
 
 import { generateApi }          from './api-client.js';
 
+Meteor.methods({
+  'testing.resetDatabase': () => resetDatabase(),
+});
+
 if (Meteor.isClient) {
   describe('API Subscriptions', function() {
     let user, moduleInstances, APIs, requests;
 
     let before = () => {
-      resetDatabase();
+      Meteor.call('testing.resetDatabase');
       user = Factory.create('user');
 
       moduleInstances = [
@@ -26,8 +30,7 @@ if (Meteor.isClient) {
         Factory.create('moduleInstance'),
       ];
 
-      APIs = [];
-      moduleInstances.forEach((moduleInstance) => APIs.push(generateApi(moduleInstance._id)));
+      moduleInstances.forEach((moduleInstance) => delete moduleInstance._id);
 
       requests = [
         {
@@ -38,9 +41,12 @@ if (Meteor.isClient) {
         }
       ];
 
+      Meteor.call('testing.resetDatabase');
+      APIs = [];
+      moduleInstances.forEach((moduleInstance) => createModuleInstance.call(moduleInstance, (res) => APIs.push(generateApi(res._id))));
+      Meteor.call('testing.resetDatabase');
       resetDatabase();
       Meteor.users.insert(user);
-      moduleInstances.forEach((moduleInstance) => createModuleInstance.call(moduleInstance));
       sinon.stub(Meteor, 'user', () => user);
     };
 

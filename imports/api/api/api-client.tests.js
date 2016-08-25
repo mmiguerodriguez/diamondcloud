@@ -10,6 +10,7 @@ import { ModuleInstances }      from '../module-instances/module-instances.js';
 
 import { generateApi }           from './api-client.js';
 
+/*
 if (Meteor.isClient) {
   describe('Modules API', () => {
     describe('Client subscriptions', () => {
@@ -17,7 +18,7 @@ if (Meteor.isClient) {
       let subscriptionName, moduleInstanceId, request, callbackFunctions;
 
       beforeEach(function() {
-        resetDatabase();
+        Meteor.call('testing.resetDatabase');
 
         user = Factory.create('user');
 
@@ -41,7 +42,7 @@ if (Meteor.isClient) {
           },
         ];
 
-        resetDatabase();
+        Meteor.call('testing.resetDatabase');
 
         Meteor.users.insert(user);
         moduleInstances.forEach((moduleInstance) => ModuleInstances.insert(moduleInstance));
@@ -74,3 +75,4 @@ if (Meteor.isClient) {
     });
   });
 }
+*/
