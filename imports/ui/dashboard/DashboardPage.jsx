@@ -9,7 +9,7 @@ import DashboardLayout     from './DashboardLayout.jsx';
 export default class Dashboard extends React.Component {
   render() {
     if (this.props.loading) {
-      return null;
+      return ( null );
     }
 
     return (<DashboardLayout teams={ this.props.teams } />);
