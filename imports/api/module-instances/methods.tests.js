@@ -291,7 +291,7 @@ if(Meteor.isServer){
       });
     });
     
-    /*it('should remove an entry from module data', function(done) {
+    it('should remove an entry from module data', function(done) {
       module.data = {
         todos: [
           {
@@ -336,13 +336,13 @@ if(Meteor.isServer){
           },
         }, (err, res) => {
           let expect = [];
-          expect.push(module.data.todos[0]);
-          expect.push(module.data.todos[1]);
-          expect.push(module.data.todos[2]);
-          chai.assert.deepEqual(res, expect);
+          expect.push(module.data.todos[3]);
+          let result = ModuleInstances.findOne(module._id).data.todos;
+          console.log(`RES: ${JSON.stringify(result, null, 4)}; EXPECT: ${JSON.stringify(expect, null, 4)}`);
+          chai.assert.deepEqual(result, expect);
           done();
         });
       });
-    });*/
+    });
   });
 }
