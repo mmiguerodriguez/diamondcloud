@@ -1,16 +1,16 @@
 <html>
   <head>
-    <!-- Add Roboto font -->
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
+    <script src='main.js'></script>
   </head>
   <body>
     <div id="resizable" class="post-it ui-widget-content">
-  		<div class="container-fluid" style="padding-top: 10px;">
-  			<input type="text" class="postitTitle" id="postitTitle" placeholder="Título">
+  		<div class="container-fluid title-container">
+  			<input type="text" id='title' class="post-it-title" placeholder="Título">
   		</div>
-  		<div class="description container-fluid" style="height: 80%; padding-top: 10px;">
-  			<textarea placeholder="Descripción" class="postitDescription"></textarea>
+  		<div class="description-container container-fluid">
+  			<textarea id='description' class="post-it-description" placeholder="Descripción"></textarea>
   		</div>
   	</div>
   </body>
