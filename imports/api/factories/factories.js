@@ -56,6 +56,7 @@ Factory.define('message', Messages, {
 	type: "text",
 	content: faker.lorem.sentence(),
 	createdAt: new Date(),
+	seers: []
 });
 
 Factory.define('directChatMessage', Messages, Factory.extend('message', {

@@ -11,9 +11,10 @@ export const sendMessage = new ValidatedMethod({
     boardId: { type: String, optional: true },
     type: { type: String, allowedValues: ['text'] },
     content: { type: String },
-    createdAt: { type: Number }
+    createdAt: { type: Number },
+    seers: { type: [String] }
   }).validator(),
-  run({ directChatId, boardId, type, content, createdAt }) {
+  run({ directChatId, boardId, type, content, createdAt, seers }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('Messages.methods.send.notLoggedIn',
       'Must be logged in to send a message.');
@@ -24,6 +25,7 @@ export const sendMessage = new ValidatedMethod({
       type,
       content,
       createdAt,
+      seers,
     };
 
     // Check if board or directChat exists
@@ -51,14 +53,23 @@ export const seeMessage = new ValidatedMethod({
       throw new Meteor.Error('Messages.methods.see.notLoggedIn',
       'Must be logged in to see a message.');
     }
-
-    Messages.update(messageId, {
-      $set: {
-        seen: true,
-      }
-    });
-
     let message = Messages.findOne(messageId);
+
+    if (message.boardId) {
+      Messages.update(messageId, {
+        $push: {
+          seers: Meteor.user()._id,
+        }
+      });
+    } else {
+      Messages.update(messageId, {
+        $set: {
+          seen: true,
+        }
+      });
+    }
+
+    message = Messages.findOne(messageId);
     return message;
   }
 });
