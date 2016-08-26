@@ -12,8 +12,12 @@ export default class ModuleInstance extends React.Component {
       height: this.props.moduleInstance.height,
       loading: true,
     };
+
+    this.refs = {
+      iframe: null,
+    };
   }
-  
+
   render() {
     return (
       <div className='module-container'
@@ -31,20 +35,22 @@ export default class ModuleInstance extends React.Component {
         }
         <iframe id={ this.props.moduleInstance._id }
                 name={ this.props.moduleInstance._id }
+                ref='iframe'
                 className='module'
                 src={ '/modules/' + this.props.moduleInstance.moduleId + '/index.html' }>
         </iframe>
       </div>
     );
   }
-  
+
   componentDidMount() {
-    $('#' + this.props.moduleInstance._id).load(this.iframeLoaded.bind(this));
+    let DiamondAPI = generateApi(this.props.moduleInstance._id);
+
+    this.refs.iframe.onload = this.iframeLoaded.bind(this);
+    this.refs.iframe.contentWindow.DiamondAPI = DiamondAPI;
   }
-  
+
   iframeLoaded() {
-    window.frames[this.props.moduleInstance._id].DiamondAPI = generateApi(this.props.moduleInstance._id);
-    
     $('.module-container').draggable({
       containment: 'parent',
       handle: '.module-pin',
