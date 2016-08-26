@@ -16,19 +16,23 @@ import TeamLayout          from './TeamLayout.jsx';
 export default class Team extends React.Component {
   constructor(props) {
     super(props);
-
+    
     this.state = {
       subscriptions: [],
-      board: undefined,
-      boardSub: undefined,
     };
   }
   render() {
+    const board = Team.board.get();
+    
     if(this.props.loading) {
       return ( null );
     }
 
     if(!this.props.team) {
+      return ( null );
+    }
+
+    if(!board) {
       return ( null );
     }
 
@@ -38,7 +42,7 @@ export default class Team extends React.Component {
         owner={ this.props.team.owner() === Meteor.user().emails[0].address }
 
         boards={ this.props.boards }
-        board={ this.state.board || this.props.boards[0] }
+        board={ board }
         moduleInstances={ this.props.moduleInstances }
         modules={ this.props.modules }
 
@@ -160,30 +164,37 @@ export default class Team extends React.Component {
   }
 
   boardSubscribe(boardId) {
-    if(this.state.boardSub) {
-      this.state.boardSub.stop();
+    if(Team.boardSubscription.get()) {
+      Team.boardSubscription.get().stop();
     }
 
     let subscription = Meteor.subscribe('boards.board', boardId, {
       onReady: () => {
-        this.setState({
-          board: Boards.findOne(boardId),
-        });
+        Team.board.set(Boards.findOne(boardId));
       },
       onError: (error) => {
         throw new Meteor.Error(error);
       }
     });
 
-    this.setState({
-      boardSub: subscription,
-    });
+    Team.boardSubscription.set(subscription);
   }
 }
 
+
+Team.board = new ReactiveVar();
+Team.boardSubscription = new ReactiveVar();
+
 export default TeamPageContainer = createContainer(({ params }) => {
   const { teamId } = params;
-  const teamHandle = Meteor.subscribe('teams.team', teamId);
+  const teamHandle = Meteor.subscribe('teams.team', teamId, () => {
+    let firstBoard = Boards.findOne();
+    let boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
+      Team.board.set(Boards.findOne());
+    });
+    
+    Team.boardSubscription.set(boardHandle);
+  });
   const loading = !teamHandle.ready();
 
   return {
