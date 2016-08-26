@@ -1,4 +1,5 @@
-import React from 'react';
+import React              from 'react';
+import { generateApi }    from '../../api/api/api-client.js';
 
 export default class ModuleInstance extends React.Component {
   constructor(props) {
@@ -12,6 +13,7 @@ export default class ModuleInstance extends React.Component {
       loading: true,
     };
   }
+  
   render() {
     return (
       <div className='module-container'
@@ -28,17 +30,21 @@ export default class ModuleInstance extends React.Component {
           ) : ( null )
         }
         <iframe id={ this.props.moduleInstance._id }
+                name={ this.props.moduleInstance._id }
                 className='module'
                 src={ '/modules/' + this.props.moduleInstance.moduleId + '/index.html' }>
-
         </iframe>
       </div>
     );
   }
+  
   componentDidMount() {
     $('#' + this.props.moduleInstance._id).load(this.iframeLoaded.bind(this));
   }
+  
   iframeLoaded() {
+    window.frames[this.props.moduleInstance._id].DiamondAPI = generateApi(this.props.moduleInstance._id);
+    
     $('.module-container').draggable({
       containment: 'parent',
       handle: '.module-pin',

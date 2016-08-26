@@ -2,8 +2,8 @@ var resize;
 
 window.onload = () => {
   console.log('I am a module and I just loaded');
+  console.log('DiamondAPI', window.DiamondAPI);
 };
-
 window.onresize = () => {
   clearTimeout(resize);
   resize = setTimeout(() => {
