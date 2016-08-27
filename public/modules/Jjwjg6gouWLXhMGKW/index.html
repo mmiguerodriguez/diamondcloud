@@ -1,16 +1,25 @@
 <html>
   <head>
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link href="main.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    <link href='main.css' rel='stylesheet'>
     <script src='main.js'></script>
   </head>
   <body>
-    <div id="resizable" class="post-it ui-widget-content">
-  		<div class="container-fluid title-container">
-  			<input type="text" id='title' class="post-it-title" placeholder="Título">
+    <div id='resizable' class='post-it ui-widget-content'>
+  		<div class='container-fluid title-container'>
+  			<input
+          id='title'
+          class='post-it-title'
+          type='text'
+          placeholder='Título'
+          onkeyup='updateInput(this, "title");'>
   		</div>
-  		<div class="description-container container-fluid">
-  			<textarea id='description' class="post-it-description" placeholder="Descripción"></textarea>
+  		<div class='description-container container-fluid'>
+  			<textarea
+          id='description'
+          class='post-it-description'
+          placeholder='Descripción'
+          onkeyup='updateInput(this, "description");'></textarea>
   		</div>
   	</div>
   </body>
