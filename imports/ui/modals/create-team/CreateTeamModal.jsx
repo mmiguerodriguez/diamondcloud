@@ -233,12 +233,13 @@ export default class CreateTeamModal extends React.Component {
       return;
     }
 
+    $('#createTeamModal #create-team-page-' + page).hide();
     $('#createTeamModal #create-team-page-' + (page + 1)).effect('slide', {
       direction: 'right',
       mode: 'show',
     }, 500);
 
-    $('#createTeamModal #create-team-page-' + page).hide();
+    
     $('#createTeamModal #actual-page').html(page + 1);
 
     if(page + 1 === 3) {
