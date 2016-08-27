@@ -33,10 +33,8 @@ export default class ModuleInstance extends React.Component {
             <div className='module-pin' role='button'></div>
           ) : ( null )
         }
-        <iframe id={ this.props.moduleInstance._id }
-                name={ this.props.moduleInstance._id }
+        <iframe className='module'
                 ref='iframe'
-                className='module'
                 src={ '/modules/' + this.props.moduleInstance.moduleId + '/index.html' }>
         </iframe>
       </div>
