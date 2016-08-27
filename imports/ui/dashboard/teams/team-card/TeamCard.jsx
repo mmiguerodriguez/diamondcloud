@@ -22,17 +22,8 @@ export default class TeamCard extends React.Component {
                 <b>{ this.props.team.name }</b>
               </h4>
               <h5>Plan: { this.props.team.plan }</h5>
-              {
-                this.props.team.users.length >= 4 ? (
-                  <h5>Miembros:
-                    <b className='text-danger'>
-                      &nbsp;{ this.props.team.users.length }/5
-                    </b>
-                  </h5>
-                ) : (
-                  <h5>Miembros: { this.props.team.users.length }/5</h5>
-                )
-              }
+              <h5>Miembros: { this.props.team.users.length }
+              </h5>
             </div>
           </div>
           <Link to={ '/team/' + this.props.team._id }
