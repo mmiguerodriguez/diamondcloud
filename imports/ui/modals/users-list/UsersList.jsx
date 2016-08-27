@@ -28,7 +28,8 @@ export default class UsersList extends React.Component {
                         placeholder='Compartir proyecto'
                         type='text'
                         value={ email }
-                        onChange={ this.handleChange.bind(this, 'email') }/>
+                        onChange={ this.handleChange.bind(this, 'email') }
+                        onKeyDown={ this.handleKey.bind(this) } />
                 <div className='input-group-addon search-input' onClick={ this.handleSubmit.bind(this) }>
                   <img src='/img/add-people-icon.svg'
                        width='24px' />
@@ -49,6 +50,11 @@ export default class UsersList extends React.Component {
     this.setState({
       [index]: event.target.value,
     });
+  }
+  handleKey(event) {
+    if(event.which == 13) {
+      this.handleSubmit();
+    }
   }
   handleSubmit() {
     this.props.addUser(this.state.email);

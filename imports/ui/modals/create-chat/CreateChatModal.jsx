@@ -61,12 +61,15 @@ export default class CreateChatModal extends React.Component {
     let arr = [];
 
     this.props.team.users.map((_user) => {
+      console.log(_user);
       let user = Meteor.users.findOne({ 'emails.address': _user.email });
-      if(user._id !== Meteor.userId()) {
-        arr.push({
-          label: user.profile.name,
-          value: user._id,
-        });
+      if(user) {
+        if(user._id !== Meteor.userId()) {
+          arr.push({
+            label: user.profile.name,
+            value: user._id,
+          });
+        }
       }
     });
 
