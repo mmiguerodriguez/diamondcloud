@@ -7,10 +7,10 @@ export default class UsersList extends React.Component {
         <div className="col-xs-1">
           <img  className="contact-list-photo"
                 alt="User"
-                src={ this.props.user.profile.picture || null } />
+                src={ this.props.user.profile.picture || '/img/user-shape.svg' } />
         </div>
         <div className="col-xs-9">
-          <p className="contact-list-name">{ this.props.user.profile.name }</p>
+          <p className="contact-list-name truncate">{ this.props.user.profile.name }</p>
         </div>
         { (!this.props.user.isOwner && this.props.isOwner) ? (
           <div className="col-xs-1">
