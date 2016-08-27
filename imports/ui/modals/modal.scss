@@ -9,7 +9,8 @@
   border: none !important;
 }
 .modal-body {
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   .modal-body-fixed {
     overflow-y: hidden;
     overflow-x: hidden;
