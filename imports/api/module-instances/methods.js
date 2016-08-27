@@ -1,4 +1,5 @@
 import { Meteor }                              from 'meteor/meteor';
+import { Random }                              from 'meteor/random';
 import { ValidatedMethod }                     from 'meteor/mdg:validated-method';
 import { SimpleSchema }                        from 'meteor/aldeed:simple-schema';
 import Future                                  from 'fibers/future';
@@ -148,7 +149,7 @@ export const apiInsert = new ValidatedMethod({
     if(!_.isEmpty(visibleBy)) {
       entry.visibleBy = visibleBy;
     }
-    entry._id = (entry._id !== undefined) ? entry._id : new ObjectID();
+    entry._id = (entry._id !== undefined) ? entry._id : Random.id();
 
     if(!moduleInstance.data[collection]){
       moduleInstance.data[collection] = [entry];
