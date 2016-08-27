@@ -146,25 +146,25 @@ export default class Board extends React.Component {
 
     if(this.props.board.isPrivate) {
       this.props.board.users.map((_user) => {
-        let user = Meteor.users.findOne(_user._id);
+        let user = Meteor.users.findOne(_user._id) || _user;
         arr.push(
-          <img  key={ user._id }
+          <img  key={ user._id || user.email }
             className='img-circle shared-people'
-            src={ user.profile.picture }
-            alt={ user.profile.name }
-            title={ user.profile.name }
+            src={ user.profile ? user.profile.picture : '/img/user-shape.svg' }
+            alt={ user.profile ? user.profile.name : user.email }
+            title={ user.profile ? user.profile.name : user.email }
             width='32px' />
         );
       });
     } else {
       this.props.users.map((_user) => {
-        let user = Meteor.users.findOne({ 'emails.address': _user.email });
+        let user = Meteor.users.findOne({ 'emails.address': _user.email }) || _user;
         arr.push(
-          <img  key={ user._id }
+          <img  key={ user._id || user.email }
                 className='img-circle shared-people'
-                src={ user.profile.picture }
-                alt={ user.profile.name }
-                title={ user.profile.name }
+                src={ user.profile ? user.profile.picture : '/img/user-shape.svg' }
+                alt={ user.profile ? user.profile.name : user.email }
+                title={ user.profile ? user.profile.name : user.email }
                 width='32px' />
         );
       });
