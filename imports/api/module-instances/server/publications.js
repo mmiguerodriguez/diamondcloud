@@ -23,7 +23,9 @@ Meteor.publish('moduleInstances.data', function(moduleInstanceId, obj) {
     },
     {
       $project: {
-         [obj.collection]: `$data.${obj.collection}`,
+        data: {
+          [obj.collection]: `$data.${obj.collection}`,
+        }
       }
     },
 
@@ -32,11 +34,13 @@ Meteor.publish('moduleInstances.data', function(moduleInstanceId, obj) {
   if (obj.condition) pipeline.push(
     {
       $project: {
-        [obj.collection]: {
-          $filter: {
-            input: `$${obj.collection}`,
-            as: 'element',
-            cond: obj.condition
+        data: {
+          [obj.collection]: {
+            $filter: {
+              input: `$${obj.collection}`,
+              as: 'element',
+              cond: obj.condition
+            }
           }
         }
       }
