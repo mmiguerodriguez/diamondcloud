@@ -18,7 +18,7 @@ window.onload = () => {
   });
 
   subscribe('postIt', (data) => {
-    console.log('Subscribed, new data incoming...', data.postIt[0]);
+    console.log('Subscribed, new data incoming...', data);
     handleNewData(data.postIt[0]);
   });
 };
