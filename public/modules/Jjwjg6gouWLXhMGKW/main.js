@@ -17,11 +17,8 @@ window.onload = () => {
     }
   });
 
-  window.DiamondAPI.subscribe({
-    request: {
-      collection: 'postIt',
-    },
-    callback(data) {
+  subscribe('postIt', (data) => {
+    if(data !== undefined) {
       console.log('Subscribed, new data incoming...', data.postIt[0]);
       handleNewData(data.postIt[0]);
     }
@@ -59,7 +56,14 @@ function updateData(collection, filter, updateQuery) {
     updateQuery,
   });
 }
-
+function subscribe(collection, callback) {
+  window.DiamondAPI.subscribe({
+    request: {
+      collection,
+    },
+    callback,
+  });
+}
 // Module methods
 function updateInput(e, which) {
   clearTimeout(timeout);
