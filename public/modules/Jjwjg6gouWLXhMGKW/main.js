@@ -20,7 +20,6 @@ window.onresize = () => {
 window.DiamondAPI.subscribe({
   request: {
     collection: 'postIt',
-    condition: {},
   },
   callback(data) {
     console.log('Subscribed, new data incoming...', data);
