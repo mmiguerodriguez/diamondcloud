@@ -181,6 +181,27 @@ if (Meteor.isClient) {
         });
         chai.assert.equal(myCallback(), 'value');
       });
+      it('should remove an entry from module instance data', () => {
+        let DiamondAPI = generateApi(moduleInstances[0]._id);
+        DiamondAPI.remove({
+          collection: 'todos',
+          filter: {
+            categoryId: 'categoryId1',
+          },
+          callback: (err, res) => {
+            return 'value';
+          }
+        });
+        chai.assert.equal(name, 'ModuleInstances.methods.apiRemove');
+        chai.assert.deepEqual(params, {
+          moduleInstanceId: moduleInstances[0]._id,
+          collection: 'todos',
+          filter: {
+            categoryId: 'categoryId1'
+          },
+        });
+        chai.assert.equal(myCallback(), 'value');
+      });
     });
   });
 }
