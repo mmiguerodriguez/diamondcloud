@@ -42,7 +42,7 @@ export default class BoardsCollapsible extends React.Component {
           owner={ this.props.owner }
           toggleCollapsible={ this.props.toggleCollapsible }
           changeBoard={ this.props.changeBoard }
-          openContextMenu={ this.props.openContextMenu } />
+          openBoardContextMenu={ this.props.openBoardContextMenu } />
       );
     });
 
@@ -54,9 +54,9 @@ BoardsCollapsible.propTypes = {
   boards: React.PropTypes.array.isRequired,
   team: React.PropTypes.object.isRequired,
   owner: React.PropTypes.bool.isRequired,
-  
+
   toggleCollapsible: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
   openCreateBoardModal: React.PropTypes.func.isRequired,
-  openContextMenu: React.PropTypes.func.isRequired,
+  openBoardContextMenu: React.PropTypes.func.isRequired,
 };

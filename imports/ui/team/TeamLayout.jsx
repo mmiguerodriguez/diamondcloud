@@ -7,10 +7,14 @@ import SidebarLayout    from './sidebar/SidebarLayout.jsx';
 export default class TeamLayout extends React.Component {
   constructor(props){
     super(props);
-    
+
     this.state = {
       'board-context-menu-id': null,
     };
+
+    this.refs = {
+      'board-context-menu': null,
+    }
   }
   render() {
     return (
@@ -18,7 +22,7 @@ export default class TeamLayout extends React.Component {
         <SidebarLayout
           { ...this.props }
           changeBoard={ this.changeBoard.bind(this) }
-          openContextMenu={ this.openContextMenu.bind(this) } />
+          openBoardContextMenu={ this.openBoardContextMenu.bind(this) } />
         <Board
           board={ this.props.board }
           moduleInstances={ this.props.moduleInstances }
@@ -27,9 +31,9 @@ export default class TeamLayout extends React.Component {
         <div className='chats-container'>
           { this.renderChats() }
         </div>
-        { 
+        {
           this.props.owner ? (
-            <div className='board-context-menu'>
+            <div className='board-context-menu' ref='board-context-menu'>
               <div className='row' onClick={ this.removeBoard.bind(this) }>
             		<div className='col-xs-4'>
             			<img src='http://image0.flaticon.com/icons/svg/60/60761.svg' width='20px' />
@@ -39,15 +43,16 @@ export default class TeamLayout extends React.Component {
             </div>
           ) : ( null )
         }
-        
+
       </div>
     );
   }
   componentDidMount() {
-    if(this.props.owner) { // fix this fucking shit
-      $(document).bind('mousedown', function (e) {
+    if(this.props.owner) {
+      let self = this;
+      $(document).bind('mousedown', (e) => {
         if(!$(e.target).parents('.board-context-menu').length > 0) {
-          $('.board-context-menu').hide(100);
+          self.closeBoardContextMenu();
         }
       });
     }
@@ -79,12 +84,12 @@ export default class TeamLayout extends React.Component {
       this.props.boardSubscribe(board._id);
     }
   }
-  
-  openContextMenu(boardId, event) {
+
+  openBoardContextMenu(boardId, event) {
     if(this.props.owner) {
       event.persist();
 
-      $('.board-context-menu')
+      $(this.refs['board-context-menu'])
         .finish()
         .toggle(100)
         .css({
@@ -97,25 +102,29 @@ export default class TeamLayout extends React.Component {
       });
     }
   }
+  closeBoardContextMenu() {
+    $(this.refs['board-context-menu']).hide(100);
+  }
   removeBoard() {
-    let boardId = this.state['board-context-menu-id'];
+    if(this.props.owner) {
+      let boardId = this.state['board-context-menu-id'];
+      Meteor.call('Boards.methods.archiveBoard', { _id: boardId }, (error, result) => {
+        if(error) {
+          throw new Meteor.Error(error);
+        } else {
+          let newBoardId;
+          this.props.boards.map((board) => {
+            if(board._id !== boardId) {
+              newBoardId = board._id;
+            }
+          });
 
-    Meteor.call('Boards.methods.archiveBoard', { _id: boardId }, (error, result) => {
-      if(error) {
-        throw new Meteor.Error(error);
-      } else {
-        let newBoardId;
-        this.props.boards.map((board) => {
-          if(board._id !== boardId) {
-            newBoardId = board._id;
-          }
-        });
-        
-        this.changeBoard(newBoardId); // Change to another board which isn't this one
-        this.props.removeChat({ boardId }); // Remove board chats with this boardId
-        $('.board-context-menu').toggle(100);
-      }
-    });
+          this.props.removeChat({ boardId }); // Remove board chats with this boardId
+          this.changeBoard(newBoardId); // Change to another board which isn't this one
+          this.closeBoardContextMenu(); // Close menu
+        }
+      });
+    }
   }
 }
 
