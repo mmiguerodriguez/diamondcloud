@@ -75,16 +75,8 @@ export default class TeamLayout extends React.Component {
 
     return arr;
   }
-  changeBoard(boardId) {
-    if(boardId !== this.props.board._id) {
-      let board = this.props.boards.find((board) => {
-        return board._id === boardId;
-      });
 
-      this.props.boardSubscribe(board._id);
-    }
-  }
-
+  // context-menu
   openBoardContextMenu(boardId, event) {
     if(this.props.owner) {
       event.persist();
@@ -104,6 +96,17 @@ export default class TeamLayout extends React.Component {
   }
   closeBoardContextMenu() {
     $(this.refs['board-context-menu']).hide(100);
+  }
+
+  // boards
+  changeBoard(boardId) {
+    if(boardId !== this.props.board._id) {
+      let board = this.props.boards.find((board) => {
+        return board._id === boardId;
+      });
+
+      this.props.boardSubscribe(board._id);
+    }
   }
   removeBoard() {
     if(this.props.owner) {
