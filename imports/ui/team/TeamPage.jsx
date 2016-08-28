@@ -16,14 +16,14 @@ import TeamLayout          from './TeamLayout.jsx';
 export default class Team extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       subscriptions: [],
     };
   }
   render() {
     const board = Team.board.get();
-    
+
     if(this.props.loading) {
       return ( null );
     }
@@ -181,7 +181,6 @@ export default class Team extends React.Component {
   }
 }
 
-
 Team.board = new ReactiveVar();
 Team.boardSubscription = new ReactiveVar();
 
@@ -192,7 +191,7 @@ export default TeamPageContainer = createContainer(({ params }) => {
     let boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
       Team.board.set(Boards.findOne());
     });
-    
+
     Team.boardSubscription.set(boardHandle);
   });
   const loading = !teamHandle.ready();
