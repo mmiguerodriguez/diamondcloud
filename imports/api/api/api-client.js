@@ -7,7 +7,7 @@ export let generateApi = (moduleInstanceId) => {
     subscribe: ({ request, callback }) => {
       // Validation.
       let validation = typeof request.collection == 'string';
-      validation = validation && typeof request.condition == 'object';
+      validation = validation && (typeof request.condition == 'object' || request.condition === undefined);
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         // Subscribe to data
