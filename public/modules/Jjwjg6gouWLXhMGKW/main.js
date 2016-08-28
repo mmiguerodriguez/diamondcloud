@@ -1,6 +1,10 @@
+var timeout;
+var INTERVAL = 2000;
+
 window.onload = () => {
   console.log('Module loaded, grabbing data...');
-  getData((error, result) => {
+
+  getData('postIt', {}, (error, result) => {
     console.log('Grabbed data...');
     if(!result) {
       insertStartupData((error, result) => {
@@ -12,31 +16,20 @@ window.onload = () => {
       handleNewData(postIt);
     }
   });
+
+  window.DiamondAPI.subscribe({
+    request: {
+      collection: 'postIt',
+    },
+    callback(data) {
+      console.log('Subscribed, new data incoming...', data.postIt[0]);
+      handleNewData(data.postIt[0]);
+    }
+  });
 };
 window.onresize = () => {
   console.log('Resized module...');
 };
-
-window.DiamondAPI.subscribe({
-  request: {
-    collection: 'postIt',
-  },
-  callback(data) {
-    console.log('Subscribed, new data incoming...', data);
-  }
-});
-
-//TODO: Remove this once subscription is ready
-/*
-window.setInterval(() => {
-  getData((error, result) => {
-    if(result) {
-      let postIt = result[0]; // [{ _id, title, description }]
-      handleNewData(postIt);
-    }
-  });
-}, 2000);
-*/
 
 // First insert data
 function insertStartupData(callback) {
@@ -52,34 +45,53 @@ function insertStartupData(callback) {
 }
 
 // API methods
-function getData(callback) {
+function getData(collection, filter, callback) {
   window.DiamondAPI.get({
-    collection: 'postIt',
-    filter: {},
+    collection,
+    filter,
     callback,
   });
 }
-function updateData(object) {
-  window.DiamondAPI.update(object);
+function updateData(collection, filter, updateQuery) {
+  window.DiamondAPI.update({
+    collection,
+    filter,
+    updateQuery,
+  });
 }
 
 // Module methods
 function updateInput(e, which) {
-  updateData({
-    collection: 'postIt',
-    filter: {},
-    updateQuery: {
+  clearTimeout(timeout);
+  /*
+   * You can pass arguments to the function inside setTimeout
+   * using Function.prototype.bind()
+   * https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Objetos_globales/Function/bind
+   */
+  timeout = setTimeout(
+    updateData.bind(null, 'postIt', {}, {
       $set: {
         [which]: e.value,
       }
-    }
-  });
+    }), INTERVAL);
 }
 function handleNewData(data) {
-  pushData('title', data.title);
-  pushData('description', data.description);
+  if(needsData('title', data.title)) {
+    pushData('title', data.title);
+  }
+  if(needsData('description', data.description)) {
+    pushData('description', data.description);
+  }
 
+  function needsData(e, value) {
+    let elem = document.getElementById(e);
+    if(elem.value === value) {
+      return false;
+    }
+    return true;
+  }
   function pushData(e, value) {
-    document.getElementById(e).value = value;
+    let elem = document.getElementById(e);
+    elem.value = value;
   }
 }
