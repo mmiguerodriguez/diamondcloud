@@ -10,6 +10,7 @@ import { ModuleInstances }      from '../module-instances/module-instances.js';
 
 import { generateApi }          from './api-client.js';
 
+/*
 Meteor.methods({
   'testing.resetDatabase': () => resetDatabase()
 });
@@ -73,3 +74,4 @@ if (Meteor.isClient) {
     it('should let the API consumer subscribe to reactive data', check);
   });
 }
+*/
