@@ -80,16 +80,16 @@ export default class TeamLayout extends React.Component {
     }
   }
   
-  openContextMenu(boardId, e) {
+  openContextMenu(boardId, event) {
     if(this.props.owner) {
-      e.persist();
+      event.persist();
 
       $('.board-context-menu')
         .finish()
         .toggle(100)
         .css({
-          top: e.pageY + 'px',
-          left: e.pageX + 10 + 'px',
+          top: event.pageY + 'px',
+          left: event.pageX + 10 + 'px',
         });
 
       this.setState({
