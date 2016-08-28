@@ -1,9 +1,10 @@
-import { Meteor } from 'meteor/meteor';
-import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { Meteor }             from 'meteor/meteor';
+import { ValidatedMethod }    from 'meteor/mdg:validated-method';
+import { SimpleSchema }       from 'meteor/aldeed:simple-schema';
+import   Future               from 'fibers/future';
 
-import { ModuleInstances } from './module-instances.js';
-import { Boards } from '../boards/boards.js';
+import { ModuleInstances }    from './module-instances.js';
+import { Boards }             from '../boards/boards.js';
 
 export const createModuleInstance = new ValidatedMethod({
   name: 'ModuleInstances.methods.create',
@@ -16,7 +17,7 @@ export const createModuleInstance = new ValidatedMethod({
     data: { type: Object, blackbox: true },
     archived: { type: Boolean, optional: true }
   }).validator(),
-  run({ moduleId, x, y, width, height, data }){
+  run({ moduleId, x, y, width, height, data }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('ModuleInstances.methods.create.notLoggedIn',
       'Must be logged in to make a module instance.');
@@ -32,9 +33,11 @@ export const createModuleInstance = new ValidatedMethod({
       archived: false,
     };
 
-    ModuleInstances.insert(moduleInstance);
-
-    return ModuleInstances.findOne();
+    let future = new Future();
+    ModuleInstances.insert(moduleInstance, (err, res) => {
+      future.return(ModuleInstances.findOne({ _id: res}));
+    });
+    return future.wait();
   }
 });
 

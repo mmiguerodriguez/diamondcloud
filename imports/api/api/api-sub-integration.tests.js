@@ -7,19 +7,19 @@ import { Random }               from 'meteor/random';
 import   faker                  from 'faker';
 
 import { ModuleInstances }      from '../module-instances/module-instances.js';
-import { createModuleInstance } from '../module-instances/methods.js';
 
 import { generateApi }          from './api-client.js';
 
 Meteor.methods({
-  'testing.resetDatabase': () => resetDatabase(),
+  'testing.resetDatabase': () => resetDatabase()
 });
 
 if (Meteor.isClient) {
   describe('API Subscriptions', function() {
-    let user, moduleInstances, APIs, requests;
+    let user, moduleInstances, requests;
+    let APIs = [];
 
-    let before = () => {
+    let before = function before() {
       Meteor.call('testing.resetDatabase');
       user = Factory.create('user');
 
@@ -30,8 +30,6 @@ if (Meteor.isClient) {
         Factory.create('moduleInstance'),
       ];
 
-      moduleInstances.forEach((moduleInstance) => delete moduleInstance._id);
-
       requests = [
         {
           collection: 'todos',
@@ -41,20 +39,27 @@ if (Meteor.isClient) {
         }
       ];
 
-      Meteor.call('testing.resetDatabase');
-      APIs = [];
-      moduleInstances.forEach((moduleInstance) => createModuleInstance.call(moduleInstance, (res) => APIs.push(generateApi(res._id))));
-      Meteor.call('testing.resetDatabase');
-      resetDatabase();
       Meteor.users.insert(user);
       sinon.stub(Meteor, 'user', () => user);
+      MeteorStubs.install();
+      moduleInstances.forEach((moduleInstance, index, array) => {
+        delete moduleInstance._id;
+        Meteor.call('ModuleInstances.methods.create', moduleInstance, (err, res) => {
+          console.log('err1', err);
+          console.log('res', res);
+          array[index] = res._id;
+          APIs.push(generateApi(res._id));
+          ModuleInstances.remove({ _id: moduleInstance._id });
+        });
+      });
     };
 
-    let after = () => {
+    let after = function after() {
       Meteor.user.restore();
+      MeteorStubs.uninstall();
     };
 
-    let check = (done) => {
+    let check = function check(done) {
       // Code of 1st API consumer
       let reactiveData;
       let callback = (data) => reactiveData = data;

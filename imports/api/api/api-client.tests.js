@@ -5,12 +5,12 @@ import { sinon }                from 'meteor/practicalmeteor:sinon';
 import { chai }                 from 'meteor/practicalmeteor:chai';
 import { Random }               from 'meteor/random';
 import   faker                  from 'faker';
+import                               '../factories/factories.js';
 
 import { ModuleInstances }      from '../module-instances/module-instances.js';
 
 import { generateApi }           from './api-client.js';
 
-/*
 if (Meteor.isClient) {
   describe('Modules API', () => {
     describe('Client subscriptions', () => {
@@ -42,10 +42,7 @@ if (Meteor.isClient) {
           },
         ];
 
-        Meteor.call('testing.resetDatabase');
-
         Meteor.users.insert(user);
-        moduleInstances.forEach((moduleInstance) => ModuleInstances.insert(moduleInstance));
         sinon.stub(Meteor, 'user', () => user);
         sinon.stub(Meteor, 'subscribe', (_subscriptionName, _moduleInstanceId, _request, _callbackFunctions) => {
           subscriptionName = _subscriptionName;
@@ -75,4 +72,3 @@ if (Meteor.isClient) {
     });
   });
 }
-*/

@@ -1,25 +1,22 @@
-import { Meteor }        from 'meteor/meteor';
-import { resetDatabase } from 'meteor/xolvio:cleaner';
-import { sinon }         from 'meteor/practicalmeteor:sinon';
-import { chai }          from 'meteor/practicalmeteor:chai';
-import { Random }        from 'meteor/random';
-import   faker           from 'faker';
-
-import { ModuleInstances }         from './module-instances.js';
-import { Boards }         from '../boards/boards.js';
+import { Meteor }           from 'meteor/meteor';
+import { resetDatabase }    from 'meteor/xolvio:cleaner';
+import { sinon }            from 'meteor/practicalmeteor:sinon';
+import { chai }             from 'meteor/practicalmeteor:chai';
+import { Random }           from 'meteor/random';
+import   faker              from 'faker';
+import                           '../factories/factories.js';
+import { ModuleInstances }  from './module-instances.js';
+import { Boards }           from '../boards/boards.js';
 import {
   createModuleInstance,
   editModuleInstance,
   archiveModuleInstance,
   dearchiveModuleInstance,
   apiInsert,
-}                        from './methods.js';
-
-import '../factories/factories.js';
+}                           from './methods.js';
 
 if(Meteor.isServer){
   describe('ModuleInstances', function(){
-
     let module, user, board;
 
     beforeEach(function() {
@@ -45,7 +42,7 @@ if(Meteor.isServer){
       Boards.isValid.restore();
     });
 
-    it('should create a module instance', function() {
+    it('should create a module instance', function(done) {
       let args, expect, result;
       args = {
         moduleId: module.moduleId,
@@ -57,22 +54,22 @@ if(Meteor.isServer){
       };
 
       createModuleInstance.call(args, (err, res) => {
-        if(err) throw new Meteor.Error(err);
-        result = res;
+        if (err) throw new Meteor.Error(err);
+
+        expect = {
+          _id: res._id,
+          moduleId: args.moduleId,
+          x: args.x,
+          y: args.y,
+          width: args.width,
+          height: args.height,
+          data: args.data,
+          archived: false,
+        };
+
+        chai.assert.isTrue(JSON.stringify(expect) === JSON.stringify(res));
+        done();
       });
-
-      expect = {
-        _id: result._id,
-        moduleId: args.moduleId,
-        x: args.x,
-        y: args.y,
-        width: args.width,
-        height: args.height,
-        data: args.data,
-        archived: false,
-      };
-
-      chai.assert.isTrue(JSON.stringify(expect) === JSON.stringify(result));
     });
 
     it('should edit a module instance', function() {
