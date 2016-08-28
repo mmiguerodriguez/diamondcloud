@@ -1,17 +1,23 @@
+import { Meteor } from 'meteor/meteor';
+
+import { ModuleInstances } from '../module-instances/module-instances.js';
+
 export let generateApi = (moduleInstanceId) => {
   return {
-    subscribe: (obj, callback) => {
+    subscribe: ({ request, callback }) => {
       // Validation.
-      let validation = typeof obj.collection == 'string';
-      validation = validation && typeof obj.condition == 'object';
+      let validation = typeof request.collection == 'string';
+      validation = validation && typeof request.condition == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         // Subscribe to data
-        Meteor.subscribe('moduleInstances.data', moduleInstanceId, obj, {
-          onReady: callback,
-          onError: (err) => {
-            throw console.error('Error while subscribing.', err);
-          },
+        Meteor.subscribe('moduleInstances.data', moduleInstanceId, request);
+        let caller = (id, fields) => callback(ModuleInstances.findOne(moduleInstanceId));
+        let query = ModuleInstances.find(moduleInstanceId);
+        let handle = query.observeChanges({
+          added: caller,
+          changed: caller,
+          removed: caller,
         });
       } else {
         throw console.error('The provided data is wrong.');
@@ -24,6 +30,7 @@ export let generateApi = (moduleInstanceId) => {
       validation = validation && typeof visibleBy == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
+
         Meteor.call('ModuleInstances.methods.apiInsert', {
           moduleInstanceId,
           collection,
