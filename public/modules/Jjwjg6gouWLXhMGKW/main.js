@@ -18,10 +18,8 @@ window.onload = () => {
   });
 
   subscribe('postIt', (data) => {
-    if(data !== undefined) {
-      console.log('Subscribed, new data incoming...', data.postIt[0]);
-      handleNewData(data.postIt[0]);
-    }
+    console.log('Subscribed, new data incoming...', data.postIt[0]);
+    handleNewData(data.postIt[0]);
   });
 };
 window.onresize = () => {
