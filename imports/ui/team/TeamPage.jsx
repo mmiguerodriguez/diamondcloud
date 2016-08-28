@@ -16,14 +16,14 @@ import TeamLayout          from './TeamLayout.jsx';
 export default class Team extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       subscriptions: [],
     };
   }
   render() {
     const board = Team.board.get();
-    
+
     if(this.props.loading) {
       return ( null );
     }
@@ -59,6 +59,7 @@ export default class Team extends React.Component {
     // If it already loaded and team doesn't exist then we
     // should return the user to a NotFound Layout or
     // error route...
+    console.log("HOLAAAAAA", this.props);
     if(!this.props.loading && !this.props.team) {
       browserHistory.push('/404');
     }
@@ -192,7 +193,7 @@ export default TeamPageContainer = createContainer(({ params }) => {
     let boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
       Team.board.set(Boards.findOne());
     });
-    
+
     Team.boardSubscription.set(boardHandle);
   });
   const loading = !teamHandle.ready();
