@@ -12,7 +12,7 @@ export let generateApi = (moduleInstanceId) => {
       if (validation) {
         // Subscribe to data
         Meteor.subscribe('moduleInstances.data', moduleInstanceId, request);
-        let caller = (id, fields) => callback(ModuleInstances.findOne(moduleInstanceId));
+        let caller = (id, fields) => callback(ModuleInstances.findOne(moduleInstanceId).data);
         let query = ModuleInstances.find(moduleInstanceId);
         let handle = query.observeChanges({
           added: caller,
