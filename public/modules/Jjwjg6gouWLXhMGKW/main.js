@@ -16,7 +16,19 @@ window.onload = () => {
 window.onresize = () => {
   console.log('Resized module...');
 };
+
+window.DiamondAPI.subscribe({
+  request: {
+    collection: 'postIt',
+    condition: {},
+  },
+  callback(data) {
+    console.log('Subscribed, new data incoming...', data);
+  }
+});
+
 //TODO: Remove this once subscription is ready
+/*
 window.setInterval(() => {
   getData((error, result) => {
     if(result) {
@@ -25,6 +37,7 @@ window.setInterval(() => {
     }
   });
 }, 2000);
+*/
 
 // First insert data
 function insertStartupData(callback) {
