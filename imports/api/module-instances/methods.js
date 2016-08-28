@@ -1,4 +1,5 @@
 import { Meteor }                              from 'meteor/meteor';
+import { Random }                              from 'meteor/random';
 import { ValidatedMethod }                     from 'meteor/mdg:validated-method';
 import { SimpleSchema }                        from 'meteor/aldeed:simple-schema';
 import Future                                  from 'fibers/future';
@@ -148,7 +149,7 @@ export const apiInsert = new ValidatedMethod({
     if(!_.isEmpty(visibleBy)) {
       entry.visibleBy = visibleBy;
     }
-    entry._id = (entry._id !== undefined) ? entry._id : new ObjectID();
+    entry._id = (entry._id !== undefined) ? entry._id : Random.id();
 
     if(!moduleInstance.data[collection]){
       moduleInstance.data[collection] = [entry];
@@ -248,7 +249,6 @@ export const apiGet = new ValidatedMethod({
     return selected;
   }
 });
-/*
 export const apiRemove = new ValidatedMethod({
   name: 'ModuleInstances.methods.apiRemove',
   validate: new SimpleSchema({
@@ -267,7 +267,22 @@ export const apiRemove = new ValidatedMethod({
       'Must be part of a board to access its modules.');
     }
     let future = new Future();
-    //todo: agregar validacion por visibleBy
+    let boards = Meteor.user().boards(moduleInstance.board().team()._id, { _id: 1 }).fetch();
+    boards.forEach((element, index) => {
+      boards[index] = element._id;
+    });
+    filter = {
+      $and: [
+        {
+          $or: [
+            { 'visibleBy': { $exists: false } },
+            { 'visibleBy.userId': Meteor.userId() },
+            { 'visibleBy.boardId': { $in: boards } },
+          ]
+        },
+        filter
+      ],
+    };
     ModuleInstances.update(moduleInstanceId, {
       $pull: {
         [`data.${collection}`]: filter,
@@ -282,4 +297,4 @@ export const apiRemove = new ValidatedMethod({
     });
     return future.wait();
   }
-});*/
+});

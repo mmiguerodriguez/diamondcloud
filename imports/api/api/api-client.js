@@ -2,7 +2,6 @@ export let generateApi = (moduleInstanceId) => {
   return {
     subscribe: (obj, callback) => {
       // Validation.
-      //cosa
       let validation = typeof obj.collection == 'string';
       validation = validation && typeof obj.condition == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
@@ -59,6 +58,21 @@ export let generateApi = (moduleInstanceId) => {
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         Meteor.call('ModuleInstances.methods.apiGet', {
+          moduleInstanceId,
+          collection,
+          filter,
+        }, callback);
+      } else {
+        throw console.error('The provided data is wrong.');
+      }
+    },
+    remove: ({ collection, filter, callback }) => {
+      // Validation.
+      let validation = typeof collection == 'string';
+      validation = validation && typeof filter == 'object';
+      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
+      if (validation) {
+        Meteor.call('ModuleInstances.methods.apiRemove', {
           moduleInstanceId,
           collection,
           filter,

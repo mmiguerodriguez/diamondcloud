@@ -16,7 +16,7 @@ export default class Board extends React.Component {
           </div>
           <span>
             <img  src='/img/sidebar/messages.svg'
-                  title="Abrir chat del board"
+                  title='Abrir chat del board'
                   className='message-icon'
                   width='28px'
                   onClick={ this.props.getMessages.bind(null, { boardId: this.props.board._id }) }/>
@@ -24,9 +24,9 @@ export default class Board extends React.Component {
         </div>
         <div className='board'>
           { this.renderModules() }
-          <div className="trash" style={{ display: 'none' }}>
-            <div className="trash-img">
-              <img src="http://image.flaticon.com/icons/svg/60/60761.svg" width="48px" />
+          <div className='trash' style={{ display: 'none' }}>
+            <div className='trash-img'>
+              <img src='http://image.flaticon.com/icons/svg/60/60761.svg' width='48px' />
             </div>
           </div>
         </div>
@@ -117,11 +117,11 @@ export default class Board extends React.Component {
         $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.3)');
       },
       over(event, ui) {
-        // let frameBody = ui.draggable.children('iframe').contents().find("body");
+        // let frameBody = ui.draggable.children('iframe').contents().find('body');
         $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.6)');
       },
       out(event, ui) {
-        // let frameBody = ui.draggable.children('iframe').contents().find("body");
+        // let frameBody = ui.draggable.children('iframe').contents().find('body');
         $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.3)');
       }
     });
@@ -146,25 +146,25 @@ export default class Board extends React.Component {
 
     if(this.props.board.isPrivate) {
       this.props.board.users.map((_user) => {
-        let user = Meteor.users.findOne(_user._id);
+        let user = Meteor.users.findOne(_user._id) || _user;
         arr.push(
-          <img  key={ user._id }
+          <img  key={ user._id || user.email }
             className='img-circle shared-people'
-            src={ user.profile.picture }
-            alt={ user.profile.name }
-            title={ user.profile.name }
+            src={ user.profile ? user.profile.picture : '/img/user-shape.svg' }
+            alt={ user.profile ? user.profile.name : user.email }
+            title={ user.profile ? user.profile.name : user.email }
             width='32px' />
         );
       });
     } else {
       this.props.users.map((_user) => {
-        let user = Meteor.users.findOne({ 'emails.address': _user.email });
+        let user = Meteor.users.findOne({ 'emails.address': _user.email }) || _user;
         arr.push(
-          <img  key={ user._id }
+          <img  key={ user._id || user.email }
                 className='img-circle shared-people'
-                src={ user.profile.picture }
-                alt={ user.profile.name }
-                title={ user.profile.name }
+                src={ user.profile ? user.profile.picture : '/img/user-shape.svg' }
+                alt={ user.profile ? user.profile.name : user.email }
+                title={ user.profile ? user.profile.name : user.email }
                 width='32px' />
         );
       });
