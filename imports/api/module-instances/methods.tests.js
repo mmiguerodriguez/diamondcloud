@@ -55,7 +55,7 @@ if(Meteor.isServer){
       Boards.isValid.restore();
     });
 
-    it('should create a module instance', function() {
+    it('should create a module instance', function(done) {
       let args, expect, result;
       args = {
         boardId: board._id,
@@ -67,27 +67,27 @@ if(Meteor.isServer){
         data: module.data,
       };
 
-      createModuleInstance.call(args, (err, res) => {
-        if(err) throw new Meteor.Error(err);
-        result = res;
+      createModuleInstance.call(args, (err, result) => {
+        if (err) throw new Meteor.Error(err);
+
+         expect = {
+          _id: result._id,
+          moduleId: args.moduleId,
+          x: args.x,
+          y: args.y,
+          width: args.width,
+          height: args.height,
+          data: args.data,
+          archived: false,
+        };
+  
+        let _board = Boards.findOne(board._id);
+  
+        chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
+        // Changed to [1] since a moduleInstance is already inserted // board.moduleInstances.push({ _id: module._id });
+        chai.assert.equal(_board.moduleInstances[1]._id, result._id);
+        done();
       });
-
-      expect = {
-        _id: result._id,
-        moduleId: args.moduleId,
-        x: args.x,
-        y: args.y,
-        width: args.width,
-        height: args.height,
-        data: args.data,
-        archived: false,
-      };
-
-      let _board = Boards.findOne(board._id);
-
-      chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
-      // Changed to [1] since a moduleInstance is already inserted // board.moduleInstances.push({ _id: module._id });
-      chai.assert.equal(_board.moduleInstances[1]._id, result._id);
     });
 
     it('should edit a module instance', function() {
