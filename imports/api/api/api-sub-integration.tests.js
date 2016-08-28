@@ -23,7 +23,7 @@ if (Meteor.isClient) {
     let before = function before() {
       Meteor.call('testing.resetDatabase');
       user = Factory.create('user');
-
+      
       moduleInstances = [
         Factory.create('todosModuleInstance'),
         Factory.create('moduleInstance'),
