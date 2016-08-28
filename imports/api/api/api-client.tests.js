@@ -63,7 +63,6 @@ if (Meteor.isClient) {
       afterEach(function() {
         Meteor.user.restore();
         Meteor.subscribe.restore();
-
       });
 
       it('should get the requested data when subscribing', (done) => {

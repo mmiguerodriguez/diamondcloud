@@ -8,13 +8,13 @@ let globalModuleInstanceId, userId, boards, sub;
 Meteor.publish('moduleInstances.data', function(moduleInstanceId, obj) {
   let board = ModuleInstances.findOne(moduleInstanceId).board();
   let teamId = board.team()._id;
-  boards = Meteor.user().boards(teamId, { _id: 1 }).map((board) => board._id);
-  
+  boards = Meteor.users.findOne(this.userId).boards(teamId, { _id: 1 }).map((board) => board._id);
+
   if (!Boards.isValid(board._id, this.userId)) {
     throw new Meteor.Error('ModuleInstances.data.notAValidMember',
     'Must be a valid member.');
   }
-  
+
   let pipeline = [
     {
       $match: {

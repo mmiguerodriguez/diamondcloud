@@ -53,7 +53,13 @@ if (Meteor.isServer) {
           teamId: team._id,
           users: board.users,
         },
-        message = Factory.create('message');
+        messages = [
+          Factory.create('message'),
+          Factory.create('message')
+        ];
+
+        messages[0].directChatId = Random.id();
+        messages[1].boardId = Random.id();
 
     beforeEach(function(done) {
       resetDatabase();
@@ -72,8 +78,7 @@ if (Meteor.isServer) {
       Teams.insert(team);
       Boards.insert(board);
       DirectChats.insert(directChat);
-      Messages.insert(message);
-
+      messages.forEach((message) => Messages.insert(message));
       done();
     });
     afterEach(function() {
@@ -93,12 +98,14 @@ if (Meteor.isServer) {
         type: 'text',
         content: faker.lorem.sentence(),
         createdAt: (new Date()).getTime(),
+        seers: [],
       };
       expect_1 = {
         senderId: user._id,
         type: 'text',
         content: test_1.content,
         createdAt: test_1.createdAt,
+        seers: [],
         boardId: board._id,
       };
 
@@ -107,36 +114,51 @@ if (Meteor.isServer) {
         type: 'text',
         content: faker.lorem.sentence(),
         createdAt: (new Date()).getTime(),
+        seers: [],
       };
       expect_2 = {
         senderId: user._id,
         type: 'text',
         content: test_2.content,
         createdAt: test_2.createdAt,
+        seers: [],
         directChatId: directChat._id,
       };
 
+      console.log('asd1');
       sendMessage.call(test_1, (err, res) => {
-        if(err) throw new Meteor.Error(err);
+        if (err) throw new Meteor.Error(err);
         result_1 = res;
-
+        console.log('asd2');
         sendMessage.call(test_2, (err, res) => {
-          if(err) throw new Meteor.Error(err);
+          if (err) throw new Meteor.Error(err);
           result_2 = res;
-
+          console.log('mandarina', expect_1, result_1);
           chai.assert.isTrue(JSON.stringify(expect_1) == JSON.stringify(result_1));
           chai.assert.isTrue(JSON.stringify(expect_2) == JSON.stringify(result_2));
+          console.log('asd3');
           done();
         });
       });
     });
 
-    it('should see a message', function() {
-      let expected = message;
+    it('should see a message in a directChat', function(done) {
+      let expected = messages[0];
       expected.seen = true;
-      
-      seeMessage.call({ messageId: message._id }, (err, res) => {
+
+      seeMessage.call({ messageId: messages[0]._id }, (err, res) => {
         chai.assert.isTrue(JSON.stringify(res) === JSON.stringify(expected));
+        done();
+      });
+    });
+
+    it('should see a message in a board', function(done) {
+      let expected = messages[1];
+      expected.seers.push(user._id);
+
+      seeMessage.call({ messageId: messages[1]._id }, (err, res) => {
+        chai.assert.isTrue(JSON.stringify(res) === JSON.stringify(expected));
+        done();
       });
     });
   });
