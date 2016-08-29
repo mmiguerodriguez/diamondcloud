@@ -31,6 +31,7 @@ export default class ConfigTeamModal extends React.Component {
         body={
           <div>
             <h4 className='configuration-title'>Equipo</h4>
+            <p className='explanation-text config'>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</p>
             <div className='row'>
               <div className='name-input'>
                 <label  htmlFor='projectName'
@@ -71,9 +72,11 @@ export default class ConfigTeamModal extends React.Component {
             </div>
             <hr />
             <h4 className='configuration-title'>Miembros</h4>
+            <p className='explanation-text config'>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</p>
             <UsersList team={ this.props.team } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
             <hr />
             <h4 className='configuration-title'>Plan</h4>
+            <p className='explanation-text config'>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</p>
             <div className='row'>
               <div className='col-sm-6 col-sm-offset-2 col-xs-12'>
                 <p>
