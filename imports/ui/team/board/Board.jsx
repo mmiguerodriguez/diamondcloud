@@ -15,8 +15,9 @@ export default class Board extends React.Component {
             </h4>
           </div>
           <span>
+            <h4 className='message-text'>Chat del board</h4>
             <img  src='/img/sidebar/messages.svg'
-                  title="Abrir chat del board"
+                  title='Abrir chat del board'
                   className='message-icon'
                   width='28px'
                   onClick={ this.props.getMessages.bind(null, { boardId: this.props.board._id }) }/>
@@ -24,11 +25,6 @@ export default class Board extends React.Component {
         </div>
         <div className='board'>
           { this.renderModules() }
-          <div className="trash" style={{ display: 'none' }}>
-            <div className="trash-img">
-              <img src="http://image.flaticon.com/icons/svg/60/60761.svg" width="48px" />
-            </div>
-          </div>
         </div>
       </div>
     );
@@ -96,33 +92,6 @@ export default class Board extends React.Component {
             console.error('Can\'t create module on those coordinates.');
           }
         }
-      }
-    });
-    $('.trash').droppable({
-      accept: '.module-container',
-      tolerance: 'touch',
-      drop(event, ui) {
-        let moduleInstanceId = ui.draggable.data('moduleinstance-id');
-
-        Meteor.call('ModuleInstances.methods.archive' , {
-          moduleInstanceId,
-        }, (error, result) => {
-          if(error) {
-            throw new Meteor.Error(error);
-          } else {
-            console.log(result);
-          }
-        });
-
-        $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.3)');
-      },
-      over(event, ui) {
-        // let frameBody = ui.draggable.children('iframe').contents().find("body");
-        $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.6)');
-      },
-      out(event, ui) {
-        // let frameBody = ui.draggable.children('iframe').contents().find("body");
-        $(this).css('backgroundColor', 'rgba(255, 0, 0, 0.3)');
       }
     });
   }

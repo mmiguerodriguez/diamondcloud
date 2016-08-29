@@ -63,6 +63,9 @@ export default class Team extends React.Component {
       browserHistory.push('/404');
     }
   }
+  componentWillUnmount() {
+    Team.boardSubscription.get().stop();
+  }
 
   getMessages(obj) {
     let subscriptions = this.state.subscriptions;
@@ -180,7 +183,6 @@ export default class Team extends React.Component {
     Team.boardSubscription.set(subscription);
   }
 }
-
 
 Team.board = new ReactiveVar();
 Team.boardSubscription = new ReactiveVar();

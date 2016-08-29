@@ -53,39 +53,41 @@ export default class ModuleInstance extends React.Component {
   }
 
   iframeLoaded() {
-    $('.module-container').draggable({
-      containment: 'parent',
-      handle: '.module-pin',
-      cursor: 'pointer',
-      cursorAt: { top: -6 },
-      iframeFix: true,
-
-      start(event, ui) {
-        $('.trash').css('display', 'block');
-      },
-      stop(event, ui) {
-        $('.trash').css('display', 'none');
-      }
-    }).resizable({
-      containment: 'parent',
-
-      stop(event, ui) {
-        let moduleInstanceId = ui.helper.data('moduleinstance-id');
-        let { width, height } = ui.size;
-
-        Meteor.call('ModuleInstances.methods.edit', {
-          moduleInstanceId,
-          width,
-          height,
-        }, (error, result) => {
-          if(error) {
-            throw new Meteor.Error(error);
-          } else {
-            console.log(result);
-          }
-        });
-      }
-    });
+    $('.module-container')
+      .draggable({
+        containment: 'parent',
+        handle: '.module-pin',
+        cursor: 'pointer',
+        cursorAt: { top: -6 },
+        iframeFix: true,
+  
+        start(event, ui) {
+          $('.trash').css('display', 'block');
+        },
+        stop(event, ui) {
+          $('.trash').css('display', 'none');
+        }
+      })
+      .resizable({
+        containment: 'parent',
+  
+        stop(event, ui) {
+          let moduleInstanceId = ui.helper.data('moduleinstance-id');
+          let { width, height } = ui.size;
+  
+          Meteor.call('ModuleInstances.methods.edit', {
+            moduleInstanceId,
+            width,
+            height,
+          }, (error, result) => {
+            if(error) {
+              throw new Meteor.Error(error);
+            } else {
+              console.log(result);
+            }
+          });
+        }
+      });
 
     this.setState({
       loading: false,

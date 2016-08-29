@@ -5,6 +5,7 @@ import { sinon }                from 'meteor/practicalmeteor:sinon';
 import { chai }                 from 'meteor/practicalmeteor:chai';
 import { Random }               from 'meteor/random';
 import   faker                  from 'faker';
+import                               '../factories/factories.js';
 
 import { ModuleInstances }      from '../module-instances/module-instances.js';
 
@@ -13,11 +14,13 @@ import { generateApi }           from './api-client.js';
 if (Meteor.isClient) {
   describe('Modules API', () => {
     describe('Client subscriptions', () => {
-      let user, moduleInstances, requests, callback,
-          reactiveData, name, params, myCallback;
+      let subscriptionName, moduleInstanceId, request,
+          user, moduleInstances, requests, callback,
+          reactiveData, name, params, myCallback,
+          callbackFunctions;
 
       beforeEach(function() {
-        resetDatabase();
+        Meteor.call('testing.resetDatabase');
 
         user = Factory.create('user');
 
@@ -41,44 +44,14 @@ if (Meteor.isClient) {
           },
         ];
 
-        callback = (data) => { reactiveData = data; };
-
-        resetDatabase();
 
         Meteor.users.insert(user);
-        moduleInstances.forEach((moduleInstance) => ModuleInstances.insert(moduleInstance));
         sinon.stub(Meteor, 'user', () => user);
-
-        sinon.stub(Meteor, 'subscribe', (subscriptionName, moduleInstanceId, request, callbackFunctions) => {
-          if (moduleInstanceId == moduleInstances[0]._id) {
-            if (request.collection == 'categories') {
-              return [
-                {
-                  _id: 'categoryId1',
-                  name: 'Lorem ipsum category',
-          				color: 'red',
-                },
-                {
-                  _id: 'categoryId2',
-                  name: 'Another great category',
-          				color: 'red',
-                }
-              ];
-            } else if (request.collection == 'todos') {
-              return [
-                {
-                  name: 'Design landing wireframe',
-                  boardId: 'designBoardId',
-                  users: [
-                    { _id: "ryanId" },
-                  ],
-                  categoryId: 'categoryId1',
-                }
-              ];
-            }
-          } else if (moduleInstanceId == moduleInstances[1]._id) {
-            callbackFunctions.onReady();
-          }
+        sinon.stub(Meteor, 'subscribe', (_subscriptionName, _moduleInstanceId, _request, _callbackFunctions) => {
+          subscriptionName = _subscriptionName;
+          moduleInstanceId = _moduleInstanceId;
+          request = _request;
+          callbackFunctions = _callbackFunctions;
         });
         sinon.stub(Meteor, 'call', (_name, _params, _callback) => {
           name = _name;
@@ -94,14 +67,19 @@ if (Meteor.isClient) {
       });
 
       it('should get the requested data when subscribing', (done) => {
-        let DiamondAPI = generateApi(moduleInstances[0]._id);
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
         // Here comes the code that an API consumer would write.
-        DiamondAPI.subscribe(requests[0], callback);
+        let reactiveData;
+        callback = (data) => reactiveData = data;
+        DiamondAPI.subscribe({ request: requests[0], callback });
         // Checking everything works
+        chai.assert.equal(subscriptionName, 'moduleInstances.data');
+        chai.assert.equal(moduleInstanceId, moduleInstances[0]._id);
+        chai.assert.deepEqual(request, requests[0]);
         done();
       });
       it('should insert object to a module instance data', () => {
-        let DiamondAPI = generateApi(moduleInstances[1]._id);
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[1]._id });
         DiamondAPI.insert({
           collection: 'testCollection',
           obj: {
@@ -130,7 +108,7 @@ if (Meteor.isClient) {
         chai.assert.equal(myCallback(), 'value');
       });
       it('should update an entry in module instance data', () => {
-        let DiamondAPI = generateApi(moduleInstances[0]._id);
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
         DiamondAPI.update({
           collection: 'categories',
           filter: {
@@ -161,7 +139,7 @@ if (Meteor.isClient) {
         chai.assert.equal(myCallback(), 'value');
       });
       it('should get an entry in module instance data', () => {
-        let DiamondAPI = generateApi(moduleInstances[0]._id);
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
         DiamondAPI.get({
           collection: 'todos',
           filter: {
@@ -182,7 +160,7 @@ if (Meteor.isClient) {
         chai.assert.equal(myCallback(), 'value');
       });
       it('should remove an entry from module instance data', () => {
-        let DiamondAPI = generateApi(moduleInstances[0]._id);
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
         DiamondAPI.remove({
           collection: 'todos',
           filter: {
@@ -201,6 +179,12 @@ if (Meteor.isClient) {
           },
         });
         chai.assert.equal(myCallback(), 'value');
+      });
+      it('should return the correct team data', () => {
+        let DiamondAPI = generateApi({ boards: 'boards', users: 'users' });
+        let result = DiamondAPI.getTeamData();
+        chai.assert.equal(result.boards, 'boards');
+        chai.assert.equal(result.users, 'users');
       });
     });
   });

@@ -1,18 +1,29 @@
+import { Meteor } from 'meteor/meteor';
+
+import { ModuleInstances } from '../module-instances/module-instances.js';
+
 export let generateApi = ({ moduleInstanceId, boards, users }) => {
   console.log(boards, users);
   return {
-    subscribe: (obj, callback) => {
+    subscribe: ({ request, callback }) => {
       // Validation.
-      let validation = typeof obj.collection == 'string';
-      validation = validation && typeof obj.condition == 'object';
+      let validation = typeof request.collection == 'string';
+      validation = validation && (typeof request.condition == 'object' || request.condition === undefined);
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         // Subscribe to data
-        Meteor.subscribe('moduleInstances.data', moduleInstanceId, obj, {
-          onReady: callback,
-          onError: (err) => {
-            throw console.error('Error while subscribing.', err);
-          },
+        Meteor.subscribe('moduleInstances.data', moduleInstanceId, request);
+        let query = ModuleInstances.find(moduleInstanceId);
+        let caller = (id, fields) => {
+          let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+          if (moduleInstance.data !== undefined && moduleInstance.data !== null) {
+            callback(moduleInstance.data);
+          }
+        };
+        let handle = query.observeChanges({
+          added: caller,
+          changed: caller,
+          removed: caller,
         });
       } else {
         throw console.error('The provided data is wrong.');
@@ -25,6 +36,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && typeof visibleBy == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
+
         Meteor.call('ModuleInstances.methods.apiInsert', {
           moduleInstanceId,
           collection,
@@ -82,5 +94,11 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
         throw console.error('The provided data is wrong.');
       }
     },
+    getTeamData: () => {
+      return {
+        boards,//todo: do not pass every property
+        users,
+      };
+    }
   };
 };

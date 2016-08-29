@@ -1,7 +1,9 @@
 // Print objects with functions
 
-export const printObject = (obj) => {
-  console.log(JSON.stringify(obj, function(key, val) {
-    return (typeof val === 'function' ? val + '' : val);
-  }, 4));
+export const printObject = function() {
+  for (let i = 0; i < arguments.length; i++) {
+    console.log(JSON.stringify(arguments[i], function(key, val) {
+      return (typeof val === 'function' ? val + '' : val);
+    }, 4));
+  }
 };

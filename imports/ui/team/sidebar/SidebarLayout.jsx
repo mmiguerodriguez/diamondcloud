@@ -1,6 +1,6 @@
-import React from 'react';
+import React              from 'react';
 
-import { Teams } from '../../../api/teams/teams.js';
+import { Teams }          from '../../../api/teams/teams.js';
 
 import ModulesCollapsible from './collapsible/modules/ModulesCollapsible.jsx';
 import BoardsCollapsible  from './collapsible/boards/BoardsCollapsible.jsx';
@@ -50,7 +50,8 @@ export default class SidebarLayout extends React.Component {
           owner={ this.props.owner }
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
           changeBoard={ this.props.changeBoard }
-          openCreateBoardModal={ this.openCreateBoardModal } />
+          openCreateBoardModal={ this.openCreateBoardModal }
+          openBoardContextMenu={ this.props.openBoardContextMenu } />
         <ChatsCollapsible
           boards={ this.props.boards }
           directChats={ this.props.directChats }
@@ -200,4 +201,5 @@ SidebarLayout.propTypes = {
 
   getMessages: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
+  openBoardContextMenu: React.PropTypes.func.isRequired,
 };

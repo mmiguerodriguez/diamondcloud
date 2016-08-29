@@ -63,8 +63,9 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('moduleInstances.data', moduleInstances[0]._id, request, (collections) => {
+          printObject('ganash', collections.ModuleInstances);
           chai.assert.isTrue(collections.ModuleInstances.length == 1);
-          chai.assert.isDefined(collections.ModuleInstances[0].todos.length == 1);
+          chai.assert.isDefined(collections.ModuleInstances[0].data.todos.length == 1);
           done();
         });
       });
