@@ -16,6 +16,12 @@
     overflow-x: hidden;
     min-height: 300px;
   }
+  .explanation-text {
+    text-align: justify;
+    &.config {
+      margin: 10px !important;
+    }
+  }
 }
 .modal-content {
   border-radius: 3px !important;

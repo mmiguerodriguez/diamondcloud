@@ -14,7 +14,7 @@ export default class TeamLayout extends React.Component {
 
     this.refs = {
       'board-context-menu': null,
-    }
+    };
   }
   render() {
     return (

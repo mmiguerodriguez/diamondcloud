@@ -62,6 +62,7 @@ function subscribe(collection, callback) {
     callback,
   });
 }
+
 // Module methods
 function updateInput(e, which) {
   clearTimeout(timeout);
