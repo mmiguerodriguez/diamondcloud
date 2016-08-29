@@ -14,13 +14,12 @@ export default class Board extends React.Component {
               { this.renderUsers() }
             </h4>
           </div>
-          <span>
+          <span onClick={ this.props.getMessages.bind(null, { boardId: this.props.board._id }) }>
             <h4 className='message-text'>Chat del board</h4>
             <img  src='/img/sidebar/messages.svg'
                   title='Abrir chat del board'
                   className='message-icon'
-                  width='28px'
-                  onClick={ this.props.getMessages.bind(null, { boardId: this.props.board._id }) }/>
+                  width='28px'/>
           </span>
         </div>
         <div className='board'>
