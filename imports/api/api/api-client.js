@@ -101,3 +101,18 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
     }
   };
 };
+
+/*
+Del lado del consumidor:
+Si quiero que algún field de alguna collection use el commit system:
+Le pongo como value “#use_commit_system#”
+Para gettear el value, lo veo normalmente (todos.field)
+Para hacer un commit, hago DiamondAPI.commit(entryId /|id de la entry en la collection|/, collection, field, type/|in: insert, remove, change|/, value);
+
+Del lado del server:
+Cuando insertan un entry, se fija en los valores de todos los fields.
+Para cada “#use_commit_system#” que encuentre:
+Crea una collection con el nombre “commit_system_collection.fieldName”
+Cuando se llama a DiamondAPI.commit:
+A la collection “commit_system_collection.fieldName” se le inserta un objeto de la siguiente pinta: {entry_}SEGUIR POR ACAAAAAAAA
+*/
