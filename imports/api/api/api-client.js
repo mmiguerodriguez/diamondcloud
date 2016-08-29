@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { ModuleInstances } from '../module-instances/module-instances.js';
 
-export let generateApi = (moduleInstanceId) => {
+export let generateApi = ({ moduleInstanceId, boards, users }) => {
+  console.log(boards, users);
   return {
     subscribe: ({ request, callback }) => {
       // Validation.
@@ -93,5 +94,11 @@ export let generateApi = (moduleInstanceId) => {
         throw console.error('The provided data is wrong.');
       }
     },
+    getTeamData: () => {
+      return {
+        boards,//todo: do not pass every property
+        users,
+      };
+    }
   };
 };

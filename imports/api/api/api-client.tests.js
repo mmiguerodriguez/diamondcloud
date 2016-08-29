@@ -63,10 +63,11 @@ if (Meteor.isClient) {
       afterEach(function() {
         Meteor.user.restore();
         Meteor.subscribe.restore();
+        Meteor.call.restore();
       });
 
       it('should get the requested data when subscribing', (done) => {
-        let DiamondAPI = generateApi(moduleInstances[0]._id);
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
         // Here comes the code that an API consumer would write.
         let reactiveData;
         callback = (data) => reactiveData = data;
@@ -78,7 +79,7 @@ if (Meteor.isClient) {
         done();
       });
       it('should insert object to a module instance data', () => {
-        let DiamondAPI = generateApi(moduleInstances[1]._id);
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[1]._id });
         DiamondAPI.insert({
           collection: 'testCollection',
           obj: {
@@ -107,7 +108,7 @@ if (Meteor.isClient) {
         chai.assert.equal(myCallback(), 'value');
       });
       it('should update an entry in module instance data', () => {
-        let DiamondAPI = generateApi(moduleInstances[0]._id);
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
         DiamondAPI.update({
           collection: 'categories',
           filter: {
@@ -138,7 +139,7 @@ if (Meteor.isClient) {
         chai.assert.equal(myCallback(), 'value');
       });
       it('should get an entry in module instance data', () => {
-        let DiamondAPI = generateApi(moduleInstances[0]._id);
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
         DiamondAPI.get({
           collection: 'todos',
           filter: {
@@ -159,7 +160,7 @@ if (Meteor.isClient) {
         chai.assert.equal(myCallback(), 'value');
       });
       it('should remove an entry from module instance data', () => {
-        let DiamondAPI = generateApi(moduleInstances[0]._id);
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
         DiamondAPI.remove({
           collection: 'todos',
           filter: {
@@ -178,6 +179,12 @@ if (Meteor.isClient) {
           },
         });
         chai.assert.equal(myCallback(), 'value');
+      });
+      it('should return the correct team data', () => {
+        let DiamondAPI = generateApi({ boards: 'boards', users: 'users' });
+        let result = DiamondAPI.getTeamData();
+        chai.assert.equal(result.boards, 'boards');
+        chai.assert.equal(result.users, 'users');
       });
     });
   });

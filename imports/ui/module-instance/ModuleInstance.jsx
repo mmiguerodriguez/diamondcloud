@@ -15,12 +15,14 @@ export default class ModuleInstance extends React.Component {
 
     this.refs = {
       iframe: null,
+      module: null,
     };
   }
 
   render() {
     return (
       <div className='module-container'
+           ref='module'
            data-moduleinstance-id={ this.props.moduleInstance._id }
            style={{
              top: this.props.moduleInstance.x,
@@ -42,21 +44,25 @@ export default class ModuleInstance extends React.Component {
   }
 
   componentDidMount() {
-    let DiamondAPI = generateApi(this.props.moduleInstance._id);
+    let DiamondAPI = generateApi({
+      moduleInstanceId: this.props.moduleInstance._id,
+      boards: this.props.boards,
+      users: this.props.users,
+    });
 
     this.refs.iframe.onload = this.iframeLoaded.bind(this);
     this.refs.iframe.contentWindow.DiamondAPI = DiamondAPI;
   }
 
   iframeLoaded() {
-    $('.module-container')
+    $(this.refs.module)
       .draggable({
         containment: 'parent',
         handle: '.module-pin',
         cursor: 'pointer',
         cursorAt: { top: -6 },
         iframeFix: true,
-  
+
         start(event, ui) {
           $('.trash').css('display', 'block');
         },
@@ -66,11 +72,11 @@ export default class ModuleInstance extends React.Component {
       })
       .resizable({
         containment: 'parent',
-  
+
         stop(event, ui) {
           let moduleInstanceId = ui.helper.data('moduleinstance-id');
           let { width, height } = ui.size;
-  
+
           Meteor.call('ModuleInstances.methods.edit', {
             moduleInstanceId,
             width,
@@ -93,4 +99,6 @@ export default class ModuleInstance extends React.Component {
 
 ModuleInstance.propTypes = {
   moduleInstance: React.PropTypes.object.isRequired,
+  boards: React.PropTypes.array.isRequired,
+  users: React.PropTypes.array.isRequired,
 };
