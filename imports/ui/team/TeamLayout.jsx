@@ -24,8 +24,8 @@ export default class TeamLayout extends React.Component {
           changeBoard={ this.changeBoard.bind(this) }
           openBoardContextMenu={ this.openBoardContextMenu.bind(this) } />
         <Board
-          boards = { this.props.boards } /* necessary for the api (team data) */
-          users = { this.props.team.users }
+          boards={ this.props.boards }
+          users={ this.props.team.users }
           board={ this.props.board }
           moduleInstances={ this.props.moduleInstances }
           getMessages={ this.props.getMessages } />

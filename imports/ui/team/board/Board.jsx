@@ -104,8 +104,8 @@ export default class Board extends React.Component {
           <ModuleInstance
             key={ moduleInstance._id }
             moduleInstance={ moduleInstance }
-            boards = { this.props.boards } /* necessary for the api (team data) */
-            users = { this.props.users }
+            boards={ this.props.boards }
+            users={ this.props.users }
             />
         );
       });
