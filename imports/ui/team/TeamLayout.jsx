@@ -10,10 +10,12 @@ export default class TeamLayout extends React.Component {
 
     this.state = {
       'board-context-menu-id': null,
+      'moduleinstance-context-menu-id': null,
     };
 
     this.refs = {
       'board-context-menu': null,
+      'moduleinstance-context-menu': null,
     };
   }
   render() {
@@ -28,13 +30,14 @@ export default class TeamLayout extends React.Component {
           users={ this.props.team.users }
           board={ this.props.board }
           moduleInstances={ this.props.moduleInstances }
-          getMessages={ this.props.getMessages } />
+          getMessages={ this.props.getMessages }
+          openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu.bind(this) } />
         <div className='chats-container'>
           { this.renderChats() }
         </div>
         {
           this.props.owner ? (
-            <div className='board-context-menu' ref='board-context-menu'>
+            <div className='board-context-menu context-menu' ref='board-context-menu'>
               <div className='row' onClick={ this.removeBoard.bind(this) }>
             		<div className='col-xs-4'>
             			<img src='http://image0.flaticon.com/icons/svg/60/60761.svg' width='20px' />
@@ -44,19 +47,32 @@ export default class TeamLayout extends React.Component {
             </div>
           ) : ( null )
         }
-
+        <div className='moduleinstance-context-menu context-menu' ref='moduleinstance-context-menu'>
+          <div className='row' onClick={ this.removeModuleInstance.bind(this) }>
+            <div className='col-xs-4'>
+              <img src='http://image0.flaticon.com/icons/svg/60/60761.svg' width='20px' />
+            </div>
+            <p className='col-xs-8'>Eliminar</p>
+          </div>
+        </div>
       </div>
     );
   }
   componentDidMount() {
+    let self = this;
     if(this.props.owner) {
-      let self = this;
       $(document).bind('mousedown', (e) => {
         if(!$(e.target).parents('.board-context-menu').length > 0) {
           self.closeBoardContextMenu();
         }
       });
     }
+
+    $(document).bind('mousedown', (e) => {
+      if(!$(e.target).parents('.moduleinstance-context-menu').length > 0) {
+        self.closeModuleInstanceContextMenu();
+      }
+    });
   }
   renderChats() {
     let arr = [];
@@ -77,7 +93,7 @@ export default class TeamLayout extends React.Component {
     return arr;
   }
 
-  // context-menu
+  // board context-menu
   openBoardContextMenu(boardId, event) {
     if(this.props.owner) {
       event.persist();
@@ -98,7 +114,6 @@ export default class TeamLayout extends React.Component {
   closeBoardContextMenu() {
     $(this.refs['board-context-menu']).hide(100);
   }
-
   // boards
   changeBoard(boardId) {
     if(boardId !== this.props.board._id) {
@@ -129,6 +144,37 @@ export default class TeamLayout extends React.Component {
         }
       });
     }
+  }
+
+  // moduleInstances context-menu
+  openModuleInstanceContextMenu(moduleInstanceId, event) {
+    event.preventDefault(); // Prevent normal contextMenu from showing up
+
+    $(this.refs['moduleinstance-context-menu'])
+      .finish()
+      .toggle(100)
+      .css({
+        top: event.pageY + 'px',
+        left: event.pageX + 'px',
+      });
+
+    this.setState({
+      'moduleinstance-context-menu-id': moduleInstanceId,
+    });
+  }
+  closeModuleInstanceContextMenu() {
+    $(this.refs['moduleinstance-context-menu']).hide(100);
+  }
+  // module-instances
+  removeModuleInstance() {
+    let moduleInstanceId = this.state['moduleinstance-context-menu-id'];
+    Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
+      if(error) {
+        throw new Meteor.Error(error);
+      } else {
+        console.log(result);
+      }
+    });
   }
 }
 

@@ -106,6 +106,7 @@ export default class Board extends React.Component {
             moduleInstance={ moduleInstance }
             boards={ this.props.boards }
             users={ this.props.users }
+            openModuleInstanceContextMenu={ this.props.openModuleInstanceContextMenu }
             />
         );
       });
@@ -152,4 +153,5 @@ Board.propTypes = {
   moduleInstances: React.PropTypes.array,
   users: React.PropTypes.array.isRequired,
   getMessages: React.PropTypes.func.isRequired,
+  openModuleInstanceContextMenu: React.PropTypes.func.isRequired,
 };

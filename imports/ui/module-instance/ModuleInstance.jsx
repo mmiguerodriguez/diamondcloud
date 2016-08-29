@@ -18,7 +18,6 @@ export default class ModuleInstance extends React.Component {
       module: null,
     };
   }
-
   render() {
     return (
       <div className='module-container'
@@ -32,7 +31,10 @@ export default class ModuleInstance extends React.Component {
            }}>
         {
           !this.state.loading ? (
-            <div className='module-pin' role='button'></div>
+            <div
+              className='module-pin'
+              role='button'
+              onContextMenu={ this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id) }></div>
           ) : ( null )
         }
         <iframe className='module'
@@ -53,7 +55,6 @@ export default class ModuleInstance extends React.Component {
     this.refs.iframe.onload = this.iframeLoaded.bind(this);
     this.refs.iframe.contentWindow.DiamondAPI = DiamondAPI;
   }
-
   iframeLoaded() {
     $(this.refs.module)
       .draggable({
@@ -101,4 +102,5 @@ ModuleInstance.propTypes = {
   moduleInstance: React.PropTypes.object.isRequired,
   boards: React.PropTypes.array.isRequired,
   users: React.PropTypes.array.isRequired,
+  openModuleInstanceContextMenu: React.PropTypes.func.isRequired,
 };

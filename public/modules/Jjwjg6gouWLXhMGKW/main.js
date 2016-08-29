@@ -1,5 +1,4 @@
-var timeout;
-var INTERVAL = 2000;
+var teamData;
 
 window.onload = () => {
   console.log('Module loaded, grabbing data...');
@@ -21,12 +20,16 @@ window.onload = () => {
     console.log('Subscribed, new data incoming...', data);
     handleNewData(data.postIt[0]);
   });
+
+  teamData = getTeamData();
+  console.log('Got team data...', teamData);
+
 };
 window.onresize = () => {
   console.log('Resized module...');
 };
 
-// First insert data
+// API methods
 function insertStartupData(callback) {
   window.DiamondAPI.insert({
     collection: 'postIt',
@@ -38,8 +41,6 @@ function insertStartupData(callback) {
     callback,
   });
 }
-
-// API methods
 function getData(collection, filter, callback) {
   window.DiamondAPI.get({
     collection,
@@ -61,6 +62,9 @@ function subscribe(collection, callback) {
     },
     callback,
   });
+}
+function getTeamData() {
+  return window.DiamondAPI.getTeamData();
 }
 
 // Module methods
