@@ -78,16 +78,16 @@ function updateInput(e, which) {
     }), INTERVAL);
 }
 function handleNewData(data) {
-  if(needsData('title', data.title)) {
+  if (needsData('title', data.title)) {
     pushData('title', data.title);
   }
-  if(needsData('description', data.description)) {
+  if (needsData('description', data.description)) {
     pushData('description', data.description);
   }
 
   function needsData(e, value) {
     let elem = document.getElementById(e);
-    if(elem.value === value) {
+    if (elem.value === value) {
       return false;
     }
     return true;

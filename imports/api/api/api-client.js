@@ -15,8 +15,8 @@ export let generateApi = (moduleInstanceId) => {
         let query = ModuleInstances.find(moduleInstanceId);
         let caller = (id, fields) => {
           let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-          if (moduleInstance !== undefined && moduleInstance !== null) {
-            callback(ModuleInstances.findOne(moduleInstanceId).data);
+          if (moduleInstance.data !== undefined && moduleInstance.data !== null) {
+            callback(moduleInstance.data);
           }
         };
         let handle = query.observeChanges({
