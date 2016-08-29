@@ -31,12 +31,11 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
     },
     insert: ({ collection, obj, visibleBy, callback }) => {
       // Validation.
-      let validation = typeof collection == 'string';
+      let validation = typeof collection == 'string' && collection.indexOf('commit_system') !== 0;
       validation = validation && typeof obj == 'object';
       validation = validation && typeof visibleBy == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
-
         Meteor.call('ModuleInstances.methods.apiInsert', {
           moduleInstanceId,
           collection,

@@ -145,6 +145,10 @@ export const apiInsert = new ValidatedMethod({
       throw new Meteor.Error('ModuleInstances.methods.apiInsert.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
+    if(collection.indexOf('commit_system') === 0) {
+      throw new Meteor.Error('ModuleInstances.methods.apiInsert.usedReservatedCollectionName',
+      'commit_system is a reservated collection name.');
+    }
 
     let entry = obj;
     if(!_.isEmpty(visibleBy)) {
