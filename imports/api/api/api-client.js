@@ -1,4 +1,5 @@
-export let generateApi = (moduleInstanceId) => {
+export let generateApi = ({ moduleInstanceId, boards, users }) => {
+  console.log(boards, users);
   return {
     subscribe: (obj, callback) => {
       // Validation.

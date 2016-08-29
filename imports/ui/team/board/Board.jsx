@@ -134,7 +134,10 @@ export default class Board extends React.Component {
         arr.push(
           <ModuleInstance
             key={ moduleInstance._id }
-            moduleInstance={ moduleInstance } />
+            moduleInstance={ moduleInstance }
+            boards = { this.props.boards } /* necessary for the api (team data) */
+            users = { this.props.users }
+            />
         );
       });
     }
@@ -175,6 +178,7 @@ export default class Board extends React.Component {
 }
 
 Board.propTypes = {
+  boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
   moduleInstances: React.PropTypes.array,
   users: React.PropTypes.array.isRequired,

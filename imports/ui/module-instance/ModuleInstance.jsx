@@ -42,7 +42,11 @@ export default class ModuleInstance extends React.Component {
   }
 
   componentDidMount() {
-    let DiamondAPI = generateApi(this.props.moduleInstance._id);
+    let DiamondAPI = generateApi({
+      moduleInstanceId: this.props.moduleInstance._id,
+      boards: this.props.boards,
+      users: this.props.users,
+    });
 
     this.refs.iframe.onload = this.iframeLoaded.bind(this);
     this.refs.iframe.contentWindow.DiamondAPI = DiamondAPI;
@@ -91,4 +95,6 @@ export default class ModuleInstance extends React.Component {
 
 ModuleInstance.propTypes = {
   moduleInstance: React.PropTypes.object.isRequired,
+  boards: React.PropTypes.array.isRequired,
+  users: React.PropTypes.array.isRequired,
 };

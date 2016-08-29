@@ -59,7 +59,6 @@ export default class Team extends React.Component {
     // If it already loaded and team doesn't exist then we
     // should return the user to a NotFound Layout or
     // error route...
-    console.log("HOLAAAAAA", this.props);
     if(!this.props.loading && !this.props.team) {
       browserHistory.push('/404');
     }
