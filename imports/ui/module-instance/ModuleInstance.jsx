@@ -107,10 +107,8 @@ export default class ModuleInstance extends React.Component {
     
     this.setState({
       minimized: minimized
-    });
-    
-    $(this.refs.module).resizable({
-      disabled: minimized,
+    }, () => {
+      $(this.refs.module).resizable('option', 'disabled', minimized);
     });
     
     Meteor.call('ModuleInstances.methods.edit', { 
