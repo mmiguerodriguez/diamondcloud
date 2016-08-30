@@ -35,6 +35,7 @@ export const createModuleInstance = new ValidatedMethod({
       height,
       data,
       archived: false,
+      minimized: false,
     };
 
     let future = new Future();
@@ -59,8 +60,9 @@ export const editModuleInstance = new ValidatedMethod({
     y: { type: Number, min: 0, optional: true },
     width: { type: Number, optional: true },
     height: { type: Number, optional: true },
+    minimized: { type: Boolean, optional: true },
   }).validator(),
-  run({ moduleInstanceId, x, y, width, height }){
+  run({ moduleInstanceId, x, y, width, height, minimized }){
     if (!Meteor.user()) {
       throw new Meteor.Error('ModuleInstances.methods.edit.notLoggedIn',
       'Must be logged in to edit a module instance.');
@@ -71,13 +73,15 @@ export const editModuleInstance = new ValidatedMethod({
     y = y || moduleInstance.y;
     width = width || moduleInstance.width;
     height = height || moduleInstance.height;
-
+    minimized = minimized != undefined ? minimized : moduleInstance.minimized;
+    
     ModuleInstances.update(moduleInstanceId, {
       $set: {
         x,
         y,
         width,
         height,
+        minimized,
       }
     });
 

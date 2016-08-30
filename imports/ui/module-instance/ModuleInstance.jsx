@@ -10,6 +10,7 @@ export default class ModuleInstance extends React.Component {
       y: this.props.moduleInstance.y,
       width: this.props.moduleInstance.width,
       height: this.props.moduleInstance.height,
+      minimized: this.props.moduleInstance.minimized,
       loading: true,
     };
 
@@ -34,12 +35,16 @@ export default class ModuleInstance extends React.Component {
             <div
               className='module-pin'
               role='button'
+              onClick={ this.toggleMinimize.bind(this) }
               onContextMenu={ this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id) }></div>
           ) : ( null )
         }
         <iframe className='module'
                 ref='iframe'
-                src={ '/modules/' + this.props.moduleInstance.moduleId + '/index.html' }>
+                src={ '/modules/' + this.props.moduleInstance.moduleId + '/index.html' }
+                style={{
+                  display: this.state.minimized ? 'none' : 'block',
+                }}>
         </iframe>
       </div>
     );
@@ -94,6 +99,33 @@ export default class ModuleInstance extends React.Component {
 
     this.setState({
       loading: false,
+    });
+  }
+  toggleMinimize() {
+    let moduleInstanceId = this.props.moduleInstance._id;
+    let minimized = !this.props.moduleInstance.minimized;
+    
+    this.setState({
+      minimized: minimized
+    });
+    
+    $(this.refs.module).resizable({
+      disabled: minimized,
+    });
+    
+    Meteor.call('ModuleInstances.methods.edit', { 
+      moduleInstanceId,
+      minimized,
+    }, (error, result) => {
+      if(error) {
+        this.setState({
+          minimized: !minimized
+        }, () => {
+          throw new Meteor.Error(error);
+        });
+      } else {
+        console.log(result);
+      }
     });
   }
 }
