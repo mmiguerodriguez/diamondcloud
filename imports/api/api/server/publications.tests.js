@@ -13,6 +13,7 @@ import                               '../../factories/factories.js';
 import { Boards }               from '../../boards/boards.js';
 import { Teams }                from '../../teams/teams.js';
 import { ModuleInstances }      from '../../module-instances/module-instances.js';
+import { ModuleData }      from '../../module-data/module-data.js';
 
 if (Meteor.isServer) {
   describe('Modules API', function() {

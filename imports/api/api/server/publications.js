@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ModuleInstances } from '../module-instances.js';
+import { ModuleInstances } from '../../module-instances/module-instances.js';
+import { ModuleData } from '../../module-data/module-data.js';
 import { Boards } from '../../boards/boards.js';
 
 Meteor.publish('moduleInstances.data', function(moduleInstanceId, obj) {
@@ -23,19 +24,21 @@ Meteor.publish('moduleInstances.data', function(moduleInstanceId, obj) {
 
   let key = `data.${obj.collection}`;
 
-  if (obj.condition) pipeline.push(
-    {
-      $project: {
-        [key]: {
-          $filter: {
-            input: `$data.${obj.collection}`,
-            as: 'element',
-            cond: obj.condition
+  if (obj.condition) {
+    pipeline.push(
+      {
+        $project: {
+          [key]: {
+            $filter: {
+              input: `$data.${obj.collection}`,
+              as: 'element',
+              cond: obj.condition
+            }
           }
         }
       }
-    }
-  );
+    );
+  }
 
   pipeline.push(
     {

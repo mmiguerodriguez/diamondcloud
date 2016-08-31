@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { ModuleInstances } from '../module-instances/module-instances.js';
+import { ModuleData } from '../module-data/module-data.js';
 
 export let generateApi = ({ moduleInstanceId, boards, users }) => {
   console.log(boards, users);
@@ -37,7 +38,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
 
-        Meteor.call('ModuleInstances.methods.apiInsert', {
+        Meteor.call('API.methods.apiInsert', {
           moduleInstanceId,
           collection,
           obj,
@@ -54,7 +55,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && typeof updateQuery == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
-        Meteor.call('ModuleInstances.methods.apiUpdate', {
+        Meteor.call('API.methods.apiUpdate', {
           moduleInstanceId,
           collection,
           filter,
@@ -70,7 +71,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && typeof filter == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
-        Meteor.call('ModuleInstances.methods.apiGet', {
+        Meteor.call('API.methods.apiGet', {
           moduleInstanceId,
           collection,
           filter,
@@ -85,7 +86,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && typeof filter == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
-        Meteor.call('ModuleInstances.methods.apiRemove', {
+        Meteor.call('API.methods.apiRemove', {
           moduleInstanceId,
           collection,
           filter,
