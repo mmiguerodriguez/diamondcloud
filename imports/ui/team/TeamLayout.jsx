@@ -63,14 +63,14 @@ export default class TeamLayout extends React.Component {
     if(this.props.owner) {
       $(document).bind('mousedown', (e) => {
         if(!$(e.target).parents('.board-context-menu').length > 0) {
-          self.closeBoardContextMenu();
+          self.closeContextMenu(this.refs['board-context-menu']);
         }
       });
     }
 
     $(document).bind('mousedown', (e) => {
       if(!$(e.target).parents('.moduleinstance-context-menu').length > 0) {
-        self.closeModuleInstanceContextMenu();
+        self.closeContextMenu(this.refs['moduleinstance-context-menu']);
       }
     });
   }
@@ -93,27 +93,6 @@ export default class TeamLayout extends React.Component {
     return arr;
   }
 
-  // board context-menu
-  openBoardContextMenu(boardId, event) {
-    if(this.props.owner) {
-      event.persist();
-
-      $(this.refs['board-context-menu'])
-        .finish()
-        .toggle(100)
-        .css({
-          top: event.pageY + 'px',
-          left: event.pageX + 10 + 'px',
-        });
-
-      this.setState({
-        'board-context-menu-id': boardId,
-      });
-    }
-  }
-  closeBoardContextMenu() {
-    $(this.refs['board-context-menu']).hide(100);
-  }
   // boards
   changeBoard(boardId) {
     if(boardId !== this.props.board._id) {
@@ -140,13 +119,40 @@ export default class TeamLayout extends React.Component {
 
           this.props.removeChat({ boardId }); // Remove board chats with this boardId
           this.changeBoard(newBoardId); // Change to another board which isn't this one
-          this.closeBoardContextMenu(); // Close menu
+          this.closeContextMenu(this.refs['board-context-menu']); // Close menu
         }
       });
     }
   }
+  openBoardContextMenu(boardId, event) {
+    if(this.props.owner) {
+      event.persist();
 
-  // moduleInstances context-menu
+      $(this.refs['board-context-menu'])
+        .finish()
+        .toggle(100)
+        .css({
+          top: event.pageY + 'px',
+          left: event.pageX + 10 + 'px',
+        });
+
+      this.setState({
+        'board-context-menu-id': boardId,
+      });
+    }
+  }
+
+  // module-instances
+  removeModuleInstance() {
+    let moduleInstanceId = this.state['moduleinstance-context-menu-id'];
+    Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
+      if(error) {
+        throw new Meteor.Error(error);
+      } else {
+        console.log(result);
+      }
+    });
+  }
   openModuleInstanceContextMenu(moduleInstanceId, event) {
     event.preventDefault(); // Prevent normal contextMenu from showing up
 
@@ -162,19 +168,9 @@ export default class TeamLayout extends React.Component {
       'moduleinstance-context-menu-id': moduleInstanceId,
     });
   }
-  closeModuleInstanceContextMenu() {
-    $(this.refs['moduleinstance-context-menu']).hide(100);
-  }
-  // module-instances
-  removeModuleInstance() {
-    let moduleInstanceId = this.state['moduleinstance-context-menu-id'];
-    Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
-      if(error) {
-        throw new Meteor.Error(error);
-      } else {
-        console.log(result);
-      }
-    });
+
+  closeContextMenu(menu) {
+    $(menu).hide(100);
   }
 }
 
