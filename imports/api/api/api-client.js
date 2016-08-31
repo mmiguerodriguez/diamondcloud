@@ -17,8 +17,10 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
         let query = ModuleInstances.find(moduleInstanceId);
         let caller = (id, fields) => {
           let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-          if (moduleInstance.data !== undefined && moduleInstance.data !== null) {
-            callback(moduleInstance.data);
+          if(moduleInstance) {
+            if(moduleInstance.data !== undefined && moduleInstance.data !== null) {
+              callback(moduleInstance.data);
+            }
           }
         };
         let handle = query.observeChanges({
