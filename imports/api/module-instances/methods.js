@@ -158,20 +158,21 @@ export const apiInsert = new ValidatedMethod({
     
     // Commit system
     for(let key in entry){
-      if(entry[key].isObject && !Array.isArray(entry[key])) {
-        if(entry['#use_commit_system#'] === true) {
+      if(entry[key] !== null && typeof entry[key] === 'object' && !Array.isArray(entry[key])) {
+          console.log('hola');
+        if(entry[key]['#use_commit_system#'] === true) {
           //create commits collection
-          if(moduleInstance.data[`commit_system_${collection}.${key}`] === undefined) {
-            moduleInstance.data[`commit_system_${collection}.${key}`] = {
-              merge: entry[key].mergeFunction,
-              commits: [],//seguir por acaaaaaaaaaaaa
+          if(moduleInstance.data[`commit_system_${collection}_${key}`] === undefined) {
+            moduleInstance.data[`commit_system_${collection}_${key}`] = {
+              merge: entry[key].mergeFunction.toString(),
+              commits: [],
             };
           }
+          entry[key] = '#use_commit_system#';
         }
       }
     }
     // End Commit System
-
     if(!moduleInstance.data[collection]){
       moduleInstance.data[collection] = [entry];
     }

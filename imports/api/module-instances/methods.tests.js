@@ -155,6 +155,10 @@ if(Meteor.isServer){
         obj: {
           _id: 'id',
           prop1: 'val1',
+          prop2: {
+            '#use_commit_system#': true,
+            mergeFunction: () => { return true },
+          },
         },
         visibleBy: [
           { userId: 'userId' },
@@ -164,18 +168,22 @@ if(Meteor.isServer){
 
       apiInsert.call(args);
       expect = {
+        'commit_system_todos_prop2': {
+          merge: (() => { return true }).toString(),
+        },
         todos: [
           {
             _id: 'id',
             prop1: 'val1',
+            prop2: '#use_commit_system#',
             visibleBy: [
               { userId: 'userId' },
             ]
           }
         ],
       };
-
-      chai.assert.deepEqual(ModuleInstances.findOne(module._id).data, expect);
+      console.log('SIOUAHSDIO', JSON.stringify(ModuleInstances.findOne(module._id).data, null, 4), JSON.stringify(expect, null, 4));
+      chai.assert.deepEqual(ModuleInstances.findOne(module._id).data, expect);//comparar el eval de las dos funciones
     });
 
     it('should update an entry in module data', function(done) {

@@ -129,10 +129,10 @@ La mergeFunction
 Del lado del server:
 Cuando insertan un entry, se fija en los valores de todos los fields.
 Para cada '#use_commit_system#' que encuentre:
-Crea una collection con el nombre 'commit_system_collection.fieldName'
+Crea una collection con el nombre 'commit_system_collection_fieldName'
 Cuando se llama a DiamondAPI.commit:
-La collection 'commit_system_collection.fieldName' consiste en el siguiente objeto:
-  'commit_system_collection.fieldName' : {
+La collection 'commit_system_collection_fieldName' consiste en el siguiente objeto:
+  'commit_system_collection_fieldName' : {
     merge: () => {},
     commits: [
       {
