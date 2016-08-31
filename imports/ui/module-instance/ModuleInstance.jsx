@@ -67,6 +67,7 @@ export default class ModuleInstance extends React.Component {
         handle: '.module-pin',
         cursor: 'pointer',
         cursorAt: { top: -6 },
+        distance: 5,
         iframeFix: true,
 
         start(event, ui) {
