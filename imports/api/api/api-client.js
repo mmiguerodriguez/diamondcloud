@@ -3,7 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { ModuleInstances } from '../module-instances/module-instances.js';
 
 export let generateApi = ({ moduleInstanceId, boards, users }) => {
-  console.log(boards, users);
+  let subscriptions = [];
+
   return {
     subscribe: ({ request, callback }) => {
       // Validation.
@@ -12,7 +13,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         // Subscribe to data
-        Meteor.subscribe('moduleInstances.data', moduleInstanceId, request);
+        let subscription = Meteor.subscribe('moduleInstances.data', moduleInstanceId, request);
         let query = ModuleInstances.find(moduleInstanceId);
         let caller = (id, fields) => {
           let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
@@ -25,8 +26,26 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
           changed: caller,
           removed: caller,
         });
+
+        subscriptions.push(subscription);
+        return subscription.subscriptionId;
       } else {
         throw console.error('The provided data is wrong.');
+      }
+    },
+    unsubscribe(subscriptionId) {
+      if(subscriptionId) {
+        subscriptions.forEach((sub, index) => {
+          if(sub.subscriptionId === subscriptionId) {
+            sub.stop();
+            subscriptions.splice(index, 1);
+          }
+        });
+      } else {
+        subscriptions.forEach((sub, index) => {
+          sub.stop();
+          subscriptions.splice(index, 1);
+        });
       }
     },
     insert: ({ collection, obj, visibleBy, callback }) => {
@@ -35,8 +54,8 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && typeof obj == 'object';
       validation = validation && typeof visibleBy == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
-      if (validation) {
 
+      if (validation) {
         Meteor.call('ModuleInstances.methods.apiInsert', {
           moduleInstanceId,
           collection,

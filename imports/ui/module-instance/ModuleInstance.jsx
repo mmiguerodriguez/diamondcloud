@@ -36,7 +36,7 @@ export default class ModuleInstance extends React.Component {
               className='module-pin'
               role='button'
               onClick={ this.toggleMinimize.bind(this) }
-              onContextMenu={ this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id) }></div>
+              onContextMenu={ this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.refs.iframe) }></div>
           ) : ( null )
         }
         <iframe className='module'

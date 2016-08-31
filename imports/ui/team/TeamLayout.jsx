@@ -11,6 +11,7 @@ export default class TeamLayout extends React.Component {
     this.state = {
       'board-context-menu-id': null,
       'moduleinstance-context-menu-id': null,
+      'moduleinstance-iframe': null,
     };
 
     this.refs = {
@@ -144,16 +145,22 @@ export default class TeamLayout extends React.Component {
 
   // module-instances
   removeModuleInstance() {
+    let self = this;
     let moduleInstanceId = this.state['moduleinstance-context-menu-id'];
+    let contextMenu = this.refs['moduleinstance-context-menu'];
+    let iframe = this.state['moduleinstance-iframe'];
+    
     Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
       if(error) {
         throw new Meteor.Error(error);
       } else {
+        iframe.contentWindow.DiamondAPI.unsubscribe();
+        self.closeContextMenu(contextMenu);
         console.log(result);
       }
     });
   }
-  openModuleInstanceContextMenu(moduleInstanceId, event) {
+  openModuleInstanceContextMenu(moduleInstanceId, iframe, event) {
     event.preventDefault(); // Prevent normal contextMenu from showing up
 
     $(this.refs['moduleinstance-context-menu'])
@@ -166,6 +173,7 @@ export default class TeamLayout extends React.Component {
 
     this.setState({
       'moduleinstance-context-menu-id': moduleInstanceId,
+      'moduleinstance-iframe': iframe,
     });
   }
 
