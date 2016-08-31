@@ -61,6 +61,7 @@ export default class ModuleInstance extends React.Component {
     this.refs.iframe.contentWindow.DiamondAPI = DiamondAPI;
   }
   iframeLoaded() {
+    let self = this;
     $(this.refs.module)
       .draggable({
         containment: 'parent',
@@ -69,19 +70,12 @@ export default class ModuleInstance extends React.Component {
         cursorAt: { top: -6 },
         distance: 5,
         iframeFix: true,
-
-        start(event, ui) {
-          $('.trash').css('display', 'block');
-        },
-        stop(event, ui) {
-          $('.trash').css('display', 'none');
-        }
       })
       .resizable({
         containment: 'parent',
         disabled: this.state.minimized,
         stop(event, ui) {
-          let moduleInstanceId = ui.helper.data('moduleinstance-id');
+          let moduleInstanceId = self.props.moduleInstance._id;
           let { width, height } = ui.size;
 
           Meteor.call('ModuleInstances.methods.edit', {
