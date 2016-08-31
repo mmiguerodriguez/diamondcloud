@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 
 export default class NavbarLink extends React.Component {
   render() {
-    active = this.props.active ? 'active' : '';
+    let active = this.props.active ? 'active' : '';
 
     return (
       <li className={ active }>
