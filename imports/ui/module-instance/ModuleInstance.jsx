@@ -78,7 +78,7 @@ export default class ModuleInstance extends React.Component {
       })
       .resizable({
         containment: 'parent',
-
+        disabled: this.state.minimized,
         stop(event, ui) {
           let moduleInstanceId = ui.helper.data('moduleinstance-id');
           let { width, height } = ui.size;
@@ -104,14 +104,14 @@ export default class ModuleInstance extends React.Component {
   toggleMinimize() {
     let moduleInstanceId = this.props.moduleInstance._id;
     let minimized = !this.props.moduleInstance.minimized;
-    
+
     this.setState({
       minimized: minimized
     }, () => {
       $(this.refs.module).resizable('option', 'disabled', minimized);
     });
-    
-    Meteor.call('ModuleInstances.methods.edit', { 
+
+    Meteor.call('ModuleInstances.methods.edit', {
       moduleInstanceId,
       minimized,
     }, (error, result) => {
