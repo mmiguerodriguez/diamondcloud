@@ -1,4 +1,6 @@
 var teamData;
+var TIMEOUT,
+    INTERVAL = 2000;
 
 window.onload = () => {
   console.log('Module loaded, grabbing data...');
@@ -31,7 +33,7 @@ window.onresize = () => {
 
 // API methods
 function insertStartupData(callback) {
-  window.DiamondAPI.insert({
+  DiamondAPI.insert({
     collection: 'postIt',
     obj: {
       title: '',
@@ -42,21 +44,21 @@ function insertStartupData(callback) {
   });
 }
 function getData(collection, filter, callback) {
-  window.DiamondAPI.get({
+  DiamondAPI.get({
     collection,
     filter,
     callback,
   });
 }
 function updateData(collection, filter, updateQuery) {
-  window.DiamondAPI.update({
+  DiamondAPI.update({
     collection,
     filter,
     updateQuery,
   });
 }
 function subscribe(collection, callback) {
-  window.DiamondAPI.subscribe({
+  DiamondAPI.subscribe({
     request: {
       collection,
     },
@@ -64,18 +66,18 @@ function subscribe(collection, callback) {
   });
 }
 function getTeamData() {
-  return window.DiamondAPI.getTeamData();
+  return DiamondAPI.getTeamData();
 }
 
 // Module methods
 function updateInput(e, which) {
-  clearTimeout(timeout);
+  clearTimeout(TIMEOUT);
   /*
    * You can pass arguments to the function inside setTimeout
    * using Function.prototype.bind()
    * https://developer.mozilla.org/es/docs/Web/JavaScript/Referencia/Objetos_globales/Function/bind
    */
-  timeout = setTimeout(
+  TIMEOUT = setTimeout(
     updateData.bind(null, 'postIt', {}, {
       $set: {
         [which]: e.value,
