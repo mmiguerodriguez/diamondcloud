@@ -5,7 +5,7 @@ import { ModuleInstances } from '../module-instances/module-instances.js';
 export let generateApi = ({ moduleInstanceId, boards, users }) => {
   console.log(boards, users);
   return {
-    subscribe: ({ request, callback }) => {
+    subscribe({ request, callback }) {
       // Validation.
       let validation = typeof request.collection == 'string';
       validation = validation && (typeof request.condition == 'object' || request.condition === undefined);
@@ -29,7 +29,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
         throw console.error('The provided data is wrong.');
       }
     },
-    insert: ({ collection, obj, visibleBy, callback }) => {
+    insert({ collection, obj, visibleBy, callback }) {
       // Validation.
       let validation = typeof collection == 'string' && collection.indexOf('commit_system') !== 0;
       validation = validation && typeof obj == 'object';
@@ -46,7 +46,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
         throw console.error('The provided data is wrong.');
       }
     },
-    update: ({ collection, filter, updateQuery, callback }) => {
+    update({ collection, filter, updateQuery, callback }) {
       // Validation.
       let validation = typeof collection == 'string';
       validation = validation && typeof filter == 'object';
@@ -63,7 +63,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
         throw console.error('The provided data is wrong.');
       }
     },
-    get: ({ collection, filter, callback }) => {
+    get({ collection, filter, callback }) {
       // Validation.
       let validation = typeof collection == 'string';
       validation = validation && typeof filter == 'object';
@@ -78,7 +78,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
         throw console.error('The provided data is wrong.');
       }
     },
-    remove: ({ collection, filter, callback }) => {
+    remove({ collection, filter, callback }) {
       // Validation.
       let validation = typeof collection == 'string';
       validation = validation && typeof filter == 'object';
@@ -93,26 +93,55 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
         throw console.error('The provided data is wrong.');
       }
     },
-    getTeamData: () => {
+    getTeamData() {
       return {
         boards,//todo: do not pass every property
         users,
       };
-    }
+    },
+    useCommitSystem(mergeFunction) {
+      return {
+        '#use_commit_system#': true,
+        mergeFunction, 
+      };
+    },
   };
 };
 
 /*
 Del lado del consumidor:
 Si quiero que algún field de alguna collection use el commit system:
-Le pongo como value “#use_commit_system#”
+Le pongo como value DiamondAPI.useCommitSystem(mergeFunction)
 Para gettear el value, lo veo normalmente (todos.field)
-Para hacer un commit, hago DiamondAPI.commit(entryId /|id de la entry en la collection|/, collection, field, type/|in: insert, remove, change|/, value);
+Para hacer un commit, hago DiamondAPI.commit({
+  entryId /|id de la entry en la collection|/,
+  collection,
+  field,
+  type/|in: insert, remove, change|/,
+  value,
+  position,
+});
+La mergeFunction
+  @params: commits
+  
+  @returns: final version of the data
 
 Del lado del server:
 Cuando insertan un entry, se fija en los valores de todos los fields.
-Para cada “#use_commit_system#” que encuentre:
-Crea una collection con el nombre “commit_system_collection.fieldName”
+Para cada '#use_commit_system#' que encuentre:
+Crea una collection con el nombre 'commit_system_collection.fieldName'
 Cuando se llama a DiamondAPI.commit:
-A la collection “commit_system_collection.fieldName” se le inserta un objeto de la siguiente pinta: {entry_}SEGUIR POR ACAAAAAAAA
+La collection 'commit_system_collection.fieldName' consiste en el siguiente objeto:
+  'commit_system_collection.fieldName' : {
+    merge: () => {},
+    commits: [
+      {
+        entryId,
+        type,
+        value,
+        position,
+      },
+    ],
+  }
+
 */

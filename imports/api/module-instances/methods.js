@@ -155,6 +155,22 @@ export const apiInsert = new ValidatedMethod({
       entry.visibleBy = visibleBy;
     }
     entry._id = (entry._id !== undefined) ? entry._id : Random.id();
+    
+    // Commit system
+    for(let key in entry){
+      if(entry[key].isObject && !Array.isArray(entry[key])) {
+        if(entry['#use_commit_system#'] === true) {
+          //create commits collection
+          if(moduleInstance.data[`commit_system_${collection}.${key}`] === undefined) {
+            moduleInstance.data[`commit_system_${collection}.${key}`] = {
+              merge: entry[key].mergeFunction,
+              commits: [],//seguir por acaaaaaaaaaaaa
+            };
+          }
+        }
+      }
+    }
+    // End Commit System
 
     if(!moduleInstance.data[collection]){
       moduleInstance.data[collection] = [entry];
