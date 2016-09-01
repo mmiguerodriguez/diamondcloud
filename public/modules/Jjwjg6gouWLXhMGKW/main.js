@@ -1,6 +1,6 @@
 var teamData;
 var subscriptions = [];
-var INTERVAL = 2000,
+var INTERVAL = 500,
     TIMEOUT;
 
 
