@@ -186,6 +186,30 @@ if (Meteor.isClient) {
         chai.assert.equal(result.boards, 'boards');
         chai.assert.equal(result.users, 'users');
       });
+      it('should create a commit', () => {
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
+        let result = DiamondAPI.commit({
+          entryId: 'entryId',
+          collection: 'collection',
+          field: 'field',
+          type: 'type',
+          value: 'value',
+          position: 'position',
+          callback: () => { return 'value' },
+        });
+        
+        chai.assert.equal(name, 'ModuleInstances.methods.apiCommit');
+        chai.assert.deepEqual(params, {
+          moduleInstanceId: moduleInstances[0]._id,
+          entryId: 'entryId',
+          collection: 'collection',
+          field: 'field',
+          type: 'type',
+          value: 'value',
+          position: 'position',
+        });
+        chai.assert.equal(myCallback(), 'value');
+      });
     });
   });
 }

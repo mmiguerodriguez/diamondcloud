@@ -102,8 +102,30 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
     useCommitSystem(mergeFunction) {
       return {
         '#use_commit_system#': true,
-        mergeFunction, 
+        mergeFunction: mergeFunction.toString(),
       };
+    },
+    commit({ entryId, collection, field, type, value, position, callback }) {
+      // Validation.
+      let validation = typeof entryId !== 'undefined';
+      validation = validation && typeof collection == 'string';
+      validation = validation && typeof field == 'string';
+      validation = validation && typeof type == 'string';
+      validation = validation && typeof value !== 'undefined';
+      validation = validation && typeof position !== 'undefined';
+      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
+      
+      if (validation) {
+        Meteor.call('ModuleInstances.methods.apiCommit', {
+          moduleInstanceId,
+          entryId,
+          field,
+          type, value,
+          position,
+        }, callback);
+      } else {
+        throw console.error('The provided data is wrong.');
+      }
     },
   };
 };
