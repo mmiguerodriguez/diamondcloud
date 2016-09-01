@@ -63,8 +63,7 @@ if(Meteor.isServer){
         x: module.x,
         y: module.y,
         width: module.width,
-        height: module.height,
-        data: module.data,
+        height: module.height
       };
 
       createModuleInstance.call(args, (err, result) => {
@@ -78,7 +77,6 @@ if(Meteor.isServer){
           y: args.y,
           width: args.width,
           height: args.height,
-          data: args.data,
           archived: false,
           minimized: false,
         };
@@ -115,12 +113,10 @@ if(Meteor.isServer){
         y: args.y,
         width: args.width,
         height: args.height,
-        data: module.data,
         archived: false,
         minimized: null
       };
 
-      console.log('Prusiano', expect, result);
       chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
     });
 

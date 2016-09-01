@@ -4,6 +4,7 @@ import { Random }    from 'meteor/random';
 import { Teams }           from '../teams/teams.js';
 import { Boards }          from '../boards/boards.js';
 import { Messages }        from '../messages/messages.js';
+import { ModuleData } from '../module-data/module-data.js';
 import { DirectChats }     from '../direct-chats/direct-chats.js';
 import { ModuleInstances } from '../module-instances/module-instances.js';
 
@@ -64,7 +65,7 @@ Factory.define('directChatMessage', Messages, Factory.extend('message', {
 }));
 
 Factory.define('boardMessage', Messages, Factory.extend('message', {
-	directChatId: Factory.get('board'),
+	directChatId: Factory.get('board')._id,
 }));
 
 Factory.define('moduleInstance', ModuleInstances, {
@@ -73,22 +74,30 @@ Factory.define('moduleInstance', ModuleInstances, {
 	y: faker.random.number(),
 	width: faker.random.number({ min: 0, max: 1920 }),
 	height: faker.random.number({ min: 0, max: 1080 }),
-	data: {},
 	archived: false,
 });
 
-Factory.define('todosModuleInstance', ModuleInstances, Factory.extend('moduleInstance', {
+Factory.define('moduleData', ModuleData, {
+	moduleId: Factory.get('module')._id,
+	teamId: Factory.get('team')._id,
+});
+
+Factory.define('todosModuleData', ModuleInstances, Factory.extend('moduleData', {
 	data: {
 		todos: [
       {
         name: 'Define business model',
         boardId: 'businessBoardId',
         categoryId: 'categoryId1',
+				isGlobal: false,
+				moduleInstanceId: Factory.get('moduleInstance')._id,
       },
       {
         name: 'Research payment processors',
         boardId: 'businessBoardId',
         categoryId: 'categoryId1',
+				isGlobal: false,
+				moduleInstanceId: Factory.get('moduleInstance')._id,
       },
       {
         name: 'Design landing wireframe',
@@ -97,6 +106,7 @@ Factory.define('todosModuleInstance', ModuleInstances, Factory.extend('moduleIns
           { _id: "ryanId" },
         ],
         categoryId: 'categoryId1',
+				isGlobal: true,
       },
       {
         name: 'Develop modules API',
@@ -107,11 +117,13 @@ Factory.define('todosModuleInstance', ModuleInstances, Factory.extend('moduleIns
           { _id: 'migueId' },
         ],
         categoryId: 'categoryId2',
+				isGlobal: true,
       },
       {
         name: 'Release the MVP',
         boardId: 'generalBoardId',
         categoryId: 'categoryId2',
+				isGlobal: true,
       },
       {
         name: 'Some super secret task',
@@ -121,11 +133,15 @@ Factory.define('todosModuleInstance', ModuleInstances, Factory.extend('moduleIns
           { boardId: 'General' },
         ],
         categoryId: 'categoryId2',
+				isGlobal: false,
+				moduleInstanceId: Factory.get('moduleInstance')._id
       },
 			{
         name: 'Conquer the world',
         boardId: 'secretBoardId',
         categoryId: 'categoryId3',
+				isGlobal: false,
+				moduleInstanceId: Factory.get('moduleInstance')._id
       }
     ],
 		categories: [
@@ -133,16 +149,20 @@ Factory.define('todosModuleInstance', ModuleInstances, Factory.extend('moduleIns
         _id: 'categoryId1',
         name: 'Lorem ipsum category',
 				color: 'red',
+				isGlobal: true,
       },
       {
         _id: 'categoryId2',
         name: 'Another great category',
 				color: 'red',
+				isGlobal: true,
       },
 			{
         _id: 'categoryId3',
         name: 'Another great banana',
-				color: 'blue'
+				color: 'blue',
+				isGlobal: false,
+				moduleInstanceId: Factory.get('moduleInstance')._id
       },
     ]
 	},

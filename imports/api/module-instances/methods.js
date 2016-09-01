@@ -18,7 +18,6 @@ export const createModuleInstance = new ValidatedMethod({
     y: { type: Number, min: 0 },
     width: { type: Number },
     height: { type: Number },
-    data: { type: Object, blackbox: true },
     archived: { type: Boolean, optional: true }
   }).validator(),
   run({ boardId, moduleId, x, y, width, height, data }){
@@ -33,7 +32,6 @@ export const createModuleInstance = new ValidatedMethod({
       y,
       width,
       height,
-      data,
       archived: false,
       minimized: false,
     };
@@ -73,8 +71,8 @@ export const editModuleInstance = new ValidatedMethod({
     y = y || moduleInstance.y;
     width = width || moduleInstance.width;
     height = height || moduleInstance.height;
-    minimized = minimized != undefined ? minimized : moduleInstance.minimized;
-    
+    minimized = minimized !== undefined ? minimized : moduleInstance.minimized;
+
     ModuleInstances.update(moduleInstanceId, {
       $set: {
         x,

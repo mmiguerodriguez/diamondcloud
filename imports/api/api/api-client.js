@@ -3,8 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { ModuleInstances } from '../module-instances/module-instances.js';
 import { ModuleData } from '../module-data/module-data.js';
 
-export let generateApi = ({ moduleInstanceId, boards, users }) => {
-  console.log(boards, users);
+export let generateApi = ({ collectionId, boards, users }) => {
   return {
     subscribe: ({ request, callback }) => {
       // Validation.
@@ -13,10 +12,10 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         // Subscribe to data
-        Meteor.subscribe('moduleInstances.data', moduleInstanceId, request);
-        let query = ModuleInstances.find(moduleInstanceId);
+        Meteor.subscribe('moduleInstances.data', collectionId, request);
+        let query = ModuleInstances.find(collectionId);
         let caller = (id, fields) => {
-          let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+          let moduleInstance = ModuleInstances.findOne(collectionId);
           if (moduleInstance.data !== undefined && moduleInstance.data !== null) {
             callback(moduleInstance.data);
           }
@@ -39,7 +38,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       if (validation) {
 
         Meteor.call('API.methods.apiInsert', {
-          moduleInstanceId,
+          collectionId,
           collection,
           obj,
           visibleBy,
@@ -56,7 +55,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         Meteor.call('API.methods.apiUpdate', {
-          moduleInstanceId,
+          collectionId,
           collection,
           filter,
           updateQuery,
@@ -72,7 +71,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         Meteor.call('API.methods.apiGet', {
-          moduleInstanceId,
+          collectionId,
           collection,
           filter,
         }, callback);
@@ -87,7 +86,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         Meteor.call('API.methods.apiRemove', {
-          moduleInstanceId,
+          collectionId,
           collection,
           filter,
         }, callback);
