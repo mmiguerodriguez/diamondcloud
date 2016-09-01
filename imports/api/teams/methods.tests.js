@@ -99,10 +99,13 @@ if (Meteor.isServer) {
         archived: false,
       };
 
+
+
       createTeam.call(args, (err, res) => {
         result = res;
         delete result._id;
       });
+      
       chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
     });
     it('should edit a team', function() {

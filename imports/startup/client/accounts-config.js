@@ -4,10 +4,12 @@ import { browserHistory } from 'react-router';
 Accounts.onLogin(() => {
   let path;
   browserHistory.listen((e) => {
-      path = e.pathname;
+    path = e.pathname;
   });
 
-  if(path == '/') {
-    browserHistory.push('/dashboard');
+  if(path === '/') {
+    if(!Meteor.user()) {
+      browserHistory.push('/dashboard');
+    }
   }
 });

@@ -11,7 +11,7 @@ export const createTeam = new ValidatedMethod({
   validate: new SimpleSchema({
     name: { type: String },
     plan: { type: String, allowedValues: ['free', 'premium'] },
-    type: { type: String },
+    type: { type: String, min: 0, max: 200 },
     usersEmails: { type: [String] },
   }).validator(),
   run({ name, plan, type, usersEmails }) {

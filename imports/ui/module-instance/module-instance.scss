@@ -2,16 +2,24 @@
   position: absolute !important;
   -webkit-user-select: none;
 
+  .minimized-module-name {
+    width: inherit;
+    position: absolute;
+    text-align: center;
+    top: -36px;
+  }
+
   .module-pin {
-    background-color: gray;
-    border: 5px outset gray;
+    background-color: #3f3f3f;
+    border: 5px ridge #e74c3c;
+    border-radius: 50%;
     width: 32px;
     height: 32px;
-    border-radius: 50%;
     margin: auto;
     position: absolute;
     top: -16px;
     left: calc(50% - 16px);
+    z-index: 2;
   }
 
   .module {

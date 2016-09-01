@@ -35,6 +35,7 @@ export default class CreateTeamModal extends React.Component {
               <div  id='create-team-page-1'
                     className='name'
                     style={{ display: 'block' }}>
+                <p className='explanation-text margin container-fluid'>Introducí el nombre y tipo del equipo.</p>
                 <div className='row'>
                   <div className='name-input'>
                     <label  htmlFor='projectName'
@@ -96,6 +97,7 @@ export default class CreateTeamModal extends React.Component {
               <div  id='create-team-page-2'
                     className='plan'
                     style={{ display: 'none' }}>
+                <p className='explanation-text margin container-fluid'>Elegí las funcionalidades que queres que tu equipo tenga disponible en Diamond Cloud</p>
                 <div className='row'>
                   <div className='free col-xs-5 col-xs-offset-1'>
                     <div className='free-card'>
@@ -138,6 +140,7 @@ export default class CreateTeamModal extends React.Component {
               <div  id='create-team-page-3'
                     className='share'
                     style={{ display: 'none' }}>
+                <p className='explanation-text margin container-fluid'>Insertá un mail de Google de los miembros de tu equipo para poder trabajar colaborativamente. Si todavia no tienen cuenta en Diamon Cloud se le enviaráun link al mail</p>
                 <UsersList usersEmails={ this.state.usersEmails } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
               </div>
           </div>
@@ -222,9 +225,7 @@ export default class CreateTeamModal extends React.Component {
         this.errorBorder('#projectName');
         return;
       }
-    }
-
-    else if (page === 2) {
+    } else if (page === 2) {
       if(this.state.plan !== 'free'){
         this.errorBorder('.btn-free');
         return;
@@ -235,12 +236,13 @@ export default class CreateTeamModal extends React.Component {
       return;
     }
 
-    $('#create-team-page-' + (page + 1)).effect('slide', {
+    $('#createTeamModal #create-team-page-' + page).hide();
+    $('#createTeamModal #create-team-page-' + (page + 1)).effect('slide', {
       direction: 'right',
       mode: 'show',
     }, 500);
 
-    $('#createTeamModal #create-team-page-' + page).hide();
+    
     $('#createTeamModal #actual-page').html(page + 1);
 
     if(page + 1 === 3) {

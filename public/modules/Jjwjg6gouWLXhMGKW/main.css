@@ -2,32 +2,14 @@ body {
   background: #ffffa5;
   font-family: 'roboto' !important;
 }
-
 input:focus {
   border:none;
 }
 
-.post-it {
-  
+.title-container {
+  padding-top: 10px;
 }
-
-.post-it:before {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  transform: rotate(90deg);
-  border-width: 0 2em 2em 0;
-  border-style: solid;
-  border-color: #f1c40f #eceff1;
-  -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2);
-  -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2);
-  box-shadow: 0 1px 1px rgba(0,0,0,0.3), -1px 1px 1px rgba(0,0,0,0.2);
-  /* Firefox 3.0 damage limitation oka */
-  display: block; width: 0;
-}
-
-.postitTitle {
+.post-it-title {
   text-align: center;
   width: 100%;
   border: none;
@@ -36,7 +18,11 @@ input:focus {
   margin-top: 5px;
 }
 
-.postitDescription {
+.description-container {
+  height: 80%;
+  padding-top: 10px;
+}
+.post-it-description {
   text-align: left;
   width: 100%;
   border: none;

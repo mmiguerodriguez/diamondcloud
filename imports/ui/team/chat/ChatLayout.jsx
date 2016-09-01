@@ -27,9 +27,7 @@ export default class ChatLayout extends React.Component {
           </p>
           <div  className='col-xs-2 chat-image'
                 onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
-            <img  className='close-image'
-                  src='/img/chat/close.svg'
-                  width='16px' />
+            <div className="close-image chat-back-image"></div>
           </div>
         </div>
       );
@@ -43,9 +41,7 @@ export default class ChatLayout extends React.Component {
             </p>
             <div  className='col-xs-2 chat-image'
                   onClick={ this.togglePosition.bind(this, 'maximized') }>
-              <img  className='maximize-image'
-                    src='/img/chat/maximize.svg'
-                    width='16px' />
+                  <div className="maximize-image chat-back-image"></div>
             </div>
           </div>
           <div className='chat-body' ref='chat_body'>
@@ -142,7 +138,7 @@ export default class ChatLayout extends React.Component {
   sendMessage() {
     let text = this.state.message;
     text = text.trim();
-    
+
     let obj = {
       type: 'text',
       content: text,

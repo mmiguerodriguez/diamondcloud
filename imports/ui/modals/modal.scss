@@ -9,11 +9,18 @@
   border: none !important;
 }
 .modal-body {
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   .modal-body-fixed {
     overflow-y: hidden;
     overflow-x: hidden;
     min-height: 300px;
+  }
+  .explanation-text {
+    text-align: center;
+    &.margin {
+      margin: 10px !important;
+    }
   }
 }
 .modal-content {
@@ -31,7 +38,7 @@
 .btn-accept {
   background-color: $peter-river;
   color: $white;
-  box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.3);
+  // box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.3);
 }
 .btn-accept:hover, .btn-accept:active, .btn-accept:focus {
   color: $white !important;

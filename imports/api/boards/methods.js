@@ -10,7 +10,7 @@ export const createBoard = new ValidatedMethod({
   name: 'Boards.methods.create',
   validate: new SimpleSchema({
     teamId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    name: { type: String },
+    name: { type: String, min: 0, max: 200 },
     isPrivate: { type: Boolean },
     users: { type: [Object], optional: true },
     'users.$._id': { type: String, regEx: SimpleSchema.RegEx.Id, optional: true },
@@ -31,7 +31,7 @@ export const createBoard = new ValidatedMethod({
         throw new Meteor.Error('Branches.methods.createBoard.userNotInTeam',
         'You cannot add yourself to a board when you are not part of the team.');
       }
-      
+
       users.forEach((user) => {
         if (!team.hasUser({ _id: user._id })) {
           throw new Meteor.Error('Branches.methods.createBoard.userNotInTeam',
@@ -55,7 +55,7 @@ export const createBoard = new ValidatedMethod({
 
       let boardId = res;
       let _board = Boards.findOne(boardId);
-      
+
       Teams.update(teamId, {
         $push: {
           boards: { _id: boardId },

@@ -19,57 +19,52 @@ export default class Team extends React.Component {
 
     this.state = {
       subscriptions: [],
-      board: undefined,
-      boardSub: undefined,
     };
   }
   render() {
+    const board = Team.board.get();
+
     if(this.props.loading) {
       return ( null );
-    } else {
-      if(this.props.team) {
-        return (
-          <TeamLayout
-            team={ this.props.team }
-            owner={ this.props.team.owner() === Meteor.user().emails[0].address }
-
-            boards={ this.props.boards }
-            board={ this.state.board || this.props.boards[0] }
-            moduleInstances={ this.props.moduleInstances }
-            modules={ this.props.modules }
-
-            directChats={ this.props.directChats }
-            chats={ this.formatChats() }
-
-            getMessages={ this.getMessages.bind(this) }
-            removeChat={ this.removeChat.bind(this) }
-            boardSubscribe={ this.boardSubscribe.bind(this) } />
-        );
-      } else {
-        return ( null );
-      }
     }
+
+    if(!this.props.team) {
+      return ( null );
+    }
+
+    if(!board) {
+      return ( null );
+    }
+
+    return (
+      <TeamLayout
+        team={ this.props.team }
+        owner={ this.props.team.owner() === Meteor.user().emails[0].address }
+
+        boards={ this.props.boards }
+        board={ board }
+        moduleInstances={ this.props.moduleInstances }
+        modules={ this.props.modules }
+
+        directChats={ this.props.directChats }
+        chats={ this.formatChats() }
+
+        getMessages={ this.getMessages.bind(this) }
+        removeChat={ this.removeChat.bind(this) }
+        boardSubscribe={ this.boardSubscribe.bind(this) } />
+    );
   }
-  /* todo: Fix when team isn't found (not working)
-  componentDidMount() {
-    if(this.props.team === undefined) {
-      // If team doesn't exists go to a not-found route
+
+  componentDidUpdate() {
+    // If it already loaded and team doesn't exist then we
+    // should return the user to a NotFound Layout or
+    // error route...
+    if(!this.props.loading && !this.props.team) {
       browserHistory.push('/404');
     }
   }
-  */
-
-  componentDidUpdate() {
-    console.log('me llamo componentDidUpdate');
-    console.log(this.props.boards);
-    if(!this.props.loading && !this.state.board && this.props.boards) {
-      this.setState({
-        board: true,
-      }, () => {
-        console.log('me suscribo');
-        this.boardSubscribe(this.props.boards[0]._id);
-      });
-    }
+  componentWillUnmount() {
+    Team.boardSubscription.get().stop();
   }
 
   getMessages(obj) {
@@ -172,33 +167,36 @@ export default class Team extends React.Component {
   }
 
   boardSubscribe(boardId) {
-    console.log('me llamo boardSubscribe');
-    if(this.state.boardSub) {
-      console.log('freno la subscripción');
-      this.state.boardSub.stop();
+    if(Team.boardSubscription.get()) {
+      Team.boardSubscription.get().stop();
     }
 
     let subscription = Meteor.subscribe('boards.board', boardId, {
       onReady: () => {
-        console.log('entro al onready');
-        this.setState({
-          board: Boards.findOne(boardId),
-        });
+        Team.board.set(Boards.findOne(boardId));
       },
       onError: (error) => {
         throw new Meteor.Error(error);
       }
     });
 
-    this.setState({
-      boardSub: subscription,
-    });
+    Team.boardSubscription.set(subscription);
   }
 }
 
+Team.board = new ReactiveVar();
+Team.boardSubscription = new ReactiveVar();
+
 export default TeamPageContainer = createContainer(({ params }) => {
   const { teamId } = params;
-  const teamHandle = Meteor.subscribe('teams.team', teamId);
+  const teamHandle = Meteor.subscribe('teams.team', teamId, () => {
+    let firstBoard = Boards.findOne();
+    let boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
+      Team.board.set(Boards.findOne());
+    });
+
+    Team.boardSubscription.set(boardHandle);
+  });
   const loading = !teamHandle.ready();
 
   return {

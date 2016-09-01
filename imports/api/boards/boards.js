@@ -48,6 +48,7 @@ Boards.moduleInstancesFields = {
   height: 1,
   moduleId: 1,
   archived: 1,
+  minimized: 1,
 };
 
 Boards.getBoards = (boardsIds, userId, fields) => {

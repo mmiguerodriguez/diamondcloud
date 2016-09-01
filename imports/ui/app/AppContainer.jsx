@@ -7,9 +7,9 @@ export default class App extends React.Component {
   render() {
     if (this.props.user === undefined) {
       return ( null );
-    } else {
-      return (<AppLayout { ...this.props } />);
     }
+
+    return (<AppLayout { ...this.props } />);
   }
 }
 
