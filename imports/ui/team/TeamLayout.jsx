@@ -28,9 +28,10 @@ export default class TeamLayout extends React.Component {
           openBoardContextMenu={ this.openBoardContextMenu.bind(this) } />
         <Board
           boards={ this.props.boards }
-          users={ this.props.team.users }
           board={ this.props.board }
+          users={ this.props.team.users }
           moduleInstances={ this.props.moduleInstances }
+          modules={ this.props.modules }
           getMessages={ this.props.getMessages }
           openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu.bind(this) } />
         <div className='chats-container'>
@@ -149,7 +150,7 @@ export default class TeamLayout extends React.Component {
     let moduleInstanceId = this.state['moduleinstance-context-menu-id'];
     let contextMenu = this.refs['moduleinstance-context-menu'];
     let iframe = this.state['moduleinstance-iframe'];
-    
+
     Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
       if(error) {
         throw new Meteor.Error(error);

@@ -1,5 +1,6 @@
-import React              from 'react';
 import { generateApi }    from '../../api/api/api-client.js';
+
+import React              from 'react';
 
 export default class ModuleInstance extends React.Component {
   constructor(props) {
@@ -30,6 +31,13 @@ export default class ModuleInstance extends React.Component {
              width: this.props.moduleInstance.width,
              height: this.props.moduleInstance.height,
            }}>
+        {
+          this.state.minimized ? (
+            <span className='minimized-module-name'>
+              { this.props.module.name }
+            </span>
+          ) : ( null )
+        }
         {
           !this.state.loading ? (
             <div
@@ -125,6 +133,7 @@ export default class ModuleInstance extends React.Component {
 
 ModuleInstance.propTypes = {
   moduleInstance: React.PropTypes.object.isRequired,
+  module: React.PropTypes.object.isRequired,
   boards: React.PropTypes.array.isRequired,
   users: React.PropTypes.array.isRequired,
   openModuleInstanceContextMenu: React.PropTypes.func.isRequired,
