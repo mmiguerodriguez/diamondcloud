@@ -3,7 +3,6 @@ var subscriptions = [];
 var INTERVAL = 500,
     TIMEOUT;
 
-
 window.onload = () => {
   console.log('Module loaded, grabbing data...');
 
