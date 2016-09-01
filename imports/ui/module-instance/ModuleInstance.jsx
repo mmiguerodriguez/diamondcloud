@@ -39,7 +39,7 @@ export default class ModuleInstance extends React.Component {
           ) : ( null )
         }
         {
-          !this.state.loading ? (
+          !this.state.loading || this.state.minimized ? (
             <div
               className='module-pin'
               role='button'
