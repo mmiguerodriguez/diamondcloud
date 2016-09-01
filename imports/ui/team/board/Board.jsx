@@ -108,6 +108,7 @@ export default class Board extends React.Component {
           <ModuleInstance
             key={ moduleInstance._id }
             moduleInstance={ moduleInstance }
+            moduleInstancesFrames={ this.props.moduleInstancesFrames }
             module={ module }
             boards={ this.props.boards }
             users={ this.props.users }
@@ -156,6 +157,7 @@ Board.propTypes = {
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
   moduleInstances: React.PropTypes.array,
+  moduleInstancesFrames: React.PropTypes.array,
   modules: React.PropTypes.array,
   users: React.PropTypes.array.isRequired,
   getMessages: React.PropTypes.func.isRequired,

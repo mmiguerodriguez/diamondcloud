@@ -140,7 +140,7 @@ export default class CreateTeamModal extends React.Component {
               <div  id='create-team-page-3'
                     className='share'
                     style={{ display: 'none' }}>
-                <p className='explanation-text margin container-fluid'>Insertá un mail de Google de los miembros de tu equipo para poder trabajar colaborativamente. Si todavia no tienen cuenta en Diamon Cloud se le enviaráun link al mail</p>
+                <p className='explanation-text margin container-fluid'>Insertá un mail de Google de los miembros de tu equipo para poder trabajar colaborativamente. Si todavia no tienen cuenta en Diamond Cloud se le enviará un link al mail</p>
                 <UsersList usersEmails={ this.state.usersEmails } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
               </div>
           </div>

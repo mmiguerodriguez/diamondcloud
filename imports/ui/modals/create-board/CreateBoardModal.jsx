@@ -155,12 +155,13 @@ export default class CreateBoardModal extends React.Component {
         if(error) {
           throw new Meteor.Error(error);
         } else {
+          this.clearData();
+          this.closeModal();
+          
           this.props.toggleCollapsible('boards');
           this.props.changeBoard(board._id);
           this.props.getMessages({ boardId: board._id });
 
-          this.clearData();
-          this.closeModal();
         }
       });
     } else {

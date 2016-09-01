@@ -39,7 +39,7 @@ export default class ModuleInstance extends React.Component {
           ) : ( null )
         }
         {
-          !this.state.loading ? (
+          !this.state.loading || this.state.minimized ? (
             <div
               className='module-pin'
               role='button'
@@ -67,6 +67,8 @@ export default class ModuleInstance extends React.Component {
 
     this.refs.iframe.onload = this.iframeLoaded.bind(this);
     this.refs.iframe.contentWindow.DiamondAPI = DiamondAPI;
+    
+    this.props.moduleInstancesFrames.push(this.refs.iframe.contentWindow);
   }
   iframeLoaded() {
     let self = this;
@@ -133,6 +135,7 @@ export default class ModuleInstance extends React.Component {
 
 ModuleInstance.propTypes = {
   moduleInstance: React.PropTypes.object.isRequired,
+  moduleInstancesFrames: React.PropTypes.array,
   module: React.PropTypes.object.isRequired,
   boards: React.PropTypes.array.isRequired,
   users: React.PropTypes.array.isRequired,
