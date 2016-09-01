@@ -63,6 +63,7 @@ if(Meteor.isServer){
           _id: 'id',
           prop1: 'val1',
         },
+        isGlobal: false,
         visibleBy: [
           { userId: 'userId' },
         ],
@@ -143,7 +144,7 @@ if(Meteor.isServer){
         done();
       });
     });
-    
+
     it('should get an entry from module data', function(done) {
       module.data = {
         todos: [
@@ -197,7 +198,7 @@ if(Meteor.isServer){
         });
       });
     });
-    
+
     it('should remove an entry from module data', function(done) {
       module.data = {
         todos: [
@@ -236,7 +237,7 @@ if(Meteor.isServer){
         apiRemove.call({
           moduleInstanceId: module._id,
           collection: 'todos',
-          filter: {
+          $filter: {
             color: {
               $in: ['Red', 'Green'],
             }

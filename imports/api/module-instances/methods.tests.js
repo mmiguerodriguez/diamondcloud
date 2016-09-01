@@ -68,9 +68,10 @@ if(Meteor.isServer){
       };
 
       createModuleInstance.call(args, (err, result) => {
+        console.log('matraodr');
         if (err) throw new Meteor.Error(err);
 
-         expect = {
+        expect = {
           _id: result._id,
           moduleId: args.moduleId,
           x: args.x,
@@ -79,10 +80,11 @@ if(Meteor.isServer){
           height: args.height,
           data: args.data,
           archived: false,
+          minimized: false,
         };
-  
+
         let _board = Boards.findOne(board._id);
-  
+
         chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
         // Changed to [1] since a moduleInstance is already inserted // board.moduleInstances.push({ _id: module._id });
         chai.assert.equal(_board.moduleInstances[1]._id, result._id);
@@ -115,8 +117,10 @@ if(Meteor.isServer){
         height: args.height,
         data: module.data,
         archived: false,
+        minimized: null
       };
 
+      console.log('Prusiano', expect, result);
       chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
     });
 

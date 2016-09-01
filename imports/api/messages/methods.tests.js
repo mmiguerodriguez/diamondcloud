@@ -98,15 +98,14 @@ if (Meteor.isServer) {
         type: 'text',
         content: faker.lorem.sentence(),
         createdAt: (new Date()).getTime(),
-        seers: [],
       };
       expect_1 = {
         senderId: user._id,
         type: 'text',
         content: test_1.content,
         createdAt: test_1.createdAt,
-        seers: [],
         boardId: board._id,
+        seers: [],
       };
 
       test_2 = {
@@ -114,29 +113,22 @@ if (Meteor.isServer) {
         type: 'text',
         content: faker.lorem.sentence(),
         createdAt: (new Date()).getTime(),
-        seers: [],
       };
       expect_2 = {
         senderId: user._id,
         type: 'text',
         content: test_2.content,
         createdAt: test_2.createdAt,
-        seers: [],
         directChatId: directChat._id,
+        seen: false
       };
 
-      console.log('asd1');
-      sendMessage.call(test_1, (err, res) => {
-        if (err) throw new Meteor.Error(err);
-        result_1 = res;
-        console.log('asd2');
-        sendMessage.call(test_2, (err, res) => {
-          if (err) throw new Meteor.Error(err);
-          result_2 = res;
-          console.log('mandarina', expect_1, result_1);
-          chai.assert.isTrue(JSON.stringify(expect_1) == JSON.stringify(result_1));
-          chai.assert.isTrue(JSON.stringify(expect_2) == JSON.stringify(result_2));
-          console.log('asd3');
+      sendMessage.call(test_1, (err_1, result_1) => {
+        if (err_1) throw new Meteor.Error(err_1);
+        sendMessage.call(test_2, (err_2, result_2) => {
+          if (err_2) throw new Meteor.Error(err_2);
+          chai.assert.equal(JSON.stringify(expect_1), JSON.stringify(result_1));
+          chai.assert.equal(JSON.stringify(expect_2), JSON.stringify(result_2));
           done();
         });
       });

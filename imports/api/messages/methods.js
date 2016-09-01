@@ -53,7 +53,7 @@ export const seeMessage = new ValidatedMethod({
       throw new Meteor.Error('Messages.methods.see.notLoggedIn',
       'Must be logged in to see a message.');
     }
-    
+
     let message = Messages.findOne(messageId);
     if (message.boardId) {
       Messages.update(messageId, {
