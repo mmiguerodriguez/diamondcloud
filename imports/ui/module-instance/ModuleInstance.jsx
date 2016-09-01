@@ -70,6 +70,11 @@ export default class ModuleInstance extends React.Component {
     
     this.props.moduleInstancesFrames.push(this.refs.iframe.contentWindow);
   }
+  componentDidUpdate() {
+    if(this.props.moduleInstance.archived) {
+      this.refs.iframe.contentWindow.DiamondAPI.unsubscribe();
+    }
+  }
   iframeLoaded() {
     let self = this;
     $(this.refs.module)
