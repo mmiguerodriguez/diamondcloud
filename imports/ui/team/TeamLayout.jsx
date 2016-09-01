@@ -120,9 +120,9 @@ export default class TeamLayout extends React.Component {
             }
           });
 
-          this.props.removeChat({ boardId }); // Remove board chats with this boardId
-          this.changeBoard(newBoardId); // Change to another board which isn't this one
           this.closeContextMenu(this.refs['board-context-menu']); // Close menu
+          this.changeBoard(newBoardId); // Change to another board which isn't this one
+          this.props.removeChat({ boardId }); // Remove board chats with this boardId
         }
       });
     }
@@ -190,6 +190,7 @@ TeamLayout.propTypes = {
 
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
+  
   moduleInstances: React.PropTypes.array,
   moduleInstancesFrames: React.PropTypes.array,
   modules: React.PropTypes.array.isRequired,
