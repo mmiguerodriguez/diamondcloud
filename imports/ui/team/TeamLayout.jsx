@@ -31,6 +31,7 @@ export default class TeamLayout extends React.Component {
           board={ this.props.board }
           users={ this.props.team.users }
           moduleInstances={ this.props.moduleInstances }
+          moduleInstancesFrames={ this.props.moduleInstancesFrames }
           modules={ this.props.modules }
           getMessages={ this.props.getMessages }
           openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu.bind(this) } />
@@ -190,6 +191,7 @@ TeamLayout.propTypes = {
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
   moduleInstances: React.PropTypes.array,
+  moduleInstancesFrames: React.PropTypes.array,
   modules: React.PropTypes.array.isRequired,
 
   directChats: React.PropTypes.array.isRequired,

@@ -19,6 +19,7 @@ export default class Team extends React.Component {
 
     this.state = {
       subscriptions: [],
+      moduleInstancesFrames: [],
     };
   }
   render() {
@@ -44,6 +45,7 @@ export default class Team extends React.Component {
         boards={ this.props.boards }
         board={ board }
         moduleInstances={ this.props.moduleInstances }
+        moduleInstancesFrames={ this.state.moduleInstancesFrames }
         modules={ this.props.modules }
 
         directChats={ this.props.directChats }
@@ -168,7 +170,10 @@ export default class Team extends React.Component {
 
   boardSubscribe(boardId) {
     if(Team.boardSubscription.get()) {
-      Team.boardSubscription.get().stop();
+      this.state.moduleInstancesFrames.map((frame) => {
+        frame.DiamondAPI.unsubscribe();
+      });
+      Team.boardSubscription.get().stop(); // Unsubscribe from actual board
     }
 
     let subscription = Meteor.subscribe('boards.board', boardId, {
