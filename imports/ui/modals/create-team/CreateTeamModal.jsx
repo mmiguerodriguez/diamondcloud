@@ -116,6 +116,7 @@ export default class CreateTeamModal extends React.Component {
                     </div>
                   </div>
                   <div className='premium col-xs-5'>
+                    <div className="tag"><p>Proximamente...</p></div>
                     <div className='premium-card'>
                       <h3 className='plan-card-title'>Premium</h3>
                       <div className='row'>
