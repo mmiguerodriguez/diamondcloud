@@ -98,7 +98,6 @@ if (Meteor.isServer) {
         type: 'text',
         content: faker.lorem.sentence(),
         createdAt: (new Date()).getTime(),
-        seers: [],
       };
       expect_1 = {
         senderId: user._id,
@@ -114,29 +113,25 @@ if (Meteor.isServer) {
         type: 'text',
         content: faker.lorem.sentence(),
         createdAt: (new Date()).getTime(),
-        seers: [],
       };
       expect_2 = {
         senderId: user._id,
         type: 'text',
         content: test_2.content,
         createdAt: test_2.createdAt,
-        seers: [],
+        seen: false,
         directChatId: directChat._id,
       };
 
-      console.log('asd1');
       sendMessage.call(test_1, (err, res) => {
         if (err) throw new Meteor.Error(err);
         result_1 = res;
-        console.log('asd2');
         sendMessage.call(test_2, (err, res) => {
           if (err) throw new Meteor.Error(err);
           result_2 = res;
-          console.log('mandarina', expect_1, result_1);
-          chai.assert.isTrue(JSON.stringify(expect_1) == JSON.stringify(result_1));
-          chai.assert.isTrue(JSON.stringify(expect_2) == JSON.stringify(result_2));
-          console.log('asd3');
+
+          chai.assert.deepEqual(expect_1, result_1);
+          chai.assert.deepEqual(expect_2, result_2);
           done();
         });
       });

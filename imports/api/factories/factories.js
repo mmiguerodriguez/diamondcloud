@@ -55,16 +55,17 @@ Factory.define('message', Messages, {
 	senderId: Factory.get('user')._id,
 	type: "text",
 	content: faker.lorem.sentence(),
-	createdAt: new Date(),
-	seers: []
+	createdAt: new Date()
 });
 
 Factory.define('directChatMessage', Messages, Factory.extend('message', {
 	directChatId: Factory.get('directChat')._id,
+	seen: false,
 }));
 
 Factory.define('boardMessage', Messages, Factory.extend('message', {
 	directChatId: Factory.get('board'),
+	seers: [],
 }));
 
 Factory.define('moduleInstance', ModuleInstances, {
