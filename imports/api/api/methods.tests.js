@@ -3,6 +3,7 @@ import { resetDatabase }           from 'meteor/xolvio:cleaner';
 import { sinon }                   from 'meteor/practicalmeteor:sinon';
 import { chai }                    from 'meteor/practicalmeteor:chai';
 import { Random }                  from 'meteor/random';
+import { printObject }             from '../helpers/print-objects.js';
 import   faker                     from 'faker';
 import                                  '../factories/factories.js';
 
@@ -41,6 +42,7 @@ if (Meteor.isServer) {
               _id: 1,
               text: 'Todo 1',
               color: 'Red',
+              isGlobal: true,
               visibleBy: [
                 { userId: user._id },
               ]
@@ -49,19 +51,24 @@ if (Meteor.isServer) {
               _id: 2,
               text: 'Todo 2',
               color: 'Green',
+              isGlobal: false,
+              moduleInstanceId: moduleInstance._id,
               visibleBy: [
                 { boardId: board._id },
-              ]
+              ],
             },
             {
               _id: 3,
               text: 'Todo 3',
-              color: 'Red'
+              color: 'Red',
+              isGlobal: true
             },
             {
               _id: 4,
               text: 'Todo 4',
               color: 'Red',
+              isGlobal: false,
+              moduleInstanceId: moduleInstance._id,
               visibleBy: [
                 { userId: Random.id() },
               ],
@@ -123,9 +130,8 @@ if (Meteor.isServer) {
           ],
         };
 
-        console.log('Mandarina', ModuleData.findOne(moduleData._id).data, expect);
         chai.assert.deepEqual(ModuleData.findOne(moduleData._id).data, expect);
-        moduleData.update(moduleData._id, moduleData);
+        ModuleData.update(moduleData._id, moduleData);
         done();
       });
 
@@ -144,16 +150,20 @@ if (Meteor.isServer) {
                 color: 'Yellow',
               }
             }
-          });
-          let expect = moduleData.data;
-          expect.todos[0].color =  'Yellow'; // These are the modules that pass the filter
-          expect.todos[1].color =  'Yellow';
-          expect.todos[2].color =  'Yellow';
+          }, (err, res) => {
+            let expect = moduleData.data;
+            expect.todos[0].color =  'Yellow';
+            expect.todos[1].color =  'Yellow';
+            expect.todos[2].color =  'Yellow';
 
-          chai.assert.deepEqual(ModuleData.findOne(moduleData._id).data, expect);
-          done();
+            printObject('kvothe', ModuleData.findOne(moduleData._id).data, expect);
+            chai.assert.deepEqual(ModuleData.findOne(moduleData._id).data, expect);
+            done();
+          });
         });
       });
+
+      // Checkpoint
 
       it('should get an entry from module data', function(done) {
         ModuleData.update(moduleData._id, moduleData, () => {
