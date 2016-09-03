@@ -45,7 +45,6 @@ export const createBoard = new ValidatedMethod({
       isPrivate,
       users,
       moduleInstances: [],
-      drawings: [],
       archived: false,
     };
 

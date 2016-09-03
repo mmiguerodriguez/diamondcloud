@@ -30,7 +30,6 @@ if (Meteor.isServer) {
             { _id: usersIds[2] }
           ],
           moduleInstances: [],
-          drawings: [],
           archived: false,
         },
         team = {
@@ -44,7 +43,6 @@ if (Meteor.isServer) {
             { email: emails[2], permission: 'member' },
           ],
           boards: [{ _id: board._id }],
-          drawings: [],
           archived: false,
         };
 
@@ -98,7 +96,6 @@ if (Meteor.isServer) {
         isPrivate: test_1.isPrivate,
         users: [],
         moduleInstances: [],
-        drawings: [],
         archived: false,
       };
       expect_2 = {
@@ -106,7 +103,6 @@ if (Meteor.isServer) {
         isPrivate: test_2.isPrivate,
         users: [...test_2.users, { _id: user._id }],
         moduleInstances: [],
-        drawings: [],
         archived: false,
       };
 
@@ -122,8 +118,8 @@ if (Meteor.isServer) {
           result_2 = res;
           delete result_2._id;
 
-          chai.assert.equal(JSON.stringify(result_1), JSON.stringify(expect_1));
-          chai.assert.equal(JSON.stringify(result_2), JSON.stringify(expect_2));
+          chai.assert.deepEqual(result_1, expect_1);
+          chai.assert.deepEqual(result_2, expect_2);
           done();
         });
       });
