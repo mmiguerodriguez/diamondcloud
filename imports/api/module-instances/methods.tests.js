@@ -79,11 +79,12 @@ if(Meteor.isServer){
           height: args.height,
           data: args.data,
           archived: false,
+          minimized: false,
         };
-  
+
         let _board = Boards.findOne(board._id);
-  
-        chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
+
+        chai.assert.deepEqual(expect, result);
         // Changed to [1] since a moduleInstance is already inserted // board.moduleInstances.push({ _id: module._id });
         chai.assert.equal(_board.moduleInstances[1]._id, result._id);
         done();
@@ -115,9 +116,10 @@ if(Meteor.isServer){
         height: args.height,
         data: module.data,
         archived: false,
+        minimized: false,
       };
 
-      chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
+      chai.assert.deepEqual(expect, result);
     });
 
     it('should archive a module instance', function() {
@@ -236,7 +238,7 @@ if(Meteor.isServer){
         done();
       });
     });
-    
+
     it('should get an entry from module data', function(done) {
       module.data = {
         todos: [
@@ -290,7 +292,7 @@ if(Meteor.isServer){
         });
       });
     });
-    
+
     it('should remove an entry from module data', function(done) {
       module.data = {
         todos: [
