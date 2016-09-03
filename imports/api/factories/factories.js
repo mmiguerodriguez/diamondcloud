@@ -64,7 +64,7 @@ Factory.define('directChatMessage', Messages, Factory.extend('message', {
 }));
 
 Factory.define('boardMessage', Messages, Factory.extend('message', {
-	directChatId: Factory.get('board'),
+	boardId: Factory.get('board')._id,
 	seers: [],
 }));
 

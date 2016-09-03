@@ -54,8 +54,8 @@ if (Meteor.isServer) {
           users: board.users,
         },
         messages = [
-          Factory.create('message'),
-          Factory.create('message')
+          Factory.create('directChatMessage'),
+          Factory.create('boardMessage')
         ];
 
         messages[0].directChatId = Random.id();
@@ -123,12 +123,12 @@ if (Meteor.isServer) {
         directChatId: directChat._id,
       };
 
-      sendMessage.call(test_1, (err, res) => {
+      sendMessage.call(test_1, (err, result) => {
         if (err) throw new Meteor.Error(err);
-        result_1 = res;
-        sendMessage.call(test_2, (err, res) => {
+        result_1 = result;
+        sendMessage.call(test_2, (err, result) => {
           if (err) throw new Meteor.Error(err);
-          result_2 = res;
+          result_2 = result;
 
           chai.assert.deepEqual(expect_1, result_1);
           chai.assert.deepEqual(expect_2, result_2);
@@ -141,8 +141,8 @@ if (Meteor.isServer) {
       let expected = messages[0];
       expected.seen = true;
 
-      seeMessage.call({ messageId: messages[0]._id }, (err, res) => {
-        chai.assert.isTrue(JSON.stringify(res) === JSON.stringify(expected));
+      seeMessage.call({ messageId: messages[0]._id }, (err, result) => {
+        chai.assert.deepEqual(result, expected);
         done();
       });
     });
@@ -151,8 +151,8 @@ if (Meteor.isServer) {
       let expected = messages[1];
       expected.seers.push(user._id);
 
-      seeMessage.call({ messageId: messages[1]._id }, (err, res) => {
-        chai.assert.isTrue(JSON.stringify(res) === JSON.stringify(expected));
+      seeMessage.call({ messageId: messages[1]._id }, (err, result) => {
+        chai.assert.deepEqual(result, expected);
         done();
       });
     });
