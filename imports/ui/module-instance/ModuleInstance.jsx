@@ -52,7 +52,7 @@ export default class ModuleInstance extends React.Component {
 
   componentDidMount() {
     let DiamondAPI = generateApi({
-      collectionId: this.props.moduleInstance._id,
+      moduleDataId: this.props.moduleInstance._id,
       boards: this.props.boards,
       users: this.props.users,
     });

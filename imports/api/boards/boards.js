@@ -41,6 +41,7 @@ Boards.boardFields = {
   moduleInstances: 1,
   archived: 1,
 };
+
 Boards.moduleInstancesFields = {
   x: 1,
   y: 1,
@@ -85,6 +86,7 @@ Boards.getBoards = (boardsIds, userId, fields) => {
     fields
   });
 };
+
 Boards.isValid = (boardId, userId) => {
   let board = Boards.findOne({
     _id: boardId,
@@ -99,13 +101,14 @@ Boards.isValid = (boardId, userId) => {
       }
     ],
   });
-  
+
   if(!board) {
     return false;
   } else {
     return board.team().hasUser({ _id: userId });
   }
 };
+
 Boards.addModuleInstance = (boardId, moduleInstanceId) => {
   Boards.update({
     _id: boardId,

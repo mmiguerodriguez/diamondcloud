@@ -78,11 +78,11 @@ Factory.define('moduleInstance', ModuleInstances, {
 });
 
 Factory.define('moduleData', ModuleData, {
-	moduleId: Factory.get('module')._id,
+	moduleId: Random.id(),
 	teamId: Factory.get('team')._id,
 });
 
-Factory.define('todosModuleData', ModuleInstances, Factory.extend('moduleData', {
+Factory.define('todosModuleData', ModuleData, Factory.extend('moduleData', {
 	data: {
 		todos: [
       {

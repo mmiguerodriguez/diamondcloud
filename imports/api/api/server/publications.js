@@ -4,10 +4,13 @@ import { ModuleInstances } from '../../module-instances/module-instances.js';
 import { ModuleData } from '../../module-data/module-data.js';
 import { Boards } from '../../boards/boards.js';
 
-Meteor.publish('moduleInstances.data', function(moduleInstanceId, obj) {
+Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
   let board = ModuleInstances.findOne(moduleInstanceId).board();
   let teamId = board.team()._id;
-  let boards = Meteor.users.findOne(this.userId).boards(teamId, { _id: 1 }).map((board) => board._id);
+  let boards = Meteor.users
+               .findOne(this.userId)
+               .boards(teamId, { _id: 1 })
+               .map((board) => board._id);
 
   if (!Boards.isValid(board._id, this.userId)) {
     throw new Meteor.Error('ModuleInstances.data.notAValidMember',

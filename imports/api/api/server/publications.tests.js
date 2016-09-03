@@ -16,8 +16,8 @@ import { ModuleInstances }      from '../../module-instances/module-instances.js
 import { ModuleData }      from '../../module-data/module-data.js';
 
 if (Meteor.isServer) {
-  describe('Modules API', function() {
-    describe('Publication', function() {
+  describe('API', function() {
+    describe('Subscriptions', function() {
       let user, teams, board, moduleInstance, requests;
 
       beforeEach(function() {
@@ -32,7 +32,7 @@ if (Meteor.isServer) {
         teams[0].users[0].permission = 'member';
         teams[0].boards.push({ _id: board._id });
         moduleInstances = [
-          Factory.create('todosModuleInstance'),
+          Factory.create('todosModuleData'),
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),

@@ -25,7 +25,7 @@ if (Meteor.isClient) {
       user = Factory.create('user');
 
       moduleInstances = [
-        Factory.create('todosModuleInstance'),
+        Factory.create('todosModuleData'),
         Factory.create('moduleInstance'),
         Factory.create('moduleInstance'),
         Factory.create('moduleInstance'),
