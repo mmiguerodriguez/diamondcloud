@@ -62,8 +62,8 @@ if (Meteor.isServer) {
       expect = {
         teamId: args.teamId,
         users: [
-          { _id: user._id },
-          { _id: otherUser._id },
+          { _id: user._id, unseen: 0 },
+          { _id: otherUser._id, unseen: 0 },
         ],
       };
 
@@ -80,7 +80,7 @@ if (Meteor.isServer) {
         }
       });
 
-      chai.assert.equal(JSON.stringify(result), JSON.stringify(expect));
+      chai.assert.deepEqual(result, expect);
       done();
     });
   });

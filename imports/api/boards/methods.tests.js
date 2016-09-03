@@ -101,7 +101,11 @@ if (Meteor.isServer) {
       expect_2 = {
         name: test_2.name,
         isPrivate: test_2.isPrivate,
-        users: [...test_2.users, { _id: user._id }],
+        users: [
+          { _id: usersIds[1], unseen: 0 },
+          { _id: usersIds[2], unseen: 0 },
+          { _id: user._id, unseen: 0 }
+        ],
         moduleInstances: [],
         archived: false,
       };

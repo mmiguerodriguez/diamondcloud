@@ -1,8 +1,10 @@
-import { Meteor } from 'meteor/meteor';
+import { Meteor }          from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
 
-import { Messages } from './messages.js';
+import { Messages }        from './messages.js';
+import { Boards }          from '../boards/boards.js';
+import { DirectChats }     from '../direct-chats/direct-chats.js';
 
 export const sendMessage = new ValidatedMethod({
   name: 'Messages.methods.send',
@@ -30,9 +32,31 @@ export const sendMessage = new ValidatedMethod({
     if (!!directChatId) {
       message.directChatId = directChatId;
       message.seen = false;
+
+      let users = DirectChats.findOne(directChatId).users;
+      users.forEach((user, index, array) => {
+        array[index].unseen = user.unseen + 1;
+      });
+
+      DirectChats.update(directChatId, {
+        $set: {
+          users,
+        }
+      });
     } else if (!!boardId) {
       message.boardId = boardId;
       message.seers = [];
+
+      let users = Boards.findOne(boardId).users;
+      users.forEach((user, index, array) => {
+        array[index].unseen = user.unseen + 1;
+      });
+
+      Boards.update(boardId, {
+        $set: {
+          users,
+        }
+      });
     } else {
       throw new Meteor.Error('Messages.methods.send.noDestination',
       'Must have a destination to send a message.');
@@ -53,7 +77,7 @@ export const seeMessage = new ValidatedMethod({
       throw new Meteor.Error('Messages.methods.see.notLoggedIn',
       'Must be logged in to see a message.');
     }
-    
+
     let message = Messages.findOne(messageId);
     if (message.boardId) {
       Messages.update(messageId, {
