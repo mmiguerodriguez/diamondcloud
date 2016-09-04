@@ -33,32 +33,12 @@ export const sendMessage = new ValidatedMethod({
       message.directChatId = directChatId;
       message.seen = false;
 
-      let users = DirectChats.findOne(directChatId).users;
-      users.forEach((user, index, array) => {
-        if(user._id !== message.senderId) {
-          array[index].notifications = user.notifications + 1;
-        }
-      });
-
-      DirectChats.update(directChatId, {
-        $set: {
-          users,
-        }
-      });
+      DirectChats.addNotification(directChatId, message.senderId);
     } else if (!!boardId) {
       message.boardId = boardId;
       message.seers = [];
 
-      let users = Boards.findOne(boardId).users;
-      users.forEach((user, index, array) => {
-        array[index].notifications = user.notifications + 1;
-      });
-
-      Boards.update(boardId, {
-        $set: {
-          users,
-        }
-      });
+      Boards.addNotification(boardId);
     } else {
       throw new Meteor.Error('Messages.methods.send.noDestination',
       'Must have a destination to send a message.');
@@ -94,18 +74,7 @@ export const seeMessage = new ValidatedMethod({
         }
       });
 
-      let users = DirectChats.findOne(message.directChatId).users;
-      users.forEach((user, index, array) => {
-        if(user._id !== message.senderId) {
-          array[index].notifications = 0;
-        }
-      });
-
-      DirectChats.update(message.directChatId, {
-        $set: {
-          users,
-        }
-      });
+      DirectChats.resetNotifications(message.directChatId, message.senderId);
     }
 
     message = Messages.findOne(messageId);

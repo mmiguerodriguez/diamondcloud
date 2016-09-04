@@ -99,7 +99,7 @@ Boards.isValid = (boardId, userId) => {
       }
     ],
   });
-  
+
   if(!board) {
     return false;
   } else {
@@ -114,6 +114,18 @@ Boards.addModuleInstance = (boardId, moduleInstanceId) => {
       moduleInstances: {
         _id: moduleInstanceId,
       }
+    }
+  });
+};
+Boards.addNotification = (boardId, userId) => {
+  let users = Boards.findOne(boardId).users;
+  users.forEach((user, index, array) => {
+    array[index].notifications = user.notifications + 1;
+  });
+
+  Boards.update(boardId, {
+    $set: {
+      users,
     }
   });
 };
