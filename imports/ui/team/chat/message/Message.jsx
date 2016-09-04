@@ -41,16 +41,17 @@ export default class Message extends React.Component {
     }
   }
   componentDidMount() {
-    console.log(this.props.message.seen);
     if(this.props.message.senderId !== Meteor.userId()) {
-      if(!this.props.message.seen) {
-        Meteor.call('Messages.methods.see', { messageId: this.props.message._id }, (error, result) => {
-          if(error) {
-            throw new Meteor.Error(error);
-          } else {
-            console.log(result);
-          }
-        });
+      if(this.props.position !== 'minimized') {
+        if(!this.props.message.seen) {
+          Meteor.call('Messages.methods.see', { messageId: this.props.message._id }, (error, result) => {
+            if(error) {
+              throw new Meteor.Error(error);
+            } else {
+              // console.log(result);
+            }
+          });
+        }
       }
     }
   }
