@@ -13,71 +13,57 @@ import { Messages }      from './messages.js';
 import { sendMessage,
          seeMessage }    from './methods.js';
 
+import '../factories/factories.js';
+
 if (Meteor.isServer) {
   describe('Messages', function() {
-    let usersIds = [Random.id(), Random.id(), Random.id()],
-        emails = [faker.internet.email(), faker.internet.email(), faker.internet.email()],
-        user = {
-          _id: usersIds[0],
-          emails: [{ address: emails[0] }],
-        },
-        board = {
-          _id: Random.id(),
-          name: faker.lorem.word(),
-          isPrivate: false,
-          users: [
-            { _id: usersIds[0] },
-            { _id: usersIds[1] },
-            { _id: usersIds[2] }
-          ],
-          moduleInstances: [],
-          drawings: [],
-          archived: false,
-        },
-        team = {
-          _id: Random.id(),
-          name: faker.lorem.word(),
-          plan: 'free',
-          type: faker.lorem.word(),
-          users: [
-            { email: emails[0], permission: 'owner' },
-            { email: emails[1], permission: 'member' },
-            { email: emails[2], permission: 'member' },
-          ],
-          boards: [{ _id: board._id }],
-          drawings: [],
-          archived: false,
-        },
-        directChat = {
-          _id: Random.id(),
-          teamId: team._id,
-          users: board.users,
-        },
-        messages = [
-          Factory.create('directChatMessage'),
-          Factory.create('boardMessage')
-        ];
-
-        messages[0].directChatId = Random.id();
-        messages[1].boardId = Random.id();
+    let users, team, board, directChat, messages;
 
     beforeEach(function(done) {
       resetDatabase();
-      sinon.stub(Meteor, 'user', () => user);
 
-      Meteor.users.insert(user);
-      Meteor.users.insert({
-        _id: usersIds[1],
-        emails: [{ address: emails[1] }],
-      });
-      Meteor.users.insert({
-        _id: usersIds[2],
-        emails: [{ address: emails[2] }],
-      });
+      users = [
+        Factory.create('user'),
+        {
+          _id: Random.id(),
+          emails: [{ address: faker.internet.email() }],
+          profile: {
+            name: faker.name.findName(),
+          },
+        }
+      ];
+      team = Factory.create('team');
+      board = Factory.create('publicBoard');
+      directChat = Factory.create('directChat');
+      messages = [
+        Factory.create('directChatMessage'),
+        Factory.create('boardMessage'),
+      ];
+
+      team.boards.push({ _id: board._id });
+      team.users = [
+        { email: users[0].emails[0].address, permission: 'owner' },
+        { email: users[1].emails[0].address, permission: 'member' },
+      ];
+      board.users = [
+        { _id: users[0]._id, notifications: faker.random.number({ min: 0, max: 100 }) },
+        { _id: users[1]._id, notifications: faker.random.number({ min: 0, max: 100 }) },
+      ];
+      directChat.teamId = team._id;
+      directChat.users = board.users;
+      messages[0].directChatId = directChat._id;
+      messages[1].boardId = board._id;
+
+      resetDatabase();
+
+      sinon.stub(Meteor, 'user', () => users[0]);
+
+      users.forEach((user) => Meteor.users.insert(user));
 
       Teams.insert(team);
       Boards.insert(board);
       DirectChats.insert(directChat);
+
       messages.forEach((message) => Messages.insert(message));
       done();
     });
@@ -100,7 +86,7 @@ if (Meteor.isServer) {
         createdAt: (new Date()).getTime(),
       };
       expect_1 = {
-        senderId: user._id,
+        senderId: users[0]._id,
         type: 'text',
         content: test_1.content,
         createdAt: test_1.createdAt,
@@ -115,7 +101,7 @@ if (Meteor.isServer) {
         createdAt: (new Date()).getTime(),
       };
       expect_2 = {
-        senderId: user._id,
+        senderId: users[0]._id,
         type: 'text',
         content: test_2.content,
         createdAt: test_2.createdAt,
@@ -142,6 +128,7 @@ if (Meteor.isServer) {
       expected.seen = true;
 
       seeMessage.call({ messageId: messages[0]._id }, (err, result) => {
+        if(err) console.log(err);
         chai.assert.deepEqual(result, expected);
         done();
       });
@@ -149,7 +136,7 @@ if (Meteor.isServer) {
 
     it('should see a message in a board', function(done) {
       let expected = messages[1];
-      expected.seers.push(user._id);
+      expected.seers.push(users[0]._id);
 
       seeMessage.call({ messageId: messages[1]._id }, (err, result) => {
         chai.assert.deepEqual(result, expected);
