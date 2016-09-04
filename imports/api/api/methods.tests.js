@@ -78,14 +78,17 @@ if (Meteor.isServer) {
         team.boards.push({ _id: board._id });
         team.users[0].email = user.emails[0].address;
         board.moduleInstances.push({ _id: moduleInstance._id });
+        board.moduleInstances.push({ _id: otherModuleInstance._id });
         moduleInstance.boardId = board._id;
         moduleData.teamId = team._id;
         moduleData.moduleId = moduleInstance.moduleId;
+        otherModuleInstance.moduleId = moduleData.moduleId;
 
         resetDatabase();
         Teams.insert(team);
         Boards.insert(board);
         ModuleInstances.insert(moduleInstance);
+        ModuleInstances.insert(otherModuleInstance);
         ModuleData.insert(moduleData);
         Meteor.users.insert(user);
 
@@ -207,9 +210,71 @@ if (Meteor.isServer) {
         });
       });
 
-      // Persistent data testing
-      it('should ', function() {
-        
+      it('should update using persistent data when indicated', function(done) {
+        ModuleData.update(moduleData._id, moduleData, () => {
+          apiUpdate.call({
+            moduleInstanceId: otherModuleInstance._id,
+            collection: 'todos',
+            filter: {
+              color: {
+                $in: ['Red', 'Green'],
+              }
+            },
+            updateQuery: {
+              $set: {
+                color: 'Yellow',
+              }
+            }
+          }, (err, res) => {
+            let expect = moduleData.data;
+            expect.todos[0].color =  'Yellow';
+            expect.todos[2].color =  'Yellow';
+            chai.assert.deepEqual(ModuleData.findOne(moduleData._id).data, expect);
+            done();
+          });
+        });
+      });
+
+      it('should get using persistent data when indicated', function(done) {
+        ModuleData.update(moduleData._id, moduleData, () => {
+          apiGet.call({
+            moduleInstanceId: otherModuleInstance._id,
+            collection: 'todos',
+            filter: {
+              color: {
+                $in: ['Red', 'Green'],
+              }
+            },
+          }, (err, res) => {
+            let expect = [];
+            expect.push(moduleData.data.todos[0]);
+            expect.push(moduleData.data.todos[2]);
+            chai.assert.deepEqual(res, expect);
+            done();
+          });
+        });
+      });
+
+      it('should remove using persistent data when indicated', function(done) {
+        ModuleData.update(moduleData._id, moduleData, () => {
+          apiRemove.call({
+            moduleInstanceId: otherModuleInstance._id,
+            collection: 'todos',
+            filter: {
+              color: {
+                $in: ['Red', 'Green'],
+              }
+            }
+          }, (err, res) => {
+            let expect = [
+              moduleData.data.todos[1],
+              moduleData.data.todos[3]
+            ];
+            let result = ModuleData.findOne(moduleData._id).data.todos;
+            chai.assert.deepEqual(result, expect);
+            done();
+          });
+        });
       });
     });
   });
