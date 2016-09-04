@@ -11,77 +11,71 @@ import { Teams }            from '../teams/teams.js';
 
 if (Meteor.isServer) {
   describe('DirectChats', function() {
-    let userMails = [faker.internet.email(), faker.internet.email(), faker.internet.email()],
-        user = {
-          _id: Random.id(),
-          emails: [{ address: userMails[0] }],
-          name: faker.name.findName(),
-        },
-        otherUser = {
-          _id: Random.id(),
-          emails: [{ address: userMails[1] }],
-          name: faker.name.findName(),
-        },
-        team = {
-          _id: Random.id(),
-          name: faker.lorem.word(),
-          plan: 'free',
-          type: 'web',
+    describe('Methods', function() {
+      let users, team;
+
+      beforeEach(function() {
+        resetDatabase();
+
+        users = [
+          Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
+          Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
+        ];
+        team = Factory.create('team');
+
+        team.users = [
+          { email: users[0].emails[0].address, permission: 'owner' },
+          { email: users[1].emails[0].address, permission: 'member' },
+        ];
+
+        resetDatabase();
+
+        sinon.stub(Meteor, 'user', () => users[0]);
+        sinon.stub(Meteor, 'userId', () => users[0]._id);
+
+        users.forEach((user) => Meteor.users.insert(user));
+
+        Teams.insert(team);
+      });
+
+      afterEach(function() {
+        Meteor.user.restore();
+        Meteor.userId.restore();
+      });
+
+      it('should create a direct chat', function(done) {
+        let args,
+            result,
+            expect;
+
+        args = {
+          teamId: team._id,
+          userId: users[1]._id,
+        };
+        expect = {
+          teamId: args.teamId,
           users: [
-            { email: userMails[0], permission: 'owner' },
-            { email: userMails[1], permission: 'member' },
+            { _id: users[0]._id, notifications: 0 },
+            { _id: users[1]._id, notifications: 0 },
           ],
-          archived: false,
         };
 
-    beforeEach(function() {
-      resetDatabase();
-      sinon.stub(Meteor, 'user', () => user);
-      sinon.stub(Meteor, 'userId', () => user._id);
+        createDirectChat.call(args, (err, res) => {
+          if(err) throw new Meteor.Error(err);
+          result = res;
 
-      Meteor.users.insert(user);
-      Meteor.users.insert(otherUser);
+          expect._id = result._id;
+        });
 
-      Teams.insert(team);
-    });
+        createDirectChat.call(args, (err, res) => {
+          if(err) {
+            chai.assert.equal(err.details, 'chat_exists');
+          }
+        });
 
-    afterEach(function() {
-      Meteor.user.restore();
-      Meteor.userId.restore();
-    });
-
-    it('should create a direct chat', function(done) {
-      let args,
-          result,
-          expect;
-
-      args = {
-        teamId: team._id,
-        userId: otherUser._id,
-      };
-      expect = {
-        teamId: args.teamId,
-        users: [
-          { _id: user._id, notifications: 0 },
-          { _id: otherUser._id, notifications: 0 },
-        ],
-      };
-
-      createDirectChat.call(args, (err, res) => {
-        if(err) throw new Meteor.Error(err);
-        result = res;
-
-        expect._id = result._id;
+        chai.assert.deepEqual(result, expect);
+        done();
       });
-
-      createDirectChat.call(args, (err, res) => {
-        if(err) {
-          chai.assert.equal(err.details, 'chat_exists');
-        }
-      });
-
-      chai.assert.deepEqual(result, expect);
-      done();
     });
   });
 }
