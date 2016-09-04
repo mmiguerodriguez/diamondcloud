@@ -102,9 +102,9 @@ if (Meteor.isServer) {
         name: test_2.name,
         isPrivate: test_2.isPrivate,
         users: [
-          { _id: usersIds[1], unseen: 0 },
-          { _id: usersIds[2], unseen: 0 },
-          { _id: user._id, unseen: 0 }
+          { _id: usersIds[1], notifications: 0 },
+          { _id: usersIds[2], notifications: 0 },
+          { _id: user._id, notifications: 0 }
         ],
         moduleInstances: [],
         archived: false,

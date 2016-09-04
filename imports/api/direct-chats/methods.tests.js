@@ -62,8 +62,8 @@ if (Meteor.isServer) {
       expect = {
         teamId: args.teamId,
         users: [
-          { _id: user._id, unseen: 0 },
-          { _id: otherUser._id, unseen: 0 },
+          { _id: user._id, notifications: 0 },
+          { _id: otherUser._id, notifications: 0 },
         ],
       };
 

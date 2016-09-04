@@ -38,7 +38,7 @@ export const createBoard = new ValidatedMethod({
           'You cannot add people to a board that are not part of the team.');
         }
 
-        array[index].unseen = 0;
+        array[index].notifications = 0;
       });
     }
 

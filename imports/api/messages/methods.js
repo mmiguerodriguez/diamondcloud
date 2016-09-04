@@ -35,7 +35,9 @@ export const sendMessage = new ValidatedMethod({
 
       let users = DirectChats.findOne(directChatId).users;
       users.forEach((user, index, array) => {
-        array[index].unseen = user.unseen + 1;
+        if(user._id !== message.senderId) {
+          array[index].notifications = user.notifications + 1;
+        }
       });
 
       DirectChats.update(directChatId, {
@@ -49,7 +51,7 @@ export const sendMessage = new ValidatedMethod({
 
       let users = Boards.findOne(boardId).users;
       users.forEach((user, index, array) => {
-        array[index].unseen = user.unseen + 1;
+        array[index].notifications = user.notifications + 1;
       });
 
       Boards.update(boardId, {
@@ -89,6 +91,19 @@ export const seeMessage = new ValidatedMethod({
       Messages.update(messageId, {
         $set: {
           seen: true,
+        }
+      });
+
+      let users = DirectChats.findOne(message.directChatId).users;
+      users.forEach((user, index, array) => {
+        if(user._id !== message.senderId) {
+          array[index].notifications = 0;
+        }
+      });
+
+      DirectChats.update(message.directChatId, {
+        $set: {
+          users,
         }
       });
     }
