@@ -99,7 +99,7 @@ Boards.isValid = (boardId, userId) => {
       }
     ],
   });
-  
+
   if(!board) {
     return false;
   } else {
@@ -115,5 +115,15 @@ Boards.addModuleInstance = (boardId, moduleInstanceId) => {
         _id: moduleInstanceId,
       }
     }
+  });
+};
+
+Boards.removeUser = (boardId, userId) => {
+  Boards.update({ _id: boardId }, {
+    $pull: {
+      users : {
+        _id: userId,
+      },
+    },
   });
 };

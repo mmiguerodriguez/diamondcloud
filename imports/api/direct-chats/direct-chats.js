@@ -27,8 +27,7 @@ DirectChats.isValid = (directChatId, userId) => {
 
   if(!directChat){
     return false;
-  }
-  else{
+  } else {
     let team = Teams.findOne(directChat.teamId);
     return team.hasUser({ _id: userId });
   }

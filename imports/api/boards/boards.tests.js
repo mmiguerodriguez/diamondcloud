@@ -20,10 +20,6 @@ if (Meteor.isServer) {
         resetDatabase();
 
         user = Factory.create('user');
-        boards = [
-          Factory.create('privateBoard'),
-          Factory.create('privateBoard')
-        ];
         teams = [
           Factory.create('team'),
           Factory.create('team'),
@@ -56,7 +52,7 @@ if (Meteor.isServer) {
         teams.forEach((team) => {
           Teams.insert(team);
         });
-        
+
         moduleInstances.forEach((moduleInstance) => {
           ModuleInstances.insert(moduleInstance);
         });
@@ -82,10 +78,10 @@ if (Meteor.isServer) {
       it('should return the moduleInstances of a board', function() {
         let board = Boards.findOne(boards[2]._id);
         let result, expect;
-        
+
         result = board.getModuleInstances(Boards.moduleInstancesFields).fetch()[0];
         expect = moduleInstances[0];
-        
+
         chai.assert.equal(expect._id, result._id);
         chai.assert.equal(expect.moduleId, result.moduleId);
         chai.assert.equal(expect.x, result.x);
@@ -94,6 +90,12 @@ if (Meteor.isServer) {
         chai.assert.equal(expect.height, result.height);
         chai.assert.equal(expect.archived, result.archived);
         chai.assert.isUndefined(result.data);
+      });
+      it('should remove a user from a board', function() {
+        let expect = boards[0];
+        expect.users = [];
+        Boards.removeUser(boards[0]._id, user._id);
+        chai.assert.deepEqual( Boards.findOne(boards[0]._id), expect);
       });
     });
   });
