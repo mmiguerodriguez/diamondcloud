@@ -123,14 +123,21 @@ export const removeUserFromTeam = new ValidatedMethod({
       throw new Meteor.Error('Teams.methods.removeUser.notLoggedIn',
       'Must be logged in to edit a team.');
     }
+
     let team = Teams.findOne(teamId);
+    let user = Meteor.users.findByEmail(email, {});
     if(Meteor.user().emails[0].address !== team.owner()){
       throw new Meteor.Error('Teams.methods.removeUser.notOwner',
       "Must be team's owner to remove user");
     }
+
+    //remove user from boards
+    let boards = user.boards(teamId, {});
+
+    
+
     Teams.removeUser(teamId, email);
-    // Testing purposes
-    // may need to change in the future
+
     return Teams.findOne(teamId);
   }
 });
