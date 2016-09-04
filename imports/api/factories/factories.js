@@ -32,7 +32,7 @@ Factory.define('publicBoard', Boards, Factory.extend('board', {
 Factory.define('privateBoard', Boards, Factory.extend('board', {
 	isPrivate: true,
 	users: [
-		{ _id: Random.id() },
+		{ _id: Random.id(), notifications: faker.random.number({ min: 0, max: 20 }) },
 	],
 }));
 
