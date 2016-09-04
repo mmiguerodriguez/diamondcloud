@@ -33,8 +33,8 @@ if (Meteor.isServer) {
         team = Factory.create('team');
         board = Factory.create('publicBoard');
         moduleInstance = Factory.create('moduleInstance');
+        otherModuleInstance = Factory.create('moduleInstance');
         moduleData = Factory.create('moduleData');
-        moduleData.moduleId = moduleInstance.moduleId;
         moduleData._id = Random.id();
         moduleData.data = {
           todos: [
@@ -80,6 +80,7 @@ if (Meteor.isServer) {
         board.moduleInstances.push({ _id: moduleInstance._id });
         moduleInstance.boardId = board._id;
         moduleData.teamId = team._id;
+        moduleData.moduleId = moduleInstance.moduleId;
 
         resetDatabase();
         Teams.insert(team);
@@ -204,6 +205,11 @@ if (Meteor.isServer) {
             done();
           });
         });
+      });
+
+      // Persistent data testing
+      it('should ', function() {
+        
       });
     });
   });
