@@ -13,32 +13,34 @@ import                               '../../factories/factories.js';
 import { Boards }               from '../../boards/boards.js';
 import { Teams }                from '../../teams/teams.js';
 import { ModuleInstances }      from '../../module-instances/module-instances.js';
-import { ModuleData }      from '../../module-data/module-data.js';
+import { ModuleData }           from '../../module-data/module-data.js';
 
 if (Meteor.isServer) {
   describe('API', function() {
     describe('Subscriptions', function() {
-      let user, teams, board, moduleInstance, requests;
+      let user, teams, board, moduleInstances, moduleData, requests;
 
       beforeEach(function() {
         resetDatabase();
         user = Factory.create('user');
         teams = [
-          Factory.create('team'), // With user
-          Factory.create('team'), // Without user
+          Factory.create('team'),
+          Factory.create('team'),
         ];
         board = Factory.create('publicBoard', { name: 'General' });
         teams[0].users[0].email = user.emails[0].address;
         teams[0].users[0].permission = 'member';
         teams[0].boards.push({ _id: board._id });
         moduleInstances = [
-          Factory.create('todosModuleData'),
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
         ];
         board.moduleInstances.push({ _id: moduleInstances[0]._id });
+        moduleData = Factory.create('todosModuleData');
+        moduleData.teamId = teams[0]._id;
+        moduleData.moduleId = moduleInstances[0].moduleId;
 
         request = {
           collection: 'todos',
@@ -53,6 +55,7 @@ if (Meteor.isServer) {
         Boards.insert(board);
         teams.forEach((team) => Teams.insert(team));
         moduleInstances.forEach((moduleInstance) => ModuleInstances.insert(moduleInstance));
+        ModuleData.insert(moduleData);
         sinon.stub(Meteor, 'user', () => user);
       });
 
@@ -63,10 +66,9 @@ if (Meteor.isServer) {
       it('should publish the requested moduleInstance data', function(done) {
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('moduleInstances.data', moduleInstances[0]._id, request, (collections) => {
-          printObject('ganash', collections.ModuleInstances);
-          chai.assert.isTrue(collections.ModuleInstances.length == 1);
-          chai.assert.isDefined(collections.ModuleInstances[0].data.todos.length == 1);
+        collector.collect('moduleData.data', moduleInstances[0]._id, request, (collections) => {
+          chai.assert.isTrue(collections.ModuleData.length == 1);
+          chai.assert.isDefined(collections.ModuleData[0].data.todos.length == 1);
           done();
         });
       });

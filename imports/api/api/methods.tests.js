@@ -125,7 +125,9 @@ if (Meteor.isServer) {
               prop1: 'val1',
               visibleBy: [
                 { userId: 'userId' },
-              ]
+              ],
+              isGlobal: false,
+              moduleInstanceId: moduleInstance._id
             }
           ],
         };
@@ -156,7 +158,6 @@ if (Meteor.isServer) {
             expect.todos[1].color =  'Yellow';
             expect.todos[2].color =  'Yellow';
 
-            printObject('kvothe', ModuleData.findOne(moduleData._id).data, expect);
             chai.assert.deepEqual(ModuleData.findOne(moduleData._id).data, expect);
             done();
           });
