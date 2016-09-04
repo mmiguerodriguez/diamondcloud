@@ -58,9 +58,11 @@ if (Meteor.isServer) {
         });
 
         sinon.stub(Meteor, 'user', () => user);
+        sinon.stub(Meteor, 'userId', () => user._id);
       });
       afterEach(function() {
         Meteor.user.restore();
+        Meteor.userId.restore();
       });
 
       it('should return the team of a board', function() {
@@ -95,6 +97,13 @@ if (Meteor.isServer) {
         let expect = boards[0];
         expect.users = [];
         Boards.removeUser(boards[0]._id, user._id);
+        chai.assert.deepEqual( Boards.findOne(boards[0]._id), expect);
+      });
+      it('should add a user to a board', function() {
+        let expect = boards[0],
+            _id = Random.id();
+        expect.users.push({ _id });
+        Boards.addUser(boards[0]._id, _id);
         chai.assert.deepEqual( Boards.findOne(boards[0]._id), expect);
       });
     });
