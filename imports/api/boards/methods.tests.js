@@ -14,54 +14,48 @@ import { createBoard,
 
 if (Meteor.isServer) {
   describe('Boards', function() {
-    let usersIds = [Random.id(), Random.id(), Random.id()],
-        emails = [faker.internet.email(), faker.internet.email(), faker.internet.email()],
-        user = {
-          _id: usersIds[0],
-          emails: [{ address: emails[0] }],
-        },
-        board = {
-          _id: Random.id(),
-          name: faker.lorem.word(),
-          isPrivate: false,
-          users: [
-            { _id: usersIds[0] },
-            { _id: usersIds[1] },
-            { _id: usersIds[2] }
-          ],
-          moduleInstances: [],
-          drawings: [],
-          archived: false,
-        },
-        team = {
-          _id: Random.id(),
-          name: faker.lorem.word(),
-          plan: 'free',
-          type: faker.lorem.word(),
-          users: [
-            { email: emails[0], permission: 'owner' },
-            { email: emails[1], permission: 'member' },
-            { email: emails[2], permission: 'member' },
-          ],
-          boards: [{ _id: board._id }],
-          drawings: [],
-          archived: false,
-        };
+    let users, board, team;
 
     beforeEach(function() {
       resetDatabase();
-      sinon.stub(Meteor, 'user', () => user);
-      sinon.stub(Meteor, 'userId', () => user._id);
 
-      Meteor.users.insert(user);
-      Meteor.users.insert({
-        _id: usersIds[1],
-        emails: [{ address: emails[1] }],
-      });
-      Meteor.users.insert({
-        _id: usersIds[2],
-        emails: [{ address: emails[2] }],
-      });
+      users = [
+        Factory.create('user'),
+        {
+          _id: Random.id(),
+          emails: [{ address: faker.internet.email() }],
+          profile: {
+            name: faker.name.findName(),
+          },
+        },
+        {
+          _id: Random.id(),
+          emails: [{ address: faker.internet.email() }],
+          profile: {
+            name: faker.name.findName(),
+          },
+        }
+      ];
+      team = Factory.create('team');
+      board = Factory.create('publicBoard');
+
+      team.users = [
+        { email: users[0].emails[0].address, permission: 'owner' },
+        { email: users[1].emails[0].address, permission: 'member' },
+        { email: users[2].emails[0].address, permission: 'member' },
+      ];
+      board.users = [
+        { _id: users[0]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
+        { _id: users[1]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
+        { _id: users[2]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
+      ];
+
+      resetDatabase();
+
+      sinon.stub(Meteor, 'user', () => users[0]);
+      sinon.stub(Meteor, 'userId', () => users[0]._id);
+
+      users.forEach((user) => Meteor.users.insert(user));
 
       Teams.insert(team);
       Boards.insert(board);
@@ -89,8 +83,8 @@ if (Meteor.isServer) {
         name: faker.lorem.word(),
         isPrivate: true,
         users: [
-          { _id: usersIds[1] },
-          { _id: usersIds[2] }
+          { _id: users[1]._id },
+          { _id: users[2]._id }
         ],
       };
       expect_1 = {
@@ -98,15 +92,17 @@ if (Meteor.isServer) {
         isPrivate: test_1.isPrivate,
         users: [],
         moduleInstances: [],
-        drawings: [],
         archived: false,
       };
       expect_2 = {
         name: test_2.name,
         isPrivate: test_2.isPrivate,
-        users: [...test_2.users, { _id: user._id }],
+        users: [
+          { _id: users[1]._id, notifications: 0 },
+          { _id: users[2]._id, notifications: 0 },
+          { _id: users[0]._id, notifications: 0 }
+        ],
         moduleInstances: [],
-        drawings: [],
         archived: false,
       };
 
@@ -122,8 +118,8 @@ if (Meteor.isServer) {
           result_2 = res;
           delete result_2._id;
 
-          chai.assert.equal(JSON.stringify(result_1), JSON.stringify(expect_1));
-          chai.assert.equal(JSON.stringify(result_2), JSON.stringify(expect_2));
+          chai.assert.deepEqual(result_1, expect_1);
+          chai.assert.deepEqual(result_2, expect_2);
           done();
         });
       });
@@ -138,7 +134,7 @@ if (Meteor.isServer) {
         result = res;
         expect.archived = true;
 
-        chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
+        chai.assert.equal(JSON.stringify(result), JSON.stringify(expect));
         done();
       });
     });
@@ -152,7 +148,7 @@ if (Meteor.isServer) {
         result = res;
         expect.archived = false;
 
-        chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
+        chai.assert.equal(JSON.stringify(result), JSON.stringify(expect));
         done();
       });
     });

@@ -19,27 +19,6 @@ import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Teams', function() {
-    /*let user = {
-      emails: [{ address: faker.internet.email() }],
-    },
-        name = faker.lorem.word(),
-        usersEmails = [faker.internet.email(), faker.internet.email()],
-        boardId = Random.id(),
-        team = {
-          _id: Random.id(),
-          name,
-          plan: 'free',
-          type: 'web',
-          boards: [
-            { _id: boardId }
-          ],
-          users: [
-            { email: user.emails[0].address, permission: 'owner' },
-            { email: usersEmails[0], permission: 'member' },
-            { email: usersEmails[1], permission: 'member' },
-          ],
-          archived: false,
-        };*/
     let user, team;
     let usersEmails = [faker.internet.email(), faker.internet.email()],
         boardId = Random.id();
@@ -105,7 +84,7 @@ if (Meteor.isServer) {
         result = res;
         delete result._id;
       });
-      
+
       chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
     });
     it('should edit a team', function() {
@@ -159,7 +138,7 @@ if (Meteor.isServer) {
 
       chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
     });
-    it('should remove a user from a team', function() {
+    it('should remove a user from a team', function(done) {
       let result,
           expect,
           args;
@@ -174,8 +153,10 @@ if (Meteor.isServer) {
       };
       removeUserFromTeam.call(args, (err, res) => {
         result = res;
+        console.log(err);
+        chai.assert.deepEqual(result, expect);
+        done();
       });
-      chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
     });
     it('should archive a team', function(done) {
       let result,

@@ -44,8 +44,8 @@ export default class TeamCard extends React.Component {
 }
 
 TeamCard.propTypes = {
-  team: React.PropTypes.object.isRequired,
+  team: React.PropTypes.object,
   hasTeams: React.PropTypes.bool.isRequired,
-  owner: React.PropTypes.bool.isRequired,
-  openConfigTeamModal: React.PropTypes.func.isRequired,
+  owner: React.PropTypes.bool,
+  openConfigTeamModal: React.PropTypes.func,
 };

@@ -132,10 +132,8 @@ export const removeUserFromTeam = new ValidatedMethod({
     }
 
     //remove user from boards
+    console.log(user);//todo: agregar en el testeo boards
     let boards = user.boards(teamId, {});
-
-    
-
     Teams.removeUser(teamId, email);
 
     return Teams.findOne(teamId);

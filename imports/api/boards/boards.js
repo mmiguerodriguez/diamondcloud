@@ -146,3 +146,15 @@ Boards.addUser = (boardId, userId) => {
     },
   });
 };
+Boards.addNotification = (boardId, userId) => {
+  let users = Boards.findOne(boardId).users;
+  users.forEach((user, index, array) => {
+    array[index].notifications = user.notifications + 1;
+  });
+
+  Boards.update(boardId, {
+    $set: {
+      users,
+    }
+  });
+};

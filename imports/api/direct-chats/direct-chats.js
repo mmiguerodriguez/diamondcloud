@@ -14,7 +14,6 @@ DirectChats.getUserDirectChats = (userId, teamId) => {
     }
   });
 };
-
 DirectChats.isValid = (directChatId, userId) => {
 	let directChat =  DirectChats.findOne({
     _id: directChatId,
@@ -31,4 +30,32 @@ DirectChats.isValid = (directChatId, userId) => {
     let team = Teams.findOne(directChat.teamId);
     return team.hasUser({ _id: userId });
   }
+};
+DirectChats.addNotification = (directChatId, userId) => {
+	let users = DirectChats.findOne(directChatId).users;
+	users.forEach((user, index, array) => {
+		if(user._id !== userId) {
+			array[index].notifications = user.notifications + 1;
+		}
+	});
+
+	DirectChats.update(directChatId, {
+		$set: {
+			users,
+		}
+	});
+};
+DirectChats.resetNotifications = (directChatId, userId) => {
+	let users = DirectChats.findOne(directChatId).users;
+	users.forEach((user, index, array) => {
+		if(user._id !== userId) {
+			array[index].notifications = 0;
+		}
+	});
+
+	DirectChats.update(directChatId, {
+		$set: {
+			users,
+		}
+	});
 };
