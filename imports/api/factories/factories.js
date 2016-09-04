@@ -1,5 +1,6 @@
-import faker		     from 'faker';
-import { Random }    from 'meteor/random';
+import { Meteor }          from 'meteor/meteor';
+import { Random }          from 'meteor/random';
+import faker		           from 'faker';
 
 import { Teams }           from '../teams/teams.js';
 import { Boards }          from '../boards/boards.js';
@@ -8,9 +9,9 @@ import { DirectChats }     from '../direct-chats/direct-chats.js';
 import { ModuleInstances } from '../module-instances/module-instances.js';
 
 Factory.define('user', Meteor.users, {
-	emails: [{
-		address: faker.internet.email(),
-	}],
+	emails: [
+		{ address: faker.internet.email() }
+	],
 	profile: {
 		name: faker.name.findName(),
 	},
