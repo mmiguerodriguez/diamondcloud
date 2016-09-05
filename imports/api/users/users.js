@@ -45,7 +45,7 @@ Meteor.users.findByEmail = (emails, fields) => {
   if(typeof emails === 'string') {
     emails = [emails];
   }
-  
+
   return Meteor.users.find({
     'emails.address': {
       $in: emails,

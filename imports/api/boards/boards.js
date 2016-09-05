@@ -107,6 +107,7 @@ Boards.isValid = (boardId, userId) => {
   }
 };
 Boards.addModuleInstance = (boardId, moduleInstanceId) => {
+  //todo: add user is in board validation
   Boards.update({
     _id: boardId,
   }, {
@@ -115,6 +116,30 @@ Boards.addModuleInstance = (boardId, moduleInstanceId) => {
         _id: moduleInstanceId,
       }
     }
+  });
+};
+
+Boards.removeUser = (boardId, userId) => {
+  Boards.update({ _id: boardId }, {
+    $pull: {
+      users : {
+        _id: userId,
+      },
+    },
+  });
+};
+
+Boards.addUser = (boardId, userId) => {
+  if(!Boards.isValid(boardId, Meteor.userId())){
+    throw new Meteor.Error('Boards.addUser.notInBoard',
+    'Must be a member of a board to add users to it.');
+  }
+  Boards.update({ _id: boardId }, {
+    $push: {
+      users : {
+        _id: userId,
+      },
+    },
   });
 };
 Boards.addNotification = (boardId, userId) => {
