@@ -31,6 +31,13 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
   ];
 
   let key = `data.${obj.collection}`;
+  let keys = [
+    `${key}.visibleBy`,
+    `${key}.visibleBy.userId`,
+    `${key}.visibleBy.boardId`,
+    `${key}.isGlobal`,
+    `${key}.moduleInstanceId`,
+  ];
 
   if (obj.condition) {
     pipeline.push(
@@ -51,10 +58,20 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
   pipeline.push(
     {
       $match: {
-        $or: [
-          { 'todos.visibleBy': null },
-          { 'todos.visibleBy.userId': this.userId },
-          { 'todos.visibleBy.boardId': { $in: boards } }
+        $and: [
+          {
+            $or: [
+              { [keys[0]]: null },
+              { [keys[1]]: this.userId },
+              { [keys[2]]: { $in: boards } }
+            ],
+          },
+          {
+            $or: [
+              { [keys[3]]: true },
+              { [keys[4]]: moduleInstance._id }
+            ]
+          },
         ]
       }
     }

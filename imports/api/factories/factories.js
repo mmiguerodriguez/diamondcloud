@@ -102,9 +102,6 @@ Factory.define('todosModuleData', ModuleData, Factory.extend('moduleData', {
       {
         name: 'Design landing wireframe',
         boardId: 'designBoardId',
-        users: [
-          { _id: "ryanId" },
-        ],
         categoryId: 'categoryId1',
 				isGlobal: true,
       },
