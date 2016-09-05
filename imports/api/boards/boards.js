@@ -120,10 +120,6 @@ Boards.addModuleInstance = (boardId, moduleInstanceId) => {
 };
 
 Boards.removeUser = (boardId, userId) => {
-  if(!Boards.isValid(boardId, Meteor.userId())){
-    throw new Meteor.Error('Boards.removeUser.notInBoard',
-    'Must be a member of a board to remove users from it.');
-  }
   Boards.update({ _id: boardId }, {
     $pull: {
       users : {

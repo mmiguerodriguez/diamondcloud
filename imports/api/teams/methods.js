@@ -4,6 +4,7 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import Future from 'fibers/future';
 
 import { Teams } from './teams.js';
+import { Boards } from '../boards/boards.js';
 import { createBoard } from '../boards/methods.js';
 
 export const createTeam = new ValidatedMethod({
@@ -79,9 +80,6 @@ export const editTeam = new ValidatedMethod({
     Teams.update({ _id: teamId }, {
       $set: team
     });
-
-    // Testing purposes
-    // may need to change in the future
     return Teams.findOne(teamId);
   }
 });
@@ -105,9 +103,6 @@ export const shareTeam = new ValidatedMethod({
     let user = { email, permission: 'member' };
 
     Teams.addUser(teamId, user);
-
-    // Testing purposes
-    // may need to change in the future
     return Teams.findOne(teamId);
   }
 });
@@ -125,15 +120,17 @@ export const removeUserFromTeam = new ValidatedMethod({
     }
 
     let team = Teams.findOne(teamId);
-    let user = Meteor.users.findByEmail(email, {});
+    let user = Meteor.users.findByEmail(email).fetch()[0];
     if(Meteor.user().emails[0].address !== team.owner()){
       throw new Meteor.Error('Teams.methods.removeUser.notOwner',
       "Must be team's owner to remove user");
     }
 
     //remove user from boards
-    console.log(user);//todo: agregar en el testeo boards
-    let boards = user.boards(teamId, {});
+    let boards = user.boards(teamId).fetch();
+    boards.forEach((board) => {
+      Boards.removeUser(board._id, user._id);
+    });
     Teams.removeUser(teamId, email);
 
     return Teams.findOne(teamId);
