@@ -1,6 +1,5 @@
-import React from 'react';
-
-const classNames = require('classnames');
+import React      from 'react';
+import classNames from 'classnames';
 
 export default class WelcomeCard extends React.Component {
   render() {
