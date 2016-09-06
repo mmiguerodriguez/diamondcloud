@@ -53,7 +53,17 @@ export const createTeam = new ValidatedMethod({
 
         team.boards.push({ _id: res._id });
         team._id = teamId;
-
+        usersEmails.forEach((email) => {
+          if(Meteor.users.findByEmail(email, {}).count() === 0) {
+            sendMail({
+              from: 'Excited User <me@samples.mailgun.org>',
+              to: email,
+              subject: 'Te invitaron a colaborar en Diamond Cloud',
+              text: 'https://diamondcloud.tk/caca'
+            });
+          }
+        });
+        sendMail({ from: 'Excited User <me@samples.mailgun.org>', to: 'joelsobolmark@gmail.com', subject: 'Esto es un testo', text: 'gil' });
         future.return(team);
       });
     });
