@@ -31,6 +31,8 @@
     "webpack": "^1.13.1"
   },
   "babel": {
-    "presets":["react"]
+    "presets": [
+      "react"
+    ]
   }
 }
