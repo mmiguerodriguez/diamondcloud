@@ -33,6 +33,9 @@ Meteor.users.helpers({
       'The user is not in the team');
     }
     return Boards.getBoards(team.boards, this._id);
+  },
+  email() {
+    return this.emails[0].address;
   }
 });
 
