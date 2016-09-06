@@ -30,6 +30,8 @@ export default class DirectChatsLayout extends React.Component {
         }
       });
 
+      notifications = notifications || 0;
+
       arr.push(
         <DirectChat
           key={ directChat._id }
