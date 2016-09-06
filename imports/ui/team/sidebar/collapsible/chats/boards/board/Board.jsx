@@ -10,9 +10,13 @@ export default class Board extends React.Component {
         <div className='col-xs-8'>
           <h4 className='truncate'>{ this.props.board.name }</h4>
         </div>
-        <div className='col-xs-2 img-fixed-margin'>
-          <div className='messages-badge img-circle'></div>
-        </div>
+        {
+          this.props.notifications > 0 ? (
+            <div className='col-xs-2 img-fixed-margin'>
+              <div className='messages-badge img-circle'>{ this.props.notifications }</div>
+            </div>
+          ) : ( null )
+        }
       </div>
     );
   }
@@ -20,5 +24,6 @@ export default class Board extends React.Component {
 
 Board.propTypes = {
   board: React.PropTypes.object.isRequired,
+  notifications: React.PropTypes.number.isRequired,
   getMessages: React.PropTypes.func.isRequired,
 };

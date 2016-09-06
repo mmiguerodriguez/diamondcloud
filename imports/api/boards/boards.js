@@ -119,6 +119,20 @@ Boards.addModuleInstance = (boardId, moduleInstanceId) => {
   });
 };
 
+Boards.addUser = (boardId, userId) => {
+  if(!Boards.isValid(boardId, Meteor.userId())){
+    throw new Meteor.Error('Boards.addUser.notInBoard',
+    'Must be a member of a board to add users to it.');
+  }
+  Boards.update({ _id: boardId }, {
+    $push: {
+      users : {
+        _id: userId,
+        notifications: 0,
+      },
+    },
+  });
+};
 Boards.removeUser = (boardId, userId) => {
   Boards.update({ _id: boardId }, {
     $pull: {
@@ -129,23 +143,12 @@ Boards.removeUser = (boardId, userId) => {
   });
 };
 
-Boards.addUser = (boardId, userId) => {
-  if(!Boards.isValid(boardId, Meteor.userId())){
-    throw new Meteor.Error('Boards.addUser.notInBoard',
-    'Must be a member of a board to add users to it.');
-  }
-  Boards.update({ _id: boardId }, {
-    $push: {
-      users : {
-        _id: userId,
-      },
-    },
-  });
-};
 Boards.addNotification = (boardId, userId) => {
   let users = Boards.findOne(boardId).users;
   users.forEach((user, index, array) => {
-    array[index].notifications = user.notifications + 1;
+    if(user._id === userId) {
+      array[index].notifications = user.notifications + 1;
+    }
   });
 
   Boards.update(boardId, {
@@ -153,4 +156,18 @@ Boards.addNotification = (boardId, userId) => {
       users,
     }
   });
+};
+Boards.resetNotifications = (boardId, userId) => {
+	let users = Boards.findOne(boardId).users;
+	users.forEach((user, index, array) => {
+		if(user._id === userId) {
+			array[index].notifications = 0;
+		}
+	});
+
+	Boards.update(boardId, {
+		$set: {
+			users,
+		}
+	});
 };

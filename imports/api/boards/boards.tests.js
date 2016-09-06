@@ -15,7 +15,12 @@ if (Meteor.isServer) {
   describe('Boards', function() {
     describe('Helpers', function() {
       let teams, boards, user, moduleInstances;
-
+      function getNotifications(boardId, userId) {
+        return Boards.findOne(boardId).users.find((user) => {
+          return user._id === userId;
+        }).notifications;
+      }
+      
       beforeEach(function() {
         resetDatabase();
 
@@ -38,7 +43,7 @@ if (Meteor.isServer) {
         teams[0].boards.push({ _id: boards[0]._id });
         teams[1].users.push({ email: user.emails[0].address, permission: 'owner' });
 
-        boards[0].users.push({ _id: user._id });
+        boards[0].users.push({ _id: user._id, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[2].moduleInstances.push({ _id: moduleInstances[0]._id });
 
         resetDatabase();
@@ -48,11 +53,9 @@ if (Meteor.isServer) {
         boards.forEach((board) => {
           Boards.insert(board);
         });
-
         teams.forEach((team) => {
           Teams.insert(team);
         });
-
         moduleInstances.forEach((moduleInstance) => {
           ModuleInstances.insert(moduleInstance);
         });
@@ -102,9 +105,31 @@ if (Meteor.isServer) {
       it('should add a user to a board', function() {
         let expect = boards[0],
             _id = Random.id();
-        expect.users.push({ _id });
+            
+        expect.users.push({ _id, notifications: 0 });
         Boards.addUser(boards[0]._id, _id);
+        
         chai.assert.deepEqual( Boards.findOne(boards[0]._id), expect);
+      });
+      it('should add a notification of user board', function() {
+        let startNotifications, endNotifications;
+
+        startNotifications = getNotifications(boards[0]._id, user._id);
+        Boards.addNotification(boards[0]._id, user._id);
+        endNotifications = getNotifications(boards[0]._id, user._id);
+
+        chai.assert.notEqual(startNotifications, endNotifications);
+        chai.assert.equal(startNotifications + 1, endNotifications);
+      });
+      it('should reset notifications of user board', function() {
+        let startNotifications, endNotifications;
+
+        startNotifications = getNotifications(boards[0]._id, user._id);
+        Boards.resetNotifications(boards[0]._id, user._id);
+        endNotifications = getNotifications(boards[0]._id, user._id);
+
+        chai.assert.notEqual(startNotifications, endNotifications);
+        chai.assert.equal(endNotifications, 0);
       });
     });
   });

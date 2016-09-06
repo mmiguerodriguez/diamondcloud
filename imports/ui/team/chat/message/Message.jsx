@@ -56,7 +56,7 @@ export default class Message extends React.Component {
             });
           }
         } else if(this.props.message.seers !== undefined) {
-          /*
+          
           let seenMessage = this.props.message.seers.find((seer) => {
             return seer === Meteor.userId();
           });
@@ -72,7 +72,6 @@ export default class Message extends React.Component {
               }
             });
           }
-          */
         }
       }
     }

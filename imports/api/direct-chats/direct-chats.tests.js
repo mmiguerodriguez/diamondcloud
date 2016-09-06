@@ -59,29 +59,29 @@ if (Meteor.isServer) {
           Factory.create('directChat', {
             teamId: teams[0]._id,
             users: [
-              { _id: users[0]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
-              { _id: users[1]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
+              { _id: users[0]._id, notifications: faker.random.number({ min: 1, max: 20 }) },
+              { _id: users[1]._id, notifications: faker.random.number({ min: 1, max: 20 }) },
             ]
           }),
           Factory.create('directChat', {
             teamId: teams[1]._id,
             users: [
-              { _id: users[1]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
-              { _id: users[2]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
+              { _id: users[1]._id, notifications: faker.random.number({ min: 1, max: 20 }) },
+              { _id: users[2]._id, notifications: faker.random.number({ min: 1, max: 20 }) },
             ]
           }),
           Factory.create('directChat', {
             teamId: teams[2]._id,
             users: [
-              { _id: users[2]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
-              { _id: users[3]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
+              { _id: users[2]._id, notifications: faker.random.number({ min: 1, max: 20 }) },
+              { _id: users[3]._id, notifications: faker.random.number({ min: 1, max: 20 }) },
             ]
           }),
           Factory.create('directChat', {
             teamId: teams[3]._id,
             users: [
-              { _id: users[0]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
-              { _id: users[3]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
+              { _id: users[0]._id, notifications: faker.random.number({ min: 1, max: 20 }) },
+              { _id: users[3]._id, notifications: faker.random.number({ min: 1, max: 20 }) },
             ]
           }),
         ];

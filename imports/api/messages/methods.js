@@ -32,12 +32,10 @@ export const sendMessage = new ValidatedMethod({
     if (!!directChatId) {
       message.directChatId = directChatId;
       message.seen = false;
-
       DirectChats.addNotification(directChatId, message.senderId);
     } else if (!!boardId) {
       message.boardId = boardId;
       message.seers = [];
-
       Boards.addNotification(boardId);
     } else {
       throw new Meteor.Error('Messages.methods.send.noDestination',
@@ -55,7 +53,7 @@ export const seeMessage = new ValidatedMethod({
     messageId: { type: String, regEx: SimpleSchema.RegEx.Id, },
   }).validator(),
   run({ messageId }) {
-    if (!Meteor.user()) {
+    if(!Meteor.user()) {
       throw new Meteor.Error('Messages.methods.see.notLoggedIn',
       'Must be logged in to see a message.');
     }
@@ -67,13 +65,13 @@ export const seeMessage = new ValidatedMethod({
           seers: Meteor.user()._id,
         }
       });
-    } else {
+      Boards.resetNotifications(message.boardId, message.senderId);
+    } else if(message.directChatId) {
       Messages.update(messageId, {
         $set: {
           seen: true,
         }
       });
-
       DirectChats.resetNotifications(message.directChatId, message.senderId);
     }
 

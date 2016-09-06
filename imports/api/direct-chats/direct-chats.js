@@ -31,6 +31,7 @@ DirectChats.isValid = (directChatId, userId) => {
     return team.hasUser({ _id: userId });
   }
 };
+
 DirectChats.addNotification = (directChatId, userId) => {
 	let users = DirectChats.findOne(directChatId).users;
 	users.forEach((user, index, array) => {

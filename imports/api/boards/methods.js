@@ -24,7 +24,7 @@ export const createBoard = new ValidatedMethod({
     let team = Teams.findOne(teamId);
     users = users || [];
 
-    if(users.length > 0 && isPrivate) {
+    if(users.length > 0) {
       if (team.hasUser({ _id: Meteor.userId() })) {
         users.push({ _id: Meteor.userId() });
       } else {
