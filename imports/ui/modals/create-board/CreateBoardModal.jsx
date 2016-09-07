@@ -155,22 +155,18 @@ export default class CreateBoardModal extends React.Component {
     }
 
     if(board.name != '' && board.name.length >= 3) {
-      if((board.isPrivate && board.users.length > 0) || !board.isPrivate) {
-        Meteor.call('Boards.methods.create', board, (error, result) => {
-          if(error) {
-            throw new Meteor.Error(error);
-          } else {
-            this.clearData();
-            this.closeModal();
+      Meteor.call('Boards.methods.create', board, (error, result) => {
+        if(error) {
+          throw new Meteor.Error(error);
+        } else {
+          this.clearData();
+          this.closeModal();
 
-            this.props.toggleCollapsible('boards');
-            this.props.changeBoard(result._id);
-            this.props.getMessages({ boardId: result._id });
-          }
-        });
-      } else {
-        // border error for select
-      }
+          this.props.toggleCollapsible('boards');
+          this.props.changeBoard(result._id);
+          this.props.getMessages({ boardId: result._id });
+        }
+      });
     } else {
       this.errorBorder('#boardName');
     }
