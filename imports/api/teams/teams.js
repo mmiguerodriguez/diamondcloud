@@ -21,7 +21,6 @@ Teams.helpers({
     return owner;
   },
   hasUser(user) {
-    // If obj.mail exists then use it, if not, use the id
     let mail, found = false;
     
     if(typeof user === 'string'){
