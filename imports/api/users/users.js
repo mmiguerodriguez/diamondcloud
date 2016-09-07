@@ -28,7 +28,7 @@ Meteor.users.helpers({
       throw new Meteor.Error('Users.boards.wrongTeamId',
       'There is no team with the given id');
     }
-    if(!team.hasUser(this)){
+    if(!team.hasUser({ _id: this._id })){
       throw new Meteor.Error('Users.boards.userNotInTeam',
       'The user is not in the team');
     }

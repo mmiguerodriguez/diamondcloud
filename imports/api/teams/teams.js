@@ -20,13 +20,22 @@ Teams.helpers({
     }
     return owner;
   },
-  hasUser(obj) {
+  hasUser(user) {
     // If obj.mail exists then use it, if not, use the id
-    if(typeof(obj) === "string"){
-      obj = Meteor.users.findOne(obj);
+    let mail, found = false;
+    
+    if(typeof user === 'string'){
+      user = Meteor.users.findOne(user);
+      mail = user.email();
+    } else {
+      if(user._id) {
+        user = Meteor.users.findOne(user._id);
+        mail = user.email();
+      } else if(typeof user.email === 'string') {
+        mail = user.email;
+      }
     }
-    let mail = obj.email || Meteor.users.findOne(obj._id).emails[0].address;
-    let found = false;
+    
     this.users.forEach((user) => {
       if(user.email == mail) {
         found = true;
