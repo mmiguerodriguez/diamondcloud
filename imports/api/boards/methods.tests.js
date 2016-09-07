@@ -45,9 +45,9 @@ if (Meteor.isServer) {
         { email: users[2].emails[0].address, permission: 'member' },
       ];
       board.users = [
-        { _id: users[0]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
-        { _id: users[1]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
-        { _id: users[2]._id, notifications: faker.random.number({ min: 0, max: 20 }) },
+        { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
+        { email: users[1].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
+        { email: users[2].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
       ];
 
       resetDatabase();
@@ -83,14 +83,16 @@ if (Meteor.isServer) {
         name: faker.lorem.word(),
         isPrivate: true,
         users: [
-          { _id: users[1]._id },
-          { _id: users[2]._id }
+          { email: users[1].emails[0].address },
+          { email: users[2].emails[0].address }
         ],
       };
       expect_1 = {
         name: test_1.name,
         isPrivate: test_1.isPrivate,
-        users: [],
+        users: [
+          { email: users[0].emails[0].address, notifications: 0 },
+        ],
         moduleInstances: [],
         archived: false,
       };
@@ -98,9 +100,9 @@ if (Meteor.isServer) {
         name: test_2.name,
         isPrivate: test_2.isPrivate,
         users: [
-          { _id: users[1]._id, notifications: 0 },
-          { _id: users[2]._id, notifications: 0 },
-          { _id: users[0]._id, notifications: 0 }
+          { email: users[1].emails[0].address, notifications: 0 },
+          { email: users[2].emails[0].address, notifications: 0 },
+          { email: users[0].emails[0].address, notifications: 0 }
         ],
         moduleInstances: [],
         archived: false,
@@ -117,7 +119,7 @@ if (Meteor.isServer) {
 
           result_2 = res;
           delete result_2._id;
-
+          
           chai.assert.deepEqual(result_1, expect_1);
           chai.assert.deepEqual(result_2, expect_2);
           done();
