@@ -33,8 +33,14 @@ export const createBoard = new ValidatedMethod({
 
         array[index].notifications = 0;
       });
+    } else if(users.length === 0 && !isPrivate) {
+      team.users.forEach((user) => {
+        if(user.email !== Meteor.user().email()) {
+          users.push({ email: user.email, notifications: 0 });
+        }
+      });
     }
-    
+
     if(team.hasUser({ _id: Meteor.userId() })) {
       users.push({ email: Meteor.user().email(), notifications: 0 });
     } else {
@@ -59,8 +65,8 @@ export const createBoard = new ValidatedMethod({
 
       Teams.update(teamId, {
         $push: {
-          boards: { 
-            _id: boardId
+          boards: {
+            _id: boardId,
           },
         },
       });
