@@ -43,7 +43,7 @@ export default class Message extends React.Component {
   componentDidMount() {
     if(!this.props.isSender) {
       if(this.props.position !== 'minimized') {
-        if(this.props.message.seen !== undefined) {
+        if(this.props.message.directChatId) {
           if(!this.props.message.seen) {
             Meteor.call('Messages.methods.see', {
               messageId: this.props.message._id
@@ -55,8 +55,7 @@ export default class Message extends React.Component {
               }
             });
           }
-        } else if(this.props.message.seers !== undefined) {
-          
+        } else if(this.props.message.boardId) {
           let seenMessage = this.props.message.seers.find((seer) => {
             return seer === Meteor.userId();
           });

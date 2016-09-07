@@ -34,7 +34,7 @@ if (Meteor.isServer) {
 
       board = Factory.create('privateBoard');
       board.users = [
-        { _id: users[2]._id, notifications: 0 },
+        { email: users[2].emails[0].address, notifications: 0 },
       ];
 
       team.users[0].email = users[0].emails[0].address;

@@ -40,8 +40,8 @@ if (Meteor.isServer) {
         { email: users[1].emails[0].address, permission: 'member' },
       ];
       board.users = [
-        { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 100 }) },
-        { email: users[1].emails[0].address, notifications: faker.random.number({ min: 0, max: 100 }) },
+        { email: users[0].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) },
+        { email: users[1].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) },
       ];
       directChat.teamId = team._id;
       directChat.users = [
@@ -50,10 +50,12 @@ if (Meteor.isServer) {
       ];
       messages[0].directChatId = directChat._id;
       messages[1].boardId = board._id;
+      messages[1].senderId = users[1]._id;
 
       resetDatabase();
 
       sinon.stub(Meteor, 'user', () => users[0]);
+      sinon.stub(Meteor, 'userId', () => users[0]._id);
 
       users.forEach((user) => {
         Meteor.users.insert(user);
@@ -69,6 +71,7 @@ if (Meteor.isServer) {
     });
     afterEach(function() {
       Meteor.user.restore();
+      Meteor.userId.restore();
     });
 
     it('should send a message', function(done) {

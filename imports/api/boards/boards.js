@@ -154,7 +154,7 @@ Boards.addNotification = (boardId, userId) => {
   let users = Boards.findOne(boardId).users;
   
   users.forEach((_user, index, array) => {
-    if(_user.email === user.email()) {
+    if(_user.email !== user.email()) {
       array[index].notifications = _user.notifications + 1;
     }
   });
@@ -170,11 +170,11 @@ Boards.resetNotifications = (boardId, userId) => {
 	let users = Boards.findOne(boardId).users;
 	
 	users.forEach((_user, index, array) => {
-		if(_user.email === user.email()) {
+		if(_user.email !== user.email()) {
 			array[index].notifications = 0;
 		}
 	});
-
+  
 	Boards.update(boardId, {
 		$set: {
 			users,

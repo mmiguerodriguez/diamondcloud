@@ -22,7 +22,7 @@ export const sendMessage = new ValidatedMethod({
     }
 
     let message = {
-      senderId: Meteor.user()._id,
+      senderId: Meteor.userId(),
       type,
       content,
       createdAt,
@@ -62,7 +62,7 @@ export const seeMessage = new ValidatedMethod({
     if (message.boardId) {
       Messages.update(messageId, {
         $push: {
-          seers: Meteor.user()._id,
+          seers: Meteor.userId(),
         }
       });
       Boards.resetNotifications(message.boardId, message.senderId);

@@ -35,7 +35,7 @@ if (Meteor.isServer) {
         teams[0].users[0].email = user.emails[0].address;
         teams[1].users[0].email = user.emails[0].address;
 
-        boards[2].users[0]._id = user._id;
+        boards[2].users[0].email = user.emails[0].address;
 
         boards.forEach((board) => {
           teams[0].boards.push(board);

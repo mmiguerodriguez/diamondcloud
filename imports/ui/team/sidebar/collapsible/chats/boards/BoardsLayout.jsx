@@ -23,7 +23,7 @@ export default class BoardsLayout extends React.Component {
     this.props.boards.map((board) => {
       let notifications;
       board.users.map((user) => {
-        if(user._id === Meteor.userId()) {
+        if(user.email === Meteor.user().email()) {
           notifications = user.notifications;
         }
       });

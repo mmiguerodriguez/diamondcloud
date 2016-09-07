@@ -18,8 +18,7 @@ if (Meteor.isServer) {
       function getNotifications(boardId, userId) {
         let user = Meteor.users.findOne(userId);
         return Boards.findOne(boardId).users.find((_user) => {
-          console.log(_user);
-          return _user.email === user.email();
+          return _user.email !== user.email();
         }).notifications;
       }
       
@@ -49,6 +48,7 @@ if (Meteor.isServer) {
         teams[1].users.push({ email: users[0].emails[0].address, permission: 'owner' });
 
         boards[0].users.push({ email: users[0].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
+        boards[0].users.push({ email: users[1].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[2].moduleInstances.push({ _id: moduleInstances[0]._id });
 
         resetDatabase();
@@ -113,7 +113,7 @@ if (Meteor.isServer) {
       it('should remove a user from a board', function() {
         let expect = boards[0];
         
-        expect.users = [];
+        expect.users = [boards[0].users[1]];
         Boards.removeUser(boards[0]._id, users[0]._id);
         
         chai.assert.deepEqual(Boards.findOne(boards[0]._id), expect);
