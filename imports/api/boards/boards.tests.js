@@ -14,17 +14,22 @@ import '../factories/factories.js';
 if (Meteor.isServer) {
   describe('Boards', function() {
     describe('Helpers', function() {
-      let teams, boards, user, moduleInstances;
+      let teams, boards, users, moduleInstances;
       function getNotifications(boardId, userId) {
-        return Boards.findOne(boardId).users.find((user) => {
-          return user._id === userId;
+        let user = Meteor.users.findOne(userId);
+        return Boards.findOne(boardId).users.find((_user) => {
+          console.log(_user);
+          return _user.email === user.email();
         }).notifications;
       }
       
       beforeEach(function() {
         resetDatabase();
 
-        user = Factory.create('user');
+        users = [
+          Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }]}),
+          Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }]}),
+        ];
         teams = [
           Factory.create('team'),
           Factory.create('team'),
@@ -39,17 +44,18 @@ if (Meteor.isServer) {
           Factory.create('moduleInstance'),
         ];
 
-        teams[0].users.push({ email: user.emails[0].address, permission: 'owner' });
+        teams[0].users.push({ email: users[0].emails[0].address, permission: 'owner' });
         teams[0].boards.push({ _id: boards[0]._id });
-        teams[1].users.push({ email: user.emails[0].address, permission: 'owner' });
+        teams[1].users.push({ email: users[0].emails[0].address, permission: 'owner' });
 
-        boards[0].users.push({ _id: user._id, notifications: faker.random.number({ min: 1, max: 20 }) });
+        boards[0].users.push({ email: users[0].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[2].moduleInstances.push({ _id: moduleInstances[0]._id });
 
         resetDatabase();
 
-        Meteor.users.insert(user);
-
+        users.forEach((user) => {
+          Meteor.users.insert(user);
+        });
         boards.forEach((board) => {
           Boards.insert(board);
         });
@@ -60,8 +66,8 @@ if (Meteor.isServer) {
           ModuleInstances.insert(moduleInstance);
         });
 
-        sinon.stub(Meteor, 'user', () => user);
-        sinon.stub(Meteor, 'userId', () => user._id);
+        sinon.stub(Meteor, 'user', () => users[0]);
+        sinon.stub(Meteor, 'userId', () => users[0]._id);
       });
       afterEach(function() {
         Meteor.user.restore();
@@ -96,27 +102,28 @@ if (Meteor.isServer) {
         chai.assert.equal(expect.archived, result.archived);
         chai.assert.isUndefined(result.data);
       });
+      it('should add a user to a board', function() {
+        let expect = boards[0];
+            
+        expect.users.push({ email: users[1].emails[0].address, notifications: 0 });
+        Boards.addUser(boards[0]._id, users[1]._id);
+
+        chai.assert.deepEqual(Boards.findOne(boards[0]._id), expect);
+      });
       it('should remove a user from a board', function() {
         let expect = boards[0];
-        expect.users = [];
-        Boards.removeUser(boards[0]._id, user._id);
-        chai.assert.deepEqual( Boards.findOne(boards[0]._id), expect);
-      });
-      it('should add a user to a board', function() {
-        let expect = boards[0],
-            _id = Random.id();
-            
-        expect.users.push({ _id, notifications: 0 });
-        Boards.addUser(boards[0]._id, _id);
         
-        chai.assert.deepEqual( Boards.findOne(boards[0]._id), expect);
+        expect.users = [];
+        Boards.removeUser(boards[0]._id, users[0]._id);
+        
+        chai.assert.deepEqual(Boards.findOne(boards[0]._id), expect);
       });
       it('should add a notification of user board', function() {
         let startNotifications, endNotifications;
 
-        startNotifications = getNotifications(boards[0]._id, user._id);
-        Boards.addNotification(boards[0]._id, user._id);
-        endNotifications = getNotifications(boards[0]._id, user._id);
+        startNotifications = getNotifications(boards[0]._id, users[0]._id);
+        Boards.addNotification(boards[0]._id, users[0]._id);
+        endNotifications = getNotifications(boards[0]._id, users[0]._id);
 
         chai.assert.notEqual(startNotifications, endNotifications);
         chai.assert.equal(startNotifications + 1, endNotifications);
@@ -124,9 +131,9 @@ if (Meteor.isServer) {
       it('should reset notifications of user board', function() {
         let startNotifications, endNotifications;
 
-        startNotifications = getNotifications(boards[0]._id, user._id);
-        Boards.resetNotifications(boards[0]._id, user._id);
-        endNotifications = getNotifications(boards[0]._id, user._id);
+        startNotifications = getNotifications(boards[0]._id, users[0]._id);
+        Boards.resetNotifications(boards[0]._id, users[0]._id);
+        endNotifications = getNotifications(boards[0]._id, users[0]._id);
 
         chai.assert.notEqual(startNotifications, endNotifications);
         chai.assert.equal(endNotifications, 0);

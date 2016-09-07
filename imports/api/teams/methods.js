@@ -21,8 +21,7 @@ export const createTeam = new ValidatedMethod({
       'Must be logged in to make a team.');
     }
 
-    let team,
-        teamId;
+    let team, teamId, boardUsers = [];
 
     team = {
       name,
@@ -37,6 +36,7 @@ export const createTeam = new ValidatedMethod({
 
     usersEmails.forEach(function(email) {
       team.users.push({ email, permission: 'member' });
+      boardUsers.push({ email });
     });
 
     let future = new Future(); // Needed to make asynchronous call to db
@@ -45,9 +45,10 @@ export const createTeam = new ValidatedMethod({
 
       teamId = res;
       createBoard.call({
-        name: 'General',
-        isPrivate: false,
         teamId,
+        name: 'General',
+        users: boardUsers,
+        isPrivate: false,
       }, (err, res) => {
         if(!!err) future.throw(err);
 

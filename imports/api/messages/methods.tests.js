@@ -40,11 +40,14 @@ if (Meteor.isServer) {
         { email: users[1].emails[0].address, permission: 'member' },
       ];
       board.users = [
-        { _id: users[0]._id, notifications: faker.random.number({ min: 0, max: 100 }) },
-        { _id: users[1]._id, notifications: faker.random.number({ min: 0, max: 100 }) },
+        { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 100 }) },
+        { email: users[1].emails[0].address, notifications: faker.random.number({ min: 0, max: 100 }) },
       ];
       directChat.teamId = team._id;
-      directChat.users = board.users;
+      directChat.users = [
+        { _id: users[0]._id, notifications: board.users[0].notifications },
+        { _id: users[1]._id, notifications: board.users[1].notifications }
+      ];
       messages[0].directChatId = directChat._id;
       messages[1].boardId = board._id;
 
@@ -52,13 +55,16 @@ if (Meteor.isServer) {
 
       sinon.stub(Meteor, 'user', () => users[0]);
 
-      users.forEach((user) => Meteor.users.insert(user));
-
+      users.forEach((user) => {
+        Meteor.users.insert(user);
+      });
       Teams.insert(team);
       Boards.insert(board);
       DirectChats.insert(directChat);
-
-      messages.forEach((message) => Messages.insert(message));
+      messages.forEach((message) => {
+        Messages.insert(message);
+      });
+      
       done();
     });
     afterEach(function() {

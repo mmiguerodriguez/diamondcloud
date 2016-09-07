@@ -36,7 +36,7 @@ export const sendMessage = new ValidatedMethod({
     } else if (!!boardId) {
       message.boardId = boardId;
       message.seers = [];
-      Boards.addNotification(boardId);
+      Boards.addNotification(boardId, message.senderId);
     } else {
       throw new Meteor.Error('Messages.methods.send.noDestination',
       'Must have a destination to send a message.');

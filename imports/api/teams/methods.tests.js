@@ -20,7 +20,7 @@ import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Teams', function() {
-    let users, team, boardId = Random.id();
+    let users, team, board, boardId = Random.id();
 
     beforeEach(function() {
       resetDatabase();
@@ -94,11 +94,10 @@ if (Meteor.isServer) {
         archived: false,
       };
 
-
-
       createTeam.call(args, (err, res) => {
         result = res;
         delete result._id;
+        
         chai.assert.deepEqual(result, expect);
         done();
       });
