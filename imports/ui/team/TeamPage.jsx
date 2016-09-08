@@ -40,7 +40,7 @@ export default class Team extends React.Component {
     return (
       <TeamLayout
         team={ this.props.team }
-        owner={ this.props.team.owner() === Meteor.user().emails[0].address }
+        owner={ this.props.team.owner() === Meteor.user().email() }
 
         boards={ this.props.boards }
         board={ board }

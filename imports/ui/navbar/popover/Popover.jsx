@@ -11,7 +11,7 @@ export default class Popover extends React.Component {
           </div>
           <div className='col-xs-7'>
             <b className='user-info'>{ user.profile.name }</b>
-            <p className='user-mail text-muted'>{ user.emails[0].address }</p>
+            <p className='user-mail text-muted'>{ user.email() }</p>
           </div>
         </div>
         <hr />

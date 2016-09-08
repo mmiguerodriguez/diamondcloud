@@ -14,7 +14,7 @@ export default class UsersList extends React.Component {
         </div>
         { (!this.props.user.isOwner && this.props.isOwner) ? (
           <div className="col-xs-1">
-            <div className="close" onClick={ this.props.removeUser.bind(null, this.props.user.emails[0].address) }>
+            <div className="close" onClick={ this.props.removeUser.bind(null, this.props.user.email()) }>
               <img src="/img/close-modal-icon.svg" width="16px" />
             </div>
           </div>
