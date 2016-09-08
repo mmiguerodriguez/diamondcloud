@@ -2,7 +2,6 @@ import React from 'react';
 
 export default class UsersList extends React.Component {
   render() {
-    console.log(this.props.user);
     return (
       <div className="row">
         <div className="col-xs-1">
