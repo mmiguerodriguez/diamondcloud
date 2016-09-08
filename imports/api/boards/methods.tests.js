@@ -91,6 +91,8 @@ if (Meteor.isServer) {
         name: test_1.name,
         isPrivate: test_1.isPrivate,
         users: [
+          { email: users[1].emails[0].address, notifications: 0 },
+          { email: users[2].emails[0].address, notifications: 0 },
           { email: users[0].emails[0].address, notifications: 0 },
         ],
         moduleInstances: [],
@@ -119,7 +121,7 @@ if (Meteor.isServer) {
 
           result_2 = res;
           delete result_2._id;
-          
+
           chai.assert.deepEqual(result_1, expect_1);
           chai.assert.deepEqual(result_2, expect_2);
           done();

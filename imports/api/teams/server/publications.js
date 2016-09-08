@@ -44,7 +44,8 @@ Meteor.publishComposite('teams.team', function(teamId) {
         find: function(team) {
           return Boards.getBoards(team.boards, this.userId, {
             _id: 1,
-            name: 1
+            name: 1,
+            users: 1,
           });
         },
       },

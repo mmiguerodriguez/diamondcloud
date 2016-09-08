@@ -10,7 +10,7 @@ export default class CreateBoardModal extends React.Component {
     this.state = {
       name: '',
       isPrivate: false,
-      users: [],
+      users: '',
     };
   }
 
@@ -127,7 +127,7 @@ export default class CreateBoardModal extends React.Component {
       if(user._id !== Meteor.userId()) {
         arr.push({
           label: user.profile.name,
-          value: user._id,
+          value: user.email(),
         });
       }
     });
@@ -142,30 +142,33 @@ export default class CreateBoardModal extends React.Component {
 
     if(board.isPrivate) {
       let arr = [];
-      board.users.split(',').map((userId) => {
-        arr.push({ _id: userId });
-      });
-      board.users = arr;
+      if(board.users !== '') {
+        board.users.split(',').map((email) => {
+          arr.push({ email });
+        });
+        board.users = arr;
+      } else {
+        board.users = [];
+      }
     } else {
       board.users = [];
     }
 
     if(board.name != '' && board.name.length >= 3) {
-      Meteor.call('Boards.methods.create', board, (error, board) => {
+      Meteor.call('Boards.methods.create', board, (error, result) => {
         if(error) {
           throw new Meteor.Error(error);
         } else {
           this.clearData();
           this.closeModal();
-          
-          this.props.toggleCollapsible('boards');
-          this.props.changeBoard(board._id);
-          this.props.getMessages({ boardId: board._id });
 
+          this.props.toggleCollapsible('boards');
+          this.props.changeBoard(result._id);
+          this.props.getMessages({ boardId: result._id });
         }
       });
     } else {
-      this.errorBorder($('#boardName'));
+      this.errorBorder('#boardName');
     }
   }
 
@@ -198,8 +201,8 @@ export default class CreateBoardModal extends React.Component {
   clearData() {
     this.setState({
       name: '',
-      isPrivate: false,
-      users: [],
+      // isPrivate: false,
+      users: '',
     });
   }
 }
