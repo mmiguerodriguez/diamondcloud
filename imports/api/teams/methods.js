@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import Future from 'fibers/future';
-import { sendMail } from '../mails/mails.js';
+import { Mail } from '../mails/mails.js';
 
 import { Teams } from './teams.js';
 import { Boards } from '../boards/boards.js';
@@ -56,15 +56,22 @@ export const createTeam = new ValidatedMethod({
         team._id = teamId;
         usersEmails.forEach((email) => {
           if(Meteor.users.findByEmail(email, {}).count() === 0) {
-            sendMail({
-              from: 'Excited User <me@samples.mailgun.org>',
+            //if user is not registered in Diamond Cloud
+            Mail.sendMail({
+              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
               to: email,
               subject: 'Te invitaron a colaborar en Diamond Cloud',
-              text: 'https://diamondcloud.tk/caca'
+              text: Mail.messages.sharedTeamNotRegistered(teamId),
+            });
+          } else {
+            Mail.sendMail({
+              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+              to: email,
+              subject: 'Te invitaron a colaborar en Diamond Cloud',
+              text: Mail.messages.sharedTeamRegistered(teamId),
             });
           }
         });
-        sendMail({ from: 'Excited User <me@samples.mailgun.org>', to: 'joelsobolmark@gmail.com', subject: 'Esto es un testo', text: 'gil' });
         future.return(team);
       });
     });

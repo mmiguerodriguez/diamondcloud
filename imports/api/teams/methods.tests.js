@@ -4,6 +4,7 @@ import { sinon }         from 'meteor/practicalmeteor:sinon';
 import { chai }          from 'meteor/practicalmeteor:chai';
 import   faker           from 'faker';
 import { Random }        from 'meteor/random';
+import { Mail }          from '../mails/mails.js';
 
 import { Teams }         from './teams.js';
 import { Boards }         from '../boards/boards.js';
@@ -60,11 +61,14 @@ if (Meteor.isServer) {
 
         callback(null, { _id: boardId });
       });
+
+      sinon.stub(Mail, 'sendMail', () => true);
     });
 
     afterEach(function() {
       createBoard.call.restore();
       Meteor.user.restore();
+      Mail.sendMail.restore();
     });
 
     it('should create a team', function(done) {
