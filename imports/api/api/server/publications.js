@@ -1,5 +1,7 @@
 import { Meteor }           from 'meteor/meteor';
 
+import { printObject }          from '../../helpers/print-objects.js';
+
 import { ModuleInstances }  from '../../module-instances/module-instances.js';
 import { ModuleData }       from '../../module-data/module-data.js';
 import { Boards }           from '../../boards/boards.js';
@@ -30,20 +32,11 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
     },
   ];
 
-  let key = `data.${obj.collection}`;
-  let keys = [
-    `${key}.visibleBy`,
-    `${key}.visibleBy.userId`,
-    `${key}.visibleBy.boardId`,
-    `${key}.isGlobal`,
-    `${key}.moduleInstanceId`,
-  ];
-
   if (obj.condition) {
     pipeline.push(
       {
         $project: {
-          [key]: {
+          [`data.${obj.collection}`]: {
             $filter: {
               input: `$data.${obj.collection}`,
               as: 'element',
@@ -57,25 +50,61 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
 
   pipeline.push(
     {
-      $match: {
-        $and: [
-          {
-            $or: [
-              { [keys[0]]: null },
-              { [keys[1]]: this.userId },
-              { [keys[2]]: { $in: boards } }
-            ],
-          },
-          {
-            $or: [
-              { [keys[3]]: true },
-              { [keys[4]]: moduleInstance._id }
-            ]
-          },
-        ]
+      $project: {
+        [`data.${obj.collection}`]: {
+          $filter: {
+            input: `$data.${obj.collection}`,
+            as: 'element',
+            cond: {
+              $or: [
+                {
+                  $eq: ['$$element.visibleBy', null],
+                },
+                {
+                  $eq: ['$$element.visibleBy', undefined],
+                },
+                {
+                  $eq: ['$$element.visibleBy.userId', this.userId],
+                },
+                /*
+                {
+                  ['$$element.boardId']: {
+                    $in: boards
+                  }
+                }
+                */
+              ]
+            },
+          }
+        },
       }
     }
   );
+
+  if (obj.condition) {
+    pipeline.push(
+      {
+        $project: {
+          [`data.${obj.collection}`]: {
+            $filter: {
+              input: `$data.${obj.collection}`,
+              as: 'element',
+              cond: {
+                $or: [
+                  {
+                    $eq: ['$$element.visibleBy.isGlobal', true]
+                  },
+                  {
+                    $eq: ['$$element.moduleInstanceId', moduleInstance._id ]
+                  }
+                ]
+              },
+            }
+          }
+        }
+      }
+    );
+  }
 
   ReactiveAggregate(this, ModuleData, pipeline);
 });

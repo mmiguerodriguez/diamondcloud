@@ -61,7 +61,7 @@ if (Meteor.isServer) {
               _id: 1,
               text: 'Todo 1',
               color: 'Red',
-              isGlobal: false,
+              isGlobal: true,
               visibleBy: [
                 { userId: user._id },
               ]
@@ -71,7 +71,7 @@ if (Meteor.isServer) {
               text: 'Todo 2',
               color: 'Red',
               isGlobal: false,
-              //moduleInstanceId: moduleInstances[0]._id,
+              moduleInstanceId: moduleInstances[0]._id,
               visibleBy: [
                 { boardId: board._id },
               ],
@@ -80,14 +80,14 @@ if (Meteor.isServer) {
               _id: 3,
               text: 'Todo 3',
               color: 'Green',
-              isGlobal: false
+              isGlobal: true
             },
             {
               _id: 4,
               text: 'Todo 4',
               color: 'Red',
               isGlobal: false,
-              //moduleInstanceId: moduleInstances[0]._id,
+              moduleInstanceId: moduleInstances[0]._id,
               visibleBy: [
                 { userId: Random.id() },
               ],
@@ -110,37 +110,36 @@ if (Meteor.isServer) {
       });
 
       it('should publish the requested moduleData data', function(done) {
+        let expect = [
+          moduleData.data.todos[0],
+          moduleData.data.todos[1],
+        ];
+
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('moduleData.data', moduleInstances[0]._id, request, (collections) => {
-          printObject(collections.ModuleData[0].data.todos);
-          chai.assert.isTrue(collections.ModuleData.length == 1);
-          chai.assert.isTrue(collections.ModuleData[0].data.todos.length == 2);
-          console.log(collections.ModuleData[0].data.todos);
+          printObject('Zaratustra', collections.ModuleData);
+          chai.assert.equal(collections.ModuleData.length, 1);
+          chai.assert.deepEqual(collections.ModuleData[0].data.todos, expect);
           done();
         });
       });
 
-      /*
       it('should publish using persistent data', function() {
         let expect = [
           moduleData.data.todos[0],
           moduleData.data.todos[2]
         ];
 
-        ModuleData.update(moduleData._id, temp, () => {
-          const collector = new PublicationCollector({ userId: user._id });
+        const collector = new PublicationCollector({ userId: user._id });
 
-          collector.collect('moduleData.data', moduleInstances[1]._id, otherRequest, (collections) => {
-            console.log(collections.ModuleData);
-            chai.assert.isTrue(collections.ModuleData.length == 1);
-            chai.assert.isTrue(collections.ModuleData[0].data.todos.length == 2);
-            chai.assert.deepEqual(collections.ModuleData[0].data.todos, expect);
-            done();
-          });
+        collector.collect('moduleData.data', moduleInstances[1]._id, otherRequest, (collections) => {
+          printObject('Melón', collections.ModuleData);
+          chai.assert.equal(collections.ModuleData.length, 1);
+          chai.assert.deepEqual(collections.ModuleData[0].data.todos, expect);
+          done();
         });
       });
-      */
     });
   });
 }

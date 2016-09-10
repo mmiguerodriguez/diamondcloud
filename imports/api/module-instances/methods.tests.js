@@ -67,7 +67,6 @@ if(Meteor.isServer){
         };
 
         createModuleInstance.call(args, (err, result) => {
-          console.log('matraodr');
           if (err) throw new Meteor.Error(err);
 
           expect = {
