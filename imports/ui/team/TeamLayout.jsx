@@ -1,4 +1,5 @@
 import React            from 'react';
+import classNames       from 'classnames';
 
 import Board            from './board/Board.jsx';
 import ChatLayout       from './chat/ChatLayout.jsx';
@@ -12,6 +13,7 @@ export default class TeamLayout extends React.Component {
       'board-context-menu-id': null,
       'moduleinstance-context-menu-id': null,
       'moduleinstance-iframe': null,
+      'has-maximized-chats': false,
     };
 
     this.refs = {
@@ -20,6 +22,11 @@ export default class TeamLayout extends React.Component {
     };
   }
   render() {
+    let chatsContainer = classNames({
+      'auto': !this.state['has-maximized-chats'],
+      'maximized': this.state['has-maximized-chats'],
+    }, 'chats-container');
+
     return (
       <div>
         <SidebarLayout
@@ -35,7 +42,7 @@ export default class TeamLayout extends React.Component {
           modules={ this.props.modules }
           getMessages={ this.props.getMessages }
           openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu.bind(this) } />
-        <div className='chats-container'>
+        <div className={ chatsContainer }>
           { this.renderChats() }
         </div>
         {
@@ -77,6 +84,8 @@ export default class TeamLayout extends React.Component {
       }
     });
   }
+
+  // chats
   renderChats() {
     let arr = [];
 
@@ -89,13 +98,25 @@ export default class TeamLayout extends React.Component {
           boards={ this.props.boards }
           directChats={ this.props.directChats }
           position={ 'medium' }
-          removeChat={ this.props.removeChat }/>
+          togglePosition={ this.togglePosition.bind(this) }
+          removeChat={ this.props.removeChat }
+          hasMaximizedChats={ this.state['has-maximized-chats']}/>
       );
     });
 
     return arr;
   }
-
+  togglePosition(chat, oldPosition, newPosition) {
+    chat.setState({
+      position: newPosition,
+    }, () => {
+      if(newPosition === 'maximized' || oldPosition === 'maximized') {
+        this.setState({
+          'has-maximized-chats': !this.state['has-maximized-chats'],
+        });
+      }
+    });
+  }
   // boards
   changeBoard(boardId) {
     if(boardId !== this.props.board._id) {
@@ -190,7 +211,7 @@ TeamLayout.propTypes = {
 
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
-  
+
   moduleInstances: React.PropTypes.array,
   moduleInstancesFrames: React.PropTypes.array,
   modules: React.PropTypes.array.isRequired,

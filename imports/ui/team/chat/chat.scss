@@ -85,11 +85,12 @@
 }
 .maximized {
   background-color: #ddd;
-  width: 250px;
+  width: 100%;
   float: right;
   margin-left: 24px;
+
   .chat-header {
-    height: 30px;
+    height: 64px;
     background-color: #ccc;
     cursor: pointer;
     .chat-text {
@@ -108,7 +109,7 @@
   }
 
   .chat-body {
-    height: 200px;
+    height: calc(100% - 64px - 50px);
     max-height: 200px;
     width: 100%;
     background-color: #a9a9a9;
