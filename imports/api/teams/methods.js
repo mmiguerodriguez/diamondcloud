@@ -121,6 +121,22 @@ export const shareTeam = new ValidatedMethod({
     let user = { email, permission: 'member' };
 
     Teams.addUser(teamId, user);
+    if(Meteor.users.findByEmail(email, {}).count() === 0) {
+      //if user is not registered in Diamond Cloud
+      Mail.sendMail({
+        from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+        to: email,
+        subject: 'Te invitaron a colaborar en Diamond Cloud',
+        text: Mail.messages.sharedTeamNotRegistered(teamId),
+      });
+    } else {
+      Mail.sendMail({
+        from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+        to: email,
+        subject: 'Te invitaron a colaborar en Diamond Cloud',
+        text: Mail.messages.sharedTeamRegistered(teamId),
+      });
+    }
     return Teams.findOne(teamId);
   }
 });
