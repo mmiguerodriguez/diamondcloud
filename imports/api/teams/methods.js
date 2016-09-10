@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import Future from 'fibers/future';
+import { sendMail } from '../mails/mails.js';
 
 import { Teams } from './teams.js';
 import { Boards } from '../boards/boards.js';
