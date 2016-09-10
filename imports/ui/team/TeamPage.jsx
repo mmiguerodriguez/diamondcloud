@@ -66,7 +66,9 @@ export default class Team extends React.Component {
     }
   }
   componentWillUnmount() {
-    Team.boardSubscription.get().stop();
+    if(Team.boardSubscription.get()) {
+      Team.boardSubscription.get().stop();
+    }
   }
 
   getMessages(obj) {
@@ -193,6 +195,10 @@ Team.board = new ReactiveVar();
 Team.boardSubscription = new ReactiveVar();
 
 export default TeamPageContainer = createContainer(({ params }) => {
+  if(!Meteor.user()) {
+    browserHistory.push('/');
+  }
+
   const { teamId } = params;
   const teamHandle = Meteor.subscribe('teams.team', teamId, () => {
     let firstBoard = Boards.findOne();
