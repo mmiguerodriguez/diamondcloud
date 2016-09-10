@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import Future from 'fibers/future';
+import { Mail } from '../mails/mails.js';
 
 import { Teams } from './teams.js';
 import { Boards } from '../boards/boards.js';
@@ -54,7 +55,24 @@ export const createTeam = new ValidatedMethod({
 
         team.boards.push({ _id: res._id });
         team._id = teamId;
-
+        usersEmails.forEach((email) => {
+          if(Meteor.users.findByEmail(email, {}).count() === 0) {
+            //if user is not registered in Diamond Cloud
+            Mail.sendMail({
+              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+              to: email,
+              subject: 'Te invitaron a colaborar en Diamond Cloud',
+              text: Mail.messages.sharedTeamNotRegistered(teamId),
+            });
+          } else {
+            Mail.sendMail({
+              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+              to: email,
+              subject: 'Te invitaron a colaborar en Diamond Cloud',
+              text: Mail.messages.sharedTeamRegistered(teamId),
+            });
+          }
+        });
         future.return(team);
       });
     });
@@ -104,6 +122,22 @@ export const shareTeam = new ValidatedMethod({
     let user = { email, permission: 'member' };
 
     Teams.addUser(teamId, user);
+    if(Meteor.users.findByEmail(email, {}).count() === 0) {
+      //if user is not registered in Diamond Cloud
+      Mail.sendMail({
+        from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+        to: email,
+        subject: 'Te invitaron a colaborar en Diamond Cloud',
+        text: Mail.messages.sharedTeamNotRegistered(teamId),
+      });
+    } else {
+      Mail.sendMail({
+        from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+        to: email,
+        subject: 'Te invitaron a colaborar en Diamond Cloud',
+        text: Mail.messages.sharedTeamRegistered(teamId),
+      });
+    }
     return Teams.findOne(teamId);
   }
 });
