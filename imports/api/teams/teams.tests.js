@@ -1,5 +1,6 @@
 import { Meteor }        from 'meteor/meteor';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
+import { printObject }   from '../helpers/print-objects.js';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
 import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
@@ -9,7 +10,6 @@ import { Teams }         from './teams.js';
 
 import '../factories/factories.js';
 
-/*
 if (Meteor.isServer) {
   describe('Teams', function() {
     describe('Helpers', function() {
@@ -54,18 +54,23 @@ if (Meteor.isServer) {
 
 
       it('should return the users of a team', function() {
-        let result = Teams.findOne(team._id).getUsers({ field1: 'value1' }),
-            expect = {
-              emails: team.users,
-              fields: { field1: 'value1' }
-            };
-        expect.emails.forEach((email, index) => {
-          expect.emails[index] = email.email;
-        });
+        let result = Teams
+                     .findOne(team._id)
+                     .getUsers({ emails: 1 })
+                     .fetch(),
+            expect = [
+              {
+                _id: user._id,
+                emails: [
+                  {
+                    address: user.emails[0].address,
+                  }
+                ]
+              }
+            ];
 
-        chai.assert.deepEqual(result, expect);
+        chai.assert.equal(JSON.stringify(result), JSON.stringify(expect));
       });
     });
   });
 }
-*/

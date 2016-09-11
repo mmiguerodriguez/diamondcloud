@@ -45,9 +45,8 @@ Teams.helpers({
     return found;
   },
   getUsers(fields) {
-    let emails = JSON.parse(JSON.stringify(this.users))
-                 .map((email) => email.email);
-    return Meteor.users.find({ 'emails.address' : emails[0] }, fields);
+    let emails = this.users.map((email) => email.email);
+    return Meteor.users.find({ 'emails.address' : { $in: emails } }, { fields });
   }
 });
 
