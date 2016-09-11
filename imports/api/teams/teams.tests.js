@@ -9,9 +9,10 @@ import { Teams }         from './teams.js';
 
 import '../factories/factories.js';
 
+/*
 if (Meteor.isServer) {
   describe('Teams', function() {
-    describe('Helpers', function(){
+    describe('Helpers', function() {
       let user, team;
       beforeEach(function() {
         resetDatabase();
@@ -41,17 +42,16 @@ if (Meteor.isServer) {
       it('should return owner of a team', function() {
         let expected = team.users[1].email;
         let result = Teams.findOne(team._id).owner();
-
         chai.assert.isTrue(result == expected);
       });
 
       it('should return if a team has a user', function() {
         let result = Teams.findOne(team._id);
-
         chai.assert.isTrue(result.hasUser({ _id: user._id }));
         chai.assert.isTrue(result.hasUser({ email: team.users[1].email }));
         chai.assert.isFalse(result.hasUser({ email: faker.internet.email() }));
       });
+
 
       it('should return the users of a team', function() {
         let result = Teams.findOne(team._id).getUsers({ field1: 'value1' }),
@@ -63,9 +63,9 @@ if (Meteor.isServer) {
           expect.emails[index] = email.email;
         });
 
-
         chai.assert.deepEqual(result, expect);
       });
     });
   });
 }
+*/

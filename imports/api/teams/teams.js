@@ -18,11 +18,12 @@ Teams.helpers({
       throw new Meteor.Error('Teams.owner.noOwner',
       'The team has no owner.');
     }
+
     return owner;
   },
   hasUser(user) {
     let mail, found = false;
-    
+
     if(typeof user === 'string'){
       user = Meteor.users.findOne(user);
       mail = user.email();
@@ -34,7 +35,7 @@ Teams.helpers({
         mail = user.email;
       }
     }
-    
+
     this.users.forEach((user) => {
       if(user.email == mail) {
         found = true;
@@ -44,11 +45,9 @@ Teams.helpers({
     return found;
   },
   getUsers(fields) {
-    let emails = JSON.parse(JSON.stringify(this.users));
-    emails.forEach((email, index) => {
-      emails[index] = email.email;
-    });
-    return Meteor.users.findByEmail(emails, fields);
+    let emails = JSON.parse(JSON.stringify(this.users))
+                 .map((email) => email.email);
+    return Meteor.users.find({ 'emails.address' : emails[0] }, fields);
   }
 });
 
