@@ -5,7 +5,7 @@ import ModuleInstance from '../../module-instance/ModuleInstance.jsx';
 export default class Board extends React.Component {
   render() {
     return (
-      <div className='board-container'>
+      <div className='board-container hidden-xs'>
         <div className='sub-header'>
           <div className='sub-header-data'>
             <h4 className='title'>{ this.props.board.name }</h4>

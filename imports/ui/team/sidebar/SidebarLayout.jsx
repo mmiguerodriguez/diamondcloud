@@ -12,7 +12,7 @@ import ConfigTeamModal    from '../../modals/config-team/ConfigTeamModal.jsx';
 export default class SidebarLayout extends React.Component {
   render() {
     return (
-      <div className='sidebar'>
+      <div className='sidebar hidden-xs'>
         <div  id='boards-item'
               className='item no-margin'
               onClick={ this.toggleCollapsible.bind(this, 'boards') }>

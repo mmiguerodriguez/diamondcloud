@@ -11,8 +11,8 @@ export default class NavbarLayout extends React.Component {
     return (
       <nav className='navbar header'>
         <div className='container-fluid'>
-          <div className='navbar-header'>
-            <button className='navbar-toggle collapsed'
+          <div className='navbar-header row'>
+            <button className='navbar-toggle collapsed hidden-xs'
                     type='button'
                     data-toggle='collapse'
                     data-target='#navbar'
@@ -22,11 +22,59 @@ export default class NavbarLayout extends React.Component {
               <span className='icon-bar'></span>
               <span className='icon-bar'></span>
             </button>
-            <a>
+            <a className="col-xs-2">
               <img src='/img/logo.svg' className='logo-photo'/>
             </a>
+            <div className="col-xs-4 col-xs-offset-2 visible-xs-block">
+              <div className="dropdown">
+                <button className="btn"
+                        id="dLabel"
+                        type="button"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false">
+                  Teams
+                  <span className="caret"></span>
+                </button>
+                <ul className="dropdown-menu" aria-labelledby="dLabel">
+                  <li className="item-li"><a href="#" className="item-a truncate">Diamond Cloud</a></li>
+                  <li className="item-li"><a href="#" className="item-a truncate">Google</a></li>
+                  <li className="item-li"><a href="#" className="item-a truncate">Tester</a></li>
+                </ul>
+              </div>
+            </div>
+            <div className="col-xs-4 visible-xs-block">
+              <div className="right-align-icon user">
+              {
+                this.props.user ? (
+                  <a className='UserPhotoPopover'
+                    data-container='body'
+                    data-toggle='popover'
+                    data-placement='bottom'
+                    data-content=''>
+                    <Profile picture={ this.props.user.profile.picture } />
+                  </a>
+                ) : ( null )
+              }
+              </div>
+              <div className="new right-align-icon"></div>
+            </div>
           </div>
-          <div className='collapse navbar-collapse' id='navbar'>
+          <div className="tabs">
+              <ul className="nav nav-tabs" role="tablist">
+                <li className="item col-xs-6">
+                  <a href="#home" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false">
+                    Boards
+                  </a>
+                </li>
+                <li className="item col-xs-6">
+                  <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="true">
+                    Users
+                  </a>
+                </li>
+              </ul>
+          </div>
+          <div className='collapse navbar-collapse hidden-xs' id='navbar'>
             <ul className='nav navbar-nav'>
               {
                 this.props.user ? (
