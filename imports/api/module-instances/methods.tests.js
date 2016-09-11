@@ -113,7 +113,7 @@ if(Meteor.isServer){
           width: args.width,
           height: args.height,
           archived: false,
-          minimized: null
+          minimized: false
         };
 
         chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));

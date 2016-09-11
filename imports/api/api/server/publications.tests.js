@@ -123,7 +123,6 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('moduleData.data', moduleInstances[0]._id, request, (collections) => {
-          printObject('Zaratustra', collections.ModuleData);
           chai.assert.equal(collections.ModuleData.length, 1);
           chai.assert.deepEqual(collections.ModuleData[0].data.todos, expect);
           done();
@@ -144,7 +143,6 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('moduleData.data', moduleInstances[1]._id, otherRequest, (collections) => {
-          printObject('Kiwasawa', collections.ModuleData);
           chai.assert.equal(collections.ModuleData.length, 1);
           chai.assert.deepEqual(collections.ModuleData[0].data.todos, expect);
           done();
