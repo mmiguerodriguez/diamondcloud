@@ -58,6 +58,9 @@ export default class TeamLayout extends React.Component {
             <p className='col-xs-8'>Eliminar</p>
           </div>
         </div>
+        <div className="new-chat visible-xs-block">
+          <img className="icon" src="/img/add-people-icon.svg" width="32px" />
+        </div>
       </div>
     );
   }
@@ -190,7 +193,7 @@ TeamLayout.propTypes = {
 
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
-  
+
   moduleInstances: React.PropTypes.array,
   moduleInstancesFrames: React.PropTypes.array,
   modules: React.PropTypes.array.isRequired,

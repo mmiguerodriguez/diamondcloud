@@ -57,7 +57,6 @@ export default class NavbarLayout extends React.Component {
                 ) : ( null )
               }
               </div>
-              <div className="new right-align-icon"></div>
             </div>
           </div>
           <div className="tabs visible-xs-block">
