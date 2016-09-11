@@ -58,6 +58,35 @@ export default class TeamLayout extends React.Component {
             <p className='col-xs-8'>Eliminar</p>
           </div>
         </div>
+        <div className="chats visible-xs-block">
+          <div className="board">
+            <div className="item">
+              <div className="col-xs-2">
+              	<img className="img-circle" src="https://lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAABg/Oxt0RhF_35g/photo.jpg" width="48px" />
+              </div>
+              <div className="col-xs-8 info">
+                <p className="user truncate">User Name</p>
+                <p className="last-message truncate">Holaaa, todo bien??? Me queria comunicar con vos porque si ;)</p>
+              </div>
+              <div className="col-xs-2">
+                <div className="pin">
+                  <p className="text">12</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="users" hidden>
+            <div className="item">
+              <div className="col-xs-2">
+              	<img className="img-circle" src="https://lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAABg/Oxt0RhF_35g/photo.jpg" width="48px" />
+              </div>
+              <div className="col-xs-8 info">
+                <p className="user truncate">User Name</p>
+                <p className="last-message truncate">Holaaa, todo bien??? Me queria comunicar con vos porque si ;)</p>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="new-chat visible-xs-block">
           <img className="icon" src="/img/add-people-icon.svg" width="32px" />
         </div>

@@ -55,3 +55,38 @@
     filter: invert(1);
   }
 }
+
+.chats {
+  .board, .users {
+    margin-bottom: 100px;
+    .item {
+      overflow: auto;
+      padding: 10px 5px;
+      border-bottom: 1px solid $sidebar-text-color;
+      .info {
+        .user {
+          font-weight: bold;
+        }
+        .user, .last-message {
+          margin: 5px 0px !important;
+        }
+      }
+      .pin {
+        width: 24px;
+        height: 24px;
+        background: red;
+        border-radius: 50%;
+        margin-top: 15px;
+        float: right;
+        text-align: center;
+        .text {
+          color: $white;
+          margin-top: 2px;
+        }
+      }
+      &:hover {
+        background-color: $sidebar-text-color;
+      }
+    }
+  }
+}

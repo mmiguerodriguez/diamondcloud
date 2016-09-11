@@ -68,24 +68,6 @@ export default class NavbarLayout extends React.Component {
             }
           </div>
           {
-            this.props.path.indexOf("/team") > -1 ? (
-              <div className="tabs visible-xs-block">
-                  <ul className="nav nav-tabs" role="tablist">
-                    <li className="item col-xs-6 active">
-                      <a href="#home" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false">
-                        Boards
-                      </a>
-                    </li>
-                    <li className="item col-xs-6">
-                      <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="true">
-                        Users
-                      </a>
-                    </li>
-                  </ul>
-              </div>
-            ) : ( null )
-          }
-          {
             this.props.path.indexOf("/team") < 0 ? (
               <div className='collapse navbar-collapse' id='navbar'>
                 <ul className='nav navbar-nav'>
@@ -120,6 +102,24 @@ export default class NavbarLayout extends React.Component {
              ) : (null)
           }
         </div>
+        {
+          this.props.path.indexOf("/team") > -1 ? (
+            <div className="tabs visible-xs-block">
+                <ul className="nav nav-tabs" role="tablist">
+                  <li className="item col-xs-6 active">
+                    <a href="#home" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false">
+                      Boards
+                    </a>
+                  </li>
+                  <li className="item col-xs-6">
+                    <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="true">
+                      Users
+                    </a>
+                  </li>
+                </ul>
+            </div>
+          ) : ( null )
+        }
       </nav>
     );
   }
