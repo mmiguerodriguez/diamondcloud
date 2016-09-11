@@ -1,7 +1,7 @@
 import React from 'react';
-import { Notifications } from '../../notifications/notifications.js';
+import { Notifications } from '../../../notifications/notifications.js';
 
-import { Boards } from '~/imports/api/boards/boards.js';
+import { Boards } from '/imports/api/boards/boards.js';
 
 export default class Message extends React.Component {
   render() {

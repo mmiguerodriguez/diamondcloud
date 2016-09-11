@@ -11,10 +11,10 @@ export let Notifications = {
     });
   },
 
-  sendNotification({ body,icon,title }) {
+  sendNotification({ body, icon, title }) {
     if (Notification.permission === "granted") {
       icon = icon || 'http://diamondcloud.tk/img/logo.ico';
-      var notification = new Notification("Hi there!", { body, icon });
+      let notification = new Notification(title, { body, icon });
     }
   },
 };
