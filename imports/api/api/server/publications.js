@@ -10,14 +10,12 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
   let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
   let board = moduleInstance.board();
   let teamId = board.team()._id;
-  let boards = Meteor.users
-               .findOne(this.userId)
-               .boards(teamId, { _id: 1 })
-               .map((board) => board._id);
   let moduleData = ModuleData.findOne({
     moduleId: moduleInstance.moduleId,
     teamId,
   });
+  let boards = Meteor.users.findOne(this.userId)
+  .boards(teamId, { _id: 1 }).map((board) => board._id);
 
   if (!Boards.isValid(board._id, this.userId)) {
     throw new Meteor.Error('ModuleData.data.notAValidMember',
@@ -58,30 +56,42 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
             cond: {
               $or: [
                 {
-                  $eq: ['$$element.visibleBy', null],
+                  $eq: ['$$element.isGlobal', true]
                 },
                 {
-                  $eq: ['$$element.visibleBy', undefined],
-                },
-                {
-                  $eq: ['$$element.visibleBy.userId', this.userId],
-                },
-                /*
-                {
-                  ['$$element.boardId']: {
-                    $in: boards
-                  }
+                  $eq: ['$$element.moduleInstanceId', moduleInstance._id ]
                 }
-                */
               ]
             },
           }
-        },
+        }
       }
     }
   );
 
-  if (obj.condition) {
+  let ids = [];
+  let condOptions = [];
+
+  ModuleData.aggregate(pipeline, (err, res) => {
+    res[0].data[obj.collection].forEach((doc) => {
+      if (doc.visibleBy === undefined) {
+        ids.push(doc._id);
+      } else {
+        doc.visibleBy.forEach((visObj) => {
+          if (visObj.userId == this.userId) ids.push(doc._id);
+          boards.forEach((boardId) => {
+            if (boardId == visObj.boardId) ids.push(doc._id);
+          });
+        });
+      }
+    });
+
+    ids.forEach((id) => {
+      condOptions.push({
+        $eq: ['$$element._id', id]
+      });
+    });
+
     pipeline.push(
       {
         $project: {
@@ -90,21 +100,14 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
               input: `$data.${obj.collection}`,
               as: 'element',
               cond: {
-                $or: [
-                  {
-                    $eq: ['$$element.visibleBy.isGlobal', true]
-                  },
-                  {
-                    $eq: ['$$element.moduleInstanceId', moduleInstance._id ]
-                  }
-                ]
+                $or: condOptions
               },
             }
-          }
+          },
         }
       }
     );
-  }
 
-  ReactiveAggregate(this, ModuleData, pipeline);
+    ReactiveAggregate(this, ModuleData, pipeline);
+  });
 });

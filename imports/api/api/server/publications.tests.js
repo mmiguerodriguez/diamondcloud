@@ -80,7 +80,7 @@ if (Meteor.isServer) {
               _id: 3,
               text: 'Todo 3',
               color: 'Green',
-              isGlobal: true
+              isGlobal: true,
             },
             {
               _id: 4,
@@ -109,7 +109,7 @@ if (Meteor.isServer) {
         Meteor.user.restore();
       });
 
-      it('should publish the requested moduleData data', function(done) {
+      it('should publish the requested data', function(done) {
         let expect = [
           moduleData.data.todos[0],
           moduleData.data.todos[1],
@@ -125,7 +125,7 @@ if (Meteor.isServer) {
         });
       });
 
-      it('should publish using persistent data', function() {
+      it('should publish using persistent data', function(done) {
         let expect = [
           moduleData.data.todos[0],
           moduleData.data.todos[2]
@@ -134,7 +134,7 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('moduleData.data', moduleInstances[1]._id, otherRequest, (collections) => {
-          printObject('Melón', collections.ModuleData);
+          printObject('Kiwasawa', collections.ModuleData);
           chai.assert.equal(collections.ModuleData.length, 1);
           chai.assert.deepEqual(collections.ModuleData[0].data.todos, expect);
           done();
