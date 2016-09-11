@@ -30,15 +30,13 @@ if (Meteor.isServer) {
           team.boards.push({ _id: board._id });
         });
 
-        boards[2].users.push({ _id: user._id });
+        boards[2].users.push({ email: user.emails[0].address });
         boards[3].users = [];
 
         resetDatabase();
 
         Meteor.users.insert(user);
-
         Teams.insert(team);
-
         boards.forEach((board) => {
           Boards.insert(board);
         });

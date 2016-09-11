@@ -99,10 +99,17 @@ export default class Board extends React.Component {
 
     if(this.props.moduleInstances) {
       this.props.moduleInstances.map((moduleInstance) => {
+
+        let module = this.props.modules.find((module) => {
+          return module._id = moduleInstance.moduleId;
+        });
+
         arr.push(
           <ModuleInstance
             key={ moduleInstance._id }
             moduleInstance={ moduleInstance }
+            moduleInstancesFrames={ this.props.moduleInstancesFrames }
+            module={ module }
             boards={ this.props.boards }
             users={ this.props.users }
             openModuleInstanceContextMenu={ this.props.openModuleInstanceContextMenu }
@@ -118,7 +125,7 @@ export default class Board extends React.Component {
 
     if(this.props.board.isPrivate) {
       this.props.board.users.map((_user) => {
-        let user = Meteor.users.findOne(_user._id) || _user;
+        let user = Meteor.users.findOne({ 'emails.address': _user.email }) || _user;
         arr.push(
           <img  key={ user._id || user.email }
             className='img-circle shared-people'
@@ -150,6 +157,8 @@ Board.propTypes = {
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
   moduleInstances: React.PropTypes.array,
+  moduleInstancesFrames: React.PropTypes.array,
+  modules: React.PropTypes.array,
   users: React.PropTypes.array.isRequired,
   getMessages: React.PropTypes.func.isRequired,
   openModuleInstanceContextMenu: React.PropTypes.func.isRequired,

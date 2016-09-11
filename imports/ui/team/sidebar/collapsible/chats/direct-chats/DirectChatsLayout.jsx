@@ -21,10 +21,23 @@ export default class DirectChatsLayout extends React.Component {
     let arr = [];
 
     this.props.directChats.map((directChat) => {
+      let notifications, user;
+      directChat.users.map((_user) => {
+        if(_user._id !== Meteor.userId()) {
+          user = Meteor.users.findOne(_user._id).profile.name;
+        } else {
+          notifications = _user.notifications;
+        }
+      });
+
+      notifications = notifications || 0;
+
       arr.push(
         <DirectChat
           key={ directChat._id }
           directChat={ directChat }
+          user={ user }
+          notifications={ notifications }
           getMessages={ this.props.getMessages } />
       );
     });

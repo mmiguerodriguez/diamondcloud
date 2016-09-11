@@ -2,6 +2,13 @@
   position: absolute !important;
   -webkit-user-select: none;
 
+  .minimized-module-name {
+    width: inherit;
+    position: absolute;
+    text-align: center;
+    top: -36px;
+  }
+
   .module-pin {
     background-color: #3f3f3f;
     border: 5px ridge #e74c3c;

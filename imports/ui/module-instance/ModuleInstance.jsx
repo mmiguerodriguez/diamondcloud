@@ -1,5 +1,6 @@
-import React              from 'react';
 import { generateApi }    from '../../api/api/api-client.js';
+
+import React              from 'react';
 
 export default class ModuleInstance extends React.Component {
   constructor(props) {
@@ -31,12 +32,19 @@ export default class ModuleInstance extends React.Component {
              height: this.props.moduleInstance.height,
            }}>
         {
-          !this.state.loading ? (
+          this.state.minimized ? (
+            <span className='minimized-module-name'>
+              { this.props.module.name }
+            </span>
+          ) : ( null )
+        }
+        {
+          !this.state.loading || this.state.minimized ? (
             <div
               className='module-pin'
               role='button'
               onClick={ this.toggleMinimize.bind(this) }
-              onContextMenu={ this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id) }></div>
+              onContextMenu={ this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.refs.iframe) }></div>
           ) : ( null )
         }
         <iframe className='module'
@@ -59,6 +67,13 @@ export default class ModuleInstance extends React.Component {
 
     this.refs.iframe.onload = this.iframeLoaded.bind(this);
     this.refs.iframe.contentWindow.DiamondAPI = DiamondAPI;
+    
+    this.props.moduleInstancesFrames.push(this.refs.iframe.contentWindow);
+  }
+  componentDidUpdate() {
+    if(this.props.moduleInstance.archived) {
+      this.refs.iframe.contentWindow.DiamondAPI.unsubscribe();
+    }
   }
 
   iframeLoaded() {
@@ -127,6 +142,8 @@ export default class ModuleInstance extends React.Component {
 
 ModuleInstance.propTypes = {
   moduleInstance: React.PropTypes.object.isRequired,
+  moduleInstancesFrames: React.PropTypes.array,
+  module: React.PropTypes.object.isRequired,
   boards: React.PropTypes.array.isRequired,
   users: React.PropTypes.array.isRequired,
   openModuleInstanceContextMenu: React.PropTypes.func.isRequired,

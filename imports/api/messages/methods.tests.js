@@ -13,76 +13,65 @@ import { Messages }      from './messages.js';
 import { sendMessage,
          seeMessage }    from './methods.js';
 
+import '../factories/factories.js';
+
 if (Meteor.isServer) {
   describe('Messages', function() {
-    let usersIds = [Random.id(), Random.id(), Random.id()],
-        emails = [faker.internet.email(), faker.internet.email(), faker.internet.email()],
-        user = {
-          _id: usersIds[0],
-          emails: [{ address: emails[0] }],
-        },
-        board = {
-          _id: Random.id(),
-          name: faker.lorem.word(),
-          isPrivate: false,
-          users: [
-            { _id: usersIds[0] },
-            { _id: usersIds[1] },
-            { _id: usersIds[2] }
-          ],
-          moduleInstances: [],
-          drawings: [],
-          archived: false,
-        },
-        team = {
-          _id: Random.id(),
-          name: faker.lorem.word(),
-          plan: 'free',
-          type: faker.lorem.word(),
-          users: [
-            { email: emails[0], permission: 'owner' },
-            { email: emails[1], permission: 'member' },
-            { email: emails[2], permission: 'member' },
-          ],
-          boards: [{ _id: board._id }],
-          drawings: [],
-          archived: false,
-        },
-        directChat = {
-          _id: Random.id(),
-          teamId: team._id,
-          users: board.users,
-        },
-        messages = [
-          Factory.create('message'),
-          Factory.create('message')
-        ];
-
-        messages[0].directChatId = Random.id();
-        messages[1].boardId = Random.id();
+    let users, team, board, directChat, messages;
 
     beforeEach(function(done) {
       resetDatabase();
-      sinon.stub(Meteor, 'user', () => user);
 
-      Meteor.users.insert(user);
-      Meteor.users.insert({
-        _id: usersIds[1],
-        emails: [{ address: emails[1] }],
-      });
-      Meteor.users.insert({
-        _id: usersIds[2],
-        emails: [{ address: emails[2] }],
-      });
+      users = [
+        Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
+        Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
+      ];
+      team = Factory.create('team');
+      board = Factory.create('publicBoard');
+      directChat = Factory.create('directChat');
+      messages = [
+        Factory.create('directChatMessage'),
+        Factory.create('boardMessage'),
+      ];
 
+      team.boards.push({ _id: board._id });
+      team.users = [
+        { email: users[0].emails[0].address, permission: 'owner' },
+        { email: users[1].emails[0].address, permission: 'member' },
+      ];
+      board.users = [
+        { email: users[0].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) },
+        { email: users[1].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) },
+      ];
+      directChat.teamId = team._id;
+      directChat.users = [
+        { _id: users[0]._id, notifications: board.users[0].notifications },
+        { _id: users[1]._id, notifications: board.users[1].notifications }
+      ];
+      messages[0].directChatId = directChat._id;
+      messages[1].boardId = board._id;
+      messages[1].senderId = users[1]._id;
+
+      resetDatabase();
+
+      sinon.stub(Meteor, 'user', () => users[0]);
+      sinon.stub(Meteor, 'userId', () => users[0]._id);
+
+      users.forEach((user) => {
+        Meteor.users.insert(user);
+      });
       Teams.insert(team);
       Boards.insert(board);
       DirectChats.insert(directChat);
-      messages.forEach((message) => Messages.insert(message));
+      messages.forEach((message) => {
+        Messages.insert(message);
+      });
+
       done();
     });
     afterEach(function() {
       Meteor.user.restore();
+      Meteor.userId.restore();
     });
 
     it('should send a message', function(done) {
@@ -100,7 +89,7 @@ if (Meteor.isServer) {
         createdAt: (new Date()).getTime(),
       };
       expect_1 = {
-        senderId: user._id,
+        senderId: users[0]._id,
         type: 'text',
         content: test_1.content,
         createdAt: test_1.createdAt,
@@ -115,7 +104,7 @@ if (Meteor.isServer) {
         createdAt: (new Date()).getTime(),
       };
       expect_2 = {
-        senderId: user._id,
+        senderId: users[0]._id,
         type: 'text',
         content: test_2.content,
         createdAt: test_2.createdAt,
@@ -123,12 +112,15 @@ if (Meteor.isServer) {
         seen: false
       };
 
-      sendMessage.call(test_1, (err_1, result_1) => {
-        if (err_1) throw new Meteor.Error(err_1);
-        sendMessage.call(test_2, (err_2, result_2) => {
-          if (err_2) throw new Meteor.Error(err_2);
-          chai.assert.equal(JSON.stringify(expect_1), JSON.stringify(result_1));
-          chai.assert.equal(JSON.stringify(expect_2), JSON.stringify(result_2));
+      sendMessage.call(test_1, (err, result) => {
+        if (err) throw new Meteor.Error(err);
+        result_1 = result;
+        sendMessage.call(test_2, (err, result) => {
+          if (err) throw new Meteor.Error(err);
+          result_2 = result;
+
+          chai.assert.deepEqual(expect_1, result_1);
+          chai.assert.deepEqual(expect_2, result_2);
           done();
         });
       });
@@ -138,18 +130,19 @@ if (Meteor.isServer) {
       let expected = messages[0];
       expected.seen = true;
 
-      seeMessage.call({ messageId: messages[0]._id }, (err, res) => {
-        chai.assert.isTrue(JSON.stringify(res) === JSON.stringify(expected));
+      seeMessage.call({ messageId: messages[0]._id }, (err, result) => {
+        if(err) console.log(err);
+        chai.assert.deepEqual(result, expected);
         done();
       });
     });
 
     it('should see a message in a board', function(done) {
       let expected = messages[1];
-      expected.seers.push(user._id);
+      expected.seers.push(users[0]._id);
 
-      seeMessage.call({ messageId: messages[1]._id }, (err, res) => {
-        chai.assert.isTrue(JSON.stringify(res) === JSON.stringify(expected));
+      seeMessage.call({ messageId: messages[1]._id }, (err, result) => {
+        chai.assert.deepEqual(result, expected);
         done();
       });
     });

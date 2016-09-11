@@ -1,5 +1,6 @@
-import faker		     from 'faker';
-import { Random }    from 'meteor/random';
+import { Meteor }          from 'meteor/meteor';
+import { Random }          from 'meteor/random';
+import faker		           from 'faker';
 
 import { Teams }           from '../teams/teams.js';
 import { Boards }          from '../boards/boards.js';
@@ -9,8 +10,12 @@ import { DirectChats }     from '../direct-chats/direct-chats.js';
 import { ModuleInstances } from '../module-instances/module-instances.js';
 
 Factory.define('user', Meteor.users, {
-	emails: [ { address: faker.internet.email() } ],
-	profile: 'profile',
+	emails: [
+		{ address: faker.internet.email() }
+	],
+	profile: {
+		name: faker.name.findName(),
+	},
 });
 
 Factory.define('board', Boards, {
@@ -29,7 +34,7 @@ Factory.define('publicBoard', Boards, Factory.extend('board', {
 Factory.define('privateBoard', Boards, Factory.extend('board', {
 	isPrivate: true,
 	users: [
-		{ _id: Random.id() },
+		{ _id: Random.id(), notifications: faker.random.number({ min: 0, max: 20 }) },
 	],
 }));
 
@@ -47,8 +52,8 @@ Factory.define('team', Teams, {
 Factory.define('directChat', DirectChats, {
 	teamId: Factory.get('team'),
 	users: [
-		{ _id: Random.id() },
-		{ _id: Random.id() },
+		{ _id: Random.id(), notifications: faker.random.number({ min: 0, max: 20 }) },
+		{ _id: Random.id(), notifications: faker.random.number({ min: 0, max: 20 }) },
 	]
 });
 
@@ -56,16 +61,17 @@ Factory.define('message', Messages, {
 	senderId: Factory.get('user')._id,
 	type: "text",
 	content: faker.lorem.sentence(),
-	createdAt: new Date(),
-	seers: []
+	createdAt: new Date()
 });
 
 Factory.define('directChatMessage', Messages, Factory.extend('message', {
 	directChatId: Factory.get('directChat')._id,
+	seen: false,
 }));
 
 Factory.define('boardMessage', Messages, Factory.extend('message', {
-	directChatId: Factory.get('board')._id,
+	boardId: Factory.get('board')._id,
+	seers: [],
 }));
 
 Factory.define('moduleInstance', ModuleInstances, {
@@ -75,6 +81,7 @@ Factory.define('moduleInstance', ModuleInstances, {
 	width: faker.random.number({ min: 0, max: 1920 }),
 	height: faker.random.number({ min: 0, max: 1080 }),
 	archived: false,
+	minimized: false,
 });
 
 Factory.define('moduleData', ModuleData, {

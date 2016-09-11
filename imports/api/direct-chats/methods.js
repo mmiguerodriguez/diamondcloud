@@ -40,8 +40,8 @@ export const createDirectChat = new ValidatedMethod({
     let directChat = {
       teamId,
       users: [
-        { _id: Meteor.userId() },
-        { _id: userId },
+        { _id: Meteor.userId(), notifications: 0 },
+        { _id: userId, notifications: 0 },
       ],
     };
 

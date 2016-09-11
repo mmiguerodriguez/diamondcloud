@@ -16,11 +16,11 @@ export default class Message extends React.Component {
           </div>
         );
       } else {
-        let otherUser = Meteor.users.findOne(this.props.message.senderId);
+        let sender = Meteor.users.findOne(this.props.message.senderId);
         return (
           <div className='message-other'>
-            <div className='col-xs-2 message-user-image' title={ otherUser.profile.name }>
-              <img className='img-rounded' src={ otherUser.profile.picture } width='32px' />
+            <div className='col-xs-2 message-user-image' title={ sender.profile.name }>
+              <img className='img-rounded' src={ sender.profile.picture } width='32px' />
             </div>
             <div className='col-xs-9 message-text-container'>
               <p className='message-text'>{ this.props.message.content }</p>
@@ -37,6 +37,41 @@ export default class Message extends React.Component {
         return (
           <div>Maximized message</div>
         );
+      }
+    }
+  }
+  componentDidMount() {
+    if(!this.props.isSender) {
+      if(this.props.position !== 'minimized') {
+        if(this.props.message.directChatId) {
+          if(!this.props.message.seen) {
+            Meteor.call('Messages.methods.see', {
+              messageId: this.props.message._id
+            }, (error, result) => {
+              if(error) {
+                throw new Meteor.Error(error);
+              } else {
+                // console.log(result);
+              }
+            });
+          }
+        } else if(this.props.message.boardId) {
+          let seenMessage = this.props.message.seers.find((seer) => {
+            return seer === Meteor.userId();
+          });
+
+          if(!seenMessage) {
+            Meteor.call('Messages.methods.see', {
+              messageId: this.props.message._id,
+            }, (error, result) => {
+              if(error) {
+                throw new Meteor.Error(error);
+              } else {
+                console.log(result);
+              }
+            });
+          }
+        }
       }
     }
   }

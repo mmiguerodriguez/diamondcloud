@@ -1,8 +1,10 @@
-import { Meteor } from 'meteor/meteor';
+import { Meteor }          from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
+import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
 
-import { Messages } from './messages.js';
+import { Messages }        from './messages.js';
+import { Boards }          from '../boards/boards.js';
+import { DirectChats }     from '../direct-chats/direct-chats.js';
 
 export const sendMessage = new ValidatedMethod({
   name: 'Messages.methods.send',
@@ -20,7 +22,7 @@ export const sendMessage = new ValidatedMethod({
     }
 
     let message = {
-      senderId: Meteor.user()._id,
+      senderId: Meteor.userId(),
       type,
       content,
       createdAt,
@@ -30,9 +32,11 @@ export const sendMessage = new ValidatedMethod({
     if (!!directChatId) {
       message.directChatId = directChatId;
       message.seen = false;
+      DirectChats.addNotification(directChatId, message.senderId);
     } else if (!!boardId) {
       message.boardId = boardId;
       message.seers = [];
+      Boards.addNotification(boardId, message.senderId);
     } else {
       throw new Meteor.Error('Messages.methods.send.noDestination',
       'Must have a destination to send a message.');
@@ -49,7 +53,7 @@ export const seeMessage = new ValidatedMethod({
     messageId: { type: String, regEx: SimpleSchema.RegEx.Id, },
   }).validator(),
   run({ messageId }) {
-    if (!Meteor.user()) {
+    if(!Meteor.user()) {
       throw new Meteor.Error('Messages.methods.see.notLoggedIn',
       'Must be logged in to see a message.');
     }
@@ -58,15 +62,17 @@ export const seeMessage = new ValidatedMethod({
     if (message.boardId) {
       Messages.update(messageId, {
         $push: {
-          seers: Meteor.user()._id,
+          seers: Meteor.userId(),
         }
       });
-    } else {
+      Boards.resetNotifications(message.boardId, message.senderId);
+    } else if(message.directChatId) {
       Messages.update(messageId, {
         $set: {
           seen: true,
         }
       });
+      DirectChats.resetNotifications(message.directChatId, message.senderId);
     }
 
     message = Messages.findOne(messageId);

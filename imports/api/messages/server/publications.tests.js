@@ -41,7 +41,7 @@ if (Meteor.isServer) {
         teamWithUser.boards.push({ _id: publicBoard._id });
 
         privateBoardWithUser = Factory.create('privateBoard');
-        privateBoardWithUser.users[0]._id = user._id;
+        privateBoardWithUser.users[0].email = user.emails[0].address;
         teamWithUser.boards.push({ _id: privateBoardWithUser._id });
 
         privateBoardWithoutUser = Factory.create('privateBoard');

@@ -13,7 +13,7 @@ export const createBoard = new ValidatedMethod({
     name: { type: String, min: 0, max: 200 },
     isPrivate: { type: Boolean },
     users: { type: [Object], optional: true },
-    'users.$._id': { type: String, regEx: SimpleSchema.RegEx.Id, optional: true },
+    'users.$.email': { type: String, regEx: SimpleSchema.RegEx.Email, optional: true },
   }).validator(),
   run({ teamId, name, isPrivate, users }) {
     if (!Meteor.user()) {
@@ -24,20 +24,28 @@ export const createBoard = new ValidatedMethod({
     let team = Teams.findOne(teamId);
     users = users || [];
 
-    if(users.length > 0 && isPrivate) {
-      if (team.hasUser({ _id: Meteor.userId() })) {
-        users.push({ _id: Meteor.userId() });
-      } else {
-        throw new Meteor.Error('Branches.methods.createBoard.userNotInTeam',
-        'You cannot add yourself to a board when you are not part of the team.');
-      }
-
-      users.forEach((user) => {
-        if (!team.hasUser({ _id: user._id })) {
-          throw new Meteor.Error('Branches.methods.createBoard.userNotInTeam',
+    if(users.length > 0) {
+      users.forEach((user, index, array) => {
+        if (!team.hasUser({ email: user.email })) {
+          throw new Meteor.Error('Boards.methods.createBoard.userNotInTeam',
           'You cannot add people to a board that are not part of the team.');
         }
+
+        array[index].notifications = 0;
       });
+    } else if(users.length === 0 && !isPrivate) {
+      team.users.forEach((user) => {
+        if(user.email !== Meteor.user().email()) {
+          users.push({ email: user.email, notifications: 0 });
+        }
+      });
+    }
+
+    if(team.hasUser({ _id: Meteor.userId() })) {
+      users.push({ email: Meteor.user().email(), notifications: 0 });
+    } else {
+      throw new Meteor.Error('Boards.methods.createBoard.userNotInTeam',
+      'You cannot add yourself to a board when you are not part of the team.');
     }
 
     let board = {
@@ -45,7 +53,6 @@ export const createBoard = new ValidatedMethod({
       isPrivate,
       users,
       moduleInstances: [],
-      drawings: [],
       archived: false,
     };
 
@@ -58,7 +65,9 @@ export const createBoard = new ValidatedMethod({
 
       Teams.update(teamId, {
         $push: {
-          boards: { _id: boardId },
+          boards: {
+            _id: boardId,
+          },
         },
       });
 

@@ -59,6 +59,8 @@ Boards.getBoards = (boardsIds, userId, fields) => {
       boardsIds[index] = board._id;
     });
   }
+  
+  let user = Meteor.users.findOne(userId);
   return Boards.find({
     $and: [
       {
@@ -71,7 +73,7 @@ Boards.getBoards = (boardsIds, userId, fields) => {
           {
             users: {
               $elemMatch: {
-                _id: userId,
+                email: user.email(),
               }
             }
           },
@@ -88,6 +90,7 @@ Boards.getBoards = (boardsIds, userId, fields) => {
 };
 
 Boards.isValid = (boardId, userId) => {
+  let user = Meteor.users.findOne(userId);
   let board = Boards.findOne({
     _id: boardId,
     $or: [
@@ -95,7 +98,7 @@ Boards.isValid = (boardId, userId) => {
       {
         users: {
           $elemMatch: {
-            _id: userId,
+            email: user.email(),
           }
         }
       }
@@ -110,6 +113,7 @@ Boards.isValid = (boardId, userId) => {
 };
 
 Boards.addModuleInstance = (boardId, moduleInstanceId) => {
+  //todo: add user is in board validation
   Boards.update({
     _id: boardId,
   }, {
@@ -119,4 +123,64 @@ Boards.addModuleInstance = (boardId, moduleInstanceId) => {
       }
     }
   });
+};
+
+Boards.addUser = (boardId, userId) => {
+  if(!Boards.isValid(boardId, Meteor.userId())){
+    throw new Meteor.Error('Boards.addUser.notInBoard',
+    'Must be a member of a board to add users to it.');
+  }
+  
+  let user = Meteor.users.findOne(userId);
+  Boards.update(boardId, {
+    $push: {
+      users : {
+        email: user.email(),
+        notifications: 0,
+      },
+    },
+  });
+};
+Boards.removeUser = (boardId, userId) => {
+  let user = Meteor.users.findOne(userId);
+  Boards.update(boardId, {
+    $pull: {
+      users : {
+        email: user.email(),
+      },
+    },
+  });
+};
+
+Boards.addNotification = (boardId, userId) => {
+  let user = Meteor.users.findOne(userId);
+  let users = Boards.findOne(boardId).users;
+  
+  users.forEach((_user, index, array) => {
+    if(_user.email !== user.email()) {
+      array[index].notifications = _user.notifications + 1;
+    }
+  });
+
+  Boards.update(boardId, {
+    $set: {
+      users,
+    }
+  });
+};
+Boards.resetNotifications = (boardId, userId) => {
+  let user = Meteor.users.findOne(userId);
+	let users = Boards.findOne(boardId).users;
+	
+	users.forEach((_user, index, array) => {
+		if(_user.email !== user.email()) {
+			array[index].notifications = 0;
+		}
+	});
+  
+	Boards.update(boardId, {
+		$set: {
+			users,
+		}
+	});
 };

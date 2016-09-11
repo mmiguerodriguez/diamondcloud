@@ -35,7 +35,7 @@ export default class CreateTeamModal extends React.Component {
               <div  id='create-team-page-1'
                     className='name'
                     style={{ display: 'block' }}>
-                <p className='explanation-text'>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</p>
+                <p className='explanation-text margin container-fluid'>Introducí el nombre y tipo del equipo.</p>
                 <div className='row'>
                   <div className='name-input'>
                     <label  htmlFor='projectName'
@@ -97,7 +97,7 @@ export default class CreateTeamModal extends React.Component {
               <div  id='create-team-page-2'
                     className='plan'
                     style={{ display: 'none' }}>
-                <p className='explanation-text'>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</p>
+                <p className='explanation-text margin container-fluid'>Elegí las funcionalidades que queres que tu equipo tenga disponible en Diamond Cloud</p>
                 <div className='row'>
                   <div className='free col-xs-5 col-xs-offset-1'>
                     <div className='free-card'>
@@ -116,6 +116,7 @@ export default class CreateTeamModal extends React.Component {
                     </div>
                   </div>
                   <div className='premium col-xs-5'>
+                    <div className="tag"><p>Proximamente...</p></div>
                     <div className='premium-card'>
                       <h3 className='plan-card-title'>Premium</h3>
                       <div className='row'>
@@ -140,7 +141,7 @@ export default class CreateTeamModal extends React.Component {
               <div  id='create-team-page-3'
                     className='share'
                     style={{ display: 'none' }}>
-                <p className='explanation-text'>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</p>
+                <p className='explanation-text margin container-fluid'>Insertá un mail de Google de los miembros de tu equipo para poder trabajar colaborativamente. Si todavia no tienen cuenta en Diamond Cloud se le enviará un link al mail</p>
                 <UsersList usersEmails={ this.state.usersEmails } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
               </div>
           </div>

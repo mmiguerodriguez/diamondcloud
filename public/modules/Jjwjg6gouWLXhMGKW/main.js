@@ -1,6 +1,7 @@
 var teamData;
-var TIMEOUT,
-    INTERVAL = 2000;
+var subscriptions = [];
+var INTERVAL = 500,
+    TIMEOUT;
 
 window.onload = () => {
   console.log('Module loaded, grabbing data...');
@@ -18,11 +19,13 @@ window.onload = () => {
     }
   });
 
-  subscribe('postIt', (data) => {
+  let subscription = subscribe('postIt', (data) => {
     console.log('Subscribed, new data incoming...', data);
     handleNewData(data.postIt[0]);
   });
-
+  
+  subscriptions.push(subscription);
+  
   teamData = getTeamData();
   console.log('Got team data...', teamData);
 
@@ -58,12 +61,15 @@ function updateData(collection, filter, updateQuery) {
   });
 }
 function subscribe(collection, callback) {
-  DiamondAPI.subscribe({
+  return DiamondAPI.subscribe({
     request: {
       collection,
     },
     callback,
   });
+}
+function unsubscribe(subscriptionId) {
+  DiamondAPI.unsubscribe(subscriptionId);
 }
 function getTeamData() {
   return DiamondAPI.getTeamData();

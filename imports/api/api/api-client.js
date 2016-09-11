@@ -27,11 +27,30 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
           changed: caller,
           removed: caller,
         });
+
+        subscriptions.push(subscription);
+        return subscription.subscriptionId;
       } else {
         throw console.error('The provided data is wrong.');
       }
     },
-    insert: ({ collection, obj, isGlobal, visibleBy, callback }) => {
+    unsubscribe(subscriptionId) {
+      if(subscriptionId) {
+        subscriptions.forEach((sub, index) => {
+          if(sub.subscriptionId === subscriptionId) {
+            sub.stop();
+            subscriptions.splice(index, 1);
+          }
+        });
+      } else {
+        subscriptions.forEach((sub, index) => {
+          sub.stop();
+          subscriptions.splice(index, 1);
+        });
+      }
+    },
+    insert: ({ collection, obj, visibleBy, callback }) => {
+      // Validation.
       let validation = typeof collection == 'string';
       validation = validation && typeof obj == 'object';
       validation = validation && typeof visibleBy == 'object';

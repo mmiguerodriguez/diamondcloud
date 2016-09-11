@@ -11,6 +11,7 @@ export default class TeamLayout extends React.Component {
     this.state = {
       'board-context-menu-id': null,
       'moduleinstance-context-menu-id': null,
+      'moduleinstance-iframe': null,
     };
 
     this.refs = {
@@ -27,9 +28,11 @@ export default class TeamLayout extends React.Component {
           openBoardContextMenu={ this.openBoardContextMenu.bind(this) } />
         <Board
           boards={ this.props.boards }
-          users={ this.props.team.users }
           board={ this.props.board }
+          users={ this.props.team.users }
           moduleInstances={ this.props.moduleInstances }
+          moduleInstancesFrames={ this.props.moduleInstancesFrames }
+          modules={ this.props.modules }
           getMessages={ this.props.getMessages }
           openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu.bind(this) } />
         <div className='chats-container'>
@@ -117,9 +120,9 @@ export default class TeamLayout extends React.Component {
             }
           });
 
-          this.props.removeChat({ boardId }); // Remove board chats with this boardId
-          this.changeBoard(newBoardId); // Change to another board which isn't this one
           this.closeContextMenu(this.refs['board-context-menu']); // Close menu
+          this.changeBoard(newBoardId); // Change to another board which isn't this one
+          this.props.removeChat({ boardId }); // Remove board chats with this boardId
         }
       });
     }
@@ -144,16 +147,22 @@ export default class TeamLayout extends React.Component {
 
   // module-instances
   removeModuleInstance() {
+    let self = this;
     let moduleInstanceId = this.state['moduleinstance-context-menu-id'];
+    let contextMenu = this.refs['moduleinstance-context-menu'];
+    let iframe = this.state['moduleinstance-iframe'];
+
     Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
       if(error) {
         throw new Meteor.Error(error);
       } else {
+        iframe.contentWindow.DiamondAPI.unsubscribe();
+        self.closeContextMenu(contextMenu);
         console.log(result);
       }
     });
   }
-  openModuleInstanceContextMenu(moduleInstanceId, event) {
+  openModuleInstanceContextMenu(moduleInstanceId, iframe, event) {
     event.preventDefault(); // Prevent normal contextMenu from showing up
 
     $(this.refs['moduleinstance-context-menu'])
@@ -166,6 +175,7 @@ export default class TeamLayout extends React.Component {
 
     this.setState({
       'moduleinstance-context-menu-id': moduleInstanceId,
+      'moduleinstance-iframe': iframe,
     });
   }
 
@@ -180,7 +190,9 @@ TeamLayout.propTypes = {
 
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
+  
   moduleInstances: React.PropTypes.array,
+  moduleInstancesFrames: React.PropTypes.array,
   modules: React.PropTypes.array.isRequired,
 
   directChats: React.PropTypes.array.isRequired,

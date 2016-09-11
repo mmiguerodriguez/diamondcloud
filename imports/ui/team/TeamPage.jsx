@@ -19,6 +19,7 @@ export default class Team extends React.Component {
 
     this.state = {
       subscriptions: [],
+      moduleInstancesFrames: [],
     };
   }
   render() {
@@ -39,11 +40,12 @@ export default class Team extends React.Component {
     return (
       <TeamLayout
         team={ this.props.team }
-        owner={ this.props.team.owner() === Meteor.user().emails[0].address }
+        owner={ this.props.team.owner() === Meteor.user().email() }
 
         boards={ this.props.boards }
         board={ board }
         moduleInstances={ this.props.moduleInstances }
+        moduleInstancesFrames={ this.state.moduleInstancesFrames }
         modules={ this.props.modules }
 
         directChats={ this.props.directChats }
@@ -64,7 +66,9 @@ export default class Team extends React.Component {
     }
   }
   componentWillUnmount() {
-    Team.boardSubscription.get().stop();
+    if(Team.boardSubscription.get()) {
+      Team.boardSubscription.get().stop();
+    }
   }
 
   getMessages(obj) {
@@ -168,7 +172,10 @@ export default class Team extends React.Component {
 
   boardSubscribe(boardId) {
     if(Team.boardSubscription.get()) {
-      Team.boardSubscription.get().stop();
+      this.state.moduleInstancesFrames.map((frame) => {
+        frame.DiamondAPI.unsubscribe();
+      });
+      Team.boardSubscription.get().stop(); // Unsubscribe from actual board
     }
 
     let subscription = Meteor.subscribe('boards.board', boardId, {
@@ -188,6 +195,10 @@ Team.board = new ReactiveVar();
 Team.boardSubscription = new ReactiveVar();
 
 export default TeamPageContainer = createContainer(({ params }) => {
+  if(!Meteor.user()) {
+    browserHistory.push('/');
+  }
+
   const { teamId } = params;
   const teamHandle = Meteor.subscribe('teams.team', teamId, () => {
     let firstBoard = Boards.findOne();
