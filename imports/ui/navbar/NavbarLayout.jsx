@@ -60,9 +60,9 @@ export default class NavbarLayout extends React.Component {
               <div className="new right-align-icon"></div>
             </div>
           </div>
-          <div className="tabs">
+          <div className="tabs visible-xs-block">
               <ul className="nav nav-tabs" role="tablist">
-                <li className="item col-xs-6">
+                <li className="item col-xs-6 active">
                   <a href="#home" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false">
                     Boards
                   </a>
