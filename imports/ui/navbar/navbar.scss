@@ -29,87 +29,9 @@ nav.header {
     background-color: $li-active !important;
   }
 }
-.dropdown {
-  margin-top: 8px;
-  .btn {
-    text-decoration: none;
-    color: $sidebar-color;
-    background-color: $sidebar-text-color;
-    text-align: center;
-    letter-spacing: .5px;
-    transition: .2s ease-out;
-    width: 109.47px !important;
-    cursor: pointer;
-    .caret {
-      margin-left: 10px !important
-    }
-  }
-  .item-a {
-    padding-top: 7px;
-    padding-bottom: 7px;
-  }
-  .item-li {
-    height: 34px;
-  }
-  .dropdown-menu {
-    width: 109.47px !important;
-    min-width: auto !important;
-    transition: .2s ease-out;
-    top: 0px;
-    margin: 0px;
-    padding: 0px;
-  }
-}
-.navbar-header {
-  .new {
-    height: 32px;
-    width: 32px;
-    background-color: $sidebar-text-color;
-    border-radius: 50%;
-    margin-top: 9px;
-    margin-left: auto;
-    background-image: url(/img/add-people-icon.svg);
-    background-size: 70%;
-    background-repeat: no-repeat;
-    background-position-x: 4px;
-    background-position-y: 4px;
-  }
-  .right-align-icon {
-    display: inline-flex;
-    float: right;
-    &.user {
-      margin-left: 5px;
-    }
-  }
-}
-.tabs {
-  margin-top: 10px;
-  .nav-tabs {
-    .item {
-      border: none;
-      text-align: center;
-      background-color: transparent !important;
-      &.active {
-        a {
-          background-color: $white !important;
-          color: $sidebar-color !important;
-        }
-        &:hover {
-          a{
-            background-color: $white !important;
-            color: $sidebar-color !important;
-          }
-        }
-      }
-      a {
-        transition: .2s ease;
-        color: $white !important;
-      }
-      a:hover {
-        border-color: transparent;
-        background-color: $white !important;
-        color: $sidebar-color !important;
-      }
-    }
+.navbar-toggle {
+  background-color: $sidebar-text-color !important;
+  .icon-bar {
+    background-color: $sidebar-color !important;
   }
 }
