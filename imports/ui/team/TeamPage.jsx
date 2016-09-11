@@ -18,7 +18,7 @@ export default class Team extends React.Component {
     super(props);
 
     this.state = {
-      subscriptions: [],
+      chats: [],
       moduleInstancesFrames: [],
     };
   }
@@ -49,9 +49,9 @@ export default class Team extends React.Component {
         modules={ this.props.modules }
 
         directChats={ this.props.directChats }
-        chats={ this.formatChats() }
+        chats={ this.getChats() }
 
-        getMessages={ this.getMessages.bind(this) }
+        addChat={ this.getMessages.bind(this) }
         removeChat={ this.removeChat.bind(this) }
         boardSubscribe={ this.boardSubscribe.bind(this) } />
     );
@@ -71,7 +71,7 @@ export default class Team extends React.Component {
     }
   }
 
-  getMessages(obj) {
+  addChat(obj) {
     let subscriptions = this.state.subscriptions;
     let isSubscribed = false;
 
@@ -109,10 +109,15 @@ export default class Team extends React.Component {
       });
     }
   }
-  formatChats() {
+  getChats() {
     let chats = [];
-    let messages = this.props.messages;
-
+    this.props.boards.forEach((board) => {
+      let messages = board.
+      chats.push({
+        boardId: board._id,
+        
+      })
+    });
     this.state.subscriptions.map((sub) => {
       if(sub.boardId) {
         chats.push({
@@ -205,8 +210,8 @@ export default TeamPageContainer = createContainer(({ params }) => {
     let boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
       Team.board.set(Boards.findOne());
     });
-
     Team.boardSubscription.set(boardHandle);
+    let messagesHandle = Meteor.subscribe('messages.all', teamId);
   });
   const loading = !teamHandle.ready();
 

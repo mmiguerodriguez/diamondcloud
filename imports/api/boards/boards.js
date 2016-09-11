@@ -1,7 +1,8 @@
 import { Mongo }           from 'meteor/mongo';
 
-import { Teams }           from '../teams/teams';
-import { ModuleInstances } from '../module-instances/module-instances';
+import { Teams }           from '../teams/teams.js';
+import { Messages }        from '../messages/messages.js';
+import { ModuleInstances } from '../module-instances/module-instances.js';
 
 export let Boards = new Mongo.Collection('Boards');
 
@@ -13,6 +14,11 @@ Boards.helpers({
           _id: this._id,
         },
       },
+    });
+  },
+  getMessages() {
+    return Messages.find({
+      boardId: this._id,
     });
   },
   getModuleInstances(fields) {

@@ -53,8 +53,6 @@ Meteor.publish('messages.all', function(teamId) {
   boards = boards.map((board) => {
     return board._id;
   });
-  console.log("quetepaaaaaaaa", Messages.find().fetch(),
-  "DIRECTCHATS: ", JSON.stringify(directChats, null, 4), "Boards: ", JSON.stringify(boards, null, 4));
   return Messages.find({
     $or: [
       {
