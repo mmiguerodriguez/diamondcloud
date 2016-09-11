@@ -1,8 +1,9 @@
-import React            from 'react';
+import React                        from 'react';
 
-import Board            from './board/Board.jsx';
-import ChatLayout       from './chat/ChatLayout.jsx';
-import SidebarLayout    from './sidebar/SidebarLayout.jsx';
+import Board                        from './board/Board.jsx';
+import ChatLayout                   from './chat/ChatLayout.jsx';
+import SidebarLayout                from './sidebar/SidebarLayout.jsx';
+import NotificationsPermissionAsker from './notifications-permission-asker/NotificationsPermissionAsker.jsx';
 
 export default class TeamLayout extends React.Component {
   constructor(props){
@@ -12,6 +13,7 @@ export default class TeamLayout extends React.Component {
       'board-context-menu-id': null,
       'moduleinstance-context-menu-id': null,
       'moduleinstance-iframe': null,
+      'permissionAsker': Notification.permission === 'default',
     };
 
     this.refs = {
@@ -22,8 +24,14 @@ export default class TeamLayout extends React.Component {
   render() {
     return (
       <div>
+        {
+          this.state.permissionAsker ?
+            (<NotificationsPermissionAsker
+              close={ this.closePermissionAsker.bind(this) }/>) : ( null )
+        }
         <SidebarLayout
           { ...this.props }
+          permissionAsker={ this.state.permissionAsker }
           changeBoard={ this.changeBoard.bind(this) }
           openBoardContextMenu={ this.openBoardContextMenu.bind(this) } />
         <Board
@@ -34,7 +42,8 @@ export default class TeamLayout extends React.Component {
           moduleInstancesFrames={ this.props.moduleInstancesFrames }
           modules={ this.props.modules }
           getMessages={ this.props.getMessages }
-          openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu.bind(this) } />
+          openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu.bind(this) }
+          permissionAsker={ this.state.permissionAsker } />
         <div className='chats-container'>
           { this.renderChats() }
         </div>
@@ -182,6 +191,12 @@ export default class TeamLayout extends React.Component {
   closeContextMenu(menu) {
     $(menu).hide(100);
   }
+
+  closePermissionAsker() {
+    this.setState({
+      permissionAsker: false
+    });
+  }
 }
 
 TeamLayout.propTypes = {
@@ -190,7 +205,7 @@ TeamLayout.propTypes = {
 
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
-  
+
   moduleInstances: React.PropTypes.array,
   moduleInstancesFrames: React.PropTypes.array,
   modules: React.PropTypes.array.isRequired,

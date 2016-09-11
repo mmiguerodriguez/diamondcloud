@@ -1,11 +1,15 @@
 import React          from 'react';
+import classNames         from 'classnames';
 
 import ModuleInstance from '../../module-instance/ModuleInstance.jsx';
 
 export default class Board extends React.Component {
   render() {
+    let classes = classNames('board-container', {
+      'permission-asker-opened': this.props.permissionAsker
+    });
     return (
-      <div className='board-container'>
+      <div className={ classes }>
         <div className='sub-header'>
           <div className='sub-header-data'>
             <h4 className='title'>{ this.props.board.name }</h4>
@@ -162,4 +166,5 @@ Board.propTypes = {
   users: React.PropTypes.array.isRequired,
   getMessages: React.PropTypes.func.isRequired,
   openModuleInstanceContextMenu: React.PropTypes.func.isRequired,
+  permissionAsker: React.PropTypes.bool.isRequired,
 };

@@ -1,4 +1,7 @@
 import React from 'react';
+import { Notifications } from '../../notifications/notifications.js';
+
+import { Boards } from '~/imports/api/boards/boards.js';
 
 export default class Message extends React.Component {
   render() {
@@ -54,6 +57,12 @@ export default class Message extends React.Component {
                 // console.log(result);
               }
             });
+            let title = Meteor.users.findOne(this.props.message.senderId).profile.name;
+            let body = this.props.message.text;
+            Notifications.sendNotification({
+              title,
+              body,
+            });
           }
         } else if(this.props.message.boardId) {
           let seenMessage = this.props.message.seers.find((seer) => {
@@ -69,6 +78,12 @@ export default class Message extends React.Component {
               } else {
                 console.log(result);
               }
+            });
+            let title = Boards.findOne(this.props.message.boardId).name;
+            let body = this.props.message.text;
+            Notifications.sendNotification({
+              title,
+              body,
             });
           }
         }
