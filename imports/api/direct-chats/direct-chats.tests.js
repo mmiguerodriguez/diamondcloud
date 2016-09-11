@@ -7,13 +7,14 @@ import   faker           from 'faker';
 
 import { DirectChats }   from './direct-chats.js';
 import { Teams }         from '../teams/teams.js';
+import { Messages }        from '../messages/messages.js';
 
 import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('DirectChats', function() {
     describe('Helpers', function() {
-      let users, teams, directChats;
+      let users, teams, directChats, messages;
       function getNotifications(directChatId, userId) {
         return DirectChats.findOne(directChatId).users.find((user) => {
           return user._id !== userId;
@@ -85,16 +86,31 @@ if (Meteor.isServer) {
             ]
           }),
         ];
+        messages = [];
+        for(let i = 0; i < 3; i++) {
+          messages.push(Factory.create('directChatMessage'));
+          messages[i].directChatId = directChats[0]._id;
+        }
 
         resetDatabase();
 
-        users.forEach((user) => Meteor.users.insert(user));
-        teams.forEach((team) => Teams.insert(team));
-        directChats.forEach((directChat) => DirectChats.insert(directChat));
+        users.forEach((user) => {
+          Meteor.users.insert(user);
+        });
+        teams.forEach((team) => {
+          Teams.insert(team);
+        });
+        directChats.forEach((directChat) => {
+          DirectChats.insert(directChat);
+        });
+        messages.forEach((message) => {
+          Messages.insert(message);
+        });
       });
-
-      afterEach(function() {
-
+      
+      it('should return the messages of a direct chat', function() {
+        let directChat = DirectChats.findOne(directChats[0]._id);
+        chai.assert.equal(directChat.getMessages().count(), messages.length);
       });
 
       it('should return if a direct-chat is valid', function() {

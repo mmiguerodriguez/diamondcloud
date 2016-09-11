@@ -1,8 +1,17 @@
-import { Mongo } from 'meteor/mongo';
+import { Mongo }		from 'meteor/mongo';
 
-import { Teams } from '../teams/teams.js';
+import { Teams }		from '../teams/teams.js';
+import { Messages } from '../messages/messages.js';
 
 export let DirectChats = new Mongo.Collection('DirectChats');
+
+DirectChats.helpers({
+	getMessages() {
+    return Messages.find({
+      directChatId: this._id,
+    });
+  },
+});
 
 DirectChats.getUserDirectChats = (userId, teamId) => {
 	return DirectChats.find({
