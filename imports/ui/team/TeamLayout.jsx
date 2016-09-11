@@ -72,13 +72,13 @@ export default class TeamLayout extends React.Component {
           <div className='boards active' id='boards'>
             { this.renderBoardsChats() }
             <div className='new-chat visible-xs-block'>
-              <img className='icon boards active' src='/img/sidebar/messages.svg' width='32px' />
+              <img className='icon boards active' src='/img/sidebar/messages.svg' width='26px' />
             </div>
           </div>
           <div className='users' id='users'>
             { this.renderDirectChats() }
             <div className='new-chat visible-xs-block'>
-              <img className='icon users' src='/img/add-people-icon.svg' width='32px' />
+              <img className='icon users' src='/img/add-people-icon.svg' width='26px' />
             </div>
           </div>
         </div>
