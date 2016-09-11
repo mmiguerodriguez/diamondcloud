@@ -115,6 +115,11 @@ if (Meteor.isServer) {
           moduleData.data.todos[1],
         ];
 
+        delete expect[0].isGlobal;
+        delete expect[0].moduleInstanceId;
+        delete expect[1].isGlobal;
+        delete expect[1].moduleInstanceId;
+
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('moduleData.data', moduleInstances[0]._id, request, (collections) => {
@@ -130,6 +135,11 @@ if (Meteor.isServer) {
           moduleData.data.todos[0],
           moduleData.data.todos[2]
         ];
+
+        delete expect[0].isGlobal;
+        delete expect[0].moduleInstanceId;
+        delete expect[1].isGlobal;
+        delete expect[1].moduleInstanceId;
 
         const collector = new PublicationCollector({ userId: user._id });
 

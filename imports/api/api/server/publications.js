@@ -70,10 +70,12 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
   );
 
   let ids = [];
+  let keys = {};
   let condOptions = [];
 
   ModuleData.aggregate(pipeline, (err, res) => {
     res[0].data[obj.collection].forEach((doc) => {
+      for (let i in doc) keys[`data.${obj.collection}.${i}`] = 1;
       if (doc.visibleBy === undefined) {
         ids.push(doc._id);
       } else {
@@ -105,6 +107,15 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
             }
           },
         }
+      }
+    );
+
+    delete keys[`data.${obj.collection}.moduleInstanceId`];
+    delete keys[`data.${obj.collection}.isGlobal`];
+
+    pipeline.push(
+      {
+        $project: keys
       }
     );
 
