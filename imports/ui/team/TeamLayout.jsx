@@ -39,78 +39,46 @@ export default class TeamLayout extends React.Component {
         <div className='chats-container'>
           { this.renderChats() }
         </div>
-        {
-          this.props.owner ? (
-            <div className='board-context-menu context-menu' ref='board-context-menu'>
-              <div className='row' onClick={ this.removeBoard.bind(this) }>
-            		<div className='col-xs-4'>
-            			<img src='http://image0.flaticon.com/icons/svg/60/60761.svg' width='20px' />
-          	  	</div>
-          	  	<p className='col-xs-8'>Eliminar</p>
-            	</div>
-            </div>
-          ) : ( null )
-        }
-        <div className="dropdown visible-xs-block">
-          <button className="btn col-xs-12"
-                  id="dLabel"
-                  type="button"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false">
+
+        <div className='dropdown visible-xs-block'>
+          <button className='btn col-xs-12'
+                  id='dLabel'
+                  type='button'
+                  data-toggle='dropdown'
+                  aria-haspopup='true'
+                  aria-expanded='false'>
             { this.props.team.name }
-            <span className="caret"></span>
+            <span className='caret'></span>
           </button>
-          <ul className="dropdown-menu col-xs-12" aria-labelledby="dLabel">
+          <ul className='dropdown-menu col-xs-12' aria-labelledby='dLabel'>
             { this.renderTeams() }
           </ul>
         </div>
-        <div className="tabs visible-xs-block">
-            <ul className="nav nav-tabs" role="tablist">
-              <li className="item col-xs-6 active">
-                <a href="#boards" aria-controls="boards" role="tab" data-toggle="tab" aria-expanded="false">
+        <div className='tabs visible-xs-block'>
+            <ul className='nav nav-tabs' role='tablist'>
+              <li className='item col-xs-6 active'>
+                <a href='#boards' aria-controls='boards' role='tab' data-toggle='tab' aria-expanded='false'>
                   Boards
                 </a>
               </li>
-              <li className="item col-xs-6">
-                <a href="#users" aria-controls="users" role="tab" data-toggle="tab" aria-expanded="true">
+              <li className='item col-xs-6'>
+                <a href='#users' aria-controls='users' role='tab' data-toggle='tab' aria-expanded='true'>
                   Users
                 </a>
               </li>
             </ul>
         </div>
-        <div className="chats visible-xs-block">
-          <div className="boards active" id='boards'>
-            <div className="item">
-              <div className="col-xs-2">
-              	<img className="img-circle" src="https://lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAABg/Oxt0RhF_35g/photo.jpg" width="48px" />
-              </div>
-              <div className="col-xs-8 info">
-                <p className="user truncate">Board</p>
-                <p className="last-message truncate">Holaaa, todo bien??? Me queria comunicar con vos porque si ;)</p>
-              </div>
-              <div className="col-xs-2">
-                <div className="pin">
-                  <p className="text">12</p>
-                </div>
-              </div>
-            </div>
-            <div className="new-chat visible-xs-block">
-              <img className="icon boards active" src="/img/sidebar/messages.svg" width="32px" />
+        <div className='chats visible-xs-block'>
+          <div className='boards active' id='boards'>
+            { this.renderBoardsChats() }
+            <div className='new-chat visible-xs-block'>
+              <img className='icon boards active' src='/img/sidebar/messages.svg' width='32px' />
             </div>
           </div>
-          <div className="users" id='users'>
-            <div className="item">
-              <div className="col-xs-2">
-              	<img className="img-circle" src="https://lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAABg/Oxt0RhF_35g/photo.jpg" width="48px" />
-              </div>
-              <div className="col-xs-8 info">
-                <p className="user truncate">User Name</p>
-                <p className="last-message truncate">Holaaa, todo bien??? Me queria comunicar con vos porque si ;)</p>
-              </div>
-            </div>
-            <div className="new-chat visible-xs-block">
-              <img className="icon users" src="/img/add-people-icon.svg" width="32px" />
+          <div className='users' id='users'>
+            { this.renderDirectChats() }
+            <div className='new-chat visible-xs-block'>
+              <img className='icon users' src='/img/add-people-icon.svg' width='32px' />
             </div>
           </div>
         </div>
@@ -123,6 +91,18 @@ export default class TeamLayout extends React.Component {
             <p className='col-xs-8'>Eliminar</p>
           </div>
         </div>
+        {
+          this.props.owner ? (
+            <div className='board-context-menu context-menu' ref='board-context-menu'>
+              <div className='row' onClick={ this.removeBoard.bind(this) }>
+            		<div className='col-xs-4'>
+            			<img src='http://image0.flaticon.com/icons/svg/60/60761.svg' width='20px' />
+          	  	</div>
+          	  	<p className='col-xs-8'>Eliminar</p>
+            	</div>
+            </div>
+          ) : ( null )
+        }
       </div>
     );
   }
@@ -142,21 +122,7 @@ export default class TeamLayout extends React.Component {
       }
     });
   }
-  renderTeams() {
-    let arr = [];
 
-    this.props.teams.map((team) => {
-      if(this.props.team._id !== team._id) {
-        arr.push(
-          <li key={ team._id } className="item-li">
-              <Link to={ '/team/' + team._id } className="item-a truncate">{ team.name }</Link>
-          </li>
-        );
-      }
-    });
-
-    return arr;
-  }
   renderChats() {
     let arr = [];
 
@@ -174,6 +140,94 @@ export default class TeamLayout extends React.Component {
     });
 
     return arr;
+  }
+
+  // Minimized
+  renderTeams() {
+    let arr = [];
+
+    this.props.teams.map((team) => {
+      if(this.props.team._id !== team._id) {
+        arr.push(
+          <li key={ team._id } className='item-li'>
+            <Link to={ '/team/' + team._id } className='item-a truncate'>{ team.name }</Link>
+          </li>
+        );
+      }
+    });
+
+    return arr;
+  }
+  renderDirectChats() {
+    let arr = [];
+
+    this.props.directChats.map((directChat) => {
+      let user = this.getUser(directChat._id);
+
+      arr.push(
+        <div className='item' role='button' key={ directChat._id }>
+          <div className='col-xs-2'>
+            <img
+              className='img-circle'
+              src={ user.profile.picture }
+              width='48px' />
+          </div>
+          <div className='col-xs-8 info'>
+            <p className='user truncate'>{ user.profile.name }</p>
+            <p className='last-message truncate'>{ 'last message' }</p>
+          </div>
+          <div className='col-xs-2'>
+            <div className='pin'>
+              <p className='text'>12</p>
+            </div>
+          </div>
+        </div>
+      );
+    });
+
+    return arr;
+  }
+  renderBoardsChats() {
+    let arr = [];
+
+    this.props.boards.map((board) => {
+      arr.push(
+        <div className='item' role='button' key={ board._id }>
+          <div className='col-xs-2'>
+            <img
+              className='img-circle'
+              src='http://image.flaticon.com/icons/svg/60/60541.svg'
+              width='48px' />
+          </div>
+          <div className='col-xs-8 info'>
+            <p className='user truncate'>{ board.name }</p>
+            <p className='last-message truncate'>{ 'last message' }</p>
+          </div>
+          <div className='col-xs-2'>
+            <div className='pin'>
+              <p className='text'>12</p>
+            </div>
+          </div>
+        </div>
+      );
+    });
+
+    return arr;
+  }
+  // Helpers
+  getUser(directChatId) {
+    let user;
+
+    let directChat = this.props.directChats.find((_directChat) => {
+      return _directChat._id === directChatId;
+    });
+    directChat.users.map((_user) => {
+      if(_user._id !== Meteor.userId()) {
+        user = Meteor.users.findOne(_user._id);
+      }
+    });
+
+    return user;
   }
 
   // boards
