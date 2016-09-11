@@ -1,26 +1,17 @@
-import { resetDatabase } from 'meteor/xolvio:cleaner';
-import faker from 'faker';
+import { Meteor }           from 'meteor/meteor';
+import { resetDatabase }    from 'meteor/xolvio:cleaner';
+import { sinon }            from 'meteor/practicalmeteor:sinon';
+import { chai }             from 'meteor/practicalmeteor:chai';
+import { Random }           from 'meteor/random';
+import   faker              from 'faker';
 
-/*Factory.define('todo', Todos, {
-  listId: () => Factory.get('list'),
-  text: () => faker.lorem.sentence(),
-  createdAt: () => new Date(),
-});*/
+import { Modules }          from './modules.js';
+import { createModule }     from './methods.js';
 
-/*Meteor.methods({
-  'reemplazar.resetDatabase': () => resetDatabase(),
-});
-
-describe('my module', function (done) {
-  beforeEach(function (done) {
-    Meteor.call('test.resetDatabase', done);
+if (Meteor.isServer) {
+  describe('Modules', function() {
+    describe('Methods', function() {
+      
+    });
   });
-  it('renders correctly with simple data', function () {
-    /*const todo = Factory.build('todo', { checked: false });
-    const data = {
-      todo,
-      onEditingChange: () => 0,
-    };
-    chai.assert.equal(1, 1);*/
-/*  });
-});*/
+}

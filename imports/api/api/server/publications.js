@@ -8,6 +8,10 @@ import { Boards }           from '../../boards/boards.js';
 
 Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
   let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+  if (moduleInstance === undefined || moduleInstance === null) {
+    throw new Meteor.Error('ModuleData.data.notAValidModuleInstance',
+    'Must call from existing module instance.');
+  }
   let board = moduleInstance.board();
   let teamId = board.team()._id;
   let moduleData = ModuleData.findOne({
