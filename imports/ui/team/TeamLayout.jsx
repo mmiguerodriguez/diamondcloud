@@ -96,7 +96,7 @@ export default class TeamLayout extends React.Component {
               </div>
             </div>
             <div className="new-chat visible-xs-block">
-              <img className="icon boards active" src="/img/sidebar/messages.svg" width="32px" />
+              <img className="icon boards active" src="/img/sidebar/messages.svg" width="26px" />
             </div>
           </div>
           <div className="users" id='users'>
@@ -110,7 +110,7 @@ export default class TeamLayout extends React.Component {
               </div>
             </div>
             <div className="new-chat visible-xs-block">
-              <img className="icon users" src="/img/add-people-icon.svg" width="32px" />
+              <img className="icon users" src="/img/add-people-icon.svg" width="26px" />
             </div>
           </div>
         </div>
