@@ -20,7 +20,7 @@ export default class ChatLayout extends React.Component {
   render() {
     if (this.state.position === 'minimized') {
       return (
-        <div className='chat minimized'>
+        <div className='chat minimized hidden-xs'>
           <p  className='col-xs-10 chat-text'
               onClick={ this.togglePosition.bind(this, 'medium') }>
             <b>{ this.getName() }</b>
@@ -33,7 +33,7 @@ export default class ChatLayout extends React.Component {
       );
     } else if (this.state.position === 'medium') {
       return (
-        <div className='chat medium'>
+        <div className='chat medium hidden-xs'>
           <div className='chat-header'>
             <p  className='col-xs-10 chat-text'
                 onClick={ this.togglePosition.bind(this, 'minimized') }>
@@ -60,7 +60,7 @@ export default class ChatLayout extends React.Component {
       );
     } else if (this.state.position === 'maximized') {
       return (
-        <div className='chat maximized'>
+        <div className='chat maximized hidden-xs'>
           <div className='chat-header'>
             <p className='col-xs-10 chat-text'>{ this.getName() }</p>
             <div  className='col-xs-2 chat-image'
