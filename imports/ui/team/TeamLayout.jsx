@@ -33,7 +33,8 @@ export default class TeamLayout extends React.Component {
           { ...this.props }
           permissionAsker={ this.state.permissionAsker }
           changeBoard={ this.changeBoard.bind(this) }
-          openBoardContextMenu={ this.openBoardContextMenu.bind(this) } />
+          openBoardContextMenu={ this.openBoardContextMenu.bind(this) }
+          addChat={ this.props.addChat }/>
         <Board
           boards={ this.props.boards }
           board={ this.props.board }
@@ -41,7 +42,7 @@ export default class TeamLayout extends React.Component {
           moduleInstances={ this.props.moduleInstances }
           moduleInstancesFrames={ this.props.moduleInstancesFrames }
           modules={ this.props.modules }
-          getMessages={ this.props.getMessages }
+          addChat={ this.props.addChat }
           openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu.bind(this) }
           permissionAsker={ this.state.permissionAsker } />
         <div className='chats-container'>
@@ -213,7 +214,7 @@ TeamLayout.propTypes = {
   directChats: React.PropTypes.array.isRequired,
   chats: React.PropTypes.array.isRequired,
 
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
   removeChat: React.PropTypes.func.isRequired,
   boardSubscribe: React.PropTypes.func.isRequired,
 };

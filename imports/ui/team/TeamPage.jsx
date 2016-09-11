@@ -51,7 +51,7 @@ export default class Team extends React.Component {
         directChats={ this.props.directChats }
         chats={ this.getChats() }
 
-        addChat={ this.getMessages.bind(this) }
+        addChat={ this.addChat.bind(this) }
         removeChat={ this.removeChat.bind(this) }
         boardSubscribe={ this.boardSubscribe.bind(this) } />
     );
@@ -72,106 +72,55 @@ export default class Team extends React.Component {
   }
 
   addChat(obj) {
-    let subscriptions = this.state.subscriptions;
-    let isSubscribed = false;
-
-    // Hard check if the subscription exists
-    subscriptions.map((sub) => {
-      if(sub.boardId && obj.boardId) {
-        if(sub.boardId === obj.boardId) {
-          isSubscribed = true;
-        }
-      } else if(sub.directChatId && obj.directChatId) {
-        if(sub.directChatId === obj.directChatId) {
-          isSubscribed = true;
-        }
-      }
-    });
-
-    if(!isSubscribed) {
-      let subscription = Meteor.subscribe('messages.chat', obj, {
-        onReady: () => {
-          if(obj.boardId) {
-            subscriptions.push({ subscription, boardId: obj.boardId });
-          } else if(obj.directChatId) {
-            subscriptions.push({ subscription, directChatId: obj.directChatId });
-          }
-
-          this.setState({
-            subscriptions: subscriptions,
-          }, () => {
-            this.formatChats();
-          });
-        },
-        onError: (error) => {
-          throw new Meteor.Error(error);
-        }
+    //obj: { boardId || directChatId }
+    let chats = this.state.chats;
+    if(!!obj.boardId) {
+      let messages = Boards.findOne(obj.boardId).getMessages().fetch();
+      chats.push({
+        boardId: obj.boardId,
+        messages
+      });
+    } else {
+      let messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
+      chats.push({
+        directChatId: obj.directChatId,
+        messages
       });
     }
+    this.setState({
+      chats
+    });
   }
   getChats() {
-    let chats = [];
-    this.props.boards.forEach((board) => {
-      let messages = board.
-      chats.push({
-        boardId: board._id,
-        
-      })
-    });
-    this.state.subscriptions.map((sub) => {
-      if(sub.boardId) {
-        chats.push({
-          boardId: sub.boardId,
-          messages: [],
-        });
-      } else if(sub.directChatId) {
-        chats.push({
-          directChatId: sub.directChatId,
-          messages: [],
-        });
+    let chats = this.state.chats;
+    chats = chats.map((chat) => {
+      if(!!chat.boardId) {
+        chat.messages = Boards.findOne(chat.boardId).getMessages().fetch();
+      } else {
+        chat.messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
       }
+      return chat;
     });
-
-    if(messages.length > 0) {
-      messages.map((message) => {
-        chats.map((chat) => {
-          // Hard check if message in chat exists
-          if(chat.directChatId && message.directChatId){
-            if(chat.directChatId === message.directChatId) {
-              chat.messages.push(message);
-            }
-          } else if(chat.boardId && message.boardId) {
-            if(chat.boardId === message.boardId) {
-              chat.messages.push(message);
-            }
-          }
-        });
-      });
-    }
-
     return chats;
   }
   removeChat(obj) {
-    let subscriptions = this.state.subscriptions;
-    if(obj.directChatId) { // check if it is a direct-chat or a board
-      subscriptions.map((sub, index) => {
-        if(sub.directChatId === obj.directChatId) {
-          sub.subscription.stop(); // stop subscription
-          subscriptions.splice(index, 1); // remove element from array
+    //obj: { boardId || directChatId }
+    let chats = this.state.chats;
+    if(!!obj.boardId) {
+      chats.forEach((chat, index) => {
+        if(chat.boardId === obj.boardId) {
+          chats.splice(index, 1);
         }
       });
-    } else if(obj.boardId) {
-      subscriptions.map((sub, index) => {
-        if(sub.boardId === obj.boardId) {
-          sub.subscription.stop();
-          subscriptions.splice(index, 1);
+    } else {
+      chats.forEach((chat, index) => {
+        if(chat.directChatId === obj.directChatId) {
+          chats.splice(index, 1);
         }
       });
     }
-
-    // update state
     this.setState({
-      subscriptions: subscriptions,
+      chats
     });
   }
 

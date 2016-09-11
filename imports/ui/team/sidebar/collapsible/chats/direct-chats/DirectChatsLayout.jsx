@@ -38,7 +38,7 @@ export default class DirectChatsLayout extends React.Component {
           directChat={ directChat }
           user={ user }
           notifications={ notifications }
-          getMessages={ this.props.getMessages } />
+          addChat={ this.props.addChat } />
       );
     });
 
@@ -48,5 +48,5 @@ export default class DirectChatsLayout extends React.Component {
 
 DirectChatsLayout.propTypes = {
   directChats: React.PropTypes.array.isRequired,
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
 };

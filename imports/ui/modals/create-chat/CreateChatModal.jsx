@@ -86,7 +86,7 @@ export default class CreateChatModal extends React.Component {
         if(error) {
           throw new Meteor.Error(error);
         } else {
-          this.props.getMessages({ directChatId: response._id });
+          this.props.addChat({ directChatId: response._id });
           this.props.toggleCollapsible('chats');
 
           this.clearData();
@@ -122,6 +122,6 @@ export default class CreateChatModal extends React.Component {
 
 CreateChatModal.propTypes = {
   team: React.PropTypes.object.isRequired,
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
 };

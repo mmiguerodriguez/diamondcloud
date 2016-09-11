@@ -60,7 +60,7 @@ export default class SidebarLayout extends React.Component {
           boards={ this.props.boards }
           directChats={ this.props.directChats }
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
-          getMessages={ this.props.getMessages }
+          addChat={ this.props.addChat }
           openCreateChatModal={ this.openCreateChatModal } />
 
         {
@@ -68,7 +68,7 @@ export default class SidebarLayout extends React.Component {
             <div>
               <CreateBoardModal
                 team={ this.props.team }
-                getMessages={ this.props.getMessages }
+                addChat={ this.props.addChat }
                 changeBoard={ this.props.changeBoard }
                 toggleCollapsible={ this.toggleCollapsible.bind(this) } />
               <ConfigTeamModal
@@ -80,7 +80,7 @@ export default class SidebarLayout extends React.Component {
         }
         <CreateChatModal
           team={ this.props.team }
-          getMessages={ this.props.getMessages }
+          addChat={ this.props.addChat }
           toggleCollapsible={ this.toggleCollapsible.bind(this) } />
 
       </div>
@@ -203,7 +203,7 @@ SidebarLayout.propTypes = {
 
   directChats: React.PropTypes.array.isRequired,
 
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
   openBoardContextMenu: React.PropTypes.func.isRequired,
 

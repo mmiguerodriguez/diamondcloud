@@ -33,7 +33,7 @@ export default class BoardsLayout extends React.Component {
           key={ board._id }
           board={ board }
           notifications={ notifications }
-          getMessages={ this.props.getMessages } />
+          addChat={ this.props.addChat } />
       );
     });
 
@@ -43,5 +43,5 @@ export default class BoardsLayout extends React.Component {
 
 BoardsLayout.propTypes = {
   boards: React.PropTypes.array.isRequired,
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
 };
