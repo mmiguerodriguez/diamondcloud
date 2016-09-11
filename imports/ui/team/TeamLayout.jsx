@@ -1,4 +1,5 @@
 import React            from 'react';
+import { Link }         from 'react-router';
 
 import Board            from './board/Board.jsx';
 import ChatLayout       from './chat/ChatLayout.jsx';
@@ -50,14 +51,6 @@ export default class TeamLayout extends React.Component {
             </div>
           ) : ( null )
         }
-        <div className='moduleinstance-context-menu context-menu' ref='moduleinstance-context-menu'>
-          <div className='row' onClick={ this.removeModuleInstance.bind(this) }>
-            <div className='col-xs-4'>
-              <img src='http://image0.flaticon.com/icons/svg/60/60761.svg' width='20px' />
-            </div>
-            <p className='col-xs-8'>Eliminar</p>
-          </div>
-        </div>
         <div className="dropdown visible-xs-block">
           <button className="btn col-xs-12"
                   id="dLabel"
@@ -65,37 +58,35 @@ export default class TeamLayout extends React.Component {
                   data-toggle="dropdown"
                   aria-haspopup="true"
                   aria-expanded="false">
-            Teams
+            { this.props.team.name }
             <span className="caret"></span>
           </button>
           <ul className="dropdown-menu col-xs-12" aria-labelledby="dLabel">
-            <li className="item-li"><a href="#" className="item-a truncate">Diamond Cloud</a></li>
-            <li className="item-li"><a href="#" className="item-a truncate">Google</a></li>
-            <li className="item-li"><a href="#" className="item-a truncate">Tester</a></li>
+            { this.renderTeams() }
           </ul>
         </div>
         <div className="tabs visible-xs-block">
             <ul className="nav nav-tabs" role="tablist">
               <li className="item col-xs-6 active">
-                <a href="#home" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="false">
+                <a href="#boards" aria-controls="boards" role="tab" data-toggle="tab" aria-expanded="false">
                   Boards
                 </a>
               </li>
               <li className="item col-xs-6">
-                <a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="true">
+                <a href="#users" aria-controls="users" role="tab" data-toggle="tab" aria-expanded="true">
                   Users
                 </a>
               </li>
             </ul>
         </div>
         <div className="chats visible-xs-block">
-          <div className="boards">
+          <div className="boards active" id='boards'>
             <div className="item">
               <div className="col-xs-2">
               	<img className="img-circle" src="https://lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAABg/Oxt0RhF_35g/photo.jpg" width="48px" />
               </div>
               <div className="col-xs-8 info">
-                <p className="user truncate">User Name</p>
+                <p className="user truncate">Board</p>
                 <p className="last-message truncate">Holaaa, todo bien??? Me queria comunicar con vos porque si ;)</p>
               </div>
               <div className="col-xs-2">
@@ -104,8 +95,11 @@ export default class TeamLayout extends React.Component {
                 </div>
               </div>
             </div>
+            <div className="new-chat visible-xs-block">
+              <img className="icon boards active" src="/img/sidebar/messages.svg" width="32px" />
+            </div>
           </div>
-          <div className="users" hidden>
+          <div className="users" id='users'>
             <div className="item">
               <div className="col-xs-2">
               	<img className="img-circle" src="https://lh3.googleusercontent.com/-ri26AYShk-U/AAAAAAAAAAI/AAAAAAAAABg/Oxt0RhF_35g/photo.jpg" width="48px" />
@@ -115,11 +109,19 @@ export default class TeamLayout extends React.Component {
                 <p className="last-message truncate">Holaaa, todo bien??? Me queria comunicar con vos porque si ;)</p>
               </div>
             </div>
+            <div className="new-chat visible-xs-block">
+              <img className="icon users" src="/img/add-people-icon.svg" width="32px" />
+            </div>
           </div>
         </div>
-        <div className="new-chat visible-xs-block">
-          <img className="icon user" src="/img/add-people-icon.svg" width="32px" />
-          <img className="icon board" src="/img/sidebar/messages.svg" width="32px" />
+
+        <div className='moduleinstance-context-menu context-menu' ref='moduleinstance-context-menu'>
+          <div className='row' onClick={ this.removeModuleInstance.bind(this) }>
+            <div className='col-xs-4'>
+              <img src='http://image0.flaticon.com/icons/svg/60/60761.svg' width='20px' />
+            </div>
+            <p className='col-xs-8'>Eliminar</p>
+          </div>
         </div>
       </div>
     );
@@ -139,6 +141,21 @@ export default class TeamLayout extends React.Component {
         self.closeContextMenu(this.refs['moduleinstance-context-menu']);
       }
     });
+  }
+  renderTeams() {
+    let arr = [];
+
+    this.props.teams.map((team) => {
+      if(this.props.team._id !== team._id) {
+        arr.push(
+          <li key={ team._id } className="item-li">
+              <Link to={ '/team/' + team._id } className="item-a truncate">{ team.name }</Link>
+          </li>
+        );
+      }
+    });
+
+    return arr;
   }
   renderChats() {
     let arr = [];
@@ -248,6 +265,7 @@ export default class TeamLayout extends React.Component {
 }
 
 TeamLayout.propTypes = {
+  teams: React.PropTypes.array.isRequired,
   team: React.PropTypes.object.isRequired,
   owner: React.PropTypes.bool.isRequired,
 

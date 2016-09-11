@@ -37,7 +37,9 @@ Meteor.publishComposite('teams.team', function(teamId) {
   let user = Meteor.users.findOne(this.userId);
   return {
     find: function() {
-      return Teams.getTeam(teamId, user.emails[0].address, Teams.teamFields);
+      return user.teams({
+        fields: Teams.teamFields,
+      });
     },
     children: [
       {
