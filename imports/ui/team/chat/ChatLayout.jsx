@@ -109,6 +109,7 @@ export default class ChatLayout extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     // Scroll to bottom if a new message is sent or received
     if(this.props.chat.messages.length > prevProps.chat.messages.length) {
+      console.log('b');
       let chat_body = this.refs.chat_body;
       if(chat_body !== null && chat_body !== undefined) {
         let e = $(chat_body);

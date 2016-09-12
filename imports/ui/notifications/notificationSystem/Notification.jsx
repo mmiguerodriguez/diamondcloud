@@ -6,9 +6,7 @@ export default class Notification extends React.Component {
   //when the component is created, send a notification
   render() {
     return (
-      <div>
-        hola
-      </div>
+      <div></div>
     );
   }
 
@@ -21,7 +19,6 @@ export default class Notification extends React.Component {
 }
 
 Notification.propTypes = {
-  key: React.PropTypes.string.isRequired,
   title: React.PropTypes.string.isRequired,
   body: React.PropTypes.string.isRequired,
 };
