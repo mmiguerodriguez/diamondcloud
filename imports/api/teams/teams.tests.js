@@ -1,5 +1,6 @@
 import { Meteor }        from 'meteor/meteor';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
+import { printObject }   from '../helpers/print-objects.js';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
 import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
@@ -11,7 +12,7 @@ import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Teams', function() {
-    describe('Helpers', function(){
+    describe('Helpers', function() {
       let user, team;
       beforeEach(function() {
         resetDatabase();
@@ -41,30 +42,34 @@ if (Meteor.isServer) {
       it('should return owner of a team', function() {
         let expected = team.users[1].email;
         let result = Teams.findOne(team._id).owner();
-
         chai.assert.isTrue(result == expected);
       });
 
       it('should return if a team has a user', function() {
         let result = Teams.findOne(team._id);
-
         chai.assert.isTrue(result.hasUser({ _id: user._id }));
         chai.assert.isTrue(result.hasUser({ email: team.users[1].email }));
         chai.assert.isFalse(result.hasUser({ email: faker.internet.email() }));
       });
 
+
       it('should return the users of a team', function() {
-        let result = Teams.findOne(team._id).getUsers({ field1: 'value1' }),
-            expect = {
-              emails: team.users,
-              fields: { field1: 'value1' }
-            };
-        expect.emails.forEach((email, index) => {
-          expect.emails[index] = email.email;
-        });
+        let result = Teams
+                     .findOne(team._id)
+                     .getUsers({ emails: 1 })
+                     .fetch(),
+            expect = [
+              {
+                _id: user._id,
+                emails: [
+                  {
+                    address: user.emails[0].address,
+                  }
+                ]
+              }
+            ];
 
-
-        chai.assert.deepEqual(result, expect);
+        chai.assert.equal(JSON.stringify(result), JSON.stringify(expect));
       });
     });
   });

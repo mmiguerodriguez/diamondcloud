@@ -47,6 +47,7 @@ Boards.boardFields = {
   moduleInstances: 1,
   archived: 1,
 };
+
 Boards.moduleInstancesFields = {
   x: 1,
   y: 1,
@@ -93,6 +94,7 @@ Boards.getBoards = (boardsIds, userId, fields) => {
     fields
   });
 };
+
 Boards.isValid = (boardId, userId) => {
   let user = Meteor.users.findOne(userId);
   let board = Boards.findOne({
@@ -115,6 +117,7 @@ Boards.isValid = (boardId, userId) => {
     return board.team().hasUser({ _id: userId });
   }
 };
+
 Boards.addModuleInstance = (boardId, moduleInstanceId) => {
   //todo: add user is in board validation
   Boards.update({

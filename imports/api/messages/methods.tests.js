@@ -66,7 +66,7 @@ if (Meteor.isServer) {
       messages.forEach((message) => {
         Messages.insert(message);
       });
-      
+
       done();
     });
     afterEach(function() {
@@ -93,8 +93,8 @@ if (Meteor.isServer) {
         type: 'text',
         content: test_1.content,
         createdAt: test_1.createdAt,
-        seers: [],
         boardId: board._id,
+        seers: [],
       };
 
       test_2 = {
@@ -108,8 +108,8 @@ if (Meteor.isServer) {
         type: 'text',
         content: test_2.content,
         createdAt: test_2.createdAt,
-        seen: false,
         directChatId: directChat._id,
+        seen: false
       };
 
       sendMessage.call(test_1, (err, result) => {
