@@ -75,23 +75,17 @@ export default class ChatLayout extends React.Component {
                     width='16px' />
             </div>
           </div>
-          <div className='chat-body' ref='chat_body'>
+          <div className='chat-body container-fluid' ref='chat_body'>
             { this.renderMessages() }
           </div>
           <div className='chat-footer'>
-            <div className='col-xs-10'>
-              <input
-                value={ this.state.message }
-                className='form-control'
-                type='text'
-                placeholder='Escriba el mensaje'
-                onKeyDown={ this.handleKey.bind(this) }
-                onChange={ this.changeText.bind(this) } />
-            </div>
-            <div  className='send-message col-xs-2'
-                  onClick={ this.sendMessage.bind(this) }>
-              <img src='http://image0.flaticon.com/icons/svg/60/60525.svg' width='24px'/>
-            </div>
+            <input
+              value={ this.state.message }
+              className='form-control'
+              type='text'
+              placeholder='Escriba el mensaje'
+              onKeyDown={ this.handleKey.bind(this) }
+              onChange={ this.changeText.bind(this) } />
           </div>
         </div>
       );
