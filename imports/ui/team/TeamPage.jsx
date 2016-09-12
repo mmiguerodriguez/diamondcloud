@@ -158,16 +158,32 @@ export default TeamPageContainer = createContainer(({ params }) => {
   }
 
   const { teamId } = params;
+  let messagesHandle;
   const teamHandle = Meteor.subscribe('teams.team', teamId, () => {
     let firstBoard = Boards.findOne();
     let boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
       Team.board.set(Boards.findOne());
     });
     Team.boardSubscription.set(boardHandle);
-    let messagesHandle = Meteor.subscribe('messages.all', teamId);
+    messagesHandle = Meteor.subscribe('messages.all', teamId);
   });
   const loading = !teamHandle.ready();
-
+  DirectChats.find().observeChanges({//This is to get the messages of newly created chats
+    added: () => {
+      messagesHandle = Meteor.subscribe('messages.all', teamId);
+    },
+    removed: () => {
+      messagesHandle = Meteor.subscribe('messages.all', teamId);
+    }
+  });
+  Boards.find().observeChanges({//This is to get the messages of newly created chats
+    added: () => {
+      messagesHandle = Meteor.subscribe('messages.all', teamId);
+    },
+    removed: () => {
+      messagesHandle = Meteor.subscribe('messages.all', teamId);
+    }
+  });
   return {
     loading,
     team: Teams.findOne(),
