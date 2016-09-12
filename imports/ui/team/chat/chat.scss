@@ -95,12 +95,22 @@
     height: 32px;
     background-color: #f1f2f3;
     cursor: pointer;
-    .chat-text {
-      padding: 6px 10px !important;
-      margin-bottom: 0px;
+    .chat-tabs {
+      
+    }
+    .tab {
+      @extend .minimized;
+      width: 150px;
+      height: 32px;
+      margin: 0;
+      float: left;
+      .chat-image {
+        padding: 0px !important;
+      }
     }
     .chat-image {
       padding: 8px 10px !important;
+      float: right;
       .exit-maximize-image {
         opacity: 0.3;
         float: right;
@@ -112,8 +122,8 @@
   }
 
   .chat-body {
-    height: calc(100% + 12px);
-    min-height: calc(100% + 12px);
+    height: calc(100% + 11px);
+    min-height: calc(100% + 11px);
     width: 100%;
     background-image: linear-gradient(to bottom, #dadada, #c4c4c4);
     overflow-y: auto;

@@ -9,6 +9,7 @@ export default class Message extends React.Component {
           <div className='message-me'>
             <div className='col-xs-10 message-text-container'>
               <p className='message-text'>{ this.props.message.content }</p>
+              <div className='arrow'></div>
             </div>
             <div className='col-xs-2 message-user-image' title={ user.profile.name }>
               <img className='img-rounded' src={ user.profile.picture } width='32px' />
@@ -23,6 +24,7 @@ export default class Message extends React.Component {
               <img className='img-rounded' src={ sender.profile.picture } width='32px' />
             </div>
             <div className='col-xs-10 message-text-container'>
+              <div className='arrow'></div>
               <p className='message-text'>{ this.props.message.content }</p>
             </div>
           </div>
@@ -35,6 +37,7 @@ export default class Message extends React.Component {
           <div className='message-me'>
             <div className='col-xs-10 col-xs-offset-1 message-text-container'>
               <p className='message-text'>{ this.props.message.content }</p>
+              <div className='arrow maximize'></div>
             </div>
             <div className='col-xs-1 message-user-image' title={ user.profile.name }>
               <img className='img-rounded' src={ user.profile.picture } width='48px' />
@@ -50,6 +53,7 @@ export default class Message extends React.Component {
             </div>
             <div className='col-xs-10 message-text-container'>
               <p className='message-text'>{ this.props.message.content }</p>
+              <div className='arrow maximize'></div>
             </div>
           </div>
         );

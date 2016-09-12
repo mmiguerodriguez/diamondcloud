@@ -67,7 +67,18 @@ export default class ChatLayout extends React.Component {
       return (
         <div className={ classes }>
           <div className='chat-header'>
-            <p className='col-xs-10 chat-text'>{ this.getName() }</p>
+            <div className='col-xs-10 row chat-tabs'>
+              <div className="tab">
+                <p  className='col-xs-10 chat-text'
+                    onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'minimized') }>
+                  <b>{ this.getName() }</b>
+                </p>
+                <div  className='col-xs-2 chat-image'
+                      onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
+                  <div className="close-image chat-back-image"></div>
+                </div>
+              </div>
+            </div>
             <div  className='col-xs-2 chat-image'
                   onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'medium') }>
               <img  className='exit-maximize-image'
