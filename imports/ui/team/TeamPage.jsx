@@ -12,6 +12,7 @@ import { DirectChats }     from '../../api/direct-chats/direct-chats.js';
 import { Messages }        from '../../api/messages/messages.js';
 
 import TeamLayout          from './TeamLayout.jsx';
+import NotificationSystem  from '../notifications/notificationSystem/NotificationSystem.jsx';
 
 export default class Team extends React.Component {
   constructor(props) {
@@ -38,22 +39,26 @@ export default class Team extends React.Component {
     }
 
     return (
-      <TeamLayout
-        team={ this.props.team }
-        owner={ this.props.team.owner() === Meteor.user().email() }
+      <div>
+        <TeamLayout
+          team={ this.props.team }
+          owner={ this.props.team.owner() === Meteor.user().email() }
 
-        boards={ this.props.boards }
-        board={ board }
-        moduleInstances={ this.props.moduleInstances }
-        moduleInstancesFrames={ this.state.moduleInstancesFrames }
-        modules={ this.props.modules }
+          boards={ this.props.boards }
+          board={ board }
+          moduleInstances={ this.props.moduleInstances }
+          moduleInstancesFrames={ this.state.moduleInstancesFrames }
+          modules={ this.props.modules }
 
-        directChats={ this.props.directChats }
-        chats={ this.getChats() }
+          directChats={ this.props.directChats }
+          chats={ this.getChats() }
 
-        addChat={ this.addChat.bind(this) }
-        removeChat={ this.removeChat.bind(this) }
-        boardSubscribe={ this.boardSubscribe.bind(this) } />
+          addChat={ this.addChat.bind(this) }
+          removeChat={ this.removeChat.bind(this) }
+          boardSubscribe={ this.boardSubscribe.bind(this) } />
+        <NotificationSystem
+          messages={ this.props.messages } />
+      </div>
     );
   }
 
@@ -70,7 +75,18 @@ export default class Team extends React.Component {
       Team.boardSubscription.get().stop();
     }
   }
-
+  getChats() {
+    let chats = this.state.chats;
+    chats = chats.map((chat) => {
+      if(!!chat.boardId) {
+        chat.messages = Boards.findOne(chat.boardId).getMessages().fetch();
+      } else {
+        chat.messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
+      }
+      return chat;
+    });
+    return chats;
+  }
   addChat(obj) {
     //obj: { boardId || directChatId }
     let chats = this.state.chats;
@@ -90,18 +106,6 @@ export default class Team extends React.Component {
     this.setState({
       chats
     });
-  }
-  getChats() {
-    let chats = this.state.chats;
-    chats = chats.map((chat) => {
-      if(!!chat.boardId) {
-        chat.messages = Boards.findOne(chat.boardId).getMessages().fetch();
-      } else {
-        chat.messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
-      }
-      return chat;
-    });
-    return chats;
   }
   removeChat(obj) {
     //obj: { boardId || directChatId }

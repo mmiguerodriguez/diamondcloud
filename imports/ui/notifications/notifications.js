@@ -17,7 +17,6 @@ export let Notifications = {
       timeout = timeout || 5000;
       onclick = onclick || (() => {
         window.focus();
-        this.cancel();
       });
       let notification = new Notification(title, { body, icon });
       notification.onclick = onclick;
