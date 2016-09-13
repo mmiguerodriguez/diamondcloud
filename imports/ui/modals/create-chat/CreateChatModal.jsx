@@ -44,7 +44,7 @@ export default class CreateChatModal extends React.Component {
               <button type='button'
                       className='btn btn-cancel btn-hover'
                       data-dismiss='modal'
-                      onClick={ this.clearData }>
+                      onClick={ this.clearData.bind(this) }>
                 Cancelar
               </button>
               <button type='button'
