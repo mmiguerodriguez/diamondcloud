@@ -60,14 +60,14 @@ export default class ModuleInstance extends React.Component {
 
   componentDidMount() {
     let DiamondAPI = generateApi({
-      moduleDataId: this.props.moduleInstance._id,
+      moduleInstanceId: this.props.moduleInstance._id,
       boards: this.props.boards,
       users: this.props.users,
     });
 
     this.refs.iframe.onload = this.iframeLoaded.bind(this);
     this.refs.iframe.contentWindow.DiamondAPI = DiamondAPI;
-    
+
     this.props.moduleInstancesFrames.push(this.refs.iframe.contentWindow);
   }
   componentDidUpdate() {
@@ -112,7 +112,7 @@ export default class ModuleInstance extends React.Component {
       loading: false,
     });
   }
-  
+
   toggleMinimize() {
     let moduleInstanceId = this.props.moduleInstance._id;
     let minimized = !this.props.moduleInstance.minimized;
