@@ -46,18 +46,27 @@ export const sendMessage = new ValidatedMethod({
 
     // Notifications
 
-    /*
-
     let title;
     let text = type == 'text' ? message.content : 'File';
     let users = (!!directChatId ? DirectChats.findOne(directChatId) : Boards.findOne(boardId)).users;
     let query;
-
-    users = users.map((user) => {
-      if (user._id != Meteor.user()._id) {
-        return Meteor.users.find({ 'emails.address': user.email })._id;
-      }
-    });
+    
+    console.log('hola ioni', users);
+    
+    if (!!directChatId) {
+      users = users.map((user) => {
+        if (user._id != Meteor.user()._id) {
+          return user._id;
+        }
+      });
+    } else if (!!boardId) {
+      users = users.map((user) => {
+        if (Meteor.users.find({ 'emails.address': user.email })._id != Meteor.user()._id) {
+          return Meteor.users.find({ 'emails.address': user.email })._id;
+        }
+      });
+    }
+    
 
     query = {
       userId: {
@@ -65,11 +74,13 @@ export const sendMessage = new ValidatedMethod({
       }
     };
 
-    if (!directChatId) {
+    if (!!boardId) {
       title = Boards.findOne(boardId).name;
-    } else {
+    } else if (!!directChatId) {
       title = users[0] === undefined ? users[1] : users[0];
     }
+    
+    console.log('Trello', title, !!directChatId ? 'directchat' : 'board', users[0], users[1]);
 
     Push.send({
       from: 'Diamond',
@@ -77,8 +88,6 @@ export const sendMessage = new ValidatedMethod({
       text,
       query,
     });
-
-    */
 
     return message;
   },
