@@ -43,6 +43,43 @@ export const sendMessage = new ValidatedMethod({
     }
 
     Messages.insert(message);
+
+    // Notifications
+
+    /*
+
+    let title;
+    let text = type == 'text' ? message.content : 'File';
+    let users = (!!directChatId ? DirectChats.findOne(directChatId) : Boards.findOne(boardId)).users;
+    let query;
+
+    users = users.map((user) => {
+      if (user._id != Meteor.user()._id) {
+        return Meteor.users.find({ 'emails.address': user.email })._id;
+      }
+    });
+
+    query = {
+      userId: {
+        $in: users,
+      }
+    };
+
+    if (!directChatId) {
+      title = Boards.findOne(boardId).name;
+    } else {
+      title = users[0] === undefined ? users[1] : users[0];
+    }
+
+    Push.send({
+      from: 'Diamond',
+      title,
+      text,
+      query,
+    });
+
+    */
+
     return message;
   },
 });
