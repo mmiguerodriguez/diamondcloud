@@ -1,36 +1,37 @@
 import { Meteor } from 'meteor/meteor';
 
 import { ModuleInstances } from '../module-instances/module-instances.js';
+import { ModuleData } from '../module-data/module-data.js';
 
 export let generateApi = ({ moduleInstanceId, boards, users }) => {
   let subscriptions = [];
-
   return {
     subscribe: ({ request, callback }) => {
-      // Validation.
       let validation = typeof request.collection == 'string';
       validation = validation && (typeof request.condition == 'object' || request.condition === undefined);
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
-        // Subscribe to data
-        let subscription = Meteor.subscribe('moduleInstances.data', moduleInstanceId, request);
-        let query = ModuleInstances.find(moduleInstanceId);
-        let caller = (id, fields) => {
-          let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-          if(moduleInstance) {
-            if(moduleInstance.data !== undefined && moduleInstance.data !== null) {
-              callback(moduleInstance.data);
+        let subscription = Meteor.subscribe('moduleData.data', moduleInstanceId, request, (err, res) => {
+          let query = ModuleData.find(moduleInstanceId);
+          let caller = (id, fields) => {
+            let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+            let moduleData = ModuleData.findOne({
+              teamId: moduleInstance.board().team()._id,
+              moduleId: moduleInstance.moduleId
+            });
+            if (moduleData.data !== undefined && moduleData.data !== null) {
+              callback(moduleData.data);
             }
-          }
-        };
-        let handle = query.observeChanges({
-          added: caller,
-          changed: caller,
-          removed: caller,
-        });
+          };
+          let handle = query.observeChanges({
+            added: caller,
+            changed: caller,
+            removed: caller,
+          });
 
-        subscriptions.push(subscription);
-        return subscription.subscriptionId;
+          subscriptions.push(subscription);
+          return subscription.subscriptionId;
+        });
       } else {
         throw console.error('The provided data is wrong.');
       }
@@ -50,18 +51,18 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
         });
       }
     },
-    insert: ({ collection, obj, visibleBy, callback }) => {
+    insert: ({ collection, obj, isGlobal, visibleBy, callback }) => {
       // Validation.
       let validation = typeof collection == 'string';
       validation = validation && typeof obj == 'object';
       validation = validation && typeof visibleBy == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
-
       if (validation) {
-        Meteor.call('ModuleInstances.methods.apiInsert', {
+        Meteor.call('API.methods.apiInsert', {
           moduleInstanceId,
           collection,
           obj,
+          isGlobal,
           visibleBy,
         }, callback);
       } else {
@@ -69,13 +70,12 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       }
     },
     update: ({ collection, filter, updateQuery, callback }) => {
-      // Validation.
       let validation = typeof collection == 'string';
       validation = validation && typeof filter == 'object';
       validation = validation && typeof updateQuery == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
-        Meteor.call('ModuleInstances.methods.apiUpdate', {
+        Meteor.call('API.methods.apiUpdate', {
           moduleInstanceId,
           collection,
           filter,
@@ -86,12 +86,11 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       }
     },
     get: ({ collection, filter, callback }) => {
-      // Validation.
       let validation = typeof collection == 'string';
       validation = validation && typeof filter == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
-        Meteor.call('ModuleInstances.methods.apiGet', {
+        Meteor.call('API.methods.apiGet', {
           moduleInstanceId,
           collection,
           filter,
@@ -101,12 +100,11 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       }
     },
     remove: ({ collection, filter, callback }) => {
-      // Validation.
       let validation = typeof collection == 'string';
       validation = validation && typeof filter == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
-        Meteor.call('ModuleInstances.methods.apiRemove', {
+        Meteor.call('API.methods.apiRemove', {
           moduleInstanceId,
           collection,
           filter,
@@ -117,7 +115,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
     },
     getTeamData: () => {
       return {
-        boards,//todo: do not pass every property
+        boards, // TODO: do not pass every property
         users,
       };
     }

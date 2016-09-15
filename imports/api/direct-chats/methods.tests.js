@@ -11,36 +11,28 @@ import { Teams }            from '../teams/teams.js';
 
 if (Meteor.isServer) {
   describe('DirectChats', function() {
-    let userMails = [faker.internet.email(), faker.internet.email(), faker.internet.email()],
-        user = {
-          _id: Random.id(),
-          emails: [{ address: userMails[0] }],
-          name: faker.name.findName(),
-        },
-        otherUser = {
-          _id: Random.id(),
-          emails: [{ address: userMails[1] }],
-          name: faker.name.findName(),
-        },
-        team = {
-          _id: Random.id(),
-          name: faker.lorem.word(),
-          plan: 'free',
-          type: 'web',
-          users: [
-            { email: userMails[0], permission: 'owner' },
-            { email: userMails[1], permission: 'member' },
-          ],
-          archived: false,
-        };
+    let users, team;
 
     beforeEach(function() {
       resetDatabase();
-      sinon.stub(Meteor, 'user', () => user);
-      sinon.stub(Meteor, 'userId', () => user._id);
 
-      Meteor.users.insert(user);
-      Meteor.users.insert(otherUser);
+      users = [
+        Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
+        Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
+      ];
+      team = Factory.create('team');
+
+      team.users = [
+        { email: users[0].emails[0].address, permission: 'owner' },
+        { email: users[1].emails[0].address, permission: 'member' },
+      ];
+
+      resetDatabase();
+
+      sinon.stub(Meteor, 'user', () => users[0]);
+      sinon.stub(Meteor, 'userId', () => users[0]._id);
+
+      users.forEach((user) => Meteor.users.insert(user));
 
       Teams.insert(team);
     });
@@ -57,13 +49,13 @@ if (Meteor.isServer) {
 
       args = {
         teamId: team._id,
-        userId: otherUser._id,
+        userId: users[1]._id,
       };
       expect = {
         teamId: args.teamId,
         users: [
-          { _id: user._id },
-          { _id: otherUser._id },
+          { _id: users[0]._id, notifications: 0 },
+          { _id: users[1]._id, notifications: 0 },
         ],
       };
 
@@ -80,7 +72,7 @@ if (Meteor.isServer) {
         }
       });
 
-      chai.assert.equal(JSON.stringify(result), JSON.stringify(expect));
+      chai.assert.deepEqual(result, expect);
       done();
     });
   });

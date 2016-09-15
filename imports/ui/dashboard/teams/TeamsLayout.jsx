@@ -51,7 +51,7 @@ export default class TeamsLayout extends React.Component {
           <TeamCard
             key={ team._id }
             team={ team }
-            owner={ team.owner() === Meteor.user().emails[0].address }
+            owner={ team.owner() === Meteor.user().email() }
             hasTeams={ this.props.hasTeams }
             openConfigTeamModal={ this.props.openConfigTeamModal }
           />

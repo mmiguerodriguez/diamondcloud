@@ -15,6 +15,7 @@
     "classnames": "^2.2.5",
     "faker": "^3.1.0",
     "fibers": "^1.0.13",
+    "mailgun-js": "^0.7.12",
     "meteor-node-stubs": "^0.2.3",
     "react": "^15.1.0",
     "react-addons-pure-render-mixin": "^15.1.0",
@@ -31,6 +32,8 @@
     "webpack": "^1.13.1"
   },
   "babel": {
-    "presets":["react"]
+    "presets": [
+      "react"
+    ]
   }
 }

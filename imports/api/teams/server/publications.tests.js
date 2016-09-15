@@ -32,7 +32,7 @@ if (Meteor.isServer) {
           Factory.create('privateBoard', { name: 'Privado con usuario' }),
           Factory.create('privateBoard', { name: 'Privado sin usuario' }),
         ];
-        boards[2].users[0]._id = user._id;
+        boards[2].users[0].email = user.emails[0].address;
 
         teams[0].users[0] = { email: user.emails[0].address, permission: 'owner' };
         teams[1].users[0] = { email: user.emails[0].address, permission: 'owner' };

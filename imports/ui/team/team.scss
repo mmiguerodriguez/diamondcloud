@@ -1,13 +1,20 @@
 @import 'board/board';
 @import 'chat/chat';
 @import 'sidebar/sidebar';
+@import 'notifications-permission-asker/notifications-permission-asker';
 
 .chats-container {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: auto;
   z-index: 100;
+  &.auto {
+    width: auto;
+  }
+  &.maximized {
+    width: calc(100% - 64px);
+    height: calc(100% - 90px);
+  }
 }
 
 .context-menu {

@@ -1,7 +1,8 @@
 import { Mongo }           from 'meteor/mongo';
 
-import { Teams }           from '../teams/teams';
-import { ModuleInstances } from '../module-instances/module-instances';
+import { Teams }           from '../teams/teams.js';
+import { Messages }        from '../messages/messages.js';
+import { ModuleInstances } from '../module-instances/module-instances.js';
 
 export let Boards = new Mongo.Collection('Boards');
 
@@ -13,6 +14,11 @@ Boards.helpers({
           _id: this._id,
         },
       },
+    });
+  },
+  getMessages() {
+    return Messages.find({
+      boardId: this._id,
     });
   },
   getModuleInstances(fields) {
@@ -41,6 +47,7 @@ Boards.boardFields = {
   moduleInstances: 1,
   archived: 1,
 };
+
 Boards.moduleInstancesFields = {
   x: 1,
   y: 1,
@@ -58,6 +65,8 @@ Boards.getBoards = (boardsIds, userId, fields) => {
       boardsIds[index] = board._id;
     });
   }
+  
+  let user = Meteor.users.findOne(userId);
   return Boards.find({
     $and: [
       {
@@ -70,7 +79,7 @@ Boards.getBoards = (boardsIds, userId, fields) => {
           {
             users: {
               $elemMatch: {
-                _id: userId,
+                email: user.email(),
               }
             }
           },
@@ -85,7 +94,9 @@ Boards.getBoards = (boardsIds, userId, fields) => {
     fields
   });
 };
+
 Boards.isValid = (boardId, userId) => {
+  let user = Meteor.users.findOne(userId);
   let board = Boards.findOne({
     _id: boardId,
     $or: [
@@ -93,20 +104,22 @@ Boards.isValid = (boardId, userId) => {
       {
         users: {
           $elemMatch: {
-            _id: userId,
+            email: user.email(),
           }
         }
       }
     ],
   });
-  
+
   if(!board) {
     return false;
   } else {
     return board.team().hasUser({ _id: userId });
   }
 };
+
 Boards.addModuleInstance = (boardId, moduleInstanceId) => {
+  //todo: add user is in board validation
   Boards.update({
     _id: boardId,
   }, {
@@ -116,4 +129,64 @@ Boards.addModuleInstance = (boardId, moduleInstanceId) => {
       }
     }
   });
+};
+
+Boards.addUser = (boardId, userId) => {
+  if(!Boards.isValid(boardId, Meteor.userId())){
+    throw new Meteor.Error('Boards.addUser.notInBoard',
+    'Must be a member of a board to add users to it.');
+  }
+  
+  let user = Meteor.users.findOne(userId);
+  Boards.update(boardId, {
+    $push: {
+      users : {
+        email: user.email(),
+        notifications: 0,
+      },
+    },
+  });
+};
+Boards.removeUser = (boardId, userId) => {
+  let user = Meteor.users.findOne(userId);
+  Boards.update(boardId, {
+    $pull: {
+      users : {
+        email: user.email(),
+      },
+    },
+  });
+};
+
+Boards.addNotification = (boardId, userId) => {
+  let user = Meteor.users.findOne(userId);
+  let users = Boards.findOne(boardId).users;
+  
+  users.forEach((_user, index, array) => {
+    if(_user.email !== user.email()) {
+      array[index].notifications = _user.notifications + 1;
+    }
+  });
+
+  Boards.update(boardId, {
+    $set: {
+      users,
+    }
+  });
+};
+Boards.resetNotifications = (boardId, userId) => {
+  let user = Meteor.users.findOne(userId);
+	let users = Boards.findOne(boardId).users;
+	
+	users.forEach((_user, index, array) => {
+		if(_user.email !== user.email()) {
+			array[index].notifications = 0;
+		}
+	});
+  
+	Boards.update(boardId, {
+		$set: {
+			users,
+		}
+	});
 };

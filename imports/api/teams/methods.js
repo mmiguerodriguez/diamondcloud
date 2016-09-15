@@ -2,8 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import Future from 'fibers/future';
+import { Mail } from '../mails/mails.js';
 
 import { Teams } from './teams.js';
+import { Boards } from '../boards/boards.js';
 import { createBoard } from '../boards/methods.js';
 
 export const createTeam = new ValidatedMethod({
@@ -20,8 +22,7 @@ export const createTeam = new ValidatedMethod({
       'Must be logged in to make a team.');
     }
 
-    let team,
-        teamId;
+    let team, teamId, boardUsers = [];
 
     team = {
       name,
@@ -36,6 +37,7 @@ export const createTeam = new ValidatedMethod({
 
     usersEmails.forEach(function(email) {
       team.users.push({ email, permission: 'member' });
+      boardUsers.push({ email });
     });
 
     let future = new Future(); // Needed to make asynchronous call to db
@@ -44,15 +46,33 @@ export const createTeam = new ValidatedMethod({
 
       teamId = res;
       createBoard.call({
-        name: 'General',
-        isPrivate: false,
         teamId,
+        name: 'General',
+        users: boardUsers,
+        isPrivate: false,
       }, (err, res) => {
         if(!!err) future.throw(err);
 
         team.boards.push({ _id: res._id });
         team._id = teamId;
-
+        usersEmails.forEach((email) => {
+          if(Meteor.users.findByEmail(email, {}).count() === 0) {
+            //if user is not registered in Diamond Cloud
+            Mail.sendMail({
+              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+              to: email,
+              subject: 'Te invitaron a colaborar en Diamond Cloud',
+              text: Mail.messages.sharedTeamNotRegistered(teamId),
+            });
+          } else {
+            Mail.sendMail({
+              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+              to: email,
+              subject: 'Te invitaron a colaborar en Diamond Cloud',
+              text: Mail.messages.sharedTeamRegistered(teamId),
+            });
+          }
+        });
         future.return(team);
       });
     });
@@ -79,9 +99,6 @@ export const editTeam = new ValidatedMethod({
     Teams.update({ _id: teamId }, {
       $set: team
     });
-
-    // Testing purposes
-    // may need to change in the future
     return Teams.findOne(teamId);
   }
 });
@@ -105,9 +122,22 @@ export const shareTeam = new ValidatedMethod({
     let user = { email, permission: 'member' };
 
     Teams.addUser(teamId, user);
-
-    // Testing purposes
-    // may need to change in the future
+    if(Meteor.users.findByEmail(email, {}).count() === 0) {
+      //if user is not registered in Diamond Cloud
+      Mail.sendMail({
+        from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+        to: email,
+        subject: 'Te invitaron a colaborar en Diamond Cloud',
+        text: Mail.messages.sharedTeamNotRegistered(teamId),
+      });
+    } else {
+      Mail.sendMail({
+        from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+        to: email,
+        subject: 'Te invitaron a colaborar en Diamond Cloud',
+        text: Mail.messages.sharedTeamRegistered(teamId),
+      });
+    }
     return Teams.findOne(teamId);
   }
 });
@@ -123,14 +153,21 @@ export const removeUserFromTeam = new ValidatedMethod({
       throw new Meteor.Error('Teams.methods.removeUser.notLoggedIn',
       'Must be logged in to edit a team.');
     }
+
     let team = Teams.findOne(teamId);
+    let user = Meteor.users.findByEmail(email).fetch()[0];
     if(Meteor.user().emails[0].address !== team.owner()){
       throw new Meteor.Error('Teams.methods.removeUser.notOwner',
       "Must be team's owner to remove user");
     }
+
+    //remove user from boards
+    let boards = user.boards(teamId).fetch();
+    boards.forEach((board) => {
+      Boards.removeUser(board._id, user._id);
+    });
     Teams.removeUser(teamId, email);
-    // Testing purposes
-    // may need to change in the future
+
     return Teams.findOne(teamId);
   }
 });
