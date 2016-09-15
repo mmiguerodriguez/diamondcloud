@@ -7,7 +7,7 @@ import { Mail }                 from '../mails/mails.js';
 import { Teams }                from './teams.js';
 import { Boards }               from '../boards/boards.js';
 import { createBoard }          from '../boards/methods.js';
-import { createModuleData }     from '../module-data/module-data.js';
+import { createModuleData }     from '../module-data/module-data-creation.js';
 
 export const createTeam = new ValidatedMethod({
   name: 'Teams.methods.create',
