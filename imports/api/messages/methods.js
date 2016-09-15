@@ -50,9 +50,7 @@ export const sendMessage = new ValidatedMethod({
     let text = type == 'text' ? message.content : 'File';
     let users = (!!directChatId ? DirectChats.findOne(directChatId) : Boards.findOne(boardId)).users;
     let query;
-    
-    console.log('hola ioni', users);
-    
+
     if (!!directChatId) {
       users = users.map((user) => {
         if (user._id != Meteor.user()._id) {
@@ -66,7 +64,6 @@ export const sendMessage = new ValidatedMethod({
         }
       });
     }
-    
 
     query = {
       userId: {
@@ -79,8 +76,6 @@ export const sendMessage = new ValidatedMethod({
     } else if (!!directChatId) {
       title = users[0] === undefined ? users[1] : users[0];
     }
-    
-    console.log('Trello', title, !!directChatId ? 'directchat' : 'board', users[0], users[1]);
 
     Push.send({
       from: 'Diamond',
