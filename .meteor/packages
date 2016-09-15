@@ -39,3 +39,4 @@ dburles:collection-helpers            # Helpers
 meteorhacks:kadira                    # Kadira
 jcbernack:reactive-aggregate          # Reactively publish Mongo aggregations
 velocity:meteor-stubs
+raix:push
