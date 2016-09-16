@@ -6,10 +6,10 @@
     "storybook": "start-storybook -p 9001 -s ./public",
     "tests-local": "meteor test --driver-package practicalmeteor:mocha",
     "tests-c9": "meteor test --driver-package practicalmeteor:mocha --port $IP:$PORT",
-    "run-c9-ryan": "ROOT_URL=https://cloud-joelsobolmark.c9users.io meteor --port $IP:$PORT",
-    "run-c9-migue": "ROOT_URL=https://cloud-migue-miguelrodriguez.c9users.io meteor --port $IP:$PORT",
-    "run-c9-dylan": "ROOT_URL=https://cloud-dylan-joelsobolmark.c9users.io meteor --port $IP:$PORT",
-    "run-c9-joel": "ROOT_URL=https://cloud-joel-joelsobolmark.c9users.io meteor --port $IP:$PORT"
+    "ryan": "ROOT_URL=https://cloud-joelsobolmark.c9users.io meteor --port $IP:$PORT",
+    "migue": "ROOT_URL=https://cloud-migue-miguelrodriguez.c9users.io meteor --port $IP:$PORT",
+    "dylan": "ROOT_URL=https://cloud-dylan-joelsobolmark.c9users.io meteor --port $IP:$PORT",
+    "joel": "ROOT_URL=https://cloud-joel-joelsobolmark.c9users.io meteor --port $IP:$PORT"
   },
   "dependencies": {
     "classnames": "^2.2.5",
