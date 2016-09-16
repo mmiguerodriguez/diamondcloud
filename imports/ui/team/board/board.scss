@@ -1,5 +1,8 @@
 .board-container {
   height: calc(100% - 50px);
+  &.permission-asker-opened {
+    height: calc(100% - 50px - #{$permission-asker-height});
+  }
   width: calc(100% - 64px);
   position: absolute;
   right: 0;

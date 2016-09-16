@@ -1,4 +1,5 @@
 import React        from 'react';
+import classNames   from 'classnames';
 
 import Message      from './message/Message.jsx';
 
@@ -18,11 +19,15 @@ export default class ChatLayout extends React.Component {
     };
   }
   render() {
+    let classes = classNames({
+      'hidden': this.props.hasMaximizedChats && this.state.position !== 'maximized',
+    }, 'chat', 'hidden-xs', this.state.position);
+
     if (this.state.position === 'minimized') {
       return (
-        <div className='chat minimized hidden-xs'>
+        <div className={ classes }>
           <p  className='col-xs-10 chat-text'
-              onClick={ this.togglePosition.bind(this, 'medium') }>
+              onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'medium') }>
             <b>{ this.getName() }</b>
           </p>
           <div  className='col-xs-2 chat-image'
@@ -33,14 +38,14 @@ export default class ChatLayout extends React.Component {
       );
     } else if (this.state.position === 'medium') {
       return (
-        <div className='chat medium hidden-xs'>
+        <div className={ classes }>
           <div className='chat-header'>
             <p  className='col-xs-10 chat-text'
-                onClick={ this.togglePosition.bind(this, 'minimized') }>
+                onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'minimized') }>
                 <b>{ this.getName() }</b>
             </p>
             <div  className='col-xs-2 chat-image'
-                  onClick={ this.togglePosition.bind(this, 'maximized') }>
+                  onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'maximized') }>
                   <div className="maximize-image chat-back-image"></div>
             </div>
           </div>
@@ -60,33 +65,38 @@ export default class ChatLayout extends React.Component {
       );
     } else if (this.state.position === 'maximized') {
       return (
-        <div className='chat maximized hidden-xs'>
+        <div className={ classes }>
           <div className='chat-header'>
-            <p className='col-xs-10 chat-text'>{ this.getName() }</p>
+            <div className='col-xs-10 row chat-tabs'>
+              <div className="tab">
+                <p  className='col-xs-10 chat-text'
+                    onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'minimized') }>
+                  <b>{ this.getName() }</b>
+                </p>
+                <div  className='col-xs-2 chat-image'
+                      onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
+                  <div className="close-image chat-back-image"></div>
+                </div>
+              </div>
+            </div>
             <div  className='col-xs-2 chat-image'
-                  onClick={ this.togglePosition.bind(this, 'medium') }>
+                  onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'medium') }>
               <img  className='exit-maximize-image'
                     src='http://image.flaticon.com/icons/svg/60/60801.svg'
                     width='16px' />
             </div>
           </div>
-          <div className='chat-body' ref='chat_body'>
+          <div className='chat-body container-fluid' ref='chat_body'>
             { this.renderMessages() }
           </div>
           <div className='chat-footer'>
-            <div className='col-xs-10'>
-              <input
-                value={ this.state.message }
-                className='form-control'
-                type='text'
-                placeholder='Escriba el mensaje'
-                onKeyDown={ this.handleKey.bind(this) }
-                onChange={ this.changeText.bind(this) } />
-            </div>
-            <div  className='send-message col-xs-2'
-                  onClick={ this.sendMessage.bind(this) }>
-              <img src='http://image0.flaticon.com/icons/svg/60/60525.svg' width='24px'/>
-            </div>
+            <input
+              value={ this.state.message }
+              className='form-control'
+              type='text'
+              placeholder='Escriba el mensaje'
+              onKeyDown={ this.handleKey.bind(this) }
+              onChange={ this.changeText.bind(this) } />
           </div>
         </div>
       );
@@ -130,11 +140,7 @@ export default class ChatLayout extends React.Component {
       message: event.target.value,
     });
   }
-  togglePosition(position) {
-    this.setState({
-      position: position,
-    });
-  }
+
   sendMessage() {
     let text = this.state.message;
     text = text.trim();
@@ -206,6 +212,10 @@ export default class ChatLayout extends React.Component {
 ChatLayout.propTypes = {
   chat: React.PropTypes.object.isRequired,
   users: React.PropTypes.array.isRequired,
+
   position: React.PropTypes.string.isRequired,
+  hasMaximizedChats: React.PropTypes.bool.isRequired,
+
   removeChat: React.PropTypes.func.isRequired,
+  togglePosition: React.PropTypes.func.isRequired,
 };

@@ -40,29 +40,38 @@ if (Meteor.isServer) {
         { email: users[1].emails[0].address, permission: 'member' },
       ];
       board.users = [
-        { _id: users[0]._id, notifications: faker.random.number({ min: 0, max: 100 }) },
-        { _id: users[1]._id, notifications: faker.random.number({ min: 0, max: 100 }) },
+        { email: users[0].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) },
+        { email: users[1].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) },
       ];
       directChat.teamId = team._id;
-      directChat.users = board.users;
+      directChat.users = [
+        { _id: users[0]._id, notifications: board.users[0].notifications },
+        { _id: users[1]._id, notifications: board.users[1].notifications }
+      ];
       messages[0].directChatId = directChat._id;
       messages[1].boardId = board._id;
+      messages[1].senderId = users[1]._id;
 
       resetDatabase();
 
       sinon.stub(Meteor, 'user', () => users[0]);
+      sinon.stub(Meteor, 'userId', () => users[0]._id);
 
-      users.forEach((user) => Meteor.users.insert(user));
-
+      users.forEach((user) => {
+        Meteor.users.insert(user);
+      });
       Teams.insert(team);
       Boards.insert(board);
       DirectChats.insert(directChat);
+      messages.forEach((message) => {
+        Messages.insert(message);
+      });
 
-      messages.forEach((message) => Messages.insert(message));
       done();
     });
     afterEach(function() {
       Meteor.user.restore();
+      Meteor.userId.restore();
     });
 
     it('should send a message', function(done) {
@@ -84,8 +93,8 @@ if (Meteor.isServer) {
         type: 'text',
         content: test_1.content,
         createdAt: test_1.createdAt,
-        seers: [],
         boardId: board._id,
+        seers: [],
       };
 
       test_2 = {
@@ -99,8 +108,8 @@ if (Meteor.isServer) {
         type: 'text',
         content: test_2.content,
         createdAt: test_2.createdAt,
-        seen: false,
         directChatId: directChat._id,
+        seen: false
       };
 
       sendMessage.call(test_1, (err, result) => {

@@ -18,6 +18,7 @@ ecmascript@0.5.7                      # Enable ECMAScript2015+ syntax in app cod
 meteorhacks:aggregate                 # Mongo aggregate
 accounts-ui@1.1.9                     # Login UI
 accounts-google@1.0.10                # Login with Google
+service-configuration                 # Set clientId and secret keys automatically for login with google
 react-meteor-data                     # React Meteor
 seba:minifiers-autoprefixer           # Sass stuff
 fourseven:scss                        # Sass
@@ -38,3 +39,4 @@ dburles:collection-helpers            # Helpers
 meteorhacks:kadira                    # Kadira
 jcbernack:reactive-aggregate          # Reactively publish Mongo aggregations
 velocity:meteor-stubs
+raix:push

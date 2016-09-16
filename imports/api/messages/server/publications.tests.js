@@ -41,7 +41,7 @@ if (Meteor.isServer) {
         teamWithUser.boards.push({ _id: publicBoard._id });
 
         privateBoardWithUser = Factory.create('privateBoard');
-        privateBoardWithUser.users[0]._id = user._id;
+        privateBoardWithUser.users[0].email = user.emails[0].address;
         teamWithUser.boards.push({ _id: privateBoardWithUser._id });
 
         privateBoardWithoutUser = Factory.create('privateBoard');
@@ -153,6 +153,15 @@ if (Meteor.isServer) {
         
         chai.assert.isTrue(error.error == 'Messages.chat.wrongParameters');
         done();
+      });
+      
+      it('should publish all the messages of a user', function(done) {
+        const collector = new PublicationCollector({ userId: user._id });
+
+        collector.collect('messages.all', teamWithUser._id, (collections) => {
+          chai.assert.equal(collections.Messages.length, 3);
+          done();
+        });
       });
     });
   });

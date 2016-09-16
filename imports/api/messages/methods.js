@@ -22,7 +22,7 @@ export const sendMessage = new ValidatedMethod({
     }
 
     let message = {
-      senderId: Meteor.user()._id,
+      senderId: Meteor.userId(),
       type,
       content,
       createdAt,
@@ -32,19 +32,58 @@ export const sendMessage = new ValidatedMethod({
     if (!!directChatId) {
       message.directChatId = directChatId;
       message.seen = false;
-
       DirectChats.addNotification(directChatId, message.senderId);
     } else if (!!boardId) {
       message.boardId = boardId;
       message.seers = [];
-
-      Boards.addNotification(boardId);
+      Boards.addNotification(boardId, message.senderId);
     } else {
       throw new Meteor.Error('Messages.methods.send.noDestination',
       'Must have a destination to send a message.');
     }
 
     Messages.insert(message);
+
+    // Notifications
+
+    let title;
+    let text = type == 'text' ? message.content : 'File';
+    let users = (!!directChatId ? DirectChats.findOne(directChatId) : Boards.findOne(boardId)).users;
+    let query;
+
+    if (!!directChatId) {
+      users = users.map((user) => {
+        if (user._id != Meteor.user()._id) {
+          return user._id;
+        }
+      });
+    } else if (!!boardId) {
+      users = users.map((user) => {
+        if (Meteor.users.find({ 'emails.address': user.email })._id != Meteor.user()._id) {
+          return Meteor.users.find({ 'emails.address': user.email })._id;
+        }
+      });
+    }
+
+    query = {
+      userId: {
+        $in: users,
+      }
+    };
+
+    if (!!boardId) {
+      title = Boards.findOne(boardId).name;
+    } else if (!!directChatId) {
+      title = users[0] === undefined ? users[1] : users[0];
+    }
+
+    Push.send({
+      from: 'Diamond',
+      title,
+      text,
+      query,
+    });
+
     return message;
   },
 });
@@ -55,7 +94,7 @@ export const seeMessage = new ValidatedMethod({
     messageId: { type: String, regEx: SimpleSchema.RegEx.Id, },
   }).validator(),
   run({ messageId }) {
-    if (!Meteor.user()) {
+    if(!Meteor.user()) {
       throw new Meteor.Error('Messages.methods.see.notLoggedIn',
       'Must be logged in to see a message.');
     }
@@ -64,16 +103,16 @@ export const seeMessage = new ValidatedMethod({
     if (message.boardId) {
       Messages.update(messageId, {
         $push: {
-          seers: Meteor.user()._id,
+          seers: Meteor.userId(),
         }
       });
-    } else {
+      Boards.resetNotifications(message.boardId, message.senderId);
+    } else if(message.directChatId) {
       Messages.update(messageId, {
         $set: {
           seen: true,
         }
       });
-
       DirectChats.resetNotifications(message.directChatId, message.senderId);
     }
 
