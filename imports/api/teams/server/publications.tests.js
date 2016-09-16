@@ -32,19 +32,16 @@ if (Meteor.isServer) {
           Factory.create('privateBoard', { name: 'Privado con usuario' }),
           Factory.create('privateBoard', { name: 'Privado sin usuario' }),
         ];
-        boards[2].users[0]._id = user._id;
+        boards[2].users[0].email = user.emails[0].address;
 
         teams[0].users[0] = { email: user.emails[0].address, permission: 'owner' };
         teams[1].users[0] = { email: user.emails[0].address, permission: 'owner' };
         teams[2].users[0] = { email: Random.id(), permission: 'owner' };
+
         boards.forEach((board) => {
           teams[0].boards.push({ _id: board._id });
         });
-        
-        console.log(JSON.stringify(teams, null, 2));
-        
         resetDatabase();
-        
         Meteor.users.insert(user);
         boards.forEach((board) => {
           Boards.insert(board);
@@ -80,21 +77,16 @@ if (Meteor.isServer) {
       it('should not publish team data if the team is archived', function(done){
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('teams.team', teams[1]._id, (collections) => {
-          chai.assert.equal(collections.Teams.length, 1);
-          chai.assert.deepEqual(collections.Teams[0], teams[0]);
-
+        collector.collect('teams.team', teams[1]._id, (collections) => {//pass the id of an archived team
+          chai.assert.isUndefined(collections.Teams);//assert it does not return any team
           done();
         });
       });
       it('should not publish team data if the user is not in the team', function(done){
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('teams.team', teams[2]._id, (collections) => {
-          console.log('asd', collections.Teams[0], teams[0]);
-          chai.assert.equal(collections.Teams.length, 1);
-          chai.assert.deepEqual(collections.Teams[0], teams[0]);
-
+        collector.collect('teams.team', teams[2]._id, (collections) => {//pass the id of a team the user is not in
+          chai.assert.isUndefined(collections.Teams);//assert it does not return any team
           done();
         });
       });
