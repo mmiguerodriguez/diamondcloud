@@ -30,7 +30,7 @@ export default class Team extends React.Component {
       return ( null );
     }
 
-    if(!this.props.team) {
+    if(this.props.team === undefined) {
       return ( null );
     }
 
@@ -41,11 +41,13 @@ export default class Team extends React.Component {
     return (
       <div>
         <TeamLayout
+          teams={ this.props.teams }
           team={ this.props.team }
           owner={ this.props.team.owner() === Meteor.user().email() }
 
           boards={ this.props.boards }
           board={ board }
+          
           moduleInstances={ this.props.moduleInstances }
           moduleInstancesFrames={ this.state.moduleInstancesFrames }
           modules={ this.props.modules }
@@ -172,13 +174,14 @@ export default TeamPageContainer = createContainer(({ params }) => {
     Team.boardSubscription.set(boardHandle);
     messagesHandle = Meteor.subscribe('messages.all', teamId);
   });
-  const loading = !teamHandle.ready();
+  const loading = !teamsHandle.ready() || !teamHandle.ready();
 
-  DirectChats.find().observeChanges({//This is to get the messages of newly created chats
-    added: changesCallback,,
+  // Get the messages of newly created chats
+  DirectChats.find().observeChanges({
+    added: changesCallback,
     removed: changesCallback,
   });
-  Boards.find().observeChanges({//This is to get the messages of newly created chats
+  Boards.find().observeChanges({
     added: changesCallback,
     removed: changesCallback,
   });
