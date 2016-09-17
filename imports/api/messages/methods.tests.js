@@ -5,7 +5,6 @@ import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
-
 import { Teams }         from '../teams/teams.js';
 import { Boards }        from '../boards/boards.js';
 import { DirectChats }   from '../direct-chats/direct-chats.js';

@@ -16,6 +16,7 @@ export const sendMessage = new ValidatedMethod({
     createdAt: { type: Number }
   }).validator(),
   run({ directChatId, boardId, type, content, createdAt }) {
+    console.log('asdasdasdasdasd');
     if (!Meteor.user()) {
       throw new Meteor.Error('Messages.methods.send.notLoggedIn',
       'Must be logged in to send a message.');
@@ -89,11 +90,12 @@ export const sendMessage = new ValidatedMethod({
       title = Meteor.users.findOne(users[0] === undefined ? users[1] : users[0]).profile.name;
     }
 
+    console.log('Hola, soy Joel');
     Push.send({
       from: 'Diamond',
       title,
       text,
-      query,
+      query: {},
     });
 
     return message;
