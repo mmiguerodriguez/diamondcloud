@@ -90,6 +90,33 @@ export default class ChatLayout extends React.Component {
           </div>
         </div>
       );
+    } else if (this.state.position === 'mobile') {
+      return (
+        <div className='chat mobile visible-xs-block'>
+          <div className='chat-header'>
+            <p  className='col-xs-12 chat-image-text chat-image'
+                onClick={ this.togglePosition.bind(this, 'minimized') }>
+              <div  className='chat-image'
+                    onClick={ this.togglePosition.bind(this, 'maximized') }>
+                    <div className="back-image chat-back-image"></div>
+              </div>
+              <b>{ this.getName() }</b>
+            </p>
+          </div>
+          <div className='chat-body' ref='chat_body'>
+            { this.renderMessages() }
+          </div>
+          <div className='chat-footer col-xs-12'>
+            <input
+              value={ this.state.message }
+              className='form-control message-input'
+              type='text'
+              placeholder='Escriba el mensaje'
+              onKeyDown={ this.handleKey.bind(this) }
+              onChange={ this.changeText.bind(this) }  />
+          </div>
+        </div>
+      );
     } else {
       return ( null );
     }
@@ -168,8 +195,8 @@ export default class ChatLayout extends React.Component {
   renderMessages() {
     let arr = [];
 
-    this.props.chat.messages.map((message) => {
-      let isSender = message.senderId === Meteor.userId();
+    this.props.chat.messages.forEach((message) => {
+      let isSender = message.senderId === /* Meteor.userId() */ '0'; // CAMBIAME!!!
       arr.push(
         <Message
           key={ message._id }
@@ -177,11 +204,10 @@ export default class ChatLayout extends React.Component {
           isSender={ isSender }
           position={ this.state.position } />);
     });
-
     return arr;
   }
-  getName() {
-    let name = '';
+  getName() { // CAMBIAME!!!
+    /* let name = '';
     if(this.props.chat.boardId) {
       let board = this.props.boards.find((_board) => {
         return _board._id === this.props.chat.boardId;
@@ -199,7 +225,8 @@ export default class ChatLayout extends React.Component {
         }
       });
     }
-    return name;
+    return name; */
+    return 'pepe';
   }
 }
 
@@ -208,4 +235,6 @@ ChatLayout.propTypes = {
   users: React.PropTypes.array.isRequired,
   position: React.PropTypes.string.isRequired,
   removeChat: React.PropTypes.func.isRequired,
+  boards: React.PropTypes.array.isRequired,
+  directChats: React.PropTypes.array.isRequired,
 };
