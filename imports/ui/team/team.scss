@@ -15,6 +15,10 @@
     width: calc(100% - 64px);
     height: calc(100% - 90px);
   }
+  &.mobile {
+    top: 0;
+    left: 0;
+  }
 }
 
 .context-menu {

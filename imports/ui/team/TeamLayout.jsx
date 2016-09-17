@@ -1,6 +1,7 @@
 import React                        from 'react';
 import { Link }                     from 'react-router';
 import classNames                   from 'classnames';
+import isMobile                     from 'ismobilejs';
 
 import Board                        from './board/Board.jsx';
 import ChatLayout                   from './chat/ChatLayout.jsx';
@@ -35,6 +36,8 @@ export default class TeamLayout extends React.Component {
     let chatsContainer = classNames({
       'auto': !this.state['has-maximized-chats'],
       'maximized': this.state['has-maximized-chats'],
+      'mobile': isMobile.any,
+      'hidden': this.props.chats.length === 0,
     }, 'chats-container');
 
     return (
@@ -82,6 +85,7 @@ export default class TeamLayout extends React.Component {
             { this.renderTeams() }
           </ul>
         </div>
+        
         <div className='tabs visible-xs-block'>
             <ul className='nav nav-tabs' role='tablist'>
               <li className='item col-xs-6 active'>
@@ -96,6 +100,7 @@ export default class TeamLayout extends React.Component {
               </li>
             </ul>
         </div>
+        
         <div className='chats visible-xs-block'>
           <div className='boards active' id='boards'>
             { this.renderBoardsChats() }
@@ -189,7 +194,7 @@ export default class TeamLayout extends React.Component {
           users={ this.props.team.users }
           boards={ this.props.boards }
           directChats={ this.props.directChats }
-          position={ 'medium' }
+          position={ isMobile.any ? 'mobile' : 'medium' }
           togglePosition={ this.togglePosition.bind(this) }
           removeChat={ this.props.removeChat }
           hasMaximizedChats={ this.state['has-maximized-chats']}/>

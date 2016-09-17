@@ -29,12 +29,14 @@ export default class ChatLayout extends React.Component {
     if (this.state.position === 'minimized') {
       return (
         <div className={ classes }>
-          <p  className='col-xs-10 chat-text'
-              onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'medium') }>
+          <p
+            className='col-xs-10 chat-text'
+            onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'medium') }>
             <b>{ this.getName() }</b>
           </p>
-          <div  className='col-xs-2 chat-image'
-                onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
+          <div
+            className='col-xs-2 chat-image'
+            onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
             <div className="close-image chat-back-image"></div>
           </div>
         </div>
@@ -107,14 +109,14 @@ export default class ChatLayout extends React.Component {
       return (
         <div className='chat mobile visible-xs-block'>
           <div className='chat-header'>
-            <p  className='col-xs-12 chat-image-text chat-image'
-                onClick={ this.togglePosition.bind(this, 'minimized') }>
-              <div  className='chat-image'
-                    onClick={ this.togglePosition.bind(this, 'maximized') }>
-                    <div className="back-image chat-back-image"></div>
+            <div
+              className='col-xs-12 chat-image-text chat-image'
+              onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
+              <div className='chat-image'>
+                <div className="back-image chat-back-image"></div>
               </div>
               <b>{ this.getName() }</b>
-            </p>
+            </div>
           </div>
           <div className='chat-body' ref='chat_body'>
             { this.renderMessages() }
@@ -162,7 +164,7 @@ export default class ChatLayout extends React.Component {
       this.sendMessage();
     } else if(event.which === 27) {
       this.props.removeChat(this.state.chatType);
-      // this.togglePosition('minimized');
+      // this.props.togglePosition('minimized');
     }
   }
   changeText(event) {
