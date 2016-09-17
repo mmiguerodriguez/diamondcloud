@@ -59,16 +59,18 @@ export const sendMessage = new ValidatedMethod({
       });
     } else if (!!boardId) {
       users = users.map((user) => {
-        let mappedId = Meteor.users.findOne({ 'emails.address': user.email })._id;
-        if (mappedId != Meteor.user()._id) {
-          return mappedId;
+        let mappedUser = Meteor.users.findOne({ 'emails.address': user.email });
+        if (mappedUser) {
+          if (mappedUser._id != Meteor.user()._id) {
+            return mappedUser._id;
+          }
         }
       });
     }
 
     let temp = users;
     users = [];
-    
+
     temp.forEach((user) => {
       if (user !== undefined) {
         users.push(user);
