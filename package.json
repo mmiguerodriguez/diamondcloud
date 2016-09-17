@@ -2,7 +2,7 @@
   "name": "cloud",
   "private": true,
   "scripts": {
-    "start": "meteor run",
+    "start": "meteor run --settings settings.json",
     "storybook": "start-storybook -p 9001 -s ./public",
     "tests-local": "meteor test --driver-package practicalmeteor:mocha",
     "tests-c9": "meteor test --driver-package practicalmeteor:mocha --port $IP:$PORT",
