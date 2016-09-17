@@ -1,7 +1,10 @@
-import React        from 'react';
-import classNames   from 'classnames';
+import React           from 'react';
+import classNames      from 'classnames';
 
-import Message      from './message/Message.jsx';
+import Message         from './message/Message.jsx';
+
+import { Boards }      from '../../../api/boards/boards.js';
+import { DirectChats } from '../../../api/direct-chats/direct-chats.js';
 
 export default class ChatLayout extends React.Component {
   constructor(props) {
@@ -187,25 +190,16 @@ export default class ChatLayout extends React.Component {
     return arr;
   }
   getName() {
-    let name = '';
     if(this.props.chat.boardId) {
-      let board = this.props.boards.find((_board) => {
-        return _board._id === this.props.chat.boardId;
-      });
-
-      name = board.name;
+      let boardId = this.props.chat.boardId;
+      return Boards.findOne(boardId).name;
+      
     } else if(this.props.chat.directChatId) {
-      let directChat = this.props.directChats.find((_directChat) => {
-        return _directChat._id === this.props.chat.directChatId;
-      });
-
-      directChat.users.map((user) => {
-        if(user._id !== Meteor.userId()) {
-          name = Meteor.users.findOne(user._id).profile.name;
-        }
-      });
+      let directChatId = this.props.chat.directChatId;
+      let directChat = DirectChats.findOne(directChatId);
+      
+      return directChat.getUser().profile.name;
     }
-    return name;
   }
 }
 
