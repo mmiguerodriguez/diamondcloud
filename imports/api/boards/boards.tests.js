@@ -78,6 +78,7 @@ if (Meteor.isServer) {
         sinon.stub(Meteor, 'user', () => users[0]);
         sinon.stub(Meteor, 'userId', () => users[0]._id);
       });
+      
       afterEach(function() {
         Meteor.user.restore();
         Meteor.userId.restore();
@@ -89,16 +90,19 @@ if (Meteor.isServer) {
 
         chai.assert.equal(team._id, teams[0]._id);
       });
+      
       it('should not return the team of a board', function() {
         let board = Boards.findOne(boards[1]._id);
         let team = board.team();
 
         chai.assert.isUndefined(team);
       });
+      
       it('should return the messages of a board', function() {
         let board = Boards.findOne(boards[0]._id);
         chai.assert.equal(board.getMessages().count(), messages.length);
       });
+      
       it('should return the moduleInstances of a board', function() {
         let board = Boards.findOne(boards[2]._id);
         let result, expect;
@@ -122,6 +126,7 @@ if (Meteor.isServer) {
 
         chai.assert.deepEqual(lastMessage, expectMessage);
       });
+      
       it('should return user notifications from the board', function() {
         let board = Boards.findOne(boards[0]._id);
         let notifications = board.getNotifications();
@@ -129,6 +134,7 @@ if (Meteor.isServer) {
         
         chai.assert.deepEqual(notifications, expectNotifications);
       });
+      
       it('should add a user to a board', function() {
         let expect = boards[0];
             
@@ -137,6 +143,7 @@ if (Meteor.isServer) {
 
         chai.assert.deepEqual(Boards.findOne(boards[0]._id), expect);
       });
+      
       it('should remove a user from a board', function() {
         let expect = boards[0];
         
@@ -145,6 +152,7 @@ if (Meteor.isServer) {
         
         chai.assert.deepEqual(Boards.findOne(boards[0]._id), expect);
       });
+      
       it('should add a notification of user board', function() {
         let startNotifications, endNotifications;
 
@@ -155,6 +163,7 @@ if (Meteor.isServer) {
         chai.assert.notEqual(startNotifications, endNotifications);
         chai.assert.equal(startNotifications + 1, endNotifications);
       });
+      
       it('should reset notifications of user board', function() {
         let startNotifications, endNotifications;
 
