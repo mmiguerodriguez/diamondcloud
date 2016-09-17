@@ -1,9 +1,11 @@
 import React            from 'react';
 import { Link }         from 'react-router';
+import classNames       from 'classnames';
 
-import Board            from './board/Board.jsx';
-import ChatLayout       from './chat/ChatLayout.jsx';
-import SidebarLayout    from './sidebar/SidebarLayout.jsx';
+import Board                        from './board/Board.jsx';
+import ChatLayout                   from './chat/ChatLayout.jsx';
+import SidebarLayout                from './sidebar/SidebarLayout.jsx';
+import NotificationsPermissionAsker from './notifications-permission-asker/NotificationsPermissionAsker.jsx';
 
 export default class TeamLayout extends React.Component {
   constructor(props){
@@ -13,6 +15,8 @@ export default class TeamLayout extends React.Component {
       'board-context-menu-id': null,
       'moduleinstance-context-menu-id': null,
       'moduleinstance-iframe': null,
+      'permissionAsker': Notification.permission === 'default',
+      'has-maximized-chats': false,
     };
 
     this.refs = {
@@ -21,12 +25,24 @@ export default class TeamLayout extends React.Component {
     };
   }
   render() {
+    let chatsContainer = classNames({
+      'auto': !this.state['has-maximized-chats'],
+      'maximized': this.state['has-maximized-chats'],
+    }, 'chats-container');
+
     return (
       <div>
+        {
+          this.state.permissionAsker ?
+            (<NotificationsPermissionAsker
+              close={ this.closePermissionAsker.bind(this) }/>) : ( null )
+        }
         <SidebarLayout
           { ...this.props }
+          permissionAsker={ this.state.permissionAsker }
           changeBoard={ this.changeBoard.bind(this) }
-          openBoardContextMenu={ this.openBoardContextMenu.bind(this) } />
+          openBoardContextMenu={ this.openBoardContextMenu.bind(this) }
+          addChat={ this.props.addChat }/>
         <Board
           boards={ this.props.boards }
           board={ this.props.board }
@@ -34,9 +50,10 @@ export default class TeamLayout extends React.Component {
           moduleInstances={ this.props.moduleInstances }
           moduleInstancesFrames={ this.props.moduleInstancesFrames }
           modules={ this.props.modules }
-          getMessages={ this.props.getMessages }
-          openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu.bind(this) } />
-        <div className='chats-container'>
+          addChat={ this.props.addChat }
+          openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu.bind(this) }
+          permissionAsker={ this.state.permissionAsker } />
+        <div className={ chatsContainer }>
           { this.renderChats() }
         </div>
 
@@ -123,6 +140,7 @@ export default class TeamLayout extends React.Component {
     });
   }
 
+  // chats
   renderChats() {
     let arr = [];
 
@@ -135,11 +153,25 @@ export default class TeamLayout extends React.Component {
           boards={ this.props.boards }
           directChats={ this.props.directChats }
           position={ 'medium' }
-          removeChat={ this.props.removeChat }/>
+          togglePosition={ this.togglePosition.bind(this) }
+          removeChat={ this.props.removeChat }
+          hasMaximizedChats={ this.state['has-maximized-chats']}/>
       );
     });
 
     return arr;
+  }
+  
+  togglePosition(chat, oldPosition, newPosition) {
+    chat.setState({
+      position: newPosition,
+    }, () => {
+      if(newPosition === 'maximized' || oldPosition === 'maximized') {
+        this.setState({
+          'has-maximized-chats': !this.state['has-maximized-chats'],
+        });
+      }
+    });
   }
 
   // Minimized
@@ -316,6 +348,12 @@ export default class TeamLayout extends React.Component {
   closeContextMenu(menu) {
     $(menu).hide(100);
   }
+
+  closePermissionAsker() {
+    this.setState({
+      permissionAsker: false
+    });
+  }
 }
 
 TeamLayout.propTypes = {
@@ -333,7 +371,7 @@ TeamLayout.propTypes = {
   directChats: React.PropTypes.array.isRequired,
   chats: React.PropTypes.array.isRequired,
 
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
   removeChat: React.PropTypes.func.isRequired,
   boardSubscribe: React.PropTypes.func.isRequired,
 };

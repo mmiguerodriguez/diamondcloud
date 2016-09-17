@@ -16,7 +16,7 @@ export default class UsersList extends React.Component {
 
   render() {
     let email = this.state.email;
-    let isOwner = this.props.team ? this.props.team.owner() === Meteor.user().emails[0].address : true;
+    let isOwner = this.props.team ? this.props.team.owner() === Meteor.user().email() : true;
     return (
       <div>
         {
@@ -67,7 +67,7 @@ export default class UsersList extends React.Component {
     if(this.props.team) {
       users = this.props.team.getUsers(Teams.dashboardUsersFields).fetch();
       let owner = this.props.team.owner();
-      if(owner === Meteor.user().emails[0].address) {
+      if(owner === Meteor.user().email()) {
         isOwner = true;
       }
       // Unregistered users will be undefined,
@@ -75,8 +75,8 @@ export default class UsersList extends React.Component {
       let emails = [];
       users.forEach((user) => {
         if(user) {
-          emails.push(user.emails[0].address);
-          if(user.emails[0].address === owner) {
+          emails.push(user.email());
+          if(user.email() === owner) {
             user.isOwner = true;
           }
         }

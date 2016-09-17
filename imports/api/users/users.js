@@ -1,7 +1,8 @@
-import { Mongo } from 'meteor/mongo';
+import { Mongo }       from 'meteor/mongo';
 
-import { Teams } from '../teams/teams.js';
-import { Boards } from '../boards/boards.js';
+import { Teams }       from '../teams/teams.js';
+import { Boards }      from '../boards/boards.js';
+import { DirectChats } from '../direct-chats/direct-chats.js';
 
 Meteor.users.helpers({
   teams({ fields }) {
@@ -24,15 +25,18 @@ Meteor.users.helpers({
   boards(teamId, fields) {
     fields = fields || {};
     let team = Teams.findOne(teamId);
-    if(!team){
+    if(!team) {
       throw new Meteor.Error('Users.boards.wrongTeamId',
       'There is no team with the given id');
     }
-    if(!team.hasUser(this)){
+    if(!team.hasUser({ _id: this._id })) {
       throw new Meteor.Error('Users.boards.userNotInTeam',
       'The user is not in the team');
     }
     return Boards.getBoards(team.boards, this._id);
+  },
+  email() {
+    return this.emails[0].address;
   }
 });
 

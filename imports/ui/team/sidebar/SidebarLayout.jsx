@@ -1,4 +1,5 @@
 import React              from 'react';
+import classNames         from 'classnames';
 
 import { Teams }          from '../../../api/teams/teams.js';
 
@@ -11,8 +12,11 @@ import ConfigTeamModal    from '../../modals/config-team/ConfigTeamModal.jsx';
 
 export default class SidebarLayout extends React.Component {
   render() {
+    let classes = classNames('sidebar', 'hidden-xs', {
+      'permission-asker-opened': this.props.permissionAsker
+    });
     return (
-      <div className='sidebar hidden-xs'>
+      <div className={ classes }>
         <div  id='boards-item'
               className='item no-margin'
               onClick={ this.toggleCollapsible.bind(this, 'boards') }>
@@ -56,7 +60,7 @@ export default class SidebarLayout extends React.Component {
           boards={ this.props.boards }
           directChats={ this.props.directChats }
           toggleCollapsible={ this.toggleCollapsible.bind(this) }
-          getMessages={ this.props.getMessages }
+          addChat={ this.props.addChat }
           openCreateChatModal={ this.openCreateChatModal } />
 
         {
@@ -64,7 +68,7 @@ export default class SidebarLayout extends React.Component {
             <div>
               <CreateBoardModal
                 team={ this.props.team }
-                getMessages={ this.props.getMessages }
+                addChat={ this.props.addChat }
                 changeBoard={ this.props.changeBoard }
                 toggleCollapsible={ this.toggleCollapsible.bind(this) } />
               <ConfigTeamModal
@@ -76,7 +80,7 @@ export default class SidebarLayout extends React.Component {
         }
         <CreateChatModal
           team={ this.props.team }
-          getMessages={ this.props.getMessages }
+          addChat={ this.props.addChat }
           toggleCollapsible={ this.toggleCollapsible.bind(this) } />
 
       </div>
@@ -199,7 +203,9 @@ SidebarLayout.propTypes = {
 
   directChats: React.PropTypes.array.isRequired,
 
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
   openBoardContextMenu: React.PropTypes.func.isRequired,
+
+  permissionAsker: React.PropTypes.bool.isRequired,
 };

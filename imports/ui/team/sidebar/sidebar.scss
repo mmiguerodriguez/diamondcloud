@@ -5,6 +5,9 @@
   background-color: $sidebar-color;
   height: calc(100% - 50px);
   position: absolute;
+  &.permission-asker-opened {
+    height: calc(100% - 50px - #{$permission-asker-height});
+  }
   .item {
     padding-top: 8px;
     width: 64px;

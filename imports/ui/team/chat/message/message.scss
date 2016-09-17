@@ -1,23 +1,65 @@
+.arrow {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  position: absolute;
+  top: 10px;
+  &.maximize {
+    top: 0px !important;
+    border-top: 15px solid transparent !important;
+    border-bottom: 15px solid transparent !important;
+  }
+}
 .message-me, .message-other {
   padding: 5px 0px;
   overflow: auto;
 }
 .message-me {
   .message-text-container {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
     background-color: #dbf8c6;
+    .arrow {
+      border-left: 5px solid #dbf8c6;
+      right: -5px;
+      &.maximize {
+        right: -15px !important;
+        border-left: 15px solid #dbf8c6 !important;
+      }
+    }
+  }
+  .message-user-image {
+    .img-rounded {
+      float: right;
+    }
   }
 }
 .message-other {
   .message-text-container {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    float: right;
     background-color: $white;
-    margin-left: 5px;
+    .arrow {
+      border-right: 5px solid $white;
+      left: -5px;
+      &.maximize {
+        left: -15px !important;
+        border-right: 15px solid $white !important;
+      }
+    }
+  }
+  .message-user-image {
+    .img-rounded {
+      float: left;
+    }
   }
 }
 
 .message-text-container {
-  border-radius: 5px;
+  //border-radius: 5px;
   padding: 0px !important;
-  margin-left: 10px;
   word-wrap: break-word;
   .message-text {
     padding: 5px;
@@ -26,7 +68,7 @@
 }
 
 .message-user-image {
-  margin: 0px -5px 0px 10px;
+  margin: 0px -5px 0px 0px;
   padding-left: 0px !important;
   padding-right: 0px !important;
 }

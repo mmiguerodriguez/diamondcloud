@@ -18,15 +18,24 @@ Teams.helpers({
       throw new Meteor.Error('Teams.owner.noOwner',
       'The team has no owner.');
     }
+
     return owner;
   },
-  hasUser(obj) {
-    // If obj.mail exists then use it, if not, use the id
-    if(typeof(obj) === "string"){
-      obj = Meteor.users.findOne(obj);
+  hasUser(user) {
+    let mail, found = false;
+
+    if(typeof user === 'string'){
+      user = Meteor.users.findOne(user);
+      mail = user.email();
+    } else {
+      if(user._id) {
+        user = Meteor.users.findOne(user._id);
+        mail = user.email();
+      } else if(typeof user.email === 'string') {
+        mail = user.email;
+      }
     }
-    let mail = obj.email || Meteor.users.findOne(obj._id).emails[0].address;
-    let found = false;
+
     this.users.forEach((user) => {
       if(user.email == mail) {
         found = true;
@@ -36,11 +45,8 @@ Teams.helpers({
     return found;
   },
   getUsers(fields) {
-    let emails = JSON.parse(JSON.stringify(this.users));
-    emails.forEach((email, index) => {
-      emails[index] = email.email;
-    });
-    return Meteor.users.findByEmail(emails, fields);
+    let emails = this.users.map((email) => email.email);
+    return Meteor.users.find({ 'emails.address' : { $in: emails } }, { fields });
   }
 });
 

@@ -10,7 +10,7 @@ Meteor.publishComposite('teams.dashboard', function() {
     throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn',
     'Must be logged in to view teams.');
   }
-
+  
   let user = Meteor.users.findOne(this.userId);
   return {
     find: function() {
@@ -33,20 +33,19 @@ Meteor.publishComposite('teams.team', function(teamId) {
     throw new Meteor.Error('Teams.publication.team.notLoggedIn',
     'Must be logged in to view teams.');
   }
-
+  
   let user = Meteor.users.findOne(this.userId);
   return {
     find: function() {
-      return user.teams({
-        fields: Teams.teamFields,
-      });
+      return Teams.getTeam(teamId, user.emails[0].address, Teams.teamFields);
     },
     children: [
       {
         find: function(team) {
           return Boards.getBoards(team.boards, this.userId, {
             _id: 1,
-            name: 1
+            name: 1,
+            users: 1,
           });
         },
       },

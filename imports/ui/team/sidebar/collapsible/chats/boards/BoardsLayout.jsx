@@ -21,11 +21,19 @@ export default class BoardsLayout extends React.Component {
     let arr = [];
 
     this.props.boards.map((board) => {
+      let notifications;
+      board.users.map((user) => {
+        if(user.email === Meteor.user().email()) {
+          notifications = user.notifications;
+        }
+      });
+      
       arr.push(
         <Board
           key={ board._id }
           board={ board }
-          getMessages={ this.props.getMessages } />
+          notifications={ notifications }
+          addChat={ this.props.addChat } />
       );
     });
 
@@ -35,5 +43,5 @@ export default class BoardsLayout extends React.Component {
 
 BoardsLayout.propTypes = {
   boards: React.PropTypes.array.isRequired,
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
 };

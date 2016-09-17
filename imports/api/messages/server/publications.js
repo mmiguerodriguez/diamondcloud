@@ -38,3 +38,33 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
     ],
   });
 });
+
+Meteor.publish('messages.all', function(teamId) {
+  if (!this.userId) {
+    throw new Meteor.Error('Messages.all.notLoggedIn',
+    'Must be logged in to view chats.');
+  }
+  let user = Meteor.users.findOne(this.userId);
+  let directChats = DirectChats.getUserDirectChats(this.userId, teamId).fetch();
+  directChats = directChats.map((directChat) => {
+    return directChat._id;
+  });
+  let boards = user.boards(teamId).fetch();
+  boards = boards.map((board) => {
+    return board._id;
+  });
+  return Messages.find({
+    $or: [
+      {
+        directChatId: {
+          $in: directChats
+        }
+      },
+      {
+        boardId: {
+          $in: boards
+        }
+      }
+    ]
+  });
+});
