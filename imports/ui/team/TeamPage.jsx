@@ -91,17 +91,33 @@ export default class Team extends React.Component {
     //obj: { boardId || directChatId }
     let chats = this.state.chats;
     if(!!obj.boardId) {
-      let messages = Boards.findOne(obj.boardId).getMessages().fetch();
-      chats.push({
-        boardId: obj.boardId,
-        messages
+      let found = false;
+      chats.forEach((chat) => {
+        if(chat.boardId === obj.boardId) {
+          found = true;
+        }
       });
+      if(!found) {
+        let messages = Boards.findOne(obj.boardId).getMessages().fetch();
+        chats.push({
+          boardId: obj.boardId,
+          messages
+        });
+      }
     } else {
-      let messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
-      chats.push({
-        directChatId: obj.directChatId,
-        messages
+      let found = false;
+      chats.forEach((chat) => {
+        if(chat.directChatId === obj.directChatId) {
+          found = true;
+        }
       });
+      if(!found) {
+        let messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
+        chats.push({
+          directChatId: obj.directChatId,
+          messages
+        });
+      }
     }
     this.setState({
       chats
