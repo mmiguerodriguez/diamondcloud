@@ -43,6 +43,59 @@ export const sendMessage = new ValidatedMethod({
     }
 
     Messages.insert(message);
+
+    // Notifications
+
+    let title;
+    let text = type == 'text' ? content : 'File';
+    let users = (!!directChatId ? DirectChats.findOne(directChatId) : Boards.findOne(boardId)).users;
+    let query;
+
+    if (!!directChatId) {
+      users = users.map((user) => {
+        if (user._id != Meteor.user()._id) {
+          return user._id;
+        }
+      });
+    } else if (!!boardId) {
+      users = users.map((user) => {
+        let mappedUser = Meteor.users.findOne({ 'emails.address': user.email });
+        if (mappedUser) {
+          if (mappedUser._id != Meteor.user()._id) {
+            return mappedUser._id;
+          }
+        }
+      });
+    }
+
+    let temp = users;
+    users = [];
+
+    temp.forEach((user) => {
+      if (user !== undefined) {
+        users.push(user);
+      }
+    });
+
+    query = {
+      userId: {
+        $in: users,
+      }
+    };
+
+    if (!!boardId) {
+      title = Boards.findOne(boardId).name;
+    } else if (!!directChatId) {
+      title = Meteor.users.findOne(users[0] === undefined ? users[1] : users[0]).profile.name;
+    }
+
+    Push.send({
+      from: 'Diamond',
+      title,
+      text,
+      query,
+    });
+
     return message;
   },
 });

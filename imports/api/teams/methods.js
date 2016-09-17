@@ -1,12 +1,13 @@
-import { Meteor } from 'meteor/meteor';
-import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import Future from 'fibers/future';
-import { Mail } from '../mails/mails.js';
+import { Meteor }               from 'meteor/meteor';
+import { ValidatedMethod }      from 'meteor/mdg:validated-method';
+import { SimpleSchema }         from 'meteor/aldeed:simple-schema';
+import  Future                  from 'fibers/future';
+import { Mail }                 from '../mails/mails.js';
 
-import { Teams } from './teams.js';
-import { Boards } from '../boards/boards.js';
-import { createBoard } from '../boards/methods.js';
+import { Teams }                from './teams.js';
+import { Boards }               from '../boards/boards.js';
+import { createBoard }          from '../boards/methods.js';
+import { createModuleData }     from '../module-data/module-data-creation.js';
 
 export const createTeam = new ValidatedMethod({
   name: 'Teams.methods.create',
@@ -43,7 +44,7 @@ export const createTeam = new ValidatedMethod({
     let future = new Future(); // Needed to make asynchronous call to db
     Teams.insert(team, (err, res) => {
       if(err) throw new Meteor.Error(err);
-
+      createModuleData();
       teamId = res;
       createBoard.call({
         teamId,
@@ -56,7 +57,7 @@ export const createTeam = new ValidatedMethod({
         team.boards.push({ _id: res._id });
         team._id = teamId;
         usersEmails.forEach((email) => {
-          if(Meteor.users.findByEmail(email, {}).count() === 0) {
+          if (Meteor.users.findByEmail(email, {}).count() === 0) {
             //if user is not registered in Diamond Cloud
             Mail.sendMail({
               from: 'Diamond Cloud <no-reply@diamondcloud.tk>',

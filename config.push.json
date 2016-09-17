@@ -1,0 +1,11 @@
+{
+  "gcm": {
+    "apiKey": "AIzaSyAjSq4PZtUlCpXdBv-FRs_6fL-oc9CXOJg",
+    "projectNumber": "cloud-1350"
+  },
+  "production": true,
+  "badge": true,
+  "sound": true,
+  "alert": true,
+  "vibrate": true
+}
