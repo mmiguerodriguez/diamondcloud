@@ -87,6 +87,7 @@ if (Meteor.isServer) {
           }),
         ];
         messages = [];
+        
         for(let i = 0; i < 3; i++) {
           messages.push(Factory.create('directChatMessage'));
           messages[i].directChatId = directChats[0]._id;
@@ -106,6 +107,14 @@ if (Meteor.isServer) {
         messages.forEach((message) => {
           Messages.insert(message);
         });
+        
+        sinon.stub(Meteor, 'user', () => users[0]);
+        sinon.stub(Meteor, 'userId', () => users[0]._id);
+      });
+      
+      afterEach(function() {
+        Meteor.user.restore();
+        Meteor.userId.restore();
       });
       
       it('should return the messages of a direct chat', function() {
@@ -147,7 +156,7 @@ if (Meteor.isServer) {
 
         chai.assert.deepEqual(foundChats, realChats);
       });
-      it('should add a notification of user direct-chat', function() {
+      it('should add a notification to the direct-chat', function() {
         let startNotifications, endNotifications;
 
         startNotifications = getNotifications(directChats[0]._id, users[0]._id);
@@ -157,7 +166,7 @@ if (Meteor.isServer) {
         chai.assert.notEqual(startNotifications, endNotifications);
         chai.assert.equal(startNotifications + 1, endNotifications);
       });
-      it('should reset notifications of user direct-chat', function() {
+      it('should reset notifications from the direct-chat', function() {
         let startNotifications, endNotifications;
 
         startNotifications = getNotifications(directChats[0]._id, users[0]._id);
@@ -166,6 +175,27 @@ if (Meteor.isServer) {
 
         chai.assert.notEqual(startNotifications, endNotifications);
         chai.assert.equal(endNotifications, 0);
+      });
+      it('should return the other user from the direct-chat', function(){
+        let directChat = DirectChats.findOne(directChats[0]._id);
+        let otherUser = directChat.getUser();
+        let expectOtherUser = Meteor.users.findOne(users[1]._id);
+        
+        chai.assert.deepEqual(otherUser, expectOtherUser);
+      });
+      it('should return the user notifications from the direct-chat', function() {
+        let directChat = DirectChats.findOne(directChats[0]._id);
+        let notifications = directChat.getNotifications();
+        let expectNotifications = directChats[0].users[0].notifications;
+        
+        chai.assert.equal(notifications, expectNotifications);
+      });
+      it('should return the last message from the direct-chat', function() {
+        let directChat = DirectChats.findOne(directChats[0]._id);
+        let lastMessage = directChat.getLastMessage();
+        let expectMessage = messages[2];
+                console.log(JSON.stringify(lastMessage), JSON.stringify(expectMessage));
+        chai.assert.deepEqual(lastMessage, expectMessage);
       });
     });
   });

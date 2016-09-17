@@ -77,6 +77,7 @@ export default class Team extends React.Component {
       Team.boardSubscription.get().stop();
     }
   }
+  
   getChats() {
     let chats = this.state.chats;
     chats = chats.map((chat) => {

@@ -115,6 +115,20 @@ if (Meteor.isServer) {
         chai.assert.equal(expect.archived, result.archived);
         chai.assert.isUndefined(result.data);
       });
+      it('should return the last message from a board', function() {
+        let board = Boards.findOne(boards[0]._id);
+        let lastMessage = board.getLastMessage();
+        let expectMessage = messages[2];
+
+        chai.assert.deepEqual(lastMessage, expectMessage);
+      });
+      it('should return user notifications from the board', function() {
+        let board = Boards.findOne(boards[0]._id);
+        let notifications = board.getNotifications();
+        let expectNotifications = boards[0].users[0].notifications;
+        
+        chai.assert.deepEqual(notifications, expectNotifications);
+      });
       it('should add a user to a board', function() {
         let expect = boards[0];
             
