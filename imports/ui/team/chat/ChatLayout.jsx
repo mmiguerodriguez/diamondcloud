@@ -110,7 +110,7 @@ export default class ChatLayout extends React.Component {
         <div className='chat mobile visible-xs-block'>
           <div className='chat-header'>
             <div
-              className='col-xs-12 chat-image-text chat-image'
+              className='chat-image-text chat-image'
               onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
               <div className='chat-image'>
                 <div className="back-image chat-back-image"></div>
