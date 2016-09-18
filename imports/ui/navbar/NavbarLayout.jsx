@@ -11,7 +11,7 @@ export default class NavbarLayout extends React.Component {
     return (
       <nav className='navbar header'>
         <div className='container-fluid'>
-          <div className='navbar-header'>
+          <div className='navbar-header row'>
             <button className='navbar-toggle collapsed'
                     type='button'
                     data-toggle='collapse'
@@ -22,7 +22,7 @@ export default class NavbarLayout extends React.Component {
               <span className='icon-bar'></span>
               <span className='icon-bar'></span>
             </button>
-            <a>
+            <a className="col-xs-2">
               <img src='/img/logo.svg' className='logo-photo'/>
             </a>
           </div>
