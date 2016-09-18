@@ -3,7 +3,7 @@ Accounts.onCreateUser(function(options, user){
   let name = user.services[service].name;
   let email = user.services[service].email;
   let picture = user.services[service].picture;
-  
+
   user.emails = [{ address: email }];
   user.profile = {
     name,
