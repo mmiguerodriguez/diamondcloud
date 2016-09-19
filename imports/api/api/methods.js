@@ -4,6 +4,8 @@ import { ValidatedMethod }                       from 'meteor/mdg:validated-meth
 import { SimpleSchema }                          from 'meteor/aldeed:simple-schema';
 import Future                                    from 'fibers/future';
 
+import { printObject }                           from '../helpers/print-objects.js';
+
 import { ModuleInstances, generateMongoQuery }   from '../module-instances/module-instances.js';
 import { ModuleData }                            from '../module-data/module-data.js';
 import { Boards }                                from '../boards/boards.js';
@@ -78,11 +80,12 @@ export const apiUpdate = new ValidatedMethod({
       'Must be part of a board to access its modules.');
     }
 
-    let newCollection  = moduleData.data[collection];
+    let newCollection = moduleData.data[collection];
     let boards = Meteor.user()
                  .boards(moduleData.teamId, { _id: 1 })
                  .fetch()
                  .map((board) => board._id);
+    console.log(boards);
     let selected = sift({
       $and: [
         {
@@ -101,6 +104,9 @@ export const apiUpdate = new ValidatedMethod({
         filter
       ]
     }, newCollection);
+
+    printObject(selected);
+
     selected.forEach((element) => {
       ModuleData.update({
         _id: moduleData._id,
