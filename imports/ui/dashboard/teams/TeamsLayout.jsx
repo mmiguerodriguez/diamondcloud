@@ -33,6 +33,15 @@ export default class TeamsLayout extends React.Component {
             </div>
           </div>
         </div>
+        {
+          this.state.search !== '' ? (
+            <div className='row search-results'>
+              <div className='col-md-12'>
+                <p className='text-muted text-center'>Resultados: { this.searchResults() }</p>
+              </div>
+            </div>
+          ) : ( null )
+        }
         <div className='row'>
           { this.renderTeams() }
         </div>
@@ -44,7 +53,7 @@ export default class TeamsLayout extends React.Component {
       search: event.target.value,
     });
   }
-  renderTeams(){
+  renderTeams() {
     if(this.props.hasTeams) {
       return this.props.teams.map((team) => {
         return team.name.toLowerCase().indexOf(this.state.search.toLowerCase()) > -1 ? (
@@ -62,6 +71,15 @@ export default class TeamsLayout extends React.Component {
         <TeamCard hasTeams={ this.props.hasTeams } />
       );
     }
+  }
+  searchResults() {
+    let results = 0;
+    this.props.teams.forEach((team) => {
+      if(team.name.toLowerCase().indexOf(this.state.search.toLowerCase()) > -1) {
+        results++;
+      }
+    });
+    return results;
   }
 }
 
