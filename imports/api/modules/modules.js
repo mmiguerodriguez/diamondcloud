@@ -9,5 +9,12 @@ export let createdModules = [
     img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
     description: "I\"m a post it",
     validated: true,
-  }
+  },
+  {
+    _id: "Hwqpiuufhsdf735sj",
+    name: "File Picker",
+    img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
+    description: "Google Drive API test",
+    validated: true,
+  },
 ];
