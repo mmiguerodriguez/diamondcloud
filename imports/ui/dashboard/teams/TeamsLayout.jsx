@@ -5,9 +5,9 @@ import TeamCard from './team-card/TeamCard.jsx';
 export default class TeamsLayout extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      search: '',
-    };
+    
+    this.state = { search: '' };
+    this.handleChange = this.handleChange.bind(this);
   }
   render() {
     return (
@@ -25,7 +25,7 @@ export default class TeamsLayout extends React.Component {
                       className='form-control input'
                       placeholder='Busca tus equipos'
                       type='search'
-                      onChange={ this.handleChange.bind(this) }/>
+                      onChange={ this.handleChange }/>
               <div className='input-group-addon icon'>
                 <img src='/img/search.svg'
                      width='24px' />

@@ -10,9 +10,10 @@ import ConfigTeamModal from '../modals/config-team/ConfigTeamModal.jsx';
 export default class DashboardLayout extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      team: null,
-    };
+    
+    this.state = { team: null };
+    this.loadTeam = this.loadTeam.bind(this);
+    this.openConfigTeamModal = this.openConfigTeamModal.bind(this);
   }
   render() {
     let hasTeams = this.props.teams.length > 0 ? true : false;
@@ -24,7 +25,7 @@ export default class DashboardLayout extends React.Component {
         <TeamsLayout
           hasTeams={ hasTeams }
           teams={ this.props.teams }
-          openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
+          openConfigTeamModal={ this.openConfigTeamModal } />
         <CreateTeamModal />
         {
           (this.state.team) ? (
@@ -32,7 +33,7 @@ export default class DashboardLayout extends React.Component {
               <ConfigTeamModal
                 key={ this.state.team._id }
                 team={ this.state.team }
-                loadTeam={ this.loadTeam.bind(this) } />
+                loadTeam={ this.loadTeam } />
             ) : ( null )
           ) : ( null )
         }
