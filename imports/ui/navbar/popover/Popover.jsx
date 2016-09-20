@@ -1,4 +1,7 @@
-import React from 'react';
+import { Meteor }          from 'meteor/meteor';
+
+import React               from 'react';
+import { browserHistory }  from 'react-router';
 
 export default class Popover extends React.Component {
   render() {
@@ -20,14 +23,23 @@ export default class Popover extends React.Component {
             <p className='popover-btn-text'>Cambiar datos</p>
           </div>
           <div className='btn col-xs-4 col-xs-offset-2 popover-btn'>
-            <p className='popover-btn-text'>Cerrar Sesion</p>
+            <p className='popover-btn-text' onClick={ this.logout.bind(this) }>Cerrar Sesion</p>
           </div>
         </div>
       </div>
     );
   }
+  logout() {
+    let self = this;
+    Meteor.logout(() => {
+      browserHistory.push('/'); // Redirect to landing page
+      $('div[role="tooltip"].popover').remove(); // Remove actual node element
+      self.props.onLogout(); // Change NavbarLayout props
+    });
+  }
 }
 
 Popover.propTypes = {
-  user: React.PropTypes.object,
+  user: React.PropTypes.object.isRequired,
+  onLogout: React.PropTypes.func.isRequired,
 };

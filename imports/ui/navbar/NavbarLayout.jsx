@@ -1,12 +1,18 @@
-import React from 'react';
-import ReactDOMServer from 'react-dom/server';
+import React          from 'react';
 
-import NavbarLink from './navbar-link/NavbarLink.jsx';
-import Profile from './profile/Profile.jsx';
-// import SearchBar from './search-bar/SearchBar.jsx';
-import Popover from './popover/Popover.jsx';
+import NavbarLink     from './navbar-link/NavbarLink.jsx';
+import Profile        from './profile/Profile.jsx';
+// import SearchBar   from './search-bar/SearchBar.jsx';
+import Popover        from './popover/Popover.jsx';
 
 export default class NavbarLayout extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      createdPopover: false,
+    }
+  }
   render() {
     return (
       <nav className='navbar header'>
@@ -60,15 +66,27 @@ export default class NavbarLayout extends React.Component {
       </nav>
     );
   }
-  componentDidMount() {
-    let { user } = this.props;
-    if(user) {
+  componentDidUpdate() {
+    if(this.props.user && !this.state.createdPopover) {
+      let onLogout = () => {
+        // Change createdPopover state to false when the user logs out
+        this.setState({
+          createdPopover: false,
+        })
+      }
+
       $('[data-toggle="popover"]').popover({
-        html: true,
-        content: function() {
-          const popover = <Popover user={ user } />;
-          return ReactDOMServer.renderToString(popover);
-        }
+        react: true,
+        content: (
+          <Popover
+            user={ this.props.user }
+            onLogout={ onLogout } />
+        ),
+      });
+
+      // Set the state as if user has created the popover
+      this.setState({
+        createdPopover: true,
       });
     }
   }
