@@ -3,7 +3,7 @@ import React from 'react';
 export default class Board extends React.Component {
   render() {
     return (
-      <div className='row row-fixed-margin' onClick={ this.props.getMessages.bind(null, { boardId: this.props.board._id }) }>
+      <div className='row row-fixed-margin' onClick={ this.props.addChat.bind(null, { boardId: this.props.board._id }) }>
         <div className='col-xs-2 img-fixed-margin fixed-padding'>
           <img className='img-circle' src='http://image.flaticon.com/icons/svg/60/60541.svg' width='22px' />
         </div>
@@ -25,5 +25,5 @@ export default class Board extends React.Component {
 Board.propTypes = {
   board: React.PropTypes.object.isRequired,
   notifications: React.PropTypes.number.isRequired,
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
 };

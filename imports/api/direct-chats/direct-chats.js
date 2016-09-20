@@ -1,8 +1,44 @@
-import { Mongo } from 'meteor/mongo';
+import { Meteor }   from 'meteor/meteor';
+import { Mongo }		from 'meteor/mongo';
 
-import { Teams } from '../teams/teams.js';
+import { Teams }		from '../teams/teams.js';
+import { Messages } from '../messages/messages.js';
 
 export let DirectChats = new Mongo.Collection('DirectChats');
+
+DirectChats.helpers({
+	getMessages() {
+    return Messages.find({
+      directChatId: this._id,
+    });
+  },
+  getLastMessage() {
+    let messages = this.getMessages().fetch();
+    return messages[messages.length - 1] || { content: '' };
+  },
+  getUser() {
+    let user;
+
+    this.users.forEach((_user) => {
+      if(_user._id !== Meteor.userId()) {
+        user = Meteor.users.findOne(_user._id);
+      }
+    });
+
+    return user;
+  },
+  getNotifications() {
+    let notifications;
+
+    this.users.forEach((_user) => {
+      if(_user._id === Meteor.userId()) {
+        notifications = _user.notifications;
+      }
+    });
+
+    return notifications;
+  }
+});
 
 DirectChats.getUserDirectChats = (userId, teamId) => {
 	return DirectChats.find({
@@ -15,7 +51,7 @@ DirectChats.getUserDirectChats = (userId, teamId) => {
   });
 };
 DirectChats.isValid = (directChatId, userId) => {
-	let directChat =  DirectChats.findOne({
+	let directChat = DirectChats.findOne({
     _id: directChatId,
     users: {
       $elemMatch: {

@@ -65,6 +65,8 @@
     height: 200px;
     max-height: 200px;
     width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
     background-color: #a9a9a9;
     background-image: linear-gradient(to bottom, #dadada, #c4c4c4);
     overflow-y: auto;
@@ -85,44 +87,102 @@
 }
 .maximized {
   background-color: #ddd;
-  width: 250px;
+  width: 100%;
   float: right;
   margin-left: 24px;
+  height: calc(100% - 82px);
   .chat-header {
-    height: 30px;
-    background-color: #ccc;
+    height: 32px;
+    background-color: #f1f2f3;
     cursor: pointer;
-    .chat-text {
-      padding: 5px 10px 0px 10px !important;
-      margin-bottom: 0px;
+    .chat-tabs {
+      
+    }
+    .tab {
+      @extend .minimized;
+      width: 150px;
+      height: 32px;
+      margin: 0;
+      float: left;
+      .chat-image {
+        padding: 0px !important;
+      }
     }
     .chat-image {
-      margin-top: 3px;
+      padding: 8px 10px !important;
+      float: right;
       .exit-maximize-image {
         opacity: 0.3;
-      }
-      .exit-maximize-image:hover {
-        opacity: 0.7;
+        float: right;
+        &:hover {
+          opacity: 0.7;
+        }
       }
     }
   }
 
   .chat-body {
-    height: 200px;
-    max-height: 200px;
+    height: calc(100% + 11px);
+    min-height: calc(100% + 11px);
     width: 100%;
-    background-color: #a9a9a9;
+    background-image: linear-gradient(to bottom, #dadada, #c4c4c4);
     overflow-y: auto;
     overflow-x: hidden;
+    .message-other {
+      .message-text-container {
+        float: left !important;
+        margin-left: 5px;
+      }
+    }
   }
 
   .chat-footer {
-    height: 50px;
-    padding-top: 6px;
+    height: 38px;
     background-color: #e6e6fa;
-    .send-message {
-      padding: 0px 0px 0px 5px;
-      margin-top: 6px;
+  }
+}
+.mobile {
+  @extend .medium;
+  width: 100%;
+  float: none;
+  margin-left: 0px;
+  .chat-header {
+    height: 60px;
+    padding: 15px;
+    padding-left: 5px;
+    .chat-image-text {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      b {
+        font-size: 20px;
+        padding-left: 5px;
+        vertical-align: text-bottom;
+      }
+      .chat-image {
+        display: inline-block;
+        .chat-back-image {
+          width: 20px;
+          height: 20px;
+          background-size: 20px;
+          background-image: url(/img/chat/back-arrow.svg);
+        }
+        .back-image {
+          opacity: 0.5;
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
     }
+  }
+  .chat-body {
+    position: absolute;
+    height: calc(100% - 98px);
+    min-height: calc(100% - 98px);
+  }
+  .chat-footer {
+    position: absolute;
+    bottom: 0px;
   }
 }

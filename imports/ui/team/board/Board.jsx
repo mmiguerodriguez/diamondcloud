@@ -1,11 +1,15 @@
 import React          from 'react';
+import classNames         from 'classnames';
 
 import ModuleInstance from '../../module-instance/ModuleInstance.jsx';
 
 export default class Board extends React.Component {
   render() {
+    let classes = classNames('board-container', 'hidden-xs', {
+      'permission-asker-opened': this.props.permissionAsker
+    });
     return (
-      <div className='board-container'>
+      <div className={ classes }>
         <div className='sub-header'>
           <div className='sub-header-data'>
             <h4 className='title'>{ this.props.board.name }</h4>
@@ -14,7 +18,7 @@ export default class Board extends React.Component {
               { this.renderUsers() }
             </h4>
           </div>
-          <span onClick={ this.props.getMessages.bind(null, { boardId: this.props.board._id }) }>
+          <span onClick={ this.props.addChat.bind(null, { boardId: this.props.board._id }) }>
             <h4 className='message-text'>Chat del board</h4>
             <img  src='/img/sidebar/messages.svg'
                   title='Abrir chat del board'
@@ -159,6 +163,7 @@ Board.propTypes = {
   moduleInstancesFrames: React.PropTypes.array,
   modules: React.PropTypes.array,
   users: React.PropTypes.array.isRequired,
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
   openModuleInstanceContextMenu: React.PropTypes.func.isRequired,
+  permissionAsker: React.PropTypes.bool.isRequired,
 };

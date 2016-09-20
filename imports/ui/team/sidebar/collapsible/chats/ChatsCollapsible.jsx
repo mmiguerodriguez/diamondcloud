@@ -23,10 +23,10 @@ export default class ChatsCollapsible extends React.Component {
           <div>
             <BoardsLayout
               boards={ this.props.boards }
-              getMessages={ this.props.getMessages } />
+              addChat={ this.props.addChat } />
             <DirectChatsLayout
               directChats={ this.props.directChats }
-              getMessages={ this.props.getMessages } />
+              addChat={ this.props.addChat } />
           </div>
         }
         footer={
@@ -43,6 +43,6 @@ ChatsCollapsible.propTypes = {
   boards: React.PropTypes.array.isRequired,
   directChats: React.PropTypes.array.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
   openCreateChatModal: React.PropTypes.func.isRequired,
 };

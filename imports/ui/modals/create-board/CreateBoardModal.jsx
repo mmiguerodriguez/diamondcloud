@@ -164,7 +164,7 @@ export default class CreateBoardModal extends React.Component {
 
           this.props.toggleCollapsible('boards');
           this.props.changeBoard(result._id);
-          this.props.getMessages({ boardId: result._id });
+          this.props.addChat({ boardId: result._id });
         }
       });
     } else {
@@ -209,7 +209,7 @@ export default class CreateBoardModal extends React.Component {
 
 CreateBoardModal.propTypes = {
   team: React.PropTypes.object.isRequired,
-  getMessages: React.PropTypes.func.isRequired,
+  addChat: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
 };

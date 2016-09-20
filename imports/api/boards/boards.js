@@ -1,7 +1,8 @@
 import { Mongo }           from 'meteor/mongo';
 
-import { Teams }           from '../teams/teams';
-import { ModuleInstances } from '../module-instances/module-instances';
+import { Teams }           from '../teams/teams.js';
+import { Messages }        from '../messages/messages.js';
+import { ModuleInstances } from '../module-instances/module-instances.js';
 
 export let Boards = new Mongo.Collection('Boards');
 
@@ -30,6 +31,26 @@ Boards.helpers({
     }, {
       fields
     });
+  },
+  getMessages() {
+    return Messages.find({
+      boardId: this._id,
+    });
+  },
+  getLastMessage() {
+    let messages = this.getMessages().fetch();
+    return messages[messages.length - 1] || { content: '' };
+  },
+  getNotifications() {
+    let notifications;
+    
+    this.users.forEach((_user) => {
+      if(_user.email === Meteor.user().email()) {
+        notifications = _user.notifications;
+      }
+    });
+    
+    return notifications;
   }
 });
 

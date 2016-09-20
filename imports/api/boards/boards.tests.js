@@ -8,13 +8,14 @@ import   faker           from 'faker';
 import { Teams }           from '../teams/teams.js';
 import { ModuleInstances } from '../module-instances/module-instances.js';
 import { Boards }          from './boards.js';
+import { Messages }        from '../messages/messages.js';
 
 import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Boards', function() {
     describe('Helpers', function() {
-      let teams, boards, users, moduleInstances;
+      let teams, boards, users, messages, moduleInstances;
       function getNotifications(boardId, userId) {
         let user = Meteor.users.findOne(userId);
         return Boards.findOne(boardId).users.find((_user) => {
@@ -38,6 +39,11 @@ if (Meteor.isServer) {
           Factory.create('board'),
           Factory.create('board'),
         ];
+        messages = [];
+        for(let i = 0; i < 3; i++) {
+          messages.push(Factory.create('boardMessage'));
+          messages[i].boardId = boards[0]._id;
+        }
         moduleInstances = [
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
@@ -65,10 +71,14 @@ if (Meteor.isServer) {
         moduleInstances.forEach((moduleInstance) => {
           ModuleInstances.insert(moduleInstance);
         });
+        messages.forEach((message) => {
+          Messages.insert(message);
+        });
 
         sinon.stub(Meteor, 'user', () => users[0]);
         sinon.stub(Meteor, 'userId', () => users[0]._id);
       });
+      
       afterEach(function() {
         Meteor.user.restore();
         Meteor.userId.restore();
@@ -78,14 +88,21 @@ if (Meteor.isServer) {
         let board = Boards.findOne(boards[0]._id);
         let team = board.team();
 
-        chai.assert.isTrue(team._id === teams[0]._id);
+        chai.assert.equal(team._id, teams[0]._id);
       });
+      
       it('should not return the team of a board', function() {
         let board = Boards.findOne(boards[1]._id);
         let team = board.team();
 
         chai.assert.isUndefined(team);
       });
+      
+      it('should return the messages of a board', function() {
+        let board = Boards.findOne(boards[0]._id);
+        chai.assert.equal(board.getMessages().count(), messages.length);
+      });
+      
       it('should return the moduleInstances of a board', function() {
         let board = Boards.findOne(boards[2]._id);
         let result, expect;
@@ -102,6 +119,22 @@ if (Meteor.isServer) {
         chai.assert.equal(expect.archived, result.archived);
         chai.assert.isUndefined(result.data);
       });
+      it('should return the last message from a board', function() {
+        let board = Boards.findOne(boards[0]._id);
+        let lastMessage = board.getLastMessage();
+        let expectMessage = messages[2];
+
+        chai.assert.deepEqual(lastMessage, expectMessage);
+      });
+      
+      it('should return user notifications from the board', function() {
+        let board = Boards.findOne(boards[0]._id);
+        let notifications = board.getNotifications();
+        let expectNotifications = boards[0].users[0].notifications;
+        
+        chai.assert.deepEqual(notifications, expectNotifications);
+      });
+      
       it('should add a user to a board', function() {
         let expect = boards[0];
             
@@ -110,6 +143,7 @@ if (Meteor.isServer) {
 
         chai.assert.deepEqual(Boards.findOne(boards[0]._id), expect);
       });
+      
       it('should remove a user from a board', function() {
         let expect = boards[0];
         
@@ -118,6 +152,7 @@ if (Meteor.isServer) {
         
         chai.assert.deepEqual(Boards.findOne(boards[0]._id), expect);
       });
+      
       it('should add a notification of user board', function() {
         let startNotifications, endNotifications;
 
@@ -128,6 +163,7 @@ if (Meteor.isServer) {
         chai.assert.notEqual(startNotifications, endNotifications);
         chai.assert.equal(startNotifications + 1, endNotifications);
       });
+      
       it('should reset notifications of user board', function() {
         let startNotifications, endNotifications;
 

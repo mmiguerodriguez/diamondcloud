@@ -1,6 +1,10 @@
-import React        from 'react';
+import React           from 'react';
+import classNames      from 'classnames';
 
-import Message      from './message/Message.jsx';
+import Message         from './message/Message.jsx';
+
+import { Boards }      from '../../../api/boards/boards.js';
+import { DirectChats } from '../../../api/direct-chats/direct-chats.js';
 
 export default class ChatLayout extends React.Component {
   constructor(props) {
@@ -18,29 +22,35 @@ export default class ChatLayout extends React.Component {
     };
   }
   render() {
+    let classes = classNames({
+      'hidden': this.props.hasMaximizedChats && this.state.position !== 'maximized',
+    }, 'chat', 'hidden-xs', this.state.position);
+
     if (this.state.position === 'minimized') {
       return (
-        <div className='chat minimized'>
-          <p  className='col-xs-10 chat-text'
-              onClick={ this.togglePosition.bind(this, 'medium') }>
+        <div className={ classes }>
+          <p
+            className='col-xs-10 chat-text'
+            onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'medium') }>
             <b>{ this.getName() }</b>
           </p>
-          <div  className='col-xs-2 chat-image'
-                onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
+          <div
+            className='col-xs-2 chat-image'
+            onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
             <div className="close-image chat-back-image"></div>
           </div>
         </div>
       );
     } else if (this.state.position === 'medium') {
       return (
-        <div className='chat medium'>
+        <div className={ classes }>
           <div className='chat-header'>
             <p  className='col-xs-10 chat-text'
-                onClick={ this.togglePosition.bind(this, 'minimized') }>
+                onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'minimized') }>
                 <b>{ this.getName() }</b>
             </p>
             <div  className='col-xs-2 chat-image'
-                  onClick={ this.togglePosition.bind(this, 'maximized') }>
+                  onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'maximized') }>
                   <div className="maximize-image chat-back-image"></div>
             </div>
           </div>
@@ -60,33 +70,65 @@ export default class ChatLayout extends React.Component {
       );
     } else if (this.state.position === 'maximized') {
       return (
-        <div className='chat maximized'>
+        <div className={ classes }>
           <div className='chat-header'>
-            <p className='col-xs-10 chat-text'>{ this.getName() }</p>
+            <div className='col-xs-10 row chat-tabs'>
+              <div className="tab">
+                <p  className='col-xs-10 chat-text'
+                    onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'minimized') }>
+                  <b>{ this.getName() }</b>
+                </p>
+                <div  className='col-xs-2 chat-image'
+                      onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
+                  <div className="close-image chat-back-image"></div>
+                </div>
+              </div>
+            </div>
             <div  className='col-xs-2 chat-image'
-                  onClick={ this.togglePosition.bind(this, 'medium') }>
+                  onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'medium') }>
               <img  className='exit-maximize-image'
                     src='http://image.flaticon.com/icons/svg/60/60801.svg'
                     width='16px' />
             </div>
           </div>
-          <div className='chat-body' ref='chat_body'>
+          <div className='chat-body container-fluid' ref='chat_body'>
             { this.renderMessages() }
           </div>
           <div className='chat-footer'>
-            <div className='col-xs-10'>
-              <input
-                value={ this.state.message }
-                className='form-control'
-                type='text'
-                placeholder='Escriba el mensaje'
-                onKeyDown={ this.handleKey.bind(this) }
-                onChange={ this.changeText.bind(this) } />
+            <input
+              value={ this.state.message }
+              className='form-control'
+              type='text'
+              placeholder='Escriba el mensaje'
+              onKeyDown={ this.handleKey.bind(this) }
+              onChange={ this.changeText.bind(this) } />
+          </div>
+        </div>
+      );
+    } else if (this.state.position === 'mobile') {
+      return (
+        <div className='chat mobile visible-xs-block'>
+          <div className='chat-header'>
+            <div
+              className='chat-image-text chat-image'
+              onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
+              <div className='chat-image'>
+                <div className="back-image chat-back-image"></div>
+              </div>
+              <b>{ this.getName() }</b>
             </div>
-            <div  className='send-message col-xs-2'
-                  onClick={ this.sendMessage.bind(this) }>
-              <img src='http://image0.flaticon.com/icons/svg/60/60525.svg' width='24px'/>
-            </div>
+          </div>
+          <div className='chat-body' ref='chat_body'>
+            { this.renderMessages() }
+          </div>
+          <div className='chat-footer col-xs-12'>
+            <input
+              value={ this.state.message }
+              className='form-control message-input'
+              type='text'
+              placeholder='Escriba el mensaje'
+              onKeyDown={ this.handleKey.bind(this) }
+              onChange={ this.changeText.bind(this) }  />
           </div>
         </div>
       );
@@ -122,7 +164,7 @@ export default class ChatLayout extends React.Component {
       this.sendMessage();
     } else if(event.which === 27) {
       this.props.removeChat(this.state.chatType);
-      // this.togglePosition('minimized');
+      // this.props.togglePosition('minimized');
     }
   }
   changeText(event) {
@@ -130,11 +172,7 @@ export default class ChatLayout extends React.Component {
       message: event.target.value,
     });
   }
-  togglePosition(position) {
-    this.setState({
-      position: position,
-    });
-  }
+
   sendMessage() {
     let text = this.state.message;
     text = text.trim();
@@ -168,7 +206,7 @@ export default class ChatLayout extends React.Component {
   renderMessages() {
     let arr = [];
 
-    this.props.chat.messages.map((message) => {
+    this.props.chat.messages.forEach((message) => {
       let isSender = message.senderId === Meteor.userId();
       arr.push(
         <Message
@@ -177,35 +215,30 @@ export default class ChatLayout extends React.Component {
           isSender={ isSender }
           position={ this.state.position } />);
     });
-
     return arr;
   }
   getName() {
-    let name = '';
     if(this.props.chat.boardId) {
-      let board = this.props.boards.find((_board) => {
-        return _board._id === this.props.chat.boardId;
-      });
-
-      name = board.name;
+      let boardId = this.props.chat.boardId;
+      return Boards.findOne(boardId).name;
+      
     } else if(this.props.chat.directChatId) {
-      let directChat = this.props.directChats.find((_directChat) => {
-        return _directChat._id === this.props.chat.directChatId;
-      });
-
-      directChat.users.map((user) => {
-        if(user._id !== Meteor.userId()) {
-          name = Meteor.users.findOne(user._id).profile.name;
-        }
-      });
+      let directChatId = this.props.chat.directChatId;
+      let directChat = DirectChats.findOne(directChatId);
+      
+      return directChat.getUser().profile.name;
     }
-    return name;
   }
 }
 
 ChatLayout.propTypes = {
   chat: React.PropTypes.object.isRequired,
   users: React.PropTypes.array.isRequired,
+
   position: React.PropTypes.string.isRequired,
+  hasMaximizedChats: React.PropTypes.bool.isRequired,
+
   removeChat: React.PropTypes.func.isRequired,
+  boards: React.PropTypes.array.isRequired,
+  directChats: React.PropTypes.array.isRequired,
 };
