@@ -54,7 +54,7 @@ export const sendMessage = new ValidatedMethod({
 
     if (!!directChatId) {
       users = users.map((user) => {
-        if (user._id != Meteor.user()._id) {
+        if (user._id != Meteor.userId()) {
           return user._id;
         }
       });
@@ -62,7 +62,7 @@ export const sendMessage = new ValidatedMethod({
       users = users.map((user) => {
         let mappedUser = Meteor.users.findOne({ 'emails.address': user.email });
         if (mappedUser) {
-          if (mappedUser._id != Meteor.user()._id) {
+          if (mappedUser._id != Meteor.userId()) {
             return mappedUser._id;
           }
         }
@@ -89,13 +89,12 @@ export const sendMessage = new ValidatedMethod({
     } else if (!!directChatId) {
       title = Meteor.users.findOne(users[0] === undefined ? users[1] : users[0]).profile.name;
     }
-
-    console.log('Hola, soy Joel');
+    
     Push.send({
       from: 'Diamond',
       title,
       text,
-      query: {},
+      query,
     });
 
     return message;
