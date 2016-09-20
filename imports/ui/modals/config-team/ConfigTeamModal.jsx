@@ -7,13 +7,15 @@ import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx'
 export default class ConfigTeamModal extends React.Component {
   constructor(props) {
     super(props);
-    // Sets state variables the first time
-    // the component gets created
+
     this.state = {
       name: this.props.team.name,
       plan: this.props.team.plan,
       type: this.props.team.type,
     };
+    this.addUser    = this.addUser.bind(this);
+    this.removeUser = this.removeUser.bind(this);
+    this.saveTeam   = this.saveTeam.bind(this);
   }
 
   render() {
@@ -64,7 +66,7 @@ export default class ConfigTeamModal extends React.Component {
                     class='form-control'
                     placeholder='Tipo de equipo'
                     value={ this.state.type }
-                    onChange={ this.handleChange.bind(this, 'otherType') }
+                    onChange={ this.handleChange.bind(this, 'type') }
                     required={ false }
                     errorMessage='El tipo de equipo no es válido'/>
                 </div>
@@ -73,15 +75,16 @@ export default class ConfigTeamModal extends React.Component {
             <hr />
             <h4 className='configuration-title'>Miembros</h4>
             <p className='explanation-text margin'>Agregue miembros al equipo.</p>
-            <UsersList team={ this.props.team } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
+            <UsersList 
+              team={ this.props.team } 
+              addUser={ this.addUser }
+              removeUser={ this.removeUser } />
             <hr />
             <h4 className='configuration-title'>Plan</h4>
             <p className='explanation-text margin'>Visualize mas información de su proyecto</p>
             <div className='row'>
               <div className='col-sm-6 col-sm-offset-2 col-xs-12'>
-                <p>
-                  Plan actual: { this.props.team.plan }
-                </p>
+                <p>Plan actual: { this.props.team.plan }</p>
                 <p>Personas: { this.props.team.users.length }</p>
                 <p>Boards: { this.props.team.boards.length }/12</p>
               </div>
@@ -90,15 +93,17 @@ export default class ConfigTeamModal extends React.Component {
         }
         footer={
           <div className='row'>
-            <button type='button'
-                    className='btn btn-cancel btn-hover'
-                    data-dismiss='modal'>
+            <button 
+              type='button'
+              className='btn btn-cancel btn-hover'
+              data-dismiss='modal'>
               Cancelar
             </button>
-            <button type='button'
-                    className='btn btn-accept btn-hover'
-                    data-dismiss='modal'
-                    onClick={ this.saveTeam.bind(this) }>
+            <button 
+              type='button'
+              className='btn btn-accept btn-hover'
+              data-dismiss='modal'
+              onClick={ this.saveTeam }>
               Guardar
             </button>
           </div>
@@ -151,4 +156,4 @@ export default class ConfigTeamModal extends React.Component {
 ConfigTeamModal.propTypes = {
   team: React.PropTypes.any.isRequired,
   loadTeam: React.PropTypes.func.isRequired,
-}
+};
