@@ -81,14 +81,6 @@ export default class ConfigTeamModal extends React.Component {
               <div className='col-sm-6 col-sm-offset-2 col-xs-12'>
                 <p>
                   Plan actual: { this.props.team.plan }
-                  {
-                    this.props.team.plan === 'free' ? (
-                      <button type='button'
-                              className='btn btn-add btn-upgrade'>
-                        Upgrade
-                      </button>
-                    ) : ( null )
-                  }
                 </p>
                 <p>Personas: { this.props.team.users.length }</p>
                 <p>Boards: { this.props.team.boards.length }/12</p>

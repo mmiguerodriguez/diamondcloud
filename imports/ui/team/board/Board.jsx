@@ -12,8 +12,8 @@ export default class Board extends React.Component {
       <div className={ classes }>
         <div className='sub-header'>
           <div className='sub-header-data col-xs-10'>
-            <h4 className='title truncate col-xs-6'>{ this.props.board.name }</h4>
-            <h4 className='members col-xs-6'>
+            <h4 className='title truncate'>{ this.props.board.name }</h4>
+            <h4 className='members truncate'>
               Miembros:
               { this.renderUsers() }
             </h4>

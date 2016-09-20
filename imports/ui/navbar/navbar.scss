@@ -11,6 +11,15 @@ nav.header {
   margin-top: 5px;
   height: 40px;
 }
+.user-info, .user-mail {
+  padding-left: 10px;
+}
+.user-info {
+  color: $white;
+}
+.user-mail {
+  color: #ecf0f1;
+}
 .logo-photo {
   height: 40px;
   margin-top: 5px;

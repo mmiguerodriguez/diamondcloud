@@ -33,6 +33,19 @@ export default class NavbarLayout extends React.Component {
             </a>
           </div>
           <div className='collapse navbar-collapse' id='navbar'>
+            <ul className='nav navbar-nav visible-xs-block'>
+            {
+              this.props.user ? (
+                <div>
+                  <a className='user-collapsible-photo col-xs-2'>
+                    <Profile picture={ this.props.user.profile.picture } />
+                  </a>
+                  <b className='user-info'>{ this.props.user.profile.name }</b>
+                  <p className='user-mail truncate'>{ this.props.user.email() }</p>
+                </div>
+              ) : ( null )
+            }
+            </ul>
             <ul className='nav navbar-nav'>
               {
                 this.props.user ? (
@@ -48,7 +61,7 @@ export default class NavbarLayout extends React.Component {
                 link={ '/help' }
                 name={ 'Help' } />
             </ul>
-            <ul className='nav navbar-nav navbar-right'>
+            <ul className='nav navbar-nav navbar-right hidden-xs'>
             {
               this.props.user ? (
                 <a className='UserPhotoPopover'
