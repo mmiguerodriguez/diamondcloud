@@ -9,6 +9,7 @@ window.onload = () => {
   getData('postIt', {}, (error, result) => {
     console.log('Grabbed data...');
     if(!result) {
+      console.log('Kakatum', error, result);
       insertStartupData((error, result) => {
         console.log('Inserted new data since there was none...');
       });
@@ -30,6 +31,7 @@ window.onload = () => {
   console.log('Got team data...', teamData);
 
 };
+
 window.onresize = () => {
   console.log('Resized module...');
 };
@@ -46,6 +48,7 @@ function insertStartupData(callback) {
     callback,
   });
 }
+
 function getData(collection, filter, callback) {
   DiamondAPI.get({
     collection,
@@ -53,6 +56,7 @@ function getData(collection, filter, callback) {
     callback,
   });
 }
+
 function updateData(collection, filter, updateQuery) {
   DiamondAPI.update({
     collection,
@@ -60,6 +64,7 @@ function updateData(collection, filter, updateQuery) {
     updateQuery,
   });
 }
+
 function subscribe(collection, callback) {
   return DiamondAPI.subscribe({
     request: {
@@ -68,9 +73,11 @@ function subscribe(collection, callback) {
     callback,
   });
 }
+
 function unsubscribe(subscriptionId) {
   DiamondAPI.unsubscribe(subscriptionId);
 }
+
 function getTeamData() {
   return DiamondAPI.getTeamData();
 }

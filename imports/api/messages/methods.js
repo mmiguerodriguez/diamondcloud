@@ -90,12 +90,11 @@ export const sendMessage = new ValidatedMethod({
       title = Meteor.users.findOne(users[0] === undefined ? users[1] : users[0]).profile.name;
     }
 
-    console.log('Hola, soy Joel');
     Push.send({
       from: 'Diamond',
       title,
       text,
-      query: {},
+      query,
     });
 
     return message;

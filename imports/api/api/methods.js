@@ -85,7 +85,7 @@ export const apiUpdate = new ValidatedMethod({
                  .boards(moduleData.teamId, { _id: 1 })
                  .fetch()
                  .map((board) => board._id);
-    console.log(boards);
+
     let selected = sift({
       $and: [
         {
@@ -104,8 +104,6 @@ export const apiUpdate = new ValidatedMethod({
         filter
       ]
     }, newCollection);
-
-    printObject(selected);
 
     selected.forEach((element) => {
       ModuleData.update({
