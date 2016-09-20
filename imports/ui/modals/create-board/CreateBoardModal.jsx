@@ -7,11 +7,15 @@ import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx'
 export default class CreateBoardModal extends React.Component {
   constructor(props) {
     super(props);
+    
     this.state = {
       name: '',
       isPrivate: false,
       users: '',
     };
+    this.clearData          = this.clearData.bind(this);
+    this.createBoard        = this.createBoard.bind(this);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
   }
 
   render() {
@@ -93,7 +97,7 @@ export default class CreateBoardModal extends React.Component {
                     disabled={ false }
                     options={ this.teamUsers() }
                     value={ this.state.users }
-                    onChange={ this.handleSelectChange.bind(this) } />
+                    onChange={ this.handleSelectChange } />
                 </div>
               ) : ( null )
             }
@@ -105,12 +109,12 @@ export default class CreateBoardModal extends React.Component {
               <button type='button'
                       className='btn btn-cancel btn-hover'
                       data-dismiss='modal'
-                      onClick={ this.clearData.bind(this) }>
+                      onClick={ this.clearData }>
                 Cancelar
               </button>
               <button type='button'
                       className='btn btn-accept btn-hover'
-                      onClick={ this.createBoard.bind(this) }>
+                      onClick={ this.createBoard }>
                 Crear
               </button>
             </div>
@@ -202,7 +206,7 @@ export default class CreateBoardModal extends React.Component {
     this.setState({
       name: '',
       // isPrivate: false,
-      users: '',
+      users: ''
     });
   }
 }
