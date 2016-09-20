@@ -19,10 +19,7 @@ export default class Popover extends React.Component {
         </div>
         <hr />
         <div className='row popover-footer'>
-          <div className='btn col-xs-4 col-xs-offset-1 popover-btn'>
-            <p className='popover-btn-text'>Cambiar datos</p>
-          </div>
-          <div className='btn col-xs-4 col-xs-offset-2 popover-btn'>
+          <div className='btn col-xs-10 col-xs-offset-1 popover-btn'>
             <p className='popover-btn-text' onClick={ this.logout.bind(this) }>Cerrar Sesion</p>
           </div>
         </div>
