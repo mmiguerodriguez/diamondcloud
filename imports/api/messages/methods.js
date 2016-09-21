@@ -16,7 +16,6 @@ export const sendMessage = new ValidatedMethod({
     createdAt: { type: Number }
   }).validator(),
   run({ directChatId, boardId, type, content, createdAt }) {
-    console.log('asdasdasdasdasd');
     if (!Meteor.user()) {
       throw new Meteor.Error('Messages.methods.send.notLoggedIn',
       'Must be logged in to send a message.');

@@ -10,7 +10,7 @@
     "run-c9-migue": "ROOT_URL=https://cloud-migue-miguelrodriguez.c9users.io meteor --port $IP:$PORT --settings settings.json",
     "run-c9-dylan": "ROOT_URL=https://cloud-dylan-joelsobolmark.c9users.io meteor --port $IP:$PORT --settings settings.json",
     "run-c9-joel": "ROOT_URL=https://cloud-joel-joelsobolmark.c9users.io meteor --port $IP:$PORT --settings settings.json",
-    "mobile": "meteor run android-device --mobile-server diamondcloud.tk --settings settings.json"
+    "mobile": "meteor run android-device --mobile-server diamondcloud.tk --production --settings settings.json"
   },
   "dependencies": {
     "classnames": "^2.2.5",
