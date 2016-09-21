@@ -64,7 +64,7 @@ export default class Board extends React.Component {
               height: 400, // must change to fixed
             }, (error, result) => {
               if(error) {
-                throw new Meteor.Error(error);
+                console.error(error);
               } else {
                 console.log(result);
               }
@@ -85,7 +85,7 @@ export default class Board extends React.Component {
               y,
             }, (error, result) => {
               if(error) {
-                throw new Meteor.Error(error);
+                console.error(error);
               } else {
                 console.log(result);
               }

@@ -87,7 +87,7 @@ export default class CreateChatModal extends React.Component {
     if(chat.userId != '') {
       Meteor.call('DirectChats.methods.create', chat, (error, response) => {
         if(error) {
-          throw new Meteor.Error(error);
+          console.error(error);
         } else {
           this.props.addChat({ directChatId: response._id });
           this.props.toggleCollapsible('chats');

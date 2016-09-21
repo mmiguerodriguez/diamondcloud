@@ -283,7 +283,7 @@ export default class CreateTeamModal extends React.Component {
     let form = { name, plan, type, usersEmails };
     Meteor.call('Teams.methods.create', form, (error, result) => {
       if (error) {
-        throw new Meteor.Error(error);
+        console.error(error);
       } else {
         $('#createTeamModal').modal('hide');
         browserHistory.push('/team/' + result._id);

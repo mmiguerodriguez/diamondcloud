@@ -161,7 +161,7 @@ export default class CreateBoardModal extends React.Component {
     if(board.name != '' && board.name.length >= 3) {
       Meteor.call('Boards.methods.create', board, (error, result) => {
         if(error) {
-          throw new Meteor.Error(error);
+          console.error(error);
         } else {
           this.onClose();
 

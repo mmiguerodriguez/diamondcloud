@@ -100,7 +100,7 @@ export default class ModuleInstance extends React.Component {
             height,
           }, (error, result) => {
             if(error) {
-              throw new Meteor.Error(error);
+              console.error(error);
             } else {
               console.log(result);
             }
@@ -131,7 +131,7 @@ export default class ModuleInstance extends React.Component {
         this.setState({
           minimized: !minimized
         }, () => {
-          throw new Meteor.Error(error);
+          console.error(error);
         });
       } else {
         console.log(result);

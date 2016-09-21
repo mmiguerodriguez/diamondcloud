@@ -332,7 +332,7 @@ export default class TeamLayout extends React.Component {
       let boardId = this.state['board-context-menu-id'];
       Meteor.call('Boards.methods.archiveBoard', { _id: boardId }, (error, result) => {
         if(error) {
-          throw new Meteor.Error(error);
+          console.error(error);
         } else {
           let newBoardId;
           this.props.boards.map((board) => {
@@ -375,7 +375,7 @@ export default class TeamLayout extends React.Component {
 
     Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
       if(error) {
-        throw new Meteor.Error(error);
+        console.error(error);
       } else {
         iframe.contentWindow.DiamondAPI.unsubscribe();
         self.closeContextMenu(contextMenu);
