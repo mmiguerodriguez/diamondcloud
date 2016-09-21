@@ -165,7 +165,7 @@ export const removeUserFromTeam = new ValidatedMethod({
     }
 
     let team = Teams.findOne(teamId);
-    let user = Meteor.users.findByEmail(email);
+    let user = Meteor.users.findByEmail(email, {});
     if(Meteor.user().emails[0].address !== team.owner()){
       throw new Meteor.Error('Teams.methods.removeUser.notOwner',
       "Must be team's owner to remove user");
