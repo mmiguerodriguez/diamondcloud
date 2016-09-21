@@ -16,7 +16,11 @@ export let createModuleData = () => {
         ModuleData.insert({
           teamId: team._id,
           moduleId: module._id,
+          data: {},
         });
+      } else if (moduleData.data === undefined) {
+        moduleData.data = {};
+        ModuleData.update(moduleData._id, moduleData);
       }
     });
   });

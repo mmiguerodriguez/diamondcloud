@@ -11,29 +11,38 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && (typeof request.condition == 'object' || request.condition === undefined);
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
-        let subscription = Meteor.subscribe('moduleData.data', moduleInstanceId, request, (err, res) => {
-          let query = ModuleData.find(moduleInstanceId);
-          let caller = (id, fields) => {
-            let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-            let moduleData = ModuleData.findOne({
-              teamId: moduleInstance.board().team()._id,
-              moduleId: moduleInstance.moduleId
+        let serverSubscriptionCallback = {
+          onReady: () => {
+            console.log('onReady');
+            let query = ModuleData.find(moduleInstanceId);
+            let caller = (id, fields) => {
+              let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+              let moduleData = ModuleData.findOne({
+                teamId: moduleInstance.board().team()._id,
+                moduleId: moduleInstance.moduleId
+              });
+              if (moduleData.data !== undefined && moduleData.data !== null) {
+                console.log('onReady!!');
+                callback(undefined, moduleData.data);
+              }
+            };
+            let handle = query.observeChanges({
+              added: caller,
+              changed: caller,
+              removed: caller,
             });
-            if (moduleData.data !== undefined && moduleData.data !== null) {
-              callback(moduleData.data);
-            }
-          };
-          let handle = query.observeChanges({
-            added: caller,
-            changed: caller,
-            removed: caller,
-          });
-
-          subscriptions.push(subscription);
-          return subscription.subscriptionId;
-        });
+  
+            subscriptions.push(subscription);
+            return subscription.subscriptionId;
+          },
+          onError: () => {
+            console.log('onError');
+            callback(arguments, undefined);
+          }
+        };
+        let subscription = Meteor.subscribe('moduleData.data', moduleInstanceId, request, serverSubscriptionCallback);
       } else {
-        throw console.error('The provided data is wrong.');
+        callback(console.error('The provided data is wrong.'), undefined);
       }
     },
     unsubscribe(subscriptionId) {
