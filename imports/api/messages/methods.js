@@ -17,7 +17,6 @@ export const sendMessage = new ValidatedMethod({
     createdAt: { type: Number }
   }).validator(),
   run({ directChatId, boardId, type, content, createdAt }) {
-    console.log('asdasdasdasdasd');
     if (!Meteor.user()) {
       throw new Meteor.Error('Messages.methods.send.notLoggedIn',
       'Must be logged in to send a message.');
@@ -35,69 +34,26 @@ export const sendMessage = new ValidatedMethod({
       message.directChatId = directChatId;
       message.seen = false;
       DirectChats.addNotification(directChatId, message.senderId);
+
+      Notifications.send({
+        directChatId,
+        message,
+      });
     } else if (!!boardId) {
       message.boardId = boardId;
       message.seers = [];
       Boards.addNotification(boardId, message.senderId);
+
+      Notifications.send({
+        boardId,
+        message,
+      });
     } else {
       throw new Meteor.Error('Messages.methods.send.noDestination',
       'Must have a destination to send a message.');
     }
 
     Messages.insert(message);
-
-    // Notifications
-
-    let title;
-    let text = type == 'text' ? content : 'File';
-    let users = (!!directChatId ? DirectChats.findOne(directChatId) : Boards.findOne(boardId)).users;
-    let query;
-
-    if (!!directChatId) {
-      users = users.map((user) => {
-        if (user._id != Meteor.userId()) {
-          return user._id;
-        }
-      });
-    } else if (!!boardId) {
-      users = users.map((user) => {
-        let mappedUser = Meteor.users.findOne({ 'emails.address': user.email });
-        if (mappedUser) {
-          if (mappedUser._id != Meteor.userId()) {
-            return mappedUser._id;
-          }
-        }
-      });
-    }
-
-    let temp = users;
-    users = [];
-
-    temp.forEach((user) => {
-      if (user !== undefined) {
-        users.push(user);
-      }
-    });
-
-    query = {
-      userId: {
-        $in: users,
-      }
-    };
-
-    if (!!boardId) {
-      title = Boards.findOne(boardId).name;
-    } else if (!!directChatId) {
-      title = Meteor.users.findOne(users[0] === undefined ? users[1] : users[0]).profile.name;
-    }
-
-    Notifications.send({
-      from: 'Diamond',
-      title,
-      text,
-      query: {}, // testing
-    });
-
     return message;
   },
 });
