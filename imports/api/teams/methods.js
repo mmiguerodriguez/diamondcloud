@@ -65,7 +65,7 @@ export const createTeam = new ValidatedMethod({
         team._id = teamId;
 
         usersEmails.forEach((email) => {
-          if(Meteor.users.findByEmail(email, {}).count() === 0) {
+          if(Meteor.users.findByEmail(email, {})) {
             // If user is not registered in Diamond Cloud
             Mail.sendMail({
               from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
@@ -132,7 +132,7 @@ export const shareTeam = new ValidatedMethod({
     let user = { email, permission: 'member' };
 
     Teams.addUser(teamId, user);
-    if(Meteor.users.findByEmail(email, {}).count() === 0) {
+    if(Meteor.users.findByEmail(email, {})) {
       //if user is not registered in Diamond Cloud
       Mail.sendMail({
         from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
@@ -165,7 +165,7 @@ export const removeUserFromTeam = new ValidatedMethod({
     }
 
     let team = Teams.findOne(teamId);
-    let user = Meteor.users.findByEmail(email).fetch()[0];
+    let user = Meteor.users.findByEmail(email);
     if(Meteor.user().emails[0].address !== team.owner()){
       throw new Meteor.Error('Teams.methods.removeUser.notOwner',
       "Must be team's owner to remove user");

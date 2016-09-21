@@ -45,8 +45,8 @@ Teams.helpers({
     return found;
   },
   getUsers(fields) {
-    let emails = this.users.map((email) => email.email);
-    return Meteor.users.find({ 'emails.address' : { $in: emails } }, { fields });
+    let emails = this.users.map((user) => user.email);
+    return Meteor.users.findByEmail(emails, fields);
   }
 });
 
@@ -85,7 +85,6 @@ Teams.addUser = (teamId, user) => {
     }
   });
 };
-
 Teams.removeUser = (teamId, userEmail) => {
   Teams.update({ _id: teamId }, {
     $pull: {
@@ -95,7 +94,6 @@ Teams.removeUser = (teamId, userEmail) => {
     },
   });
 };
-
 Teams.getTeam = (teamId, userEmail, fields) => {
   fields = fields || { _id: 1, name: 1 };
   return Teams.find({

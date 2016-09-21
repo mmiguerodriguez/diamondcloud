@@ -47,7 +47,7 @@ Meteor.users.dashboardFields = {
 
 Meteor.users.findByEmail = (emails, fields) => {
   if(typeof emails === 'string') {
-    emails = [emails];
+    return Meteor.users.findOne({ 'emails.address': emails }, { fields });
   }
 
   return Meteor.users.find({

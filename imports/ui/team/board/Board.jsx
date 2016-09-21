@@ -1,5 +1,5 @@
 import React          from 'react';
-import classNames         from 'classnames';
+import classNames     from 'classnames';
 
 import ModuleInstance from '../../module-instance/ModuleInstance.jsx';
 
@@ -128,7 +128,7 @@ export default class Board extends React.Component {
 
     if(this.props.board.isPrivate) {
       this.props.board.users.map((_user) => {
-        let user = Meteor.users.findOne({ 'emails.address': _user.email }) || _user;
+        let user = Meteor.users.findByEmail(_user.email, {}) || _user;
         arr.push(
           <img  key={ user._id || user.email }
             className='img-circle shared-people'
@@ -140,7 +140,7 @@ export default class Board extends React.Component {
       });
     } else {
       this.props.users.map((_user) => {
-        let user = Meteor.users.findOne({ 'emails.address': _user.email }) || _user;
+        let user = Meteor.users.findByEmail(_user.email, {}) || _user;
         arr.push(
           <img  key={ user._id || user.email }
                 className='img-circle shared-people'
