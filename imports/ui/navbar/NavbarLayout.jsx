@@ -5,6 +5,8 @@ import Profile        from './profile/Profile.jsx';
 // import SearchBar   from './search-bar/SearchBar.jsx';
 import Popover        from './popover/Popover.jsx';
 
+import { browserHistory }  from 'react-router';
+
 export default class NavbarLayout extends React.Component {
   constructor(props) {
     super(props);
@@ -37,11 +39,16 @@ export default class NavbarLayout extends React.Component {
             {
               this.props.user ? (
                 <div>
-                  <a className='user-collapsible-photo col-xs-2'>
+                  <a className='user-collapsible-photo col-xs-1'>
                     <Profile picture={ this.props.user.profile.picture } />
                   </a>
-                  <b className='user-info'>{ this.props.user.profile.name }</b>
-                  <p className='user-mail truncate'>{ this.props.user.email() }</p>
+                  <div className="col-xs-7 user-data">
+                    <b className='user-info'>{ this.props.user.profile.name }</b>
+                    <p className='user-mail truncate'>{ this.props.user.email() }</p>
+                  </div>
+                  <div className='btn col-xs-3 popover-btn collapse-close-btn'>
+                    <p className='popover-btn-text' onClick={ this.logout.bind(this) }>Cerrar Sesion</p>
+                  </div>
                 </div>
               ) : ( null )
             }
@@ -78,6 +85,14 @@ export default class NavbarLayout extends React.Component {
         </div>
       </nav>
     );
+  }
+  logout() {
+    let self = this;
+    Meteor.logout(() => {
+      browserHistory.push('/'); // Redirect to landing page
+      $('div[role="tooltip"].popover').remove(); // Remove actual node element
+      self.props.onLogout(); // Change NavbarLayout props
+    });
   }
   componentDidUpdate() {
     if(this.props.user && !this.state.createdPopover) {

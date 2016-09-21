@@ -12,9 +12,9 @@ export default class Popover extends React.Component {
           <div className='col-xs-3'>
             <img alt='User' src={ user.profile.picture } className='popover-user-photo' />
           </div>
-          <div className='col-xs-7'>
+          <div className='col-xs-9'>
             <b className='user-info'>{ user.profile.name }</b>
-            <p className='user-mail text-muted'>{ user.email() }</p>
+            <p className='user-mail text-muted truncate'>{ user.email() }</p>
           </div>
         </div>
         <hr />
