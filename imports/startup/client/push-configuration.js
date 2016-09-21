@@ -1,9 +1,6 @@
 Push.Configure({
-  gcm: {
-    projectNumber: 624318008240,
-  },
   android: {
-    senderID: 624318008240,
+    senderID: Meteor.settings.public.gcm.projectNumber,
   },
   badge: true,
   sound: true,
@@ -14,6 +11,16 @@ Push.Configure({
 
 if (Meteor.isCordova){
     Push.debug = true;
+    alert('Push.id', Push.id(), typeof Push.id());
+
+    Push.addListener('register', function(evt) {
+        // Platform specific event - not really used
+        alert('register event', JSON.stringify(evt));
+    });
+
+    Push.addListener('startup', function(notification) {
+        alert('startup', JSON.stringify(notification));
+    });
 
     Push.addListener('token', function(token) {
         alert('(Test) Push token received: ' + JSON.stringify(token));
