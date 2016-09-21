@@ -1,13 +1,19 @@
-import React from 'react';
-import { Link } from 'react-router';
+import React      from 'react';
+import { Link }   from 'react-router';
+import classNames from 'classnames';
 
 export default class NavbarLink extends React.Component {
   render() {
-    let active = this.props.active ? 'active' : '';
+    let active = classNames({
+      active: this.props.active,
+    });
 
     return (
       <li className={ active }>
-        <Link to={ this.props.link } className='li-navbar-text'>{ this.props.name }</Link>
+        <Link
+          to={ this.props.link }
+          className='li-navbar-text'>{ this.props.name }
+        </Link>
       </li>
     );
   }
