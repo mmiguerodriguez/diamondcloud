@@ -10,7 +10,6 @@ export let Notifications = {
       this.props.close();//close notifications permission asker
     });
   },
-
   sendNotification({ body, icon, title, timeout, onclick }) {
     if (Notification.permission === "granted") {
       icon = icon || 'http://diamondcloud.tk/img/logo.ico';
@@ -18,9 +17,12 @@ export let Notifications = {
       onclick = onclick || (() => {
         window.focus();
       });
+
       let notification = new Notification(title, { body, icon });
+
       notification.onclick = onclick;
       setTimeout(notification.close.bind(notification), timeout);
+
       return notification;
     }
   },
