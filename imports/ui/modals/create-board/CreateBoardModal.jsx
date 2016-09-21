@@ -2,7 +2,11 @@ import React     from 'react';
 import Select    from 'react-select';
 
 import Modal     from '../Modal.jsx';
-import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
+import {
+  InputError,
+  TextInput,
+  SelectInput
+}                from '../../validation/inputs.jsx';
 
 export default class CreateBoardModal extends React.Component {
   constructor(props) {

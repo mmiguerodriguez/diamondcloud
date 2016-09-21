@@ -2,7 +2,11 @@ import React     from 'react';
 
 import Modal     from '../Modal.jsx';
 import UsersList from '../users-list/UsersList.jsx';
-import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
+import {
+  InputError,
+  TextInput,
+  SelectInput
+}                from '../../validation/inputs.jsx';
 
 export default class ConfigTeamModal extends React.Component {
   constructor(props) {
