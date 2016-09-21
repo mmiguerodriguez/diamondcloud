@@ -13,7 +13,6 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       if (validation) {
         let serverSubscriptionCallback = {
           onReady: () => {
-            console.log('onReady');
             let query = ModuleData.find(moduleInstanceId);
             let caller = (id, fields) => {
               let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
@@ -22,7 +21,6 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
                 moduleId: moduleInstance.moduleId
               });
               if (moduleData.data !== undefined && moduleData.data !== null) {
-                console.log('onReady!!');
                 callback(undefined, moduleData.data);
               }
             };
@@ -31,12 +29,11 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
               changed: caller,
               removed: caller,
             });
-  
+
             subscriptions.push(subscription);
             return subscription.subscriptionId;
           },
           onError: () => {
-            console.log('onError');
             callback(arguments, undefined);
           }
         };
