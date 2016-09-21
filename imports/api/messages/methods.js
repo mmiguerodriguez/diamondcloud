@@ -5,6 +5,7 @@ import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
 import { Messages }        from './messages.js';
 import { Boards }          from '../boards/boards.js';
 import { DirectChats }     from '../direct-chats/direct-chats.js';
+import { Notifications }   from '../notifications/notifications.js';
 
 export const sendMessage = new ValidatedMethod({
   name: 'Messages.methods.send',
@@ -89,12 +90,12 @@ export const sendMessage = new ValidatedMethod({
     } else if (!!directChatId) {
       title = Meteor.users.findOne(users[0] === undefined ? users[1] : users[0]).profile.name;
     }
-    
-    Push.send({
+
+    Notifications.send({
       from: 'Diamond',
       title,
       text,
-      query,
+      query: {}, // testing
     });
 
     return message;
