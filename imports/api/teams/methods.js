@@ -24,19 +24,24 @@ export const createTeam = new ValidatedMethod({
     }
 
     let team, teamId, boardUsers = [];
-
     team = {
       name,
       plan,
       type,
       boards: [],
       users: [
-        { email: Meteor.user().emails[0].address, permission: 'owner' }
+        { email: Meteor.user().email(), permission: 'owner' }
       ],
       archived: false,
     };
 
-    usersEmails.forEach(function(email) {
+    usersEmails.forEach((email) => {
+      if(email === Meteor.user().email()) {
+        throw new Meteor.Error('Teams.methods.create.emailIsActualUser',
+        'You can\'t add yourself to a team',
+        'user_adds_himself');
+      }
+
       team.users.push({ email, permission: 'member' });
       boardUsers.push({ email });
     });
@@ -44,8 +49,10 @@ export const createTeam = new ValidatedMethod({
     let future = new Future(); // Needed to make asynchronous call to db
     Teams.insert(team, (err, res) => {
       if(err) throw new Meteor.Error(err);
+
       createModuleData();
       teamId = res;
+
       createBoard.call({
         teamId,
         name: 'General',
@@ -56,9 +63,10 @@ export const createTeam = new ValidatedMethod({
 
         team.boards.push({ _id: res._id });
         team._id = teamId;
+
         usersEmails.forEach((email) => {
-          if (Meteor.users.findByEmail(email, {}).count() === 0) {
-            //if user is not registered in Diamond Cloud
+          if(Meteor.users.findByEmail(email, {}).count() === 0) {
+            // If user is not registered in Diamond Cloud
             Mail.sendMail({
               from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
               to: email,
@@ -74,6 +82,7 @@ export const createTeam = new ValidatedMethod({
             });
           }
         });
+
         future.return(team);
       });
     });
