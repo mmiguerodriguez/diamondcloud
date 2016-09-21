@@ -4,16 +4,16 @@ import { browserHistory } from 'react-router';
 
 import Modal              from '../Modal.jsx';
 import UsersList          from '../users-list/UsersList.jsx';
-import { 
-  InputError, 
-  TextInput, 
-  SelectInput 
+import {
+  InputError,
+  TextInput,
+  SelectInput
 }                         from '../../validation/inputs.jsx';
 
 export default class CreateTeamModal extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       page: 1,
       name: '',
@@ -22,7 +22,7 @@ export default class CreateTeamModal extends React.Component {
       otherType: '',
       usersEmails: [],
     };
-    
+
     this.addUser    = this.addUser.bind(this);
     this.removeUser = this.removeUser.bind(this);
     this.backPage   = this.backPage.bind(this);
@@ -106,7 +106,7 @@ export default class CreateTeamModal extends React.Component {
                   }
                 </div>
               </div>
-              <div  
+              <div
                 id='create-team-page-2'
                 className='plan'
                 style={{ display: 'none' }}>
@@ -123,7 +123,7 @@ export default class CreateTeamModal extends React.Component {
                         </ul>
                       </div>
                     </div>
-                    <div 
+                    <div
                       className='btn btn-free col-xs-12'
                       onClick={ this.choosePlan.bind(this, 'free') }>
                       Elegir plan Free
@@ -157,9 +157,9 @@ export default class CreateTeamModal extends React.Component {
                 className='share'
                 style={{ display: 'none' }}>
                 <p className='explanation-text margin container-fluid'>Insertá un mail de Google de los miembros de tu equipo para poder trabajar colaborativamente. Si todavia no tienen cuenta en Diamond Cloud se le enviará un link al mail</p>
-                <UsersList 
-                  usersEmails={ this.state.usersEmails } 
-                  addUser={ this.addUser } 
+                <UsersList
+                  usersEmails={ this.state.usersEmails }
+                  addUser={ this.addUser }
                   removeUser={ this.removeUser } />
               </div>
           </div>
@@ -173,7 +173,7 @@ export default class CreateTeamModal extends React.Component {
               </p>
             </div>
             <div className='col-xs-11'>
-              <button 
+              <button
                 type='button'
                 id='back-page-btn'
                 className='btn btn-cancel btn-hover'
@@ -198,6 +198,7 @@ export default class CreateTeamModal extends React.Component {
       [index]: event.target.value,
     });
   }
+
   addUser(user) {
     let users = this.state.usersEmails;
     if(users.indexOf(user) === -1) {
@@ -217,6 +218,7 @@ export default class CreateTeamModal extends React.Component {
       });
     }
   }
+
   choosePlan(type) {
     let other = type === 'free' ? 'premium' : 'free';
     $('#createTeamModal .' + type).addClass(type + '-card-active');
@@ -263,7 +265,6 @@ export default class CreateTeamModal extends React.Component {
       mode: 'show',
     }, 500);
 
-    
     $('#createTeamModal #actual-page').html(page + 1);
 
     if(page + 1 === 3) {

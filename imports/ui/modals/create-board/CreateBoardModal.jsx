@@ -7,13 +7,13 @@ import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx'
 export default class CreateBoardModal extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       name: '',
       isPrivate: false,
       users: '',
     };
-    this.clearData          = this.clearData.bind(this);
+    this.onClose            = this.onClose.bind(this);
     this.createBoard        = this.createBoard.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
   }
@@ -109,7 +109,7 @@ export default class CreateBoardModal extends React.Component {
               <button type='button'
                       className='btn btn-cancel btn-hover'
                       data-dismiss='modal'
-                      onClick={ this.clearData }>
+                      onClick={ this.onClose }>
                 Cancelar
               </button>
               <button type='button'
@@ -163,8 +163,7 @@ export default class CreateBoardModal extends React.Component {
         if(error) {
           throw new Meteor.Error(error);
         } else {
-          this.clearData();
-          this.closeModal();
+          this.onClose();
 
           this.props.toggleCollapsible('boards');
           this.props.changeBoard(result._id);
@@ -199,10 +198,9 @@ export default class CreateBoardModal extends React.Component {
       $(element).css('border-color', '#ccc');
     }, 500);
   }
-  closeModal() {
-    $('#createBoardModal').modal('hide');
-  }
-  clearData() {
+  onClose() {
+    $('#createBoardModal').modal('hide'); // hide modal
+    // reset state
     this.setState({
       name: '',
       // isPrivate: false,
