@@ -19,10 +19,10 @@ window.onload = () => {
       handleNewData(postIt);
     }
   });
-
-  let subscription = subscribe('postIt', (data) => {
-    console.log('Subscribed, new data incoming...', data);
-    handleNewData(data.postIt[0]);
+  
+  let subscription = subscribe('postIt', (err, res) => {
+    console.log('Subscribed, new data incoming...', res);
+    handleNewData(res.postIt[0]);
   });
   
   subscriptions.push(subscription);

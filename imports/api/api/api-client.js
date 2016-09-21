@@ -13,7 +13,6 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       if (validation) {
         let serverSubscriptionCallback = {
           onReady: () => {
-            console.log('onReady');
             let query = ModuleData.find(moduleInstanceId);
             let caller = (id, fields) => {
               let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
@@ -21,8 +20,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
                 teamId: moduleInstance.board().team()._id,
                 moduleId: moduleInstance.moduleId
               });
-              if (moduleData.data !== undefined && moduleData.data !== null) {
-                console.log('onReady!!');
+              if (!!moduleData.data) {
                 callback(undefined, moduleData.data);
               }
             };
@@ -36,11 +34,13 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
             return subscription.subscriptionId;
           },
           onError: () => {
-            console.log('onError');
-            callback(arguments, undefined);
+            callback(console.error('Server Error 506'), undefined);
           }
         };
-        let subscription = Meteor.subscribe('moduleData.data', moduleInstanceId, request, serverSubscriptionCallback);
+        let subscription = Meteor.subscribe('moduleData.data',  
+                                            moduleInstanceId,
+                                            request,
+                                            serverSubscriptionCallback);
       } else {
         callback(console.error('The provided data is wrong.'), undefined);
       }
