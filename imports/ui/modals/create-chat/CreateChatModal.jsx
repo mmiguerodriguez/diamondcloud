@@ -7,9 +7,9 @@ import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx'
 export default class CreateChatModal extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = { userId: '' };
-    
+
     this.clearData          = this.clearData.bind(this);
     this.createChat         = this.createChat.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
@@ -34,6 +34,7 @@ export default class CreateChatModal extends React.Component {
               name='form-field-name'
               className='create-chat-user-select'
               placeholder='Seleccioná los usuarios'
+              noResultsText='No se encontraron usuarios en el equipo'
               simpleValue={ true }
               disabled={ false }
               options={ this.teamUsers() }

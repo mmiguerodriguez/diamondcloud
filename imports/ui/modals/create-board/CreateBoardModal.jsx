@@ -92,6 +92,7 @@ export default class CreateBoardModal extends React.Component {
                     name='form-field-name'
                     className=''
                     placeholder='Ingrese nombre o mail...'
+                    noResultsText='No se encontraron usuarios en el equipo'
                     multi={ true }
                     simpleValue={ true }
                     disabled={ false }
@@ -128,11 +129,13 @@ export default class CreateBoardModal extends React.Component {
 
     this.props.team.users.map((_user) => {
       let user = Meteor.users.findOne({ 'emails.address': _user.email });
-      if(user._id !== Meteor.userId()) {
-        arr.push({
-          label: user.profile.name,
-          value: user.email(),
-        });
+      if(user) {
+        if(user._id !== Meteor.userId()) {
+          arr.push({
+            label: user.profile.name,
+            value: user.email(),
+          });
+        }
       }
     });
 
