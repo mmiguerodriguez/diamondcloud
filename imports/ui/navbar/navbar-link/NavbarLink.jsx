@@ -12,7 +12,8 @@ export default class NavbarLink extends React.Component {
       <li className={ active }>
         <Link
           to={ this.props.link }
-          className='li-navbar-text'>{ this.props.name }
+          className='li-navbar-text'>
+          { this.props.name }
         </Link>
       </li>
     );
