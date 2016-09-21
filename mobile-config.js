@@ -53,3 +53,7 @@ App.setPreference('Orientation', 'all', 'ios');
 
 // Fix CORS issues
 App.accessRule('*');
+
+App.configurePlugin('phonegap-plugin-push', {
+  SENDER_ID: '624318008240',
+});
