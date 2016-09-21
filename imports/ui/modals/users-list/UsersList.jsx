@@ -1,9 +1,10 @@
-import React from 'react';
 import { Meteor } from 'meteor/meteor';
 
-import User from './user/User.jsx';
+import React      from 'react';
 
-import { Teams } from '../../../api/teams/teams.js';
+import User       from './user/User.jsx';
+
+import { Teams }  from '../../../api/teams/teams.js';
 import  '../../../api/users/users.js';
 
 export default class UsersList extends React.Component {
@@ -131,7 +132,6 @@ export default class UsersList extends React.Component {
     });
     return arr;
   }
-
   removeUser(email, teamId) {
     Meteor.call('Teams.methods.removeUser', { email, teamId });
   }
