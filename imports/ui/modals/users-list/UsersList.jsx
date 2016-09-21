@@ -38,11 +38,15 @@ export default class UsersList extends React.Component {
             </div>
           ) : ( null )
         }
-        <div className='row container-fluid contacts-list-row'>
-          <div className='contacts-list col-sm-6 col-xs-12 col-sm-offset-3'>
-            { this.renderUsers() }
-          </div>
-        </div>
+        {
+          this.renderUsers().length > 0 ? (
+            <div className='row container-fluid contacts-list-row'>
+              <div className='contacts-list col-sm-6 col-xs-12 col-sm-offset-3'>
+                { this.renderUsers() }
+              </div>
+            </div>
+          ) : ( null )
+        }
       </div>
     );
   }
@@ -116,7 +120,14 @@ export default class UsersList extends React.Component {
       });
     }
     users.map((user) => {
-      arr.push(<User key={ user._id } user={ user } removeUser={ this.props.removeUser } isOwner={ isOwner } />);
+      arr.push(
+        <User
+          key={ user._id }
+          user={ user }
+          removeUser={ this.props.removeUser }
+          isOwner={ isOwner }
+        />
+      );
     });
     return arr;
   }
