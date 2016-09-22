@@ -46,7 +46,6 @@ export const Notifications = {
       gcm: {
         style: 'inbox',
         summaryText: 'There are %n% notifications',
-        image: 'http://diamondcloud.tk/img/logo.png',
       }
     };
     Push.send(notification);

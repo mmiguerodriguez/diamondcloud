@@ -20,7 +20,9 @@ App.icons({
   // Android
   'android_mdpi': 'public/img/logo.png', // 48x48
   'android_hdpi': 'public/img/logo.png', // 72x72
-  'android_xhdpi': 'public/img/logo.png' // 96x96
+  'android_xhdpi': 'public/img/logo.png', // 96x96
+  'android_xxhdpi': 'public/img/logo.png',
+  'android_xxxhdpi': 'public/img/logo.png',
 });
 
 App.launchScreens({
@@ -42,7 +44,9 @@ App.launchScreens({
   'android_hdpi_portrait': 'public/img/logo.png', // 480x800
   'android_hdpi_landscape': 'public/img/logo.png', // 800x480
   'android_xhdpi_portrait': 'public/img/logo.png', // 720x1280
-  'android_xhdpi_landscape': 'public/img/logo.png' // 1280x720
+  'android_xhdpi_landscape': 'public/img/logo.png', // 1280x720
+  'android_xxhdpi_portrait': 'public/img/logo.png',
+  'android_xxhdpi_landscape': 'public/img/logo.png',
 });
 
 // Set PhoneGap/Cordova preferences
