@@ -13,8 +13,6 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       if (validation) {
         let serverSubscriptionCallback = {
           onReady: () => {
-            console.log('Subscribed');
-
             let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
 
             let moduleData = ModuleData.findOne({
@@ -22,12 +20,9 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
               moduleId: moduleInstance.moduleId
             });
 
-            console.log(moduleData._id);
-
             let query = ModuleData.find(moduleData._id);
 
             let caller = (id, fields) => {
-              console.log('called');
               if (!!moduleData.data) {
                 callback(undefined, moduleData.data);
               }

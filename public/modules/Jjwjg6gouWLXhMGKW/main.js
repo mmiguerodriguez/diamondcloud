@@ -25,7 +25,7 @@ window.onload = () => {
   });
 
   let subscription = subscribe('postIt', (err, res) => {
-    console.log('Subscribed, new data incoming...', res);
+    console.log('New data incoming...', res);
     handleNewData(res.postIt[0]);
   });
 
