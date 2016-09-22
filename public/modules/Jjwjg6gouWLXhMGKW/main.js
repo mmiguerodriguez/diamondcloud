@@ -6,11 +6,11 @@ window.onload = () => {
     collection: 'postIt',
     filter: {},
     callback: (error, result) => {
-      if (error) throw console.error(error);
+      if (error) throw error;
       console.log('Grabbed data...');
       if(!result) {
         insertStartupData((error, result) => {
-          if (!!error) throw console.error(error);
+          if (!!error) throw error;
           console.log('Inserted new data since there was none...');
         });
       } else {
@@ -45,8 +45,7 @@ function insertStartupData(callback) {
   });
 }
 
-function updateInput(e, key) {
-  console.log(key, e.value);
+function updatePostIt(e, key) {
   DiamondAPI.update({
     collection: 'postIt',
     filter: {},
