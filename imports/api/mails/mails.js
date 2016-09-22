@@ -9,7 +9,8 @@ export let Mail = {
       from,
       to,
       subject,
-      text
+      text, 
+      html,
     };
 
     mailgun.messages().send(data, function (error, body) {
