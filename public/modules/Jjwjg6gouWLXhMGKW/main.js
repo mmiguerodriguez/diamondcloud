@@ -9,9 +9,13 @@ window.onload = () => {
   getData('postIt', {}, (error, result) => {
     console.log('Grabbed data...');
     if(!result) {
-      console.log('Kakatum', error, result);
       insertStartupData((error, result) => {
-        console.log('Inserted new data since there was none...');
+        console.log(error, results, !error);
+        if (!error) {
+          console.log('Inserted new data since there was none...', result);
+        } else {
+          console.log(error);
+        }
       });
     } else {
       console.log('Found data, handling it to the inputs...');
@@ -20,13 +24,13 @@ window.onload = () => {
     }
   });
 
-  let subscription = subscribe('postIt', (data) => {
-    console.log('Subscribed, new data incoming...', data);
-    handleNewData(data.postIt[0]);
+  let subscription = subscribe('postIt', (err, res) => {
+    console.log('Subscribed, new data incoming...', res);
+    handleNewData(res.postIt[0]);
   });
-  
+
   subscriptions.push(subscription);
-  
+
   teamData = getTeamData();
   console.log('Got team data...', teamData);
 
@@ -44,7 +48,6 @@ function insertStartupData(callback) {
       title: '',
       description: '',
     },
-    visibleBy: [],
     callback,
   });
 }

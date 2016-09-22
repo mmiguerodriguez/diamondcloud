@@ -13,17 +13,26 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       if (validation) {
         let serverSubscriptionCallback = {
           onReady: () => {
-            let query = ModuleData.find(moduleInstanceId);
+            console.log('Subscribed');
+
+            let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+
+            let moduleData = ModuleData.findOne({
+              teamId: moduleInstance.board().team()._id,
+              moduleId: moduleInstance.moduleId
+            });
+
+            console.log(moduleData._id);
+
+            let query = ModuleData.find(moduleData._id);
+
             let caller = (id, fields) => {
-              let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-              let moduleData = ModuleData.findOne({
-                teamId: moduleInstance.board().team()._id,
-                moduleId: moduleInstance.moduleId
-              });
-              if (moduleData.data !== undefined && moduleData.data !== null) {
+              console.log('called');
+              if (!!moduleData.data) {
                 callback(undefined, moduleData.data);
               }
             };
+
             let handle = query.observeChanges({
               added: caller,
               changed: caller,
@@ -34,10 +43,13 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
             return subscription.subscriptionId;
           },
           onError: () => {
-            callback(arguments, undefined);
+            callback(console.error('Server Error 506'), undefined);
           }
         };
-        let subscription = Meteor.subscribe('moduleData.data', moduleInstanceId, request, serverSubscriptionCallback);
+        let subscription = Meteor.subscribe('moduleData.data',
+                                            moduleInstanceId,
+                                            request,
+                                            serverSubscriptionCallback);
       } else {
         callback(console.error('The provided data is wrong.'), undefined);
       }
@@ -58,10 +70,8 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       }
     },
     insert: ({ collection, obj, isGlobal, visibleBy, callback }) => {
-      // Validation.
       let validation = typeof collection == 'string';
       validation = validation && typeof obj == 'object';
-      validation = validation && typeof visibleBy == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         Meteor.call('API.methods.apiInsert', {

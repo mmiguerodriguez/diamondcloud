@@ -38,6 +38,8 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
     pipeline.push(
       {
         $project: {
+          teamId: 1,
+          moduleId: 1,
           [`data.${obj.collection}`]: {
             $filter: {
               input: `$data.${obj.collection}`,
@@ -53,6 +55,8 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
   pipeline.push(
     {
       $project: {
+        teamId: 1,
+        moduleId: 1,
         [`data.${obj.collection}`]: {
           $filter: {
             input: `$data.${obj.collection}`,
@@ -107,6 +111,8 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
     pipeline.push(
       {
         $project: {
+          teamId: 1,
+          moduleId: 1,
           [`data.${obj.collection}`]: {
             $filter: {
               input: `$data.${obj.collection}`,
@@ -122,7 +128,9 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
 
     delete keys[`data.${obj.collection}.moduleInstanceId`];
     delete keys[`data.${obj.collection}.isGlobal`];
-    
+    keys.teamId = 1;
+    keys.moduleId = 1;
+
     if (Object.keys(keys).length > 0) {
       pipeline.push(
         {
@@ -130,8 +138,6 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
         }
       );
     }
-    
-    printObject(pipeline);
 
     ReactiveAggregate(this, ModuleData, pipeline);
   });
