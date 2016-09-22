@@ -12,4 +12,5 @@ import './accounts-config.js';
 // to prevent setting it up every time
 import './accounts.js';
 
-Push.debug = true;
+// Push configuration for server-side
+import './push-configuration.js';

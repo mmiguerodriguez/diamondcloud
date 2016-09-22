@@ -5,7 +5,7 @@ import ModuleInstance from '../../module-instance/ModuleInstance.jsx';
 
 export default class Board extends React.Component {
   render() {
-    let classes = classNames('board-container', {
+    let classes = classNames('board-container', 'hidden-xs', {
       'permission-asker-opened': this.props.permissionAsker
     });
     return (

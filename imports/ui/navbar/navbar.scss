@@ -29,3 +29,9 @@ nav.header {
     background-color: $li-active !important;
   }
 }
+.navbar-toggle {
+  background-color: $sidebar-text-color !important;
+  .icon-bar {
+    background-color: $sidebar-color !important;
+  }
+}

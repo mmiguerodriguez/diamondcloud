@@ -21,7 +21,7 @@ export default class UsersList extends React.Component {
       <div>
         {
           (isOwner) ? (
-            <div className='row'>
+            <div className='row container-fluid'>
               <div className='input-group col-sm-6 col-xs-12 col-sm-offset-3'>
                 <input  id='searchUsers'
                         className='form-control'
@@ -38,7 +38,7 @@ export default class UsersList extends React.Component {
             </div>
           ) : ( null )
         }
-        <div className='row contacts-list-row'>
+        <div className='row container-fluid contacts-list-row'>
           <div className='contacts-list col-sm-6 col-xs-12 col-sm-offset-3'>
             { this.renderUsers() }
           </div>

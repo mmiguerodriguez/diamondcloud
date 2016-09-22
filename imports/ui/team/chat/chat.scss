@@ -141,3 +141,48 @@
     background-color: #e6e6fa;
   }
 }
+.mobile {
+  @extend .medium;
+  width: 100%;
+  float: none;
+  margin-left: 0px;
+  .chat-header {
+    height: 60px;
+    padding: 15px;
+    padding-left: 5px;
+    .chat-image-text {
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+      b {
+        font-size: 20px;
+        padding-left: 5px;
+        vertical-align: text-bottom;
+      }
+      .chat-image {
+        display: inline-block;
+        .chat-back-image {
+          width: 20px;
+          height: 20px;
+          background-size: 20px;
+          background-image: url(/img/chat/back-arrow.svg);
+        }
+        .back-image {
+          opacity: 0.5;
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+  .chat-body {
+    position: absolute;
+    height: calc(100% - 98px);
+    min-height: calc(100% - 98px);
+  }
+  .chat-footer {
+    position: absolute;
+    bottom: 0px;
+  }
+}
