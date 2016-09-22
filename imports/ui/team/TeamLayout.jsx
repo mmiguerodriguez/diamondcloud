@@ -43,7 +43,7 @@ export default class TeamLayout extends React.Component {
     return (
       <div>
         {
-          this.state.permissionAsker ? (
+          this.state.permissionAsker && !isMobile.any ? (
             <NotificationsPermissionAsker close={ this.closePermissionAsker.bind(this) } />
           ) : ( null )
         }

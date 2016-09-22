@@ -3,6 +3,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import React               from 'react';
 import { browserHistory }  from 'react-router';
+import isMobile            from 'ismobilejs';
 
 import { Teams }           from '../../api/teams/teams.js';
 import { Boards }          from '../../api/boards/boards.js';
@@ -58,8 +59,12 @@ export default class Team extends React.Component {
           addChat={ this.addChat.bind(this) }
           removeChat={ this.removeChat.bind(this) }
           boardSubscribe={ this.boardSubscribe.bind(this) } />
-        <NotificationSystem
-          messages={ this.props.messages } />
+        {(!isMobile.any) ?
+          ( <NotificationSystem
+          messages={ this.props.messages } /> ) :
+          ( null )
+        }
+        
       </div>
     );
   }
