@@ -37,10 +37,9 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
             subscriptions.push(subscription);
             return subscription.subscriptionId;
           },
-          onError: () => {
-            callback(console.error('Server Error 506'), undefined);
-          }
+          onError: callback.bind(console.error('Server Error 506'), undefined),
         };
+        
         let subscription = Meteor.subscribe('moduleData.data',
                                             moduleInstanceId,
                                             request,
