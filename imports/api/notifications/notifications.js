@@ -42,7 +42,7 @@ export const Notifications = {
       from: sender,
       title,
       text,
-      query: {}, // needs revision
+      query,
       gcm: {
         style: 'inbox',
         summaryText: 'There are %n% notifications',
