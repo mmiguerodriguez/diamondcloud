@@ -11,29 +11,49 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       validation = validation && (typeof request.condition == 'object' || request.condition === undefined);
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
-        let subscription = Meteor.subscribe('moduleData.data', moduleInstanceId, request, (err, res) => {
-          let query = ModuleData.find(moduleInstanceId);
-          let caller = (id, fields) => {
+        let serverSubscriptionCallback = {
+          onReady: () => {
             let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+
             let moduleData = ModuleData.findOne({
               teamId: moduleInstance.board().team()._id,
               moduleId: moduleInstance.moduleId
             });
-            if (moduleData.data !== undefined && moduleData.data !== null) {
-              callback(moduleData.data);
-            }
-          };
-          let handle = query.observeChanges({
-            added: caller,
-            changed: caller,
-            removed: caller,
-          });
 
-          subscriptions.push(subscription);
-          return subscription.subscriptionId;
-        });
+            let query = ModuleData.find(moduleData._id);
+
+            let caller = (id, fields) => {
+              moduleData = ModuleData.findOne({
+                teamId: moduleInstance.board().team()._id,
+                moduleId: moduleInstance.moduleId
+              });
+              
+              if (!!moduleData.data) {
+                callback(undefined, moduleData.data);
+              }
+            };
+
+            let handle = query.observeChanges({
+              added: caller,
+              changed: caller,
+              removed: caller,
+            });
+
+            subscriptions.push(subscription);
+            return subscription.subscriptionId;
+          },
+          onError: (err) => {
+            console.error(err);
+            callback(console.error('Server Error when trying to subscribe'), undefined);
+          },
+        };
+
+        let subscription = Meteor.subscribe('moduleData.data',
+                                            moduleInstanceId,
+                                            request,
+                                            serverSubscriptionCallback);
       } else {
-        throw console.error('The provided data is wrong.');
+        callback(console.error('The provided data is wrong.'), undefined);
       }
     },
     unsubscribe(subscriptionId) {
@@ -52,10 +72,8 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
       }
     },
     insert: ({ collection, obj, isGlobal, visibleBy, callback }) => {
-      // Validation.
       let validation = typeof collection == 'string';
       validation = validation && typeof obj == 'object';
-      validation = validation && typeof visibleBy == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         Meteor.call('API.methods.apiInsert', {
@@ -66,7 +84,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
           visibleBy,
         }, callback);
       } else {
-        throw console.error('The provided data is wrong.');
+        callback(console.error('The provided data is wrong.'), undefined);
       }
     },
     update: ({ collection, filter, updateQuery, callback }) => {
@@ -82,7 +100,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
           updateQuery,
         }, callback);
       } else {
-        throw console.error('The provided data is wrong.');
+        callback(console.error('The provided data is wrong.'), undefined);
       }
     },
     get: ({ collection, filter, callback }) => {
@@ -96,7 +114,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
           filter,
         }, callback);
       } else {
-        throw console.error('The provided data is wrong.');
+        callback(console.error('The provided data is wrong.'), undefined);
       }
     },
     remove: ({ collection, filter, callback }) => {
@@ -110,7 +128,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
           filter,
         }, callback);
       } else {
-        throw console.error('The provided data is wrong.');
+        callback(console.error('The provided data is wrong.'), undefined);
       }
     },
     getTeamData: () => {

@@ -38,5 +38,5 @@ reywood:publish-composite             # Publish a set of related documents from 
 dburles:collection-helpers            # Helpers
 meteorhacks:kadira                    # Kadira
 jcbernack:reactive-aggregate          # Reactively publish Mongo aggregations
-velocity:meteor-stubs
-raix:push
+velocity:meteor-stubs                 # Stubs
+raix:push                             # Mobile notifications

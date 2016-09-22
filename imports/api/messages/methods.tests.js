@@ -5,7 +5,6 @@ import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
-
 import { Teams }         from '../teams/teams.js';
 import { Boards }        from '../boards/boards.js';
 import { DirectChats }   from '../direct-chats/direct-chats.js';
@@ -18,6 +17,13 @@ import '../factories/factories.js';
 if (Meteor.isServer) {
   describe('Messages', function() {
     let users, team, board, directChat, messages;
+    let title, text, query;
+    let test_1,
+        test_2,
+        result_1,
+        result_2,
+        expect_1,
+        expect_2;
 
     beforeEach(function(done) {
       resetDatabase();
@@ -52,36 +58,6 @@ if (Meteor.isServer) {
       messages[1].boardId = board._id;
       messages[1].senderId = users[1]._id;
 
-      resetDatabase();
-
-      sinon.stub(Meteor, 'user', () => users[0]);
-      sinon.stub(Meteor, 'userId', () => users[0]._id);
-
-      users.forEach((user) => {
-        Meteor.users.insert(user);
-      });
-      Teams.insert(team);
-      Boards.insert(board);
-      DirectChats.insert(directChat);
-      messages.forEach((message) => {
-        Messages.insert(message);
-      });
-
-      done();
-    });
-    afterEach(function() {
-      Meteor.user.restore();
-      Meteor.userId.restore();
-    });
-
-    it('should send a message', function(done) {
-      let test_1,
-          test_2,
-          result_1,
-          result_2,
-          expect_1,
-          expect_2;
-
       test_1 = {
         boardId: board._id,
         type: 'text',
@@ -112,13 +88,41 @@ if (Meteor.isServer) {
         seen: false
       };
 
-      sendMessage.call(test_1, (err, result) => {
-        if (err) throw new Meteor.Error(err);
-        result_1 = result;
-        sendMessage.call(test_2, (err, result) => {
-          if (err) throw new Meteor.Error(err);
-          result_2 = result;
+      resetDatabase();
 
+      sinon.stub(Meteor, 'user', () => users[0]);
+      sinon.stub(Meteor, 'userId', () => users[0]._id);
+      sinon.stub(Push, 'send', (obj) => {
+        title = obj.title;
+        text = obj.text;
+        query = obj.query;
+      });
+
+      users.forEach((user) => {
+        Meteor.users.insert(user);
+      });
+      Teams.insert(team);
+      Boards.insert(board);
+      DirectChats.insert(directChat);
+      messages.forEach((message) => {
+        Messages.insert(message);
+      });
+
+      done();
+    });
+
+    afterEach(function(done) {
+      Meteor.user.restore();
+      Meteor.userId.restore();
+      Push.send.restore();
+      done();
+    });
+
+    it('should send a message', function(done) {
+      sendMessage.call(test_1, (err, result_1) => {
+        if (err) throw new Meteor.Error(err);
+        sendMessage.call(test_2, (err, result_2) => {
+          if (err) throw new Meteor.Error(err);
           chai.assert.deepEqual(expect_1, result_1);
           chai.assert.deepEqual(expect_2, result_2);
           done();
@@ -144,6 +148,30 @@ if (Meteor.isServer) {
       seeMessage.call({ messageId: messages[1]._id }, (err, result) => {
         chai.assert.deepEqual(result, expected);
         done();
+      });
+    });
+
+    it('should show a notification correctly', function(done) {
+      sendMessage.call(test_1, (err, result_1) => {
+        if (err) throw new Meteor.Error(err);
+        chai.assert.equal(board.name, title);
+        chai.assert.equal(test_1.content, text);
+        chai.assert.deepEqual({
+          userId: {
+            $in: [users[1]._id],
+          }
+        }, query);
+        sendMessage.call(test_2, (err, result_2) => {
+          if (err) throw new Meteor.Error(err);
+          chai.assert.equal(users[1].profile.name, title);
+          chai.assert.equal(test_2.content, text);
+          chai.assert.deepEqual({
+            userId: {
+              $in: [users[1]._id],
+            }
+          }, query);
+          done();
+        });
       });
     });
   });

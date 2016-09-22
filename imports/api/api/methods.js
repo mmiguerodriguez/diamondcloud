@@ -4,6 +4,8 @@ import { ValidatedMethod }                       from 'meteor/mdg:validated-meth
 import { SimpleSchema }                          from 'meteor/aldeed:simple-schema';
 import Future                                    from 'fibers/future';
 
+import { printObject }                           from '../helpers/print-objects.js';
+
 import { ModuleInstances, generateMongoQuery }   from '../module-instances/module-instances.js';
 import { ModuleData }                            from '../module-data/module-data.js';
 import { Boards }                                from '../boards/boards.js';
@@ -16,8 +18,8 @@ export const apiInsert = new ValidatedMethod({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
     collection: { type: String },
     obj: { type: Object, blackbox: true },
-    isGlobal: { type: Boolean },
-    visibleBy: { type: [Object], blackbox: true },
+    isGlobal: { type: Boolean, optional: true },
+    visibleBy: { type: [Object], blackbox: true, optional: true },
   }).validator(),
   run({ moduleInstanceId, collection, obj, isGlobal, visibleBy }) {
     if(!Meteor.user()) {
@@ -44,6 +46,8 @@ export const apiInsert = new ValidatedMethod({
 
     if (!moduleData.data[collection]) moduleData.data[collection] = [entry];
     else moduleData.data[collection].push(entry);
+
+    printObject(moduleData);
 
     ModuleData.update(moduleData._id, {
       $set: {
@@ -78,11 +82,12 @@ export const apiUpdate = new ValidatedMethod({
       'Must be part of a board to access its modules.');
     }
 
-    let newCollection  = moduleData.data[collection];
+    let newCollection = moduleData.data[collection];
     let boards = Meteor.user()
                  .boards(moduleData.teamId, { _id: 1 })
                  .fetch()
                  .map((board) => board._id);
+
     let selected = sift({
       $and: [
         {
@@ -101,6 +106,7 @@ export const apiUpdate = new ValidatedMethod({
         filter
       ]
     }, newCollection);
+
     selected.forEach((element) => {
       ModuleData.update({
         _id: moduleData._id,
