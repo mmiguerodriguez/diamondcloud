@@ -4,6 +4,11 @@ import React               from 'react';
 import { browserHistory }  from 'react-router';
 
 export default class Popover extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.logout = this.logout.bind(this);
+  }
   render() {
     let user = this.props.user;
     return (
@@ -20,7 +25,7 @@ export default class Popover extends React.Component {
         <hr />
         <div className='row popover-footer'>
           <div className='btn col-xs-10 col-xs-offset-1 popover-btn'>
-            <p className='popover-btn-text' onClick={ this.logout.bind(this) }>Cerrar Sesion</p>
+            <p className='popover-btn-text' onClick={ this.logout }>Cerrar Sesion</p>
           </div>
         </div>
       </div>

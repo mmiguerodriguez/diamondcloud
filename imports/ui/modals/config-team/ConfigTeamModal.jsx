@@ -2,7 +2,11 @@ import React     from 'react';
 
 import Modal     from '../Modal.jsx';
 import UsersList from '../users-list/UsersList.jsx';
-import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
+import {
+  InputError,
+  TextInput,
+  SelectInput
+}                from '../../validation/inputs.jsx';
 
 export default class ConfigTeamModal extends React.Component {
   constructor(props) {
@@ -75,8 +79,8 @@ export default class ConfigTeamModal extends React.Component {
             <hr />
             <h4 className='configuration-title'>Miembros</h4>
             <p className='explanation-text margin'>Agregue miembros al equipo.</p>
-            <UsersList 
-              team={ this.props.team } 
+            <UsersList
+              team={ this.props.team }
               addUser={ this.addUser }
               removeUser={ this.removeUser } />
             <hr />
@@ -93,13 +97,13 @@ export default class ConfigTeamModal extends React.Component {
         }
         footer={
           <div className='row'>
-            <button 
+            <button
               type='button'
               className='btn btn-cancel btn-hover'
               data-dismiss='modal'>
               Cancelar
             </button>
-            <button 
+            <button
               type='button'
               className='btn btn-accept btn-hover'
               data-dismiss='modal'
@@ -123,15 +127,15 @@ export default class ConfigTeamModal extends React.Component {
 
     Meteor.call('Teams.methods.edit', { teamId: this.props.team._id, team }, (error, result) => {
       if(error) {
-        throw new Meteor.Error(error);
+        console.error(error);
       }
     });
   }
 
   addUser(user) {
     Meteor.call('Teams.methods.share', { teamId: this.props.team._id, email: user }, (error, result) => {
-      if(error){
-        throw new Meteor.Error(error);
+      if(error) {
+        console.error(error);
       }
       else {
         this.props.loadTeam(this.props.team._id);
@@ -142,8 +146,8 @@ export default class ConfigTeamModal extends React.Component {
 
   removeUser(user){
     Meteor.call('Teams.methods.removeUser', { teamId: this.props.team._id, email: user }, (error, result) => {
-      if(error){
-        throw new Meteor.Error(error);
+      if(error) {
+        console.error(error);
       }
       else {
         this.props.loadTeam(this.props.team._id);

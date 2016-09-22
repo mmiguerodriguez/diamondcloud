@@ -2,14 +2,18 @@ import React     from 'react';
 import Select    from 'react-select';
 
 import Modal     from '../Modal.jsx';
-import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
+import {
+  InputError,
+  TextInput,
+  SelectInput
+}                from '../../validation/inputs.jsx';
 
 export default class CreateChatModal extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = { userId: '' };
-    
+
     this.clearData          = this.clearData.bind(this);
     this.createChat         = this.createChat.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
@@ -34,6 +38,7 @@ export default class CreateChatModal extends React.Component {
               name='form-field-name'
               className='create-chat-user-select'
               placeholder='Seleccioná los usuarios'
+              noResultsText='No se encontraron usuarios en el equipo'
               simpleValue={ true }
               disabled={ false }
               options={ this.teamUsers() }
@@ -65,7 +70,7 @@ export default class CreateChatModal extends React.Component {
     let arr = [];
 
     this.props.team.users.map((_user) => {
-      let user = Meteor.users.findOne({ 'emails.address': _user.email });
+      let user = Meteor.users.findByEmail(_user.email, {});
       if(user) {
         if(user._id !== Meteor.userId()) {
           arr.push({
@@ -87,7 +92,7 @@ export default class CreateChatModal extends React.Component {
     if(chat.userId != '') {
       Meteor.call('DirectChats.methods.create', chat, (error, response) => {
         if(error) {
-          throw new Meteor.Error(error);
+          console.error(error);
         } else {
           this.props.addChat({ directChatId: response._id });
           this.props.toggleCollapsible('chats');

@@ -192,7 +192,7 @@ export default class ChatLayout extends React.Component {
     if(text != '' && /\S/.test(text)) {
       Meteor.call('Messages.methods.send', obj, (error, response) => {
         if(error) {
-          throw new Meteor.Error(error);
+          console.error(error);
         } else {
           // Message sent correctly
         }

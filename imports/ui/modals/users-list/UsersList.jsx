@@ -1,9 +1,10 @@
-import React from 'react';
 import { Meteor } from 'meteor/meteor';
 
-import User from './user/User.jsx';
+import React      from 'react';
 
-import { Teams } from '../../../api/teams/teams.js';
+import User       from './user/User.jsx';
+
+import { Teams }  from '../../../api/teams/teams.js';
 import  '../../../api/users/users.js';
 
 export default class UsersList extends React.Component {
@@ -38,11 +39,15 @@ export default class UsersList extends React.Component {
             </div>
           ) : ( null )
         }
-        <div className='row container-fluid contacts-list-row'>
-          <div className='contacts-list col-sm-6 col-xs-12 col-sm-offset-3'>
-            { this.renderUsers() }
-          </div>
-        </div>
+        {
+          this.renderUsers().length > 0 ? (
+            <div className='row container-fluid contacts-list-row'>
+              <div className='contacts-list col-sm-6 col-xs-12 col-sm-offset-3'>
+                { this.renderUsers() }
+              </div>
+            </div>
+          ) : ( null )
+        }
       </div>
     );
   }
@@ -101,7 +106,7 @@ export default class UsersList extends React.Component {
       isOwner = true;
       users = JSON.parse(JSON.stringify(this.props.usersEmails));
       users.forEach((user, index) => {
-        let _user = Meteor.users.findByEmail(user, Teams.dashboardUsersFields).fetch()[0];
+        let _user = Meteor.users.findByEmail(user, Teams.dashboardUsersFields);
         users[index] = _user ? _user : {
           _id: index,
           emails: [
@@ -116,11 +121,17 @@ export default class UsersList extends React.Component {
       });
     }
     users.map((user) => {
-      arr.push(<User key={ user._id } user={ user } removeUser={ this.props.removeUser } isOwner={ isOwner } />);
+      arr.push(
+        <User
+          key={ user._id }
+          user={ user }
+          removeUser={ this.props.removeUser }
+          isOwner={ isOwner }
+        />
+      );
     });
     return arr;
   }
-
   removeUser(email, teamId) {
     Meteor.call('Teams.methods.removeUser', { email, teamId });
   }

@@ -99,7 +99,7 @@ export default class Message extends React.Component {
               messageId: this.props.message._id
             }, (error, result) => {
               if(error) {
-                throw new Meteor.Error(error);
+                console.error(error);
               } else {
                 // console.log(result);
               }
@@ -115,7 +115,7 @@ export default class Message extends React.Component {
               messageId: this.props.message._id,
             }, (error, result) => {
               if(error) {
-                throw new Meteor.Error(error);
+                console.error(error);
               } else {
                 console.log(result);
               }

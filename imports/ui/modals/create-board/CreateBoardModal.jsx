@@ -2,18 +2,22 @@ import React     from 'react';
 import Select    from 'react-select';
 
 import Modal     from '../Modal.jsx';
-import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
+import {
+  InputError,
+  TextInput,
+  SelectInput
+}                from '../../validation/inputs.jsx';
 
 export default class CreateBoardModal extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       name: '',
       isPrivate: false,
       users: '',
     };
-    this.clearData          = this.clearData.bind(this);
+    this.onClose            = this.onClose.bind(this);
     this.createBoard        = this.createBoard.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
   }
@@ -92,6 +96,7 @@ export default class CreateBoardModal extends React.Component {
                     name='form-field-name'
                     className=''
                     placeholder='Ingrese nombre o mail...'
+                    noResultsText='No se encontraron usuarios en el equipo'
                     multi={ true }
                     simpleValue={ true }
                     disabled={ false }
@@ -109,7 +114,7 @@ export default class CreateBoardModal extends React.Component {
               <button type='button'
                       className='btn btn-cancel btn-hover'
                       data-dismiss='modal'
-                      onClick={ this.clearData }>
+                      onClick={ this.onClose }>
                 Cancelar
               </button>
               <button type='button'
@@ -127,12 +132,14 @@ export default class CreateBoardModal extends React.Component {
     let arr = [];
 
     this.props.team.users.map((_user) => {
-      let user = Meteor.users.findOne({ 'emails.address': _user.email });
-      if(user._id !== Meteor.userId()) {
-        arr.push({
-          label: user.profile.name,
-          value: user.email(),
-        });
+      let user = Meteor.users.findByEmail(_user.email, {});
+      if(user) {
+        if(user._id !== Meteor.userId()) {
+          arr.push({
+            label: user.profile.name,
+            value: user.email(),
+          });
+        }
       }
     });
 
@@ -161,10 +168,9 @@ export default class CreateBoardModal extends React.Component {
     if(board.name != '' && board.name.length >= 3) {
       Meteor.call('Boards.methods.create', board, (error, result) => {
         if(error) {
-          throw new Meteor.Error(error);
+          console.error(error);
         } else {
-          this.clearData();
-          this.closeModal();
+          this.onClose();
 
           this.props.toggleCollapsible('boards');
           this.props.changeBoard(result._id);
@@ -199,10 +205,9 @@ export default class CreateBoardModal extends React.Component {
       $(element).css('border-color', '#ccc');
     }, 500);
   }
-  closeModal() {
-    $('#createBoardModal').modal('hide');
-  }
-  clearData() {
+  onClose() {
+    $('#createBoardModal').modal('hide'); // hide modal
+    // reset state
     this.setState({
       name: '',
       // isPrivate: false,

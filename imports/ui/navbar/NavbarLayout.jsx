@@ -11,9 +11,8 @@ export default class NavbarLayout extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      createdPopover: false,
-    }
+    this.state = { createdPopover: false };
+    this.logout = this.logout.bind(this);
   }
   render() {
     return (
@@ -47,7 +46,7 @@ export default class NavbarLayout extends React.Component {
                     <p className='user-mail truncate'>{ this.props.user.email() }</p>
                   </div>
                   <div className='btn col-xs-3 popover-btn collapse-close-btn'>
-                    <p className='popover-btn-text' onClick={ this.logout.bind(this) }>Cerrar Sesion</p>
+                    <p className='popover-btn-text' onClick={ this.logout }>Cerrar Sesion</p>
                   </div>
                 </div>
               ) : ( null )
@@ -91,7 +90,6 @@ export default class NavbarLayout extends React.Component {
     Meteor.logout(() => {
       browserHistory.push('/'); // Redirect to landing page
       $('div[role="tooltip"].popover').remove(); // Remove actual node element
-      self.props.onLogout(); // Change NavbarLayout props
     });
   }
   componentDidUpdate() {
