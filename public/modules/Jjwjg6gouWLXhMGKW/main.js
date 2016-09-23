@@ -1,5 +1,7 @@
-var teamData;
-var subscriptions = [];
+let teamData;
+let subscriptions = [];
+let TIMEOUT;
+const INTERVAL = 1000;
 
 window.onload = () => {
   DiamondAPI.get({
@@ -46,15 +48,19 @@ function insertStartupData(callback) {
 }
 
 function updatePostIt(e, key) {
-  DiamondAPI.update({
-    collection: 'postIt',
-    filter: {},
-    updateQuery: {
-      $set: {
-        [key]: e.value
-      }
-    },
-  });
+  clearTimeout(TIMEOUT);
+
+  TIMEOUT = setTimeout(() => {
+    DiamondAPI.update({
+      collection: 'postIt',
+      filter: {},
+      updateQuery: {
+        $set: {
+          [key]: e.value
+        }
+      },
+    });
+  }, INTERVAL);
 }
 
 function handleNewData(data) {
