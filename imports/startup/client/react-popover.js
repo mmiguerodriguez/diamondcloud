@@ -4,9 +4,10 @@
  * http://stackoverflow.com/questions/20033522/rendering-a-react-component-inside-a-bootstrap-popover
  */
 import ReactDOM from 'react-dom';
+import isMobile from 'ismobilejs';
 
 // Extend only if jQuery object exists and $.n (jquery functions) is an object
-if(typeof $.fn === 'object' && typeof jQuery !== 'undefined') {
+if(!isMobile.any) {
   $.extend($.fn.popover.Constructor.DEFAULTS, {
     react: false
   });
