@@ -5,7 +5,8 @@
  */
 
 import ReactDOM from 'react-dom';
-
+// fix jquery import vieja
+/*
 $.extend($.fn.popover.Constructor.DEFAULTS, {
   react: false
 });
@@ -34,3 +35,4 @@ $.fn.popover.Constructor.prototype.setContent = function() {
     ReactDOM.render(content,  $tip.find('.popover-content')[0]);
   }
 };
+*/
