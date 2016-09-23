@@ -58,6 +58,10 @@ body {
   height: 42px;
   border-radius: 50%;
   background-color: #f44336;
+  background-image: url("img/menu-button.svg");
+  background-position: center;
+  background-size: 21px;
+  background-repeat: no-repeat;
   box-shadow: 0px 0px 2px 1px rgba(0,0,0, 0.3);
   transition: all 0.2s ease;
 }
