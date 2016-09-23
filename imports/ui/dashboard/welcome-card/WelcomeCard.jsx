@@ -17,7 +17,8 @@ export default class WelcomeCard extends React.Component {
         <div className={ textClass }>
           <h1>
             <b> 
-              { this.hasTeams ? 
+              { 
+                this.hasTeams ? 
                 'Conectate con tu equipo' : 
                 'Empezá a colaborar con tu equipo' 
               }

@@ -3,7 +3,7 @@
   width: 300px;
 }
 .popover-btn {
-  padding: 3px !important;
+  padding: 3px 0px !important;
   font-size: small !important;
   background-color: $grey-btn;
 }
@@ -22,6 +22,12 @@
   margin-left: 0;
   margin-right: 0;
   margin-bottom: 10px;
+  .user-info {
+    color: $black !important;
+  }
+  .user-mail {
+    color: #777 !important;
+  }
 }
 .popover-footer {
   margin-left: 0;

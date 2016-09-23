@@ -1,12 +1,19 @@
-import React from 'react';
-import ReactDOMServer from 'react-dom/server';
+import React          from 'react';
 
-import NavbarLink from './navbar-link/NavbarLink.jsx';
-import Profile from './profile/Profile.jsx';
-// import SearchBar from './search-bar/SearchBar.jsx';
-import Popover from './popover/Popover.jsx';
+import NavbarLink     from './navbar-link/NavbarLink.jsx';
+import Profile        from './profile/Profile.jsx';
+// import SearchBar   from './search-bar/SearchBar.jsx';
+import Popover        from './popover/Popover.jsx';
+
+import { browserHistory }  from 'react-router';
 
 export default class NavbarLayout extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { createdPopover: false };
+    this.logout = this.logout.bind(this);
+  }
   render() {
     return (
       <nav className='navbar header'>
@@ -27,6 +34,24 @@ export default class NavbarLayout extends React.Component {
             </a>
           </div>
           <div className='collapse navbar-collapse' id='navbar'>
+            <ul className='nav navbar-nav visible-xs-block'>
+            {
+              this.props.user ? (
+                <div>
+                  <a className='user-collapsible-photo col-xs-1'>
+                    <Profile picture={ this.props.user.profile.picture } />
+                  </a>
+                  <div className="col-xs-7 user-data">
+                    <b className='user-info'>{ this.props.user.profile.name }</b>
+                    <p className='user-mail truncate'>{ this.props.user.email() }</p>
+                  </div>
+                  <div className='btn col-xs-3 popover-btn collapse-close-btn'>
+                    <p className='popover-btn-text' onClick={ this.logout }>Cerrar Sesion</p>
+                  </div>
+                </div>
+              ) : ( null )
+            }
+            </ul>
             <ul className='nav navbar-nav'>
               {
                 this.props.user ? (
@@ -42,7 +67,7 @@ export default class NavbarLayout extends React.Component {
                 link={ '/help' }
                 name={ 'Help' } />
             </ul>
-            <ul className='nav navbar-nav navbar-right'>
+            <ul className='nav navbar-nav navbar-right hidden-xs'>
             {
               this.props.user ? (
                 <a className='UserPhotoPopover'
@@ -60,15 +85,34 @@ export default class NavbarLayout extends React.Component {
       </nav>
     );
   }
-  componentDidMount() {
-    let { user } = this.props;
-    if(user) {
+  logout() {
+    let self = this;
+    Meteor.logout(() => {
+      browserHistory.push('/'); // Redirect to landing page
+      $('div[role="tooltip"].popover').remove(); // Remove actual node element
+    });
+  }
+  componentDidUpdate() {
+    if(this.props.user && !this.state.createdPopover) {
+      let onLogout = () => {
+        // Change createdPopover state to false when the user logs out
+        this.setState({
+          createdPopover: false,
+        })
+      }
+
       $('[data-toggle="popover"]').popover({
-        html: true,
-        content: function() {
-          const popover = <Popover user={ user } />;
-          return ReactDOMServer.renderToString(popover);
-        }
+        react: true,
+        content: (
+          <Popover
+            user={ this.props.user }
+            onLogout={ onLogout } />
+        ),
+      });
+
+      // Set the state as if user has created the popover
+      this.setState({
+        createdPopover: true,
       });
     }
   }

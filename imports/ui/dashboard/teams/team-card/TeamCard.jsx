@@ -26,9 +26,10 @@ export default class TeamCard extends React.Component {
               </h5>
             </div>
           </div>
-          <Link to={ '/team/' + this.props.team._id }
-                className='col-md-4 btn open-team-btn'
-                role='button'>
+          <Link
+            to={ '/team/' + this.props.team._id }
+            className='col-md-4 btn open-team-btn'
+            role='button'>
             Abrir
           </Link>
         </div>

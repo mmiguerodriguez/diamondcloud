@@ -72,12 +72,14 @@ if (Meteor.isServer) {
         });
         done();
       });
+
       it('should return the boards the user is able to see in a team', function() {
         let result;
         result = user.boards(teams[0]._id);
-        
+
         chai.assert.equal(result.count(), 2);
       });
+
       it('should return user email', function() {
         let expect, result;
 
@@ -85,6 +87,15 @@ if (Meteor.isServer) {
         result = user.email();
 
         chai.assert.equal(expect, result);
+      });
+
+      it('should find an user by email', function() {
+        let expect, result;
+
+        expect = Meteor.users.findOne(user._id);
+        result = Meteor.users.findByEmail(user.emails[0].address, {});
+
+        chai.assert.deepEqual(expect, result);
       });
     });
   });

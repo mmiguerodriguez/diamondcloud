@@ -11,6 +11,21 @@ nav.header {
   margin-top: 5px;
   height: 40px;
 }
+.user-info, .user-mail {
+  padding-left: 10px;
+}
+.user-data {
+  .user-info {
+    color: $white;
+  }
+  .user-mail {
+    color: #ecf0f1;
+    margin-bottom: 0;
+  }
+}
+.collapse-close-btn {
+  margin-top: 9px;
+}
 .logo-photo {
   height: 40px;
   margin-top: 5px;

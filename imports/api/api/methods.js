@@ -18,8 +18,8 @@ export const apiInsert = new ValidatedMethod({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
     collection: { type: String },
     obj: { type: Object, blackbox: true },
-    isGlobal: { type: Boolean },
-    visibleBy: { type: [Object], blackbox: true },
+    isGlobal: { type: Boolean, optional: true },
+    visibleBy: { type: [Object], blackbox: true, optional: true },
   }).validator(),
   run({ moduleInstanceId, collection, obj, isGlobal, visibleBy }) {
     if(!Meteor.user()) {
@@ -46,6 +46,8 @@ export const apiInsert = new ValidatedMethod({
 
     if (!moduleData.data[collection]) moduleData.data[collection] = [entry];
     else moduleData.data[collection].push(entry);
+
+    printObject(moduleData);
 
     ModuleData.update(moduleData._id, {
       $set: {
@@ -85,7 +87,7 @@ export const apiUpdate = new ValidatedMethod({
                  .boards(moduleData.teamId, { _id: 1 })
                  .fetch()
                  .map((board) => board._id);
-    console.log(boards);
+
     let selected = sift({
       $and: [
         {
@@ -104,8 +106,6 @@ export const apiUpdate = new ValidatedMethod({
         filter
       ]
     }, newCollection);
-
-    printObject(selected);
 
     selected.forEach((element) => {
       ModuleData.update({

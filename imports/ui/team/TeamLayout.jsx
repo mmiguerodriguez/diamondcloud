@@ -1,3 +1,8 @@
+import { Meteor }                   from 'meteor/meteor';
+import { Teams }                    from '../../api/teams/teams.js';
+import { Boards }                   from '../../api/boards/boards.js';
+import { DirectChats }              from '../../api/direct-chats/direct-chats.js';
+
 import React                        from 'react';
 import { Link }                     from 'react-router';
 import classNames                   from 'classnames';
@@ -6,14 +11,10 @@ import isMobile                     from 'ismobilejs';
 import Board                        from './board/Board.jsx';
 import ChatLayout                   from './chat/ChatLayout.jsx';
 import SidebarLayout                from './sidebar/SidebarLayout.jsx';
+import NotificationsPermissionAsker from './notifications-permission-asker/NotificationsPermissionAsker.jsx';
 import CreateBoardModal             from '../modals/create-board/CreateBoardModal.jsx';
 import CreateChatModal              from '../modals/create-chat/CreateChatModal.jsx';
 import ConfigTeamModal              from '../modals/config-team/ConfigTeamModal.jsx';
-import NotificationsPermissionAsker from './notifications-permission-asker/NotificationsPermissionAsker.jsx';
-
-import { Teams }                    from '../../api/teams/teams.js';
-import { Boards }                   from '../../api/boards/boards.js';
-import { DirectChats }              from '../../api/direct-chats/direct-chats.js';
 
 export default class TeamLayout extends React.Component {
   constructor(props){
@@ -333,7 +334,7 @@ export default class TeamLayout extends React.Component {
       let boardId = this.state['board-context-menu-id'];
       Meteor.call('Boards.methods.archiveBoard', { _id: boardId }, (error, result) => {
         if(error) {
-          throw new Meteor.Error(error);
+          console.error(error);
         } else {
           let newBoardId;
           this.props.boards.map((board) => {
@@ -376,7 +377,7 @@ export default class TeamLayout extends React.Component {
 
     Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
       if(error) {
-        throw new Meteor.Error(error);
+        console.error(error);
       } else {
         iframe.contentWindow.DiamondAPI.unsubscribe();
         self.closeContextMenu(contextMenu);

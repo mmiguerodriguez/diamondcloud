@@ -30,7 +30,7 @@ export default class ChatLayout extends React.Component {
       return (
         <div className={ classes }>
           <p
-            className='col-xs-10 chat-text'
+            className='col-xs-10 chat-text truncate'
             onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'medium') }>
             <b>{ this.getName() }</b>
           </p>
@@ -45,7 +45,7 @@ export default class ChatLayout extends React.Component {
       return (
         <div className={ classes }>
           <div className='chat-header'>
-            <p  className='col-xs-10 chat-text'
+            <p  className='col-xs-10 chat-text truncate'
                 onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'minimized') }>
                 <b>{ this.getName() }</b>
             </p>
@@ -74,7 +74,7 @@ export default class ChatLayout extends React.Component {
           <div className='chat-header'>
             <div className='col-xs-10 row chat-tabs'>
               <div className="tab">
-                <p  className='col-xs-10 chat-text'
+                <p  className='col-xs-10 chat-text truncate'
                     onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'minimized') }>
                   <b>{ this.getName() }</b>
                 </p>
@@ -110,7 +110,7 @@ export default class ChatLayout extends React.Component {
         <div className='chat mobile visible-xs-block'>
           <div className='chat-header'>
             <div
-              className='chat-image-text chat-image'
+              className='chat-image-text chat-image truncate col-xs-12'
               onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
               <div className='chat-image'>
                 <div className="back-image chat-back-image"></div>
@@ -192,7 +192,7 @@ export default class ChatLayout extends React.Component {
     if(text != '' && /\S/.test(text)) {
       Meteor.call('Messages.methods.send', obj, (error, response) => {
         if(error) {
-          throw new Meteor.Error(error);
+          console.error(error);
         } else {
           // Message sent correctly
         }
