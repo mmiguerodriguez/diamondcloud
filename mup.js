@@ -27,7 +27,6 @@ module.exports = {
 
     //dockerImage: 'kadirahq/meteord'
     deployCheckWaitTime:60,
-    
     dockerImage: 'abernix/meteord:base',
   },
 

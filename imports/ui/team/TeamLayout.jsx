@@ -23,7 +23,7 @@ export default class TeamLayout extends React.Component {
       'board-context-menu-id': null,
       'moduleinstance-context-menu-id': null,
       'moduleinstance-iframe': null,
-      'permissionAsker': Notification.permission === 'default',
+      'permissionAsker': !isMobile.any ? Notification.permission === 'default' : false,
       'has-maximized-chats': false,
     };
 
@@ -33,6 +33,7 @@ export default class TeamLayout extends React.Component {
     };
   }
   render() {
+    console.log('isMobile', isMobile.any);
     let chatsContainer = classNames({
       'auto': !this.state['has-maximized-chats'],
       'maximized': this.state['has-maximized-chats'],
@@ -49,12 +50,12 @@ export default class TeamLayout extends React.Component {
         }
         <SidebarLayout
           { ...this.props }
-          addChat={ this.props.addChat } 
+          addChat={ this.props.addChat }
           changeBoard={ this.changeBoard.bind(this) }
           permissionAsker={ this.state.permissionAsker }
           openBoardContextMenu={ this.openBoardContextMenu.bind(this) }
-          toggleCollapsible={ this.toggleCollapsible.bind(this) } 
-          openCreateBoardModal={ this.openCreateBoardModal.bind(this) } 
+          toggleCollapsible={ this.toggleCollapsible.bind(this) }
+          openCreateBoardModal={ this.openCreateBoardModal.bind(this) }
           openCreateChatModal={ this.openCreateChatModal.bind(this) }
           openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
         <Board
@@ -85,7 +86,7 @@ export default class TeamLayout extends React.Component {
             { this.renderTeams() }
           </ul>
         </div>
-        
+
         <div className='tabs visible-xs-block'>
             <ul className='nav nav-tabs' role='tablist'>
               <li className='item col-xs-6 active'>
@@ -100,13 +101,13 @@ export default class TeamLayout extends React.Component {
               </li>
             </ul>
         </div>
-        
+
         <div className='chats visible-xs-block'>
           <div className='boards active' id='boards'>
             { this.renderBoardsChats() }
             {
               this.props.owner ? (
-                <div 
+                <div
                   className='new-chat visible-xs-block'
                   role='button'
                   onClick={ this.openCreateBoardModal.bind(this) }>
@@ -117,8 +118,8 @@ export default class TeamLayout extends React.Component {
           </div>
           <div className='users' id='users'>
             { this.renderDirectChats() }
-            <div 
-              className='new-chat visible-xs-block' 
+            <div
+              className='new-chat visible-xs-block'
               onClick={ this.openCreateChatModal.bind(this) }>
               <img className='icon users' src='/img/add-people-icon.svg' width='26px' />
             </div>
@@ -133,7 +134,7 @@ export default class TeamLayout extends React.Component {
             <p className='col-xs-8'>Eliminar</p>
           </div>
         </div>
-        
+
         {
           this.props.owner ? (
             <div>
@@ -164,7 +165,7 @@ export default class TeamLayout extends React.Component {
       </div>
     );
   }
-  
+
   componentDidMount() {
     let self = this;
     if(this.props.owner) {
@@ -240,14 +241,14 @@ export default class TeamLayout extends React.Component {
       let lastMessage = directChat.getLastMessage();
       let user = directChat.getUser();
       let notifications = directChat.getNotifications();
-      
+
       let infoClasses = classNames({
         'col-xs-8': notifications > 0,
         'col-xs-10': notifications === 0,
       }, 'info');
-      
+
       arr.push(
-        <div 
+        <div
           className='item'
           role='button'
           onClick={ this.props.addChat.bind(null, { directChatId: directChat._id }) }
@@ -282,17 +283,17 @@ export default class TeamLayout extends React.Component {
 
     this.props.boards.map((_board) => {
       let board = Boards.findOne(_board._id);
-      
+
       let lastMessage = board.getLastMessage();
       let notifications = board.getNotifications();
-      
+
       let infoClasses = classNames({
         'col-xs-8': notifications > 0,
         'col-xs-10': notifications === 0,
       }, 'info');
-      
+
       arr.push(
-        <div 
+        <div
           className='item'
           role='button'
           onClick={ this.props.addChat.bind(null, { boardId: board._id }) }
@@ -322,7 +323,7 @@ export default class TeamLayout extends React.Component {
 
     return arr;
   }
-  
+
   // boards
   changeBoard(boardId) {
     this.props.boardSubscribe(boardId);
@@ -408,7 +409,7 @@ export default class TeamLayout extends React.Component {
       permissionAsker: false
     });
   }
-  
+
   // collapsibles
   toggleCollapsible(name) {
     let elem = name + '-' + 'collapsible';
@@ -494,7 +495,7 @@ export default class TeamLayout extends React.Component {
   toggleSubHeader() {
     $('.sub-header').toggleClass('sub-header-collapsed');
   }
-  
+
   openCreateBoardModal() {
     $('#createBoardModal').modal('show');
   }

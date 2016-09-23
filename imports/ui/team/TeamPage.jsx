@@ -48,7 +48,7 @@ export default class Team extends React.Component {
 
           boards={ this.props.boards }
           board={ board }
-          
+
           moduleInstances={ this.props.moduleInstances }
           moduleInstancesFrames={ this.state.moduleInstancesFrames }
           modules={ this.props.modules }
@@ -59,12 +59,13 @@ export default class Team extends React.Component {
           addChat={ this.addChat.bind(this) }
           removeChat={ this.removeChat.bind(this) }
           boardSubscribe={ this.boardSubscribe.bind(this) } />
-        {(!isMobile.any) ?
-          ( <NotificationSystem
-          messages={ this.props.messages } /> ) :
-          ( null )
+        {
+          !isMobile.any ? (
+            <NotificationSystem
+              messages={ this.props.messages } />
+          ) : ( null )
         }
-        
+
       </div>
     );
   }
@@ -82,7 +83,7 @@ export default class Team extends React.Component {
       Team.boardSubscription.get().stop();
     }
   }
-  
+
   getChats() {
     let chats = this.state.chats;
     chats = chats.map((chat) => {
