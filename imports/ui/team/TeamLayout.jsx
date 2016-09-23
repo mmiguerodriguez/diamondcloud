@@ -313,7 +313,7 @@ export default class TeamLayout extends React.Component {
             notifications > 0 ? (
               <div className='col-xs-2'>
                 <div className='pin'>
-                  <p className='text'>12</p>
+                  <p className='text'>{ notifications }</p>
                 </div>
               </div>
             ) : ( null )
