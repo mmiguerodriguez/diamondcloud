@@ -28,15 +28,18 @@
   transition: all $sidebar-speed ease-in-out;
 
   .sub-header-data {
+    padding: 0px !important;
     display: flex;
   }
   .title {
+    max-width: 50%;
     padding: 10px;
     margin-top: 0px !important;
     margin-bottom: 0 !important;
     border-right: solid 1px #3f3f3f;
   }
   .members {
+    max-width: 50%;
     padding: 5px;
     margin-top: 0px !important;
     margin-bottom: 0 !important;

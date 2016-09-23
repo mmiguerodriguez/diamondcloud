@@ -24,19 +24,24 @@ export const createTeam = new ValidatedMethod({
     }
 
     let team, teamId, boardUsers = [];
-
     team = {
       name,
       plan,
       type,
       boards: [],
       users: [
-        { email: Meteor.user().emails[0].address, permission: 'owner' }
+        { email: Meteor.user().email(), permission: 'owner' }
       ],
       archived: false,
     };
 
-    usersEmails.forEach(function(email) {
+    usersEmails.forEach((email) => {
+      if(email === Meteor.user().email()) {
+        throw new Meteor.Error('Teams.methods.create.emailIsActualUser',
+        'You can\'t add yourself to a team',
+        'user_adds_himself');
+      }
+
       team.users.push({ email, permission: 'member' });
       boardUsers.push({ email });
     });
@@ -44,8 +49,10 @@ export const createTeam = new ValidatedMethod({
     let future = new Future(); // Needed to make asynchronous call to db
     Teams.insert(team, (err, res) => {
       if(err) throw new Meteor.Error(err);
+
       createModuleData();
       teamId = res;
+
       createBoard.call({
         teamId,
         name: 'General',
@@ -56,24 +63,26 @@ export const createTeam = new ValidatedMethod({
 
         team.boards.push({ _id: res._id });
         team._id = teamId;
+
         usersEmails.forEach((email) => {
-          if (Meteor.users.findByEmail(email, {}).count() === 0) {
-            //if user is not registered in Diamond Cloud
+          if(Meteor.users.findByEmail(email, {})) {
+            // If user is not registered in Diamond Cloud
             Mail.sendMail({
               from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
               to: email,
               subject: 'Te invitaron a colaborar en Diamond Cloud',
-              text: Mail.messages.sharedTeamNotRegistered(teamId),
+              html: Mail.messages.sharedTeamRegistered(teamId),
             });
           } else {
             Mail.sendMail({
               from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
               to: email,
               subject: 'Te invitaron a colaborar en Diamond Cloud',
-              text: Mail.messages.sharedTeamRegistered(teamId),
+              html: Mail.messages.sharedTeamNotRegistered(teamId),
             });
           }
         });
+
         future.return(team);
       });
     });
@@ -123,20 +132,20 @@ export const shareTeam = new ValidatedMethod({
     let user = { email, permission: 'member' };
 
     Teams.addUser(teamId, user);
-    if(Meteor.users.findByEmail(email, {}).count() === 0) {
+    if(Meteor.users.findByEmail(email, {})) {
       //if user is not registered in Diamond Cloud
       Mail.sendMail({
         from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
         to: email,
         subject: 'Te invitaron a colaborar en Diamond Cloud',
-        text: Mail.messages.sharedTeamNotRegistered(teamId),
+        html: Mail.messages.sharedTeamRegistered(teamId),
       });
     } else {
       Mail.sendMail({
         from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
         to: email,
         subject: 'Te invitaron a colaborar en Diamond Cloud',
-        text: Mail.messages.sharedTeamRegistered(teamId),
+        html: Mail.messages.sharedTeamNotRegistered(teamId),
       });
     }
     return Teams.findOne(teamId);
@@ -156,7 +165,7 @@ export const removeUserFromTeam = new ValidatedMethod({
     }
 
     let team = Teams.findOne(teamId);
-    let user = Meteor.users.findByEmail(email).fetch()[0];
+    let user = Meteor.users.findByEmail(email, {});
     if(Meteor.user().emails[0].address !== team.owner()){
       throw new Meteor.Error('Teams.methods.removeUser.notOwner',
       "Must be team's owner to remove user");

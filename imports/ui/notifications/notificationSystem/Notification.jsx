@@ -3,13 +3,12 @@ import React from 'react';
 import { Notifications } from '../notifications.js';
 
 export default class Notification extends React.Component {
-  //when the component is created, send a notification
+  // When the component is created, send a notification
   render() {
     return (
       <div></div>
     );
   }
-
   componentDidMount() {
     Notifications.sendNotification({
       title: this.props.title,

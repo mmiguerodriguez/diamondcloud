@@ -160,7 +160,7 @@ export default class Team extends React.Component {
         Team.board.set(Boards.findOne(boardId));
       },
       onError: (error) => {
-        throw new Meteor.Error(error);
+        console.error(error);
       }
     });
 
