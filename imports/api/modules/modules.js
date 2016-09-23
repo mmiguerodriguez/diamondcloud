@@ -11,9 +11,9 @@ export let createdModules = [
     validated: true,
   },
   {
-    _id: "p2dHVHDdfer9twe7r",
+    _id: "wjQyQ6sGjzvNMDLiJ",
     name: "File Manager",
-    img: "/modules/p2dHVHDdfer9twe7r/image.png",
+    img: "/modules/wjQyQ6sGjzvNMDLiJ/image.png",
     description: "I\"m a file manager",
     validated: true,
   }
