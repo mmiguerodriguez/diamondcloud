@@ -34,7 +34,6 @@ export default class TeamLayout extends React.Component {
     };
   }
   render() {
-    console.log('isMobile', isMobile.any);
     let chatsContainer = classNames({
       'auto': !this.state['has-maximized-chats'],
       'maximized': this.state['has-maximized-chats'],
