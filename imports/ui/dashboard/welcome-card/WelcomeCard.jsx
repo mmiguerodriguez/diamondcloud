@@ -1,13 +1,27 @@
-import React from 'react';
+import React      from 'react';
+import classNames from 'classnames';
 
 export default class WelcomeCard extends React.Component {
   render() {
+    let textClass = classNames({
+      'col-xs-7': this.props.hasTeams,
+      'col-xs-6': !this.props.hasTeams,
+    }, 'welcome-text');
+    let photoClass = classNames({
+      'col-xs-5': this.props.hasTeams,
+      'col-xs-6': !this.props.hasTeams,
+    }, 'welcome-card-photo-div');
+    
     return (
-      this.props.hasTeams === true ? (
       <div className='welcome-card row'>
-        <div className='col-xs-7 welcome-text'>
+        <div className={ textClass }>
           <h1>
-            <b>Conectate con tu equipo</b>
+            <b> 
+              { this.hasTeams ? 
+                'Conectate con tu equipo' : 
+                'Empezá a colaborar con tu equipo' 
+              }
+            </b>
           </h1>
           <p className='text-muted'>Aca vamos a tener que poner una bajada para que no quede tan vacio (en gris).</p>
           <a className='btn btn-default new-team-btn'
@@ -16,28 +30,10 @@ export default class WelcomeCard extends React.Component {
             CREAR NUEVO EQUIPO
           </a>
         </div>
-        <div className='col-xs-5 welcome-card-photo-div'>
-          <img src='/img/dashboard.png' className='welcome-card-photo' />
+        <div className={ photoClass }>
+          <img src='/img/dashboard.png' className='welcome-card-photo hidden-xs' />
         </div>
       </div>
-      ) : (
-      <div className='welcome-card row'>
-        <div className='col-xs-6 welcome-text'>
-          <h1>
-            <b>Empezá a colaborar con tu equipo</b>
-          </h1>
-          <p className='text-muted'>Aca vamos a tener que poner una bajada para que no quede tan vacio (en gris).</p>
-          <a className='btn btn-default new-team-btn'
-             role='button'
-             onClick={ this.props.openCreateTeamModal }>
-            CREAR NUEVO EQUIPO
-          </a>
-        </div>
-        <div className='col-xs-6 welcome-card-photo-div'>
-          <img src='/img/dashboard.png' className='welcome-card-photo' />
-        </div>
-      </div>
-      )
     );
   }
 }

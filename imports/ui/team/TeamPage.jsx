@@ -30,7 +30,7 @@ export default class Team extends React.Component {
       return ( null );
     }
 
-    if(!this.props.team) {
+    if(this.props.team === undefined) {
       return ( null );
     }
 
@@ -41,11 +41,13 @@ export default class Team extends React.Component {
     return (
       <div>
         <TeamLayout
+          teams={ this.props.teams }
           team={ this.props.team }
           owner={ this.props.team.owner() === Meteor.user().email() }
 
           boards={ this.props.boards }
           board={ board }
+          
           moduleInstances={ this.props.moduleInstances }
           moduleInstancesFrames={ this.state.moduleInstancesFrames }
           modules={ this.props.modules }
@@ -75,6 +77,7 @@ export default class Team extends React.Component {
       Team.boardSubscription.get().stop();
     }
   }
+  
   getChats() {
     let chats = this.state.chats;
     chats = chats.map((chat) => {
@@ -175,6 +178,11 @@ export default TeamPageContainer = createContainer(({ params }) => {
 
   const { teamId } = params;
   let messagesHandle;
+  let changesCallback = () => {
+    messagesHandle = Meteor.subscribe('messages.all', teamId);
+  };
+
+  const teamsHandle = Meteor.subscribe('teams.dashboard');
   const teamHandle = Meteor.subscribe('teams.team', teamId, () => {
     let firstBoard = Boards.findOne();
     let boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
@@ -183,26 +191,22 @@ export default TeamPageContainer = createContainer(({ params }) => {
     Team.boardSubscription.set(boardHandle);
     messagesHandle = Meteor.subscribe('messages.all', teamId);
   });
-  const loading = !teamHandle.ready();
-  DirectChats.find().observeChanges({//This is to get the messages of newly created chats
-    added: () => {
-      messagesHandle = Meteor.subscribe('messages.all', teamId);
-    },
-    removed: () => {
-      messagesHandle = Meteor.subscribe('messages.all', teamId);
-    }
+  const loading = !teamsHandle.ready() || !teamHandle.ready();
+
+  // Get the messages of newly created chats
+  DirectChats.find().observeChanges({
+    added: changesCallback,
+    removed: changesCallback,
   });
-  Boards.find().observeChanges({//This is to get the messages of newly created chats
-    added: () => {
-      messagesHandle = Meteor.subscribe('messages.all', teamId);
-    },
-    removed: () => {
-      messagesHandle = Meteor.subscribe('messages.all', teamId);
-    }
+  Boards.find().observeChanges({
+    added: changesCallback,
+    removed: changesCallback,
   });
+
   return {
     loading,
-    team: Teams.findOne(),
+    team: Teams.findOne(teamId),
+    teams: Teams.find({}, { sort: { name: - 1 } }).fetch(),
     boards: Boards.find({}, { sort: { name: -1 } }).fetch(),
     directChats: DirectChats.find().fetch(),
     messages: Messages.find().fetch(),

@@ -47,7 +47,7 @@ export const sendMessage = new ValidatedMethod({
     // Notifications
 
     let title;
-    let text = type == 'text' ? message.content : 'File';
+    let text = type == 'text' ? content : 'File';
     let users = (!!directChatId ? DirectChats.findOne(directChatId) : Boards.findOne(boardId)).users;
     let query;
 
@@ -59,11 +59,23 @@ export const sendMessage = new ValidatedMethod({
       });
     } else if (!!boardId) {
       users = users.map((user) => {
-        if (Meteor.users.find({ 'emails.address': user.email })._id != Meteor.user()._id) {
-          return Meteor.users.find({ 'emails.address': user.email })._id;
+        let mappedUser = Meteor.users.findOne({ 'emails.address': user.email });
+        if (mappedUser) {
+          if (mappedUser._id != Meteor.user()._id) {
+            return mappedUser._id;
+          }
         }
       });
     }
+
+    let temp = users;
+    users = [];
+
+    temp.forEach((user) => {
+      if (user !== undefined) {
+        users.push(user);
+      }
+    });
 
     query = {
       userId: {
@@ -74,7 +86,7 @@ export const sendMessage = new ValidatedMethod({
     if (!!boardId) {
       title = Boards.findOne(boardId).name;
     } else if (!!directChatId) {
-      title = users[0] === undefined ? users[1] : users[0];
+      title = Meteor.users.findOne(users[0] === undefined ? users[1] : users[0]).profile.name;
     }
 
     Push.send({

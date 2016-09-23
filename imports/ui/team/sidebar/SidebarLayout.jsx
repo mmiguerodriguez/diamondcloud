@@ -1,37 +1,33 @@
 import React              from 'react';
 import classNames         from 'classnames';
 
-import { Teams }          from '../../../api/teams/teams.js';
-
 import ModulesCollapsible from './collapsible/modules/ModulesCollapsible.jsx';
 import BoardsCollapsible  from './collapsible/boards/BoardsCollapsible.jsx';
 import ChatsCollapsible   from './collapsible/chats/ChatsCollapsible.jsx';
-import CreateBoardModal   from '../../modals/create-board/CreateBoardModal.jsx';
-import CreateChatModal    from '../../modals/create-chat/CreateChatModal.jsx';
-import ConfigTeamModal    from '../../modals/config-team/ConfigTeamModal.jsx';
 
 export default class SidebarLayout extends React.Component {
   render() {
-    let classes = classNames('sidebar', {
+    let classes = classNames('sidebar', 'hidden-xs', {
       'permission-asker-opened': this.props.permissionAsker
     });
+    
     return (
       <div className={ classes }>
         <div  id='boards-item'
               className='item no-margin'
-              onClick={ this.toggleCollapsible.bind(this, 'boards') }>
+              onClick={ this.props.toggleCollapsible.bind(null, 'boards') }>
           <img src='/img/sidebar/boards.svg' width='32px' />
           <p className='text item-title'>Boards</p>
         </div>
         <div  id='modules-item'
               className='item'
-              onClick={ this.toggleCollapsible.bind(this, 'modules') }>
+              onClick={ this.props.toggleCollapsible.bind(null, 'modules') }>
           <img src='/img/sidebar/modules.svg' width='32px' />
           <p className='text item-title'>Módulos</p>
         </div>
         <div  id='chats-item'
               className='item'
-              onClick={ this.toggleCollapsible.bind(this, 'chats') }>
+              onClick={ this.props.toggleCollapsible.bind(null, 'chats') }>
           <img src='/img/sidebar/messages.svg' width='32px' />
           <p className='text item-title'>Mensajes</p>
         </div>
@@ -39,7 +35,7 @@ export default class SidebarLayout extends React.Component {
           this.props.owner ? (
             <div  id='settings-item'
                   className='item bottom'
-                  onClick={ this.openConfigTeamModal.bind(this) }>
+                  onClick={ this.props.openConfigTeamModal.bind(this) }>
               <img src='/img/sidebar/config.svg' width='32px' />
             </div>
           ) : ( null )
@@ -47,150 +43,23 @@ export default class SidebarLayout extends React.Component {
 
         <ModulesCollapsible
           modules={ this.props.modules }
-          toggleCollapsible={ this.toggleCollapsible.bind(this) } />
+          toggleCollapsible={ this.props.toggleCollapsible } />
         <BoardsCollapsible
           boards={ this.props.boards }
           team={ this.props.team }
           owner={ this.props.owner }
-          toggleCollapsible={ this.toggleCollapsible.bind(this) }
+          toggleCollapsible={ this.props.toggleCollapsible }
           changeBoard={ this.props.changeBoard }
-          openCreateBoardModal={ this.openCreateBoardModal }
+          openCreateBoardModal={ this.props.openCreateBoardModal }
           openBoardContextMenu={ this.props.openBoardContextMenu } />
         <ChatsCollapsible
           boards={ this.props.boards }
           directChats={ this.props.directChats }
-          toggleCollapsible={ this.toggleCollapsible.bind(this) }
+          toggleCollapsible={ this.props.toggleCollapsible }
           addChat={ this.props.addChat }
-          openCreateChatModal={ this.openCreateChatModal } />
-
-        {
-          this.props.owner ? (
-            <div>
-              <CreateBoardModal
-                team={ this.props.team }
-                addChat={ this.props.addChat }
-                changeBoard={ this.props.changeBoard }
-                toggleCollapsible={ this.toggleCollapsible.bind(this) } />
-              <ConfigTeamModal
-                key={ this.props.team._id }
-                team={ this.props.team }
-                loadTeam={ this.loadTeam.bind(this) } />
-            </div>
-          ) : ( null )
-        }
-        <CreateChatModal
-          team={ this.props.team }
-          addChat={ this.props.addChat }
-          toggleCollapsible={ this.toggleCollapsible.bind(this) } />
-
+          openCreateChatModal={ this.props.openCreateChatModal } />
       </div>
     );
-  }
-
-  // collapsibles
-  toggleCollapsible(name) {
-    let elem = name + '-' + 'collapsible';
-    let active = this.checkActive(elem);
-
-    this.hideAllActiveBackgrounds();
-
-    if(active) {
-      this.hideActive();
-      this.toggleSubHeader();
-    } else {
-      this.hideActive(() => {
-        let collapsible = $('#' + elem);
-        this.effect(collapsible, 'slide', 'left', 'show', 350);
-
-        let item = $('#' + name + '-' + 'item');
-        this.showBackground(item);
-      });
-    }
-  }
-  checkActive(name) {
-    let result;
-    $('.collapsible').each((index, item) => {
-      let elem = $(item);
-
-      if(elem.css('display') === 'block')  {
-        let id = elem.attr('id');
-        if(name === id) {
-          result = true;
-        }
-      }
-    });
-    return result || false;
-  }
-  hideActive(callback) {
-    let activeElement;
-    $('.collapsible').each((index, item) => {
-      let elem = $(item);
-
-      if(elem.css('display') === 'block') {
-        activeElement = elem;
-      }
-    });
-
-    if(!!activeElement) {
-      this.effect(activeElement, 'slide', 'left', 'hide', 350, callback);
-    } else {
-      callback();
-      this.toggleSubHeader();
-    }
-  }
-
-  // items
-  showBackground(elem) {
-    let img = elem.children('img');
-
-    img.addClass('filter');
-    elem.addClass('active');
-  }
-  hideBackground(elem) {
-    let img = elem.children('img');
-
-    img.removeClass('filter');
-    elem.removeClass('active');
-  }
-  hideAllActiveBackgrounds() {
-    $('.item').each((index, item) => {
-      let elem = $(item);
-
-      if(!elem.hasClass('bottom')){
-        if(elem.css('backgroundColor') === 'rgb(255, 255, 255)'){
-          this.hideBackground(elem);
-        }
-      }
-    });
-  }
-
-  // helpers
-  effect(element, type, direction, mode, time, callback) {
-    element.effect(type, {
-      direction,
-      mode,
-    }, time, callback);
-  }
-  toggleSubHeader() {
-    $('.sub-header').toggleClass('sub-header-collapsed');
-  }
-
-  // open modals
-  openCreateBoardModal() {
-    $('#createBoardModal').modal('show');
-  }
-  openCreateChatModal() {
-    $('#createChatModal').modal('show');
-  }
-  openConfigTeamModal() {
-    this.loadTeam(this.props.team._id, () => {
-      $('#configTeamModal').modal('show');//show modal once state is updated
-    });
-  }
-  loadTeam(id, callback){
-    this.setState({
-      team: Teams.findOne(id),
-    }, callback);
   }
 }
 
@@ -206,6 +75,11 @@ SidebarLayout.propTypes = {
   addChat: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
   openBoardContextMenu: React.PropTypes.func.isRequired,
-
+  toggleCollapsible: React.PropTypes.func.isRequired,
+  
+  openCreateBoardModal: React.PropTypes.func.isRequired,
+  openCreateChatModal: React.PropTypes.func.isRequired,
+  openConfigTeamModal: React.PropTypes.func.isRequired,
+  
   permissionAsker: React.PropTypes.bool.isRequired,
 };

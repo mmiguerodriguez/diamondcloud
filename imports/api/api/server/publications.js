@@ -38,6 +38,8 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
     pipeline.push(
       {
         $project: {
+          teamId: 1,
+          moduleId: 1,
           [`data.${obj.collection}`]: {
             $filter: {
               input: `$data.${obj.collection}`,
@@ -53,6 +55,8 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
   pipeline.push(
     {
       $project: {
+        teamId: 1,
+        moduleId: 1,
         [`data.${obj.collection}`]: {
           $filter: {
             input: `$data.${obj.collection}`,
@@ -78,19 +82,25 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
   let condOptions = [];
 
   ModuleData.aggregate(pipeline, (err, res) => {
-    res[0].data[obj.collection].forEach((doc) => {
-      for (let i in doc) keys[`data.${obj.collection}.${i}`] = 1;
-      if (doc.visibleBy === undefined) {
-        ids.push(doc._id);
-      } else {
-        doc.visibleBy.forEach((visObj) => {
-          if (visObj.userId == this.userId) ids.push(doc._id);
-          boards.forEach((boardId) => {
-            if (boardId == visObj.boardId) ids.push(doc._id);
+    if (res[0].data[obj.collection] !== null) {
+      res[0].data[obj.collection].forEach((doc) => {
+        for (let i in doc) {
+          keys[`data.${obj.collection}.${i}`] = 1;
+        }
+        if (doc.visibleBy === undefined) {
+          ids.push(doc._id);
+        } else {
+          doc.visibleBy.forEach((visObj) => {
+            if (visObj.userId == this.userId) {
+              ids.push(doc._id);
+            }
+            boards.forEach((boardId) => {
+              if (boardId == visObj.boardId) ids.push(doc._id);
+            });
           });
-        });
-      }
-    });
+        }
+      });
+    }
 
     ids.forEach((id) => {
       condOptions.push({
@@ -101,6 +111,8 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
     pipeline.push(
       {
         $project: {
+          teamId: 1,
+          moduleId: 1,
           [`data.${obj.collection}`]: {
             $filter: {
               input: `$data.${obj.collection}`,
@@ -116,12 +128,16 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
 
     delete keys[`data.${obj.collection}.moduleInstanceId`];
     delete keys[`data.${obj.collection}.isGlobal`];
+    keys.teamId = 1;
+    keys.moduleId = 1;
 
-    pipeline.push(
-      {
-        $project: keys
-      }
-    );
+    if (Object.keys(keys).length > 0) {
+      pipeline.push(
+        {
+          $project: keys
+        }
+      );
+    }
 
     ReactiveAggregate(this, ModuleData, pipeline);
   });

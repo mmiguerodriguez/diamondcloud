@@ -16,11 +16,6 @@ Boards.helpers({
       },
     });
   },
-  getMessages() {
-    return Messages.find({
-      boardId: this._id,
-    });
-  },
   getModuleInstances(fields) {
     let moduleInstances = [];
 
@@ -36,6 +31,26 @@ Boards.helpers({
     }, {
       fields
     });
+  },
+  getMessages() {
+    return Messages.find({
+      boardId: this._id,
+    });
+  },
+  getLastMessage() {
+    let messages = this.getMessages().fetch();
+    return messages[messages.length - 1] || { content: '' };
+  },
+  getNotifications() {
+    let notifications;
+    
+    this.users.forEach((_user) => {
+      if(_user.email === Meteor.user().email()) {
+        notifications = _user.notifications;
+      }
+    });
+    
+    return notifications;
   }
 });
 

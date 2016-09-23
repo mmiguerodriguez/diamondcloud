@@ -19,11 +19,8 @@ export let createModuleData = () => {
           data: {},
         });
       } else if (moduleData.data === undefined) {
-        ModuleData.update(module._id, {
-          teamId: team._id,
-          moduleId: module._id,
-          data: {},
-        });
+        moduleData.data = {};
+        ModuleData.update(moduleData._id, moduleData);
       }
     });
   });
