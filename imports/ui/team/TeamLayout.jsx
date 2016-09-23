@@ -306,7 +306,8 @@ export default class TeamLayout extends React.Component {
           </div>
           <div className={ infoClasses }>
             <p className='user truncate'>{ board.name }</p>
-            <p className='last-message truncate'>{ lastMessage.content }</p>
+            <p className='last-message truncate'>
+              { Meteor.users.findOne(lastMessage.senderId).profile.name + ': ' + lastMessage.content }</p>
           </div>
           {
             notifications > 0 ? (
