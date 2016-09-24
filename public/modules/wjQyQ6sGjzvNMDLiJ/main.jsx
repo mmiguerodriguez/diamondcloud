@@ -1,7 +1,8 @@
-/*
+//import FileManagerLayout from './FileManagerLayout';
+
 ReactDOM.render(
-  <FileManager />,
+  (<div>Caca</div>),
   document.getElementById('container')
 );
-*/
-//console.log('asd', window.DiamondAPI.getTeamData());
+
+console.log('asd', window.DiamondAPI.getCurrentBoard());

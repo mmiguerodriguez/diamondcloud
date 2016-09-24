@@ -136,6 +136,9 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
         boards, // TODO: do not pass every property
         users,
       };
-    }
+    },
+    getCurrentBoard: () => {
+      return ModuleInstances.findOne(moduleInstanceId).board();
+    },
   };
 };

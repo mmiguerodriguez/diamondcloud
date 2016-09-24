@@ -8,6 +8,7 @@ import   faker                  from 'faker';
 import                               '../factories/factories.js';
 
 import { ModuleData }      from '../module-data/module-data.js';
+import { ModuleInstances } from '../module-instances/module-instances.js';
 
 import { generateApi }           from './api-client.js';
 
@@ -191,11 +192,20 @@ if (Meteor.isClient) {
         });
         chai.assert.equal(myCallback(), 'value');
       });
-      it('should return the correct team data', () => {
+
+      it('should return the correct team data', (done) => {
         let DiamondAPI = generateApi({ boards: 'boards', users: 'users' });
         let result = DiamondAPI.getTeamData();
         chai.assert.equal(result.boards, 'boards');
         chai.assert.equal(result.users, 'users');
+        done();
+      });
+
+      it('should get current board using Diamond API', (done) => {
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
+        let board = ModuleInstances.findOne(moduleInstances[0]._id).board();
+        chai.assert.deepEqual(DiamondAPI.getCurrentBoard(), board);
+        done();
       });
     });
   });
