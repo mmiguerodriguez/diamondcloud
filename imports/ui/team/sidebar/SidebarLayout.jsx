@@ -35,7 +35,7 @@ export default class SidebarLayout extends React.Component {
           this.props.owner ? (
             <div  id='settings-item'
                   className='item bottom'
-                  onClick={ this.props.openConfigTeamModal.bind(this) }>
+                  onClick={ this.props.openConfigTeamModal }>
               <img src='/img/sidebar/config.svg' width='32px' />
             </div>
           ) : ( null )

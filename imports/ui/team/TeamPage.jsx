@@ -23,6 +23,10 @@ export default class Team extends React.Component {
       chats: [],
       moduleInstancesFrames: [],
     };
+
+    this.addChat = this.addChat.bind(this);
+    this.removeChat = this.removeChat.bind(this);
+    this.boardSubscribe = this.boardSubscribe.bind(this);
   }
   render() {
     const board = Team.board.get();
@@ -56,9 +60,9 @@ export default class Team extends React.Component {
           directChats={ this.props.directChats }
           chats={ this.getChats() }
 
-          addChat={ this.addChat.bind(this) }
-          removeChat={ this.removeChat.bind(this) }
-          boardSubscribe={ this.boardSubscribe.bind(this) } />
+          addChat={ this.addChat }
+          removeChat={ this.removeChat }
+          boardSubscribe={ this.boardSubscribe } />
         {
           !isMobile.any ? (
             <NotificationSystem

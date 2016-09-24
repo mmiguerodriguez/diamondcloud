@@ -3,9 +3,14 @@ import React from 'react';
 export default class Board extends React.Component {
   render() {
     return (
-      <div className='row row-fixed-margin' onClick={ this.props.addChat.bind(null, { boardId: this.props.board._id }) }>
+      <div
+        className='row row-fixed-margin'
+        onClick={ this.props.addChat.bind(null, { boardId: this.props.board._id }) }>
         <div className='col-xs-2 img-fixed-margin fixed-padding'>
-          <img className='img-circle' src='http://image.flaticon.com/icons/svg/60/60541.svg' width='22px' />
+          <img
+            className='img-circle'
+            src='http://image.flaticon.com/icons/svg/60/60541.svg'
+            width='22px' />
         </div>
         <div className='col-xs-8'>
           <h4 className='truncate'>{ this.props.board.name }</h4>

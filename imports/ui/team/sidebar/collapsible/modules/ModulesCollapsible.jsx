@@ -10,9 +10,10 @@ export default class ModulesCollapsible extends React.Component {
         id={ 'modules-collapsible' }
         header={
           <div>
-            <div  type='button'
-                  className='close col-xs-2'
-                  onClick={ this.props.toggleCollapsible.bind(null, 'modules') }>
+            <div
+              type='button'
+              className='close col-xs-2'
+              onClick={ this.props.toggleCollapsible.bind(null, 'modules') }>
               <img src='/img/close-modal-icon.svg' width='18px' />
             </div>
             <h3 className='col-xs-10 title'>Módulos</h3>
@@ -30,17 +31,13 @@ export default class ModulesCollapsible extends React.Component {
     );
   }
   renderModules() {
-    let arr = [];
-
-    this.props.modules.map((module) => {
-      arr.push(
+    return this.props.modules.map((module) => {
+      return (
         <Module
           key={ module._id }
           module={ module } />
       );
     });
-
-    return arr;
   }
 }
 
