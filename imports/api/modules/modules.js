@@ -11,10 +11,10 @@ export let createdModules = [
     validated: true,
   },
   {
-    _id: "wFNjYPHRotdzdmb72",
-    name: "Document",
-    img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
-    description: "This is a document",
+    _id: "wjQyQ6sGjzvNMDLiJ",
+    name: "File Manager",
+    img: "/modules/wjQyQ6sGjzvNMDLiJ/image.png",
+    description: "This is a File Manager",
     validated: true,
   }
   /*

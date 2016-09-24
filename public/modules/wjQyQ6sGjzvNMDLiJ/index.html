@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
   <head>
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
@@ -6,34 +7,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
   </head>
   <body>
-    <div id='resizable' class='file-manager ui-widget-content'>
-      <div class="container-fluid files-container">
-        <p class="folders-title-container">
-          Carpetas
-        </p>
-        <hr class="divider">
-        <div class="folders-container">
-          <div class="col-xs-4 fixed">
-            <div class="folder">
-              <p class="truncate">Diamond Cloud</p>
-            </div>
-          </div>
-        </div>
-        <p class="documents-title-container">
-          Archivos
-        </p>
-        <hr class="divider">
-        <div class="documents-container">
-          <div class="col-xs-4 fixed">
-            <div class="document">
-              <p class="truncate">Soy un documento</p>
-              <div class="preview"></div>
-            </div>
-          </div>
-        </div>
-  		</div>
-  		<div class="create fixedActionBtn"></div>
-  	</div>
-    <script src='main.js'></script>
+    <div id="container"></div>
+    <script type='text/babel' src='main.jsx'></script>
+    <script src="https://unpkg.com/babel-core@5.8.38/browser.min.js"></script>
+    <script src="https://npmcdn.com/react@latest/dist/react-with-addons.js"></script>
+    <script src="https://npmcdn.com/react-dom@latest/dist/react-dom.js"></script>
   </body>
 </html>
