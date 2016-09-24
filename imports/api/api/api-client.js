@@ -27,7 +27,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
                 teamId: moduleInstance.board().team()._id,
                 moduleId: moduleInstance.moduleId
               });
-              
+
               if (!!moduleData.data) {
                 callback(undefined, moduleData.data);
               }
@@ -40,7 +40,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
             });
 
             subscriptions.push(subscription);
-            return subscription.subscriptionId;
+            return subscription;
           },
           onError: (err) => {
             console.error(err);

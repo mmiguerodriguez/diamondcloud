@@ -1,4 +1,7 @@
+/*
 import FileManagerLayout     from './FileManagerLayout.jsx';
+
+let DiamondAPI = window.DiamondAPI;
 
 export default class FileManagerPage extends React.Component {
   renderFolders() {
@@ -13,10 +16,20 @@ export default class FileManagerPage extends React.Component {
 }
 
 export default FileManagerPageContainer = createContainer(() => {
-  const teamsHandle = Meteor.subscribe('teams.dashboard');
-  const loading = !teamsHandle.ready();
+  const handle = DiamondAPI.subscribe({
+    request: {
+      collection: 'docsList',
+      condition: {
+        _id: DiamondAPI.getTeamData(),
+      }
+    }
+  });
+
+  const loading = !handle.ready();
+
   return {
     loading,
     teams: Teams.find({}, { sort: { name: -1 } }).fetch(),
   };
 }, Dashboard);
+*/

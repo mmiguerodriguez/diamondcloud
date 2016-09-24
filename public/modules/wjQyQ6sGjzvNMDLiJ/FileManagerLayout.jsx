@@ -1,3 +1,4 @@
+/*
 class FileManagerLayout extends React.Component {
   renderFolders() {
 
@@ -43,3 +44,4 @@ class FileManagerLayout extends React.Component {
     );
   }
 }
+*/
