@@ -3,12 +3,11 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <title>Google Picker Example</title>
-
     <script type="text/javascript">
 
     // The Browser API key obtained from the Google API Console.
     // Replace with your own Browser API key, or your own key.
-    var developerKey = 'AIzaSyDl1ayZ_nl2WV6BrVBLShnobHb6MFazUxE';
+    var developerKey = 'AIzaSyD57rpGGZuvRogBOZSnGLJMVIUMxtsK910';
 
     // The Client ID obtained from the Google API Console. Replace with your own Client ID.
     var clientId = "624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com"
@@ -30,12 +29,12 @@
 
     function onAuthApiLoad() {
       window.gapi.auth.authorize(
-          {
-            'client_id': clientId,
-            'scope': scope,
-            'immediate': false
-          },
-          handleAuthResult);
+      {
+        'client_id': clientId,
+        'scope': scope,
+        'immediate': false
+      },
+      handleAuthResult);
     }
 
     function onPickerApiLoad() {

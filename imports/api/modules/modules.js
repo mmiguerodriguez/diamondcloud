@@ -11,10 +11,19 @@ export let createdModules = [
     validated: true,
   },
   {
+    _id: "wFNjYPHRotdzdmb72",
+    name: "Document",
+    img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
+    description: "This is a document",
+    validated: true,
+  }
+  /*
+  {
     _id: "Hwqpiuufhsdf735sj",
     name: "File Picker",
     img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
     description: "Google Drive API test",
     validated: true,
-  },
+  }
+  */
 ];

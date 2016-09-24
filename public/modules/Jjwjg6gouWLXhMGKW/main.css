@@ -1,4 +1,32 @@
-iframe {
-  height: 100%;
+body {
+  background: #ffffa5;
+  font-family: 'roboto' !important;
+}
+input:focus {
+  border:none;
+}
+.title-container {
+  padding-top: 10px;
+}
+.post-it-title {
+  text-align: center;
   width: 100%;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background: transparent;
+  margin-top: 5px;
+}
+.description-container {
+  height: 80%;
+  padding-top: 10px;
+}
+.post-it-description {
+  text-align: left;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background: transparent;
+  margin-top: 5px;
+  resize: none;
+  height: 100%;
 }
