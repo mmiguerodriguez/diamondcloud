@@ -88,6 +88,8 @@ export default class ModuleInstance extends React.Component {
         iframeFix: true,
       })
       .resizable({
+        minHeight: 320,
+        minWidth: 550,
         containment: 'parent',
         disabled: this.state.minimized,
         stop(event, ui) {

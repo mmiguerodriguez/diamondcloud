@@ -54,19 +54,57 @@ body {
   position: fixed;
   bottom: 15px;
   right: 15px;
-  width: 42px;
-  height: 42px;
+  width: 55.5px;
+  height: 55.5px;
   border-radius: 50%;
   background-color: #f44336;
-  background-image: url("img/menu-button.svg");
+  background-image: url(img/menu-button.svg);
   background-position: center;
   background-size: 21px;
   background-repeat: no-repeat;
   box-shadow: 0px 0px 2px 1px rgba(0,0,0, 0.3);
-  transition: all 0.2s ease;
 }
 .create:hover {
   box-shadow: 0px 0px 10px 1px rgba(0,0,0, 0.3);
+}
+.create:hover .options .new, .create:hover .options .drive {
+  opacity: 1;
+}
+.options {
+  height: 113px;
+  width: 55.5px;
+  position: absolute;
+  top: -113px;
+}
+.option {
+  width: 37px;
+  height: 37px;
+  margin: 5px 0 15px 10px;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+}
+.new, .drive {
+  opacity: 0;
+}
+.drive {
+  background-color: #4caf50;
+  background-image: url('img/google-drive-logo.svg');
+  transition: all 0.6s ease;
+}
+.drive:hover {
+  box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
+}
+.new {
+  transform: rotate(-90deg);
+  background-color: #2196f3;
+  background-image: url('img/attachment-clip.svg');
+  transition: all 0.3s ease;
+}
+.new:hover {
+  box-shadow: -5px 0 11px 0 rgba(0,0,0,0.18), -5px 0 15px 0 rgba(0,0,0,0.15);
 }
 .files-container, .folders-container, .documents-container {
   overflow: auto;
