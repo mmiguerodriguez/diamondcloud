@@ -16,6 +16,7 @@ if (Meteor.isServer) {
       let user, team;
       beforeEach(function() {
         resetDatabase();
+
         user = Factory.create('user');
         team = Factory.create('team');
         team.users = [
@@ -25,18 +26,20 @@ if (Meteor.isServer) {
           { email: faker.internet.email(), permission: 'member' },
           { email: faker.internet.email(), permission: 'member' },
         ];
+
         resetDatabase();
+
         sinon.stub(Meteor, 'user', () => user);
-        sinon.stub(Meteor.users, 'findByEmail', (emails, fields) => {
-          return { emails, fields};
-        });
+        /*sinon.stub(Meteor.users, 'findByEmail', (emails, fields) => {
+          return { emails, fields };
+        });*/
         Meteor.users.insert(user);
         Teams.insert(team);
       });
 
       afterEach(function() {
         Meteor.user.restore();
-        Meteor.users.findByEmail.restore();
+        //Meteor.users.findByEmail.restore();
       });
 
       it('should return owner of a team', function() {
@@ -52,24 +55,13 @@ if (Meteor.isServer) {
         chai.assert.isFalse(result.hasUser({ email: faker.internet.email() }));
       });
 
-
       it('should return the users of a team', function() {
-        let result = Teams
-                     .findOne(team._id)
-                     .getUsers({ emails: 1 })
-                     .fetch(),
-            expect = [
-              {
-                _id: user._id,
-                emails: [
-                  {
-                    address: user.emails[0].address,
-                  }
-                ]
-              }
-            ];
+        let expect, result;
 
-        chai.assert.equal(JSON.stringify(result), JSON.stringify(expect));
+        expect = [{ _id: user._id, emails: user.emails }];
+        result = Teams.findOne(team._id).getUsers({ emails: 1 }).fetch();
+
+        chai.assert.deepEqual(JSON.stringify(result), JSON.stringify(expect));
       });
     });
   });

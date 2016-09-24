@@ -1,0 +1,73 @@
+body {
+  background: #ffffa5;
+  font-family: 'roboto' !important;
+}
+
+.file-manager {
+  overflow: auto;
+  height: 100%;
+  background-color: #eee;
+  border: 1px solid #ccc;
+}
+.documents-container {
+  margin-bottom: 70px;
+}
+.folders-title-container, .document-title-container {
+  margin: 10px 0 0 !important;
+}
+.divider {
+  margin: 5px 0 !important;
+  border-top-color: #ccc !important;
+}
+.folder {
+  text-align: center;
+  height: 40px;
+  background-color: #fff;
+  border-radius: 3px;
+  padding: 10px;
+  box-shadow: 0.5px 0.5px 2px 0px rgba(0,0,0, 0.3);
+}
+.document {
+  text-align: center;
+  height: 150px;
+  background-color: #fff;
+  border-radius: 3px;
+  padding: 10px;
+  box-shadow: 0.5px 0.5px 2px 0px rgba(0,0,0, 0.3);
+}
+.fixed {
+  margin: 10px 0 !important;
+}
+.preview {
+  height: calc(100% - 30px);
+  background-image: url(http://46.22.133.24/files/itsupport/drive2.jpg);
+  background-size: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.create {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #f44336;
+  background-image: url("img/menu-button.svg");
+  background-position: center;
+  background-size: 21px;
+  background-repeat: no-repeat;
+  box-shadow: 0px 0px 2px 1px rgba(0,0,0, 0.3);
+  transition: all 0.2s ease;
+}
+.create:hover {
+  box-shadow: 0px 0px 10px 1px rgba(0,0,0, 0.3);
+}
+.files-container, .folders-container, .documents-container {
+  overflow: auto;
+}

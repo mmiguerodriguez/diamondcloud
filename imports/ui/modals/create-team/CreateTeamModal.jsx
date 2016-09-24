@@ -2,13 +2,18 @@ import { Meteor }         from 'meteor/meteor';
 import React              from 'react';
 import { browserHistory } from 'react-router';
 
-import Modal     from '../Modal.jsx';
-import UsersList from '../users-list/UsersList.jsx';
-import { InputError, TextInput, SelectInput } from '../../validation/inputs.jsx';
+import Modal              from '../Modal.jsx';
+import UsersList          from '../users-list/UsersList.jsx';
+import {
+  InputError,
+  TextInput,
+  SelectInput
+}                         from '../../validation/inputs.jsx';
 
 export default class CreateTeamModal extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       page: 1,
       name: '',
@@ -17,6 +22,10 @@ export default class CreateTeamModal extends React.Component {
       otherType: '',
       usersEmails: [],
     };
+    this.addUser    = this.addUser.bind(this);
+    this.removeUser = this.removeUser.bind(this);
+    this.backPage   = this.backPage.bind(this);
+    this.nextPage   = this.nextPage.bind(this);
   }
   render() {
     return (
@@ -56,8 +65,9 @@ export default class CreateTeamModal extends React.Component {
                     </div>
                   </div>
                   <div className='name-input'>
-                    <label  htmlFor='projectType'
-                            className='col-xs-2 col-sm-offset-2 control-label left-align'>
+                    <label
+                      htmlFor='projectType'
+                      className='col-xs-2 col-sm-offset-2 control-label left-align'>
                       Tipo
                     </label>
                     <div className='col-xs-12 col-sm-6'>
@@ -80,8 +90,9 @@ export default class CreateTeamModal extends React.Component {
                   </div>
                   {
                     this.state.type === 'Otro' ? (
-                      <div  id='otherProjectType'
-                            className='col-xs-12 col-sm-6 col-sm-offset-4'>
+                      <div
+                        id='otherProjectType'
+                        className='col-xs-12 col-sm-6 col-sm-offset-4'>
                         <TextInput
                           id='projectType'
                           class='form-control'
@@ -94,9 +105,10 @@ export default class CreateTeamModal extends React.Component {
                   }
                 </div>
               </div>
-              <div  id='create-team-page-2'
-                    className='plan'
-                    style={{ display: 'none' }}>
+              <div
+                id='create-team-page-2'
+                className='plan'
+                style={{ display: 'none' }}>
                 <p className='explanation-text margin container-fluid'>Elegí las funcionalidades que queres que tu equipo tenga disponible en Diamond Cloud</p>
                 <div className='row'>
                   <div className='free col-xs-5 col-xs-offset-1'>
@@ -110,8 +122,9 @@ export default class CreateTeamModal extends React.Component {
                         </ul>
                       </div>
                     </div>
-                    <div className='btn btn-free col-xs-12'
-                            onClick={ this.choosePlan.bind(this, 'free') }>
+                    <div
+                      className='btn btn-free col-xs-12'
+                      onClick={ this.choosePlan.bind(this, 'free') }>
                       Elegir plan Free
                     </div>
                   </div>
@@ -138,11 +151,15 @@ export default class CreateTeamModal extends React.Component {
                   </div>
                 </div>
               </div>
-              <div  id='create-team-page-3'
-                    className='share'
-                    style={{ display: 'none' }}>
+              <div
+                id='create-team-page-3'
+                className='share'
+                style={{ display: 'none' }}>
                 <p className='explanation-text margin container-fluid'>Insertá un mail de Google de los miembros de tu equipo para poder trabajar colaborativamente. Si todavia no tienen cuenta en Diamond Cloud se le enviará un link al mail</p>
-                <UsersList usersEmails={ this.state.usersEmails } addUser={ this.addUser.bind(this) } removeUser={ this.removeUser.bind(this) } />
+                <UsersList
+                  usersEmails={ this.state.usersEmails }
+                  addUser={ this.addUser }
+                  removeUser={ this.removeUser } />
               </div>
           </div>
         }
@@ -155,16 +172,18 @@ export default class CreateTeamModal extends React.Component {
               </p>
             </div>
             <div className='col-xs-11'>
-              <button type='button'
-                      id='back-page-btn'
-                      className='btn btn-cancel btn-hover'
-                      onClick={ this.backPage.bind(this) }>
+              <button
+                type='button'
+                id='back-page-btn'
+                className='btn btn-cancel btn-hover'
+                onClick={ this.backPage }>
                 Atrás
               </button>
-              <button type='button'
-                      id='next-page-btn'
-                      className='btn btn-accept btn-hover'
-                      onClick={ this.nextPage.bind(this) }>
+              <button
+                type='button'
+                id='next-page-btn'
+                className='btn btn-accept btn-hover'
+                onClick={ this.nextPage }>
                 Siguiente
               </button>
             </div>
@@ -178,6 +197,7 @@ export default class CreateTeamModal extends React.Component {
       [index]: event.target.value,
     });
   }
+
   addUser(user) {
     let users = this.state.usersEmails;
     if(users.indexOf(user) === -1) {
@@ -197,6 +217,7 @@ export default class CreateTeamModal extends React.Component {
       });
     }
   }
+
   choosePlan(type) {
     let other = type === 'free' ? 'premium' : 'free';
     $('#createTeamModal .' + type).addClass(type + '-card-active');
@@ -243,7 +264,6 @@ export default class CreateTeamModal extends React.Component {
       mode: 'show',
     }, 500);
 
-    
     $('#createTeamModal #actual-page').html(page + 1);
 
     if(page + 1 === 3) {
@@ -262,7 +282,7 @@ export default class CreateTeamModal extends React.Component {
     let form = { name, plan, type, usersEmails };
     Meteor.call('Teams.methods.create', form, (error, result) => {
       if (error) {
-        throw new Meteor.Error(error);
+        console.error(error);
       } else {
         $('#createTeamModal').modal('hide');
         browserHistory.push('/team/' + result._id);

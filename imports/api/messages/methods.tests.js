@@ -166,9 +166,7 @@ if (Meteor.isServer) {
           chai.assert.equal(users[1].profile.name, title);
           chai.assert.equal(test_2.content, text);
           chai.assert.deepEqual({
-            userId: {
-              $in: [users[1]._id],
-            }
+            userId: users[1]._id,
           }, query);
           done();
         });

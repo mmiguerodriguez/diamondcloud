@@ -8,9 +8,9 @@ import ChatsCollapsible   from './collapsible/chats/ChatsCollapsible.jsx';
 export default class SidebarLayout extends React.Component {
   render() {
     let classes = classNames('sidebar', 'hidden-xs', {
-      'permission-asker-opened': this.props.permissionAsker
+      'permission-asker-opened': this.props.permissionAsker,
     });
-    
+
     return (
       <div className={ classes }>
         <div  id='boards-item'
@@ -76,10 +76,10 @@ SidebarLayout.propTypes = {
   changeBoard: React.PropTypes.func.isRequired,
   openBoardContextMenu: React.PropTypes.func.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
-  
+
   openCreateBoardModal: React.PropTypes.func.isRequired,
   openCreateChatModal: React.PropTypes.func.isRequired,
   openConfigTeamModal: React.PropTypes.func.isRequired,
-  
+
   permissionAsker: React.PropTypes.bool.isRequired,
 };
