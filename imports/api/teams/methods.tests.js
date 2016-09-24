@@ -1,28 +1,30 @@
-import { Meteor }        from 'meteor/meteor';
-import { resetDatabase } from 'meteor/xolvio:cleaner';
-import { sinon }         from 'meteor/practicalmeteor:sinon';
-import { chai }          from 'meteor/practicalmeteor:chai';
-import   faker           from 'faker';
-import { Random }        from 'meteor/random';
-import { Mail }          from '../mails/mails.js';
+import { Meteor }               from 'meteor/meteor';
+import { resetDatabase }        from 'meteor/xolvio:cleaner';
+import { sinon }                from 'meteor/practicalmeteor:sinon';
+import { chai }                 from 'meteor/practicalmeteor:chai';
+import   faker                  from 'faker';
+import { Random }               from 'meteor/random';
+import { Mail }                 from '../mails/mails.js';
 
-import { Teams }         from './teams.js';
-import { Boards }         from '../boards/boards.js';
+import { Teams }                from './teams.js';
+import { Boards }               from '../boards/boards.js';
 import { createTeam,
          editTeam,
          shareTeam,
          removeUserFromTeam,
          archiveTeam,
          dearchiveTeam,
-}                        from './methods.js';
-import { createBoard }   from '../boards/methods.js';
+}                               from './methods.js';
+import { createBoard }          from '../boards/methods.js';
+import { createModuleInstance } from '../module-instances/methods.js';
 
 import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Teams', function() {
     describe('Methods', function() {
-      let users, team, board, boardId = Random.id();
+      let users, team, board, generalBoardId = Random.id(), coordinationBoardId = Random.id(),
+          createModuleInstanceArgs;
 
       beforeEach(function() {
         resetDatabase();
@@ -57,12 +59,18 @@ if (Meteor.isServer) {
 
         sinon.stub(createBoard, 'call', (obj, callback) => {
           let team = Teams.findOne(obj.teamId);
-
-          team.boards.push({ _id: boardId });
-
-          callback(null, { _id: boardId });
+          if(team.boards.length === 0) {
+            team.boards.push({ _id: generalBoardId });
+            callback(null, { _id: generalBoardId });
+          } else {
+            team.boards.push({ _id: coordinationBoardId });
+            callback(null, { _id: coordinationBoardId });
+          }
         });
-
+        sinon.stub(createModuleInstance, 'call', (obj, callback) => {
+          createModuleInstanceArgs = obj;
+          callback(null, null);
+        });
         sinon.stub(Mail, 'sendMail', () => true);
       });
 
@@ -70,6 +78,7 @@ if (Meteor.isServer) {
         createBoard.call.restore();
         Meteor.user.restore();
         Mail.sendMail.restore();
+        createModuleInstance.call.restore();
       });
 
       it('should create a team', function(done) {
@@ -90,7 +99,11 @@ if (Meteor.isServer) {
           name: team.name,
           plan: 'free',
           type: 'web',
-          boards: [{ _id: boardId }],
+          boards: [
+            { _id: generalBoardId },
+            { _id: coordinationBoardId },
+            
+          ],
           users: [
             { email: users[0].emails[0].address, permission: 'owner' },
             { email: users[1].emails[0].address, permission: 'member' },
@@ -102,8 +115,18 @@ if (Meteor.isServer) {
         createTeam.call(args, (err, res) => {
           result = res;
           delete result._id;
-
+          console.log(`result: ${JSON.stringify(result, null, 4)},
+                       expect: ${JSON.stringify(expect, null, 4)}`);
+          let expectedArgs = {
+            boardId: coordinationBoard._id,
+            moduleId: 'hYsHKx3br6kLYq3km',
+            x: 100,
+            y: 100,
+            width: 1000,
+            height: 500,
+          };
           chai.assert.deepEqual(result, expect);
+          chai.assert.deepEqual(createModuleInstanceArgs, expectedArgs);
           done();
         });
       });
