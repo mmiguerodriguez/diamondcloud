@@ -9,6 +9,7 @@ import { Boards }               from '../boards/boards.js';
 import { createBoard }          from '../boards/methods.js';
 import { createModuleInstance } from '../module-instances/methods.js';
 import { createModuleData }     from '../module-data/module-data-creation.js';
+import { apiInsert }            from '../api/methods.js';
 
 export const createTeam = new ValidatedMethod({
   name: 'Teams.methods.create',
@@ -65,7 +66,7 @@ export const createTeam = new ValidatedMethod({
 
         team.boards.push({ _id: res._id });
         team._id = teamId;
-        
+
         createBoard.call({
           teamId,
           name: 'Coordinación',
@@ -86,26 +87,37 @@ export const createTeam = new ValidatedMethod({
           }, (err, res) => {
             if(!!err)
               future.throw(err);
-            usersEmails.forEach((email) => {
-              if(Meteor.users.findByEmail(email, {})) {
-                // If user is not registered in Diamond Cloud
-                Mail.sendMail({
-                  from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
-                  to: email,
-                  subject: 'Te invitaron a colaborar en Diamond Cloud',
-                  html: Mail.messages.sharedTeamRegistered(teamId),
-                });
-              } else {
-                Mail.sendMail({
-                  from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
-                  to: email,
-                  subject: 'Te invitaron a colaborar en Diamond Cloud',
-                  html: Mail.messages.sharedTeamNotRegistered(teamId),
-                });
-              }
-            });
+            apiInsert.call({
+              moduleInstanceId: res._id,
+              collection: 'coordinationBoard',
+              obj: {
+                _id: coordinationBoard._id,
+              },
+              isGlobal: true,
+            }, (err, res) => {
+              if(!!err)
+                future.throw(err);
+              usersEmails.forEach((email) => {
+                if(Meteor.users.findByEmail(email, {})) {
+                  // If user is not registered in Diamond Cloud
+                  Mail.sendMail({
+                    from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+                    to: email,
+                    subject: 'Te invitaron a colaborar en Diamond Cloud',
+                    html: Mail.messages.sharedTeamRegistered(teamId),
+                  });
+                } else {
+                  Mail.sendMail({
+                    from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+                    to: email,
+                    subject: 'Te invitaron a colaborar en Diamond Cloud',
+                    html: Mail.messages.sharedTeamNotRegistered(teamId),
+                  });
+                }
+              });
 
-            future.return(team);
+              future.return(team);
+            });
           });
         });
       });

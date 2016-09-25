@@ -17,6 +17,7 @@ import { createTeam,
 }                               from './methods.js';
 import { createBoard }          from '../boards/methods.js';
 import { createModuleInstance } from '../module-instances/methods.js';
+import { apiInsert }            from '../api/methods.js';
 
 import '../factories/factories.js';
 
@@ -24,7 +25,9 @@ if (Meteor.isServer) {
   describe('Teams', function() {
     describe('Methods', function() {
       let users, team, board, generalBoardId = Random.id(), coordinationBoardId = Random.id(),
-          createModuleInstanceArgs;
+          createModuleInstanceArgs,
+          apiInsertArgs,
+          createdGeneralBoard = false;
 
       beforeEach(function() {
         resetDatabase();
@@ -59,7 +62,8 @@ if (Meteor.isServer) {
 
         sinon.stub(createBoard, 'call', (obj, callback) => {
           let team = Teams.findOne(obj.teamId);
-          if(team.boards.length === 0) {
+          if(!createdGeneralBoard) {
+            createdGeneralBoard = true;
             team.boards.push({ _id: generalBoardId });
             callback(null, { _id: generalBoardId });
           } else {
@@ -69,6 +73,10 @@ if (Meteor.isServer) {
         });
         sinon.stub(createModuleInstance, 'call', (obj, callback) => {
           createModuleInstanceArgs = obj;
+          callback(null, { _id: 'moduleInstanceId' });
+        });
+        sinon.stub(apiInsert, 'call', (obj, callback) => {
+          apiInsertArgs = obj;
           callback(null, null);
         });
         sinon.stub(Mail, 'sendMail', () => true);
@@ -79,6 +87,7 @@ if (Meteor.isServer) {
         Meteor.user.restore();
         Mail.sendMail.restore();
         createModuleInstance.call.restore();
+        apiInsert.call.restore();
       });
 
       it('should create a team', function(done) {
@@ -102,7 +111,7 @@ if (Meteor.isServer) {
           boards: [
             { _id: generalBoardId },
             { _id: coordinationBoardId },
-            
+
           ],
           users: [
             { email: users[0].emails[0].address, permission: 'owner' },
@@ -115,18 +124,27 @@ if (Meteor.isServer) {
         createTeam.call(args, (err, res) => {
           result = res;
           delete result._id;
-          console.log(`result: ${JSON.stringify(result, null, 4)},
-                       expect: ${JSON.stringify(expect, null, 4)}`);
-          let expectedArgs = {
-            boardId: coordinationBoard._id,
-            moduleId: 'hYsHKx3br6kLYq3km',
-            x: 100,
-            y: 100,
-            width: 1000,
-            height: 500,
-          };
+          let expectedCreateModuleInstanceArgs = {
+                boardId: coordinationBoardId,
+                moduleId: 'hYsHKx3br6kLYq3km',
+                x: 100,
+                y: 100,
+                width: 500,
+                height: 200,
+              },
+              expectedApiInsertArgs = {
+                moduleInstanceId: 'moduleInstanceId',
+                collection: 'coordinationBoard',
+                obj: {
+                  _id: coordinationBoardId,
+                },
+                isGlobal: true,
+              };
+          console.log(`RESULT: ${JSON.stringify(result, null, 4)},
+                       EXPECT: ${JSON.stringify(expect, null, 4)}`);//todo: make the boards equal
           chai.assert.deepEqual(result, expect);
-          chai.assert.deepEqual(createModuleInstanceArgs, expectedArgs);
+          chai.assert.deepEqual(createModuleInstanceArgs, expectedCreateModuleInstanceArgs);
+          chai.assert.deepEqual(apiInsertArgs, expectedApiInsertArgs);
           done();
         });
       });
