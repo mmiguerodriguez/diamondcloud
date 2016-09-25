@@ -1,0 +1,41 @@
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.btn {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: #fff;
+  background-color: #3498db;
+}
+.btn:hover {
+  color: #fff;
+}
+.task-manager {
+  min-height: 100vh;
+  background-color: #eee;
+  border: 1px #ccc solid;
+}
+.task-manager-title {
+  margin-top: 10px;
+}
+.hr-fix {
+  margin: 0;
+  border-color: #ccc;
+}
+.task {
+  height: auto;
+  background-color: #fff;
+  margin-top: 0;
+  padding: 0;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+}
+.task-title {
+  margin: 15px 0 0;
+  font-weight: bold;
+}
+.task-info {
+  text-align: justify;
+}

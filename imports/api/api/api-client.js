@@ -38,9 +38,6 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
               changed: caller,
               removed: caller,
             });
-
-            subscriptions.push(subscription);
-            return subscription.subscriptionId;
           },
           onError: (err) => {
             console.error(err);
@@ -52,6 +49,9 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
                                             moduleInstanceId,
                                             request,
                                             serverSubscriptionCallback);
+                                            
+        subscriptions.push(subscription);
+        return subscription;
       } else {
         callback(console.error('The provided data is wrong.'), undefined);
       }
