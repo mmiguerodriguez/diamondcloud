@@ -1,6 +1,5 @@
-const DiamondAPI = window.DiamondAPI;
-const React = window.React;
-const ReactDOM = window.ReactDOM;
+const { DiamondAPI, React, ReactDOM } = window;
+const { Router, Route, IndexRoute, browserHistory } = window.ReactRouter;
 
 class TrelloPage extends React.Component {
   constructor() {
@@ -9,6 +8,8 @@ class TrelloPage extends React.Component {
     this.state = {
       tasks: undefined,
       coordinationBoard: undefined,
+      currentBoard: undefined,
+      coordination: undefined,
       loading: undefined,
       users: undefined,
       boards: undefined,
@@ -25,16 +26,7 @@ class TrelloPage extends React.Component {
   }
   componentDidMount() {
     let self = this;
-
-    DiamondAPI.get({
-      collection: 'coordinationBoard',
-      filter: {},
-      callback(error, result) {
-        self.setState({
-          coordinationBoard: result,
-        });
-      }
-    });
+    let coordinationBoard, currentBoard;
 
     const trelloHandle = DiamondAPI.subscribe({
       request: {
@@ -43,8 +35,23 @@ class TrelloPage extends React.Component {
       callback(error, result) {
         console.log('subscribe callback', result.tasks);
         self.setState({
-          tasks: result.tasks
+          tasks: result.tasks,
         });
+      }
+    });
+
+    DiamondAPI.get({
+      collection: 'coordinationBoard',
+      filter: {},
+      callback(error, result) {
+        coordinationBoard = result[0]._id;
+        currentBoard =  DiamondAPI.getCurrentBoard()._id;
+
+        self.setState({
+          coordinationBoard,
+          currentBoard,
+          coordination: coordinationBoard === currentBoard,
+        })
       }
     });
 
@@ -63,23 +70,33 @@ class TrelloLayout extends React.Component {
     };
   }
   render() {
+    console.log(this.props);
     return (
       <div className="col-xs-12 task-manager">
+        {
+          this.props.coordination ? (
+            <div
+              className='col-xs-6 text-center'
+              onClick={ this.setLocation.bind(this, 'create_task') }>Crear tarea
+            </div>
+          ) : ( null )
+        }
+
         <div
-          className='col-xs-6 text-center'
-          onClick={ this.setLocation.bind(this, 'create_task') }>Crear tarea
-        </div>
-        <div
-          className='col-xs-6 text-center'
+          className={ (this.props.coordination ? 'col-xs-6' : 'col-xs-12') + ' ' + 'text-center' }
           onClick={ this.setLocation.bind(this, 'task_list') }>Lista de tareas
         </div>
+
         {
           this.state.location === 'task_list' ? (
-            <TaskList tasks={ this.props.tasks } />
+              <TaskList
+                boards={ this.props.boards }
+                tasks={ this.props.tasks }
+                coordination={ this.props.coordination } />
           ) : ( null )
         }
         {
-          this.state.location === 'create_task' ? (
+          this.state.location === 'create_task' && this.props.coordination ? (
             <CreateTask boards={ this.props.boards } />
           ) : ( null )
         }
@@ -225,3 +242,13 @@ ReactDOM.render(
   <TrelloPage />,
   document.getElementById('render-target')
 );
+
+/*
+<Router history={ browserHistory }>
+  <Route path="/" component={ TrelloPage }>
+    <IndexRoute path='/' component={  } />
+    <Route path="/createTask" component={ CreateTask } />
+    <Route path="/showTasks" component={ TaskList } />
+  </Route>
+</Router>,
+*/
