@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { ModuleInstances } from '../module-instances/module-instances.js';
 import { ModuleData } from '../module-data/module-data.js';
 
-export let generateApi = ({ moduleInstanceId, boards, users }) => {
+export const generateApi = ({ moduleInstanceId, boards, users }) => {
   let subscriptions = [];
   return {
     subscribe: ({ request, callback }) => {
@@ -38,20 +38,23 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
               changed: caller,
               removed: caller,
             });
-
-            subscriptions.push(subscription);
-            return subscription;
           },
           onError: (err) => {
+            console.log('bad 2');
             console.error(err);
             callback(console.error('Server Error when trying to subscribe'), undefined);
           },
         };
 
+        console.log('1');
+
         let subscription = Meteor.subscribe('moduleData.data',
                                             moduleInstanceId,
                                             request,
                                             serverSubscriptionCallback);
+
+        subscriptions.push(subscription);
+        return subscription;
       } else {
         callback(console.error('The provided data is wrong.'), undefined);
       }
