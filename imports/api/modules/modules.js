@@ -11,10 +11,10 @@ export let createdModules = [
     validated: true,
   },
   {
-    _id: 'hYsHKx3br6kLYq3km',
-    name: 'Trello',
-    img: '/modules/hYsHKx3br6kLYq3km/image.png',
-    description: 'I\'m a trello',
+    _id: "hYsHKx3br6kLYq3km",
+    name: "Organizador de tareas",
+    img: "/modules/hYsHKx3br6kLYq3km/image.png",
+    description: "Organizador de tareas",
     validated: true,
   }
 ];
