@@ -16,5 +16,21 @@ export let createdModules = [
     img: "/modules/hYsHKx3br6kLYq3km/image.png",
     description: "Organizador de tareas",
     validated: true,
+  },
+  {
+    _id: "wjQyQ6sGjzvNMDLiJ",
+    name: "File Manager",
+    img: "/modules/wjQyQ6sGjzvNMDLiJ/image.png",
+    description: "This is a File Manager",
+    validated: true,
+  },
+  /*
+  {
+    _id: "Hwqpiuufhsdf735sj",
+    name: "File Picker",
+    img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
+    description: "Google Drive API test",
+    validated: true,
   }
+  */
 ];

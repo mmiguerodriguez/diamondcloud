@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { ModuleInstances } from '../module-instances/module-instances.js';
 import { ModuleData } from '../module-data/module-data.js';
 
-export let generateApi = ({ moduleInstanceId, boards, users }) => {
+export const generateApi = ({ moduleInstanceId, boards, users }) => {
   let subscriptions = [];
   return {
     subscribe: ({ request, callback }) => {
@@ -27,7 +27,7 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
                 teamId: moduleInstance.board().team()._id,
                 moduleId: moduleInstance.moduleId
               });
-              
+
               if (!!moduleData.data) {
                 callback(undefined, moduleData.data);
               }
@@ -40,16 +40,19 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
             });
           },
           onError: (err) => {
+            console.log('bad 2');
             console.error(err);
             callback(console.error('Server Error when trying to subscribe'), undefined);
           },
         };
 
+        console.log('1');
+
         let subscription = Meteor.subscribe('moduleData.data',
                                             moduleInstanceId,
                                             request,
                                             serverSubscriptionCallback);
-                                            
+
         subscriptions.push(subscription);
         return subscription;
       } else {
@@ -136,6 +139,9 @@ export let generateApi = ({ moduleInstanceId, boards, users }) => {
         boards, // TODO: do not pass every property
         users,
       };
-    }
+    },
+    getCurrentBoard: () => {
+      return ModuleInstances.findOne(moduleInstanceId).board();
+    },
   };
 };
