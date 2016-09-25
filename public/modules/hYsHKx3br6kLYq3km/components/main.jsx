@@ -1,5 +1,7 @@
-const { DiamondAPI, React, ReactDOM } = window;
-const { Router, Route, IndexRoute, browserHistory } = window.ReactRouter;
+const { DiamondAPI, React, ReactDOM, ReactRouter } = window;
+const { Router, Route, IndexRoute, browserHistory } = ReactRouter;
+
+browserHistory.push('/');
 
 class TrelloPage extends React.Component {
   constructor() {
@@ -21,7 +23,7 @@ class TrelloPage extends React.Component {
     }
 
     return (
-      <TrelloLayout { ...this.state } />
+      <TrelloLayout />
     );
   }
   componentDidMount() {
@@ -71,42 +73,29 @@ class TrelloLayout extends React.Component {
   }
   render() {
     console.log(this.props);
+    let self = this;
     return (
-      <div className="col-xs-12 task-manager">
+      <div className='col-xs-12 task-manager'>
         {
           this.props.coordination ? (
             <div
               className='col-xs-6 text-center'
-              onClick={ this.setLocation.bind(this, 'create_task') }>Crear tarea
+              onClick={ this.setLocation.bind(this, 'tasks/create') }>Crear tarea
             </div>
           ) : ( null )
         }
-
         <div
           className={ (this.props.coordination ? 'col-xs-6' : 'col-xs-12') + ' ' + 'text-center' }
-          onClick={ this.setLocation.bind(this, 'task_list') }>Lista de tareas
+          onClick={ this.setLocation.bind(this, 'tasks/show') }>Lista de tareas
         </div>
 
-        {
-          this.state.location === 'task_list' ? (
-              <TaskList
-                boards={ this.props.boards }
-                tasks={ this.props.tasks }
-                coordination={ this.props.coordination } />
-          ) : ( null )
-        }
-        {
-          this.state.location === 'create_task' && this.props.coordination ? (
-            <CreateTask boards={ this.props.boards } />
-          ) : ( null )
-        }
+        { /* render children */ }
+
       </div>
     );
   }
   setLocation(location) {
-    this.setState({
-      location,
-    });
+    browserHistory.push(location);
   }
 }
 
@@ -129,18 +118,18 @@ class CreateTask extends React.Component {
           <h4>Crear una tarea</h4>
         </div>
         <div className='col-xs-12'>
-          <div className="form-group">
-            <label className="control-label" htmlFor="create-task-title">Título</label>
+          <div className='form-group'>
+            <label className='control-label' htmlFor='create-task-title'>Título</label>
             <input
               id='create-task-title'
-              className="form-control"
+              className='form-control'
               value={ this.state.title }
               onChange={ this.handleChange.bind(this, 'title') }
               type='text'
               placeholder='Ingresá el título' />
           </div>
-          <div className="form-group">
-            <label className="control-label" htmlFor="create-task-duedate">Fecha de vencimiento</label>
+          <div className='form-group'>
+            <label className='control-label' htmlFor='create-task-duedate'>Fecha de vencimiento</label>
             <input
               id='create-task-duedate'
               className='form-control'
@@ -150,7 +139,7 @@ class CreateTask extends React.Component {
               placeholder='Ingresá la fecha de vencimiento' />
           </div>
           <div className='form-group'>
-            <label className="control-label" htmlFor="create-task-board">Board</label>
+            <label className='control-label' htmlFor='create-task-board'>Board</label>
             <select
               id='create-task-board'
               className='form-control'
@@ -160,8 +149,8 @@ class CreateTask extends React.Component {
           </div>
           <button
             onClick={ this.createTask }
-            type="submit"
-            className="btn btn-primary">Crear tarea</button>
+            type='submit'
+            className='btn btn-primary'>Crear tarea</button>
         </div>
       </div>
     );
@@ -203,8 +192,8 @@ class TaskList extends React.Component {
   render() {
     return (
       <div>
-        <h4 className="task-manager-title">Tareas</h4>
-        <hr className="hr-fix" />
+        <h4 className='task-manager-title'>Tareas</h4>
+        <hr className='hr-fix' />
         { this.renderTasks() }
       </div>
     );
@@ -228,10 +217,10 @@ class TaskList extends React.Component {
 class Task extends React.Component {
   render() {
     return (
-      <div className="col-xs-12 task">
-        <h5 className="task-title col-xs-6">{ this.props.task.title }</h5>
-        <div className="col-xs-6">
-          <p className="col-xs-12 btn truncate">Marcar como haciendo</p>
+      <div className='col-xs-12 task'>
+        <h5 className='task-title col-xs-6'>{ this.props.task.title }</h5>
+        <div className='col-xs-6'>
+          <p className='col-xs-12 btn truncate'>Marcar como haciendo</p>
         </div>
       </div>
     );
@@ -239,16 +228,21 @@ class Task extends React.Component {
 }
 
 ReactDOM.render(
-  <TrelloPage />,
+  <Router history={ browserHistory }>
+    <Route path='/' component={ TrelloPage }>
+      <Route path='/tasks/create' component={ CreateTask } />
+      <Route path='/tasks/show' component={ TaskList } />
+    </Route>
+  </Router>,
   document.getElementById('render-target')
 );
 
 /*
 <Router history={ browserHistory }>
-  <Route path="/" component={ TrelloPage }>
-    <IndexRoute path='/' component={  } />
-    <Route path="/createTask" component={ CreateTask } />
-    <Route path="/showTasks" component={ TaskList } />
+  <Route path='/' component={ TrelloPage }>
+    <IndexRoute path='/' component={ TrelloLayout } />
+    <Route path='/createTask' component={ CreateTask } />
+    <Route path='/showTasks' component={ TaskList } />
   </Route>
 </Router>,
 */
