@@ -52,9 +52,9 @@ export const createTeam = new ValidatedMethod({
     Teams.insert(team, (err, res) => {
       if(err) throw new Meteor.Error(err);
 
-      createModuleData();
+      createModuleData();//creates the data storages for each module
       teamId = res;
-
+      team._id = teamId;
       createBoard.call({
         teamId,
         name: 'General',
@@ -65,7 +65,6 @@ export const createTeam = new ValidatedMethod({
           future.throw(err);
 
         team.boards.push({ _id: res._id });
-        team._id = teamId;
 
         createBoard.call({
           teamId,
@@ -82,8 +81,8 @@ export const createTeam = new ValidatedMethod({
             moduleId: 'hYsHKx3br6kLYq3km',
             x: 100,
             y: 100,
-            width: 1000,
-            height: 500,
+            width: 500,
+            height: 200,
           }, (err, res) => {
             if(!!err)
               future.throw(err);

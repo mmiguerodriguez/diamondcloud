@@ -64,10 +64,8 @@ if (Meteor.isServer) {
           let team = Teams.findOne(obj.teamId);
           if(!createdGeneralBoard) {
             createdGeneralBoard = true;
-            team.boards.push({ _id: generalBoardId });
             callback(null, { _id: generalBoardId });
           } else {
-            team.boards.push({ _id: coordinationBoardId });
             callback(null, { _id: coordinationBoardId });
           }
         });
@@ -140,8 +138,6 @@ if (Meteor.isServer) {
                 },
                 isGlobal: true,
               };
-          console.log(`RESULT: ${JSON.stringify(result, null, 4)},
-                       EXPECT: ${JSON.stringify(expect, null, 4)}`);//todo: make the boards equal
           chai.assert.deepEqual(result, expect);
           chai.assert.deepEqual(createModuleInstanceArgs, expectedCreateModuleInstanceArgs);
           chai.assert.deepEqual(apiInsertArgs, expectedApiInsertArgs);

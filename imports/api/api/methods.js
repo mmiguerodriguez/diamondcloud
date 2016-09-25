@@ -40,14 +40,16 @@ export const apiInsert = new ValidatedMethod({
 
     let entry = obj;
     entry.isGlobal = isGlobal;
-    if (!isGlobal) entry.moduleInstanceId = moduleInstanceId;
-    if (!_.isEmpty(visibleBy)) entry.visibleBy = visibleBy;
-    entry._id = entry._id !== undefined ? entry._id : Random.id();
+    if (!isGlobal)
+      entry.moduleInstanceId = moduleInstanceId;
+    if (!_.isEmpty(visibleBy))
+      entry.visibleBy = visibleBy;
+    entry._id = (entry._id !== undefined) ? entry._id : Random.id();
 
-    if (!moduleData.data[collection]) moduleData.data[collection] = [entry];
-    else moduleData.data[collection].push(entry);
-
-    printObject(moduleData);
+    if (!moduleData.data[collection])
+      moduleData.data[collection] = [entry];
+    else
+      moduleData.data[collection].push(entry);
 
     ModuleData.update(moduleData._id, {
       $set: {
