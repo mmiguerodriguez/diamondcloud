@@ -158,6 +158,10 @@ export default class Team extends React.Component {
   }
 
   boardSubscribe(boardId) {
+    if(Team.board.get()._id === boardId) {
+      return;
+    }
+    
     if(Team.boardSubscription.get()) {
       this.state.moduleInstancesFrames.map((frame) => {
         frame.DiamondAPI.unsubscribe();
