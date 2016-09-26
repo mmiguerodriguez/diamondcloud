@@ -1,4 +1,8 @@
 import '/imports/startup/server';
 import { Random } from 'meteor/random';
 
-console.log(Random.id(), Random.id(), Random.id(), Random.id(), Random.id(), Random.id());
+let n = 0;
+
+for (let i = 1; i <= n; i++) {
+  console.log(`ID ${ i }) ${ Random.id() }`);
+}

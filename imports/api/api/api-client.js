@@ -27,9 +27,12 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
                 teamId: moduleInstance.board().team()._id,
                 moduleId: moduleInstance.moduleId
               });
-
+  
+              console.log('cachin 2', moduleData.data);
+              console.log(fields);
               if (!!moduleData.data) {
-                callback(undefined, moduleData.data);
+                console.log('chachin 3');
+                callback(undefined, moduleData.data[request.collection]);
               }
             };
 
@@ -40,13 +43,9 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
             });
           },
           onError: (err) => {
-            console.log('bad 2');
-            console.error(err);
             callback(console.error('Server Error when trying to subscribe'), undefined);
           },
         };
-
-        console.log('1');
 
         let subscription = Meteor.subscribe('moduleData.data',
                                             moduleInstanceId,
