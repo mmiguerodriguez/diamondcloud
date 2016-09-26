@@ -1,8 +1,8 @@
-const { DiamondAPI, React, ReactDOM, ReactRouter } = window;
+const { DiamondAPI, React, ReactDOM, ReactRouter, classNames } = window;
 const { Router, Route, IndexRoute, browserHistory } = ReactRouter;
 
 // Start with '/' route
-browserHistory.push('/');
+browserHistory.push('/tasks/show');
 
 class TrelloPage extends React.Component {
   constructor() {
@@ -29,7 +29,7 @@ class TrelloPage extends React.Component {
   }
   componentDidMount() {
     let self = this;
-    let coordinationBoard, currentBoard;
+    let coordinationBoard, currentBoard, coordination;
 
     DiamondAPI.get({
       collection: 'coordinationBoard',
@@ -37,15 +37,24 @@ class TrelloPage extends React.Component {
       callback(error, result) {
         coordinationBoard = result[0];
         currentBoard =  DiamondAPI.getCurrentBoard();
+        coordination = coordinationBoard._id === currentBoard._id;
 
         self.setState({
           coordinationBoard,
           currentBoard,
-          coordination: coordinationBoard._id === currentBoard._id,
+          coordination,
         }, () => {
+          let condition = coordination ? {} : {
+            $eq: [
+              currentBoard._id,
+              '$$element.boardId',
+            ],
+          };
+
           const trelloHandle = DiamondAPI.subscribe({
             request: {
               collection: 'tasks',
+              condition,
             },
             filter: {},
             callback(error, result) {
@@ -79,14 +88,18 @@ class TrelloLayout extends React.Component {
           ) : ( null )
         }
         <div
-          className={ (this.props.coordination ? 'col-xs-12' : 'col-xs-12') + ' ' + 'text-center board-list-title' }
+          role='button'
+          className='col-xs-12 text-center board-list-title'
           onClick={ this.setLocation.bind(this, 'tasks/show') }>
             <b>Lista de tareas</b>
             <hr className='hr-fix' />
         </div>
 
         {
-          React.cloneElement(this.props.children, { ...this.props, setLocation: this.setLocation })
+          React.cloneElement(this.props.children, {
+            ...this.props,
+            setLocation: this.setLocation
+          })
         }
 
       </div>
@@ -94,20 +107,6 @@ class TrelloLayout extends React.Component {
   }
   setLocation(location) {
     browserHistory.push(location);
-  }
-}
-
-class Information extends React.Component {
-  render() {
-    return (
-      <div>
-        <p>
-          { 
-            //borrar esto
-          }
-        </p>
-      </div>
-    );
   }
 }
 
@@ -170,7 +169,11 @@ class CreateTask extends React.Component {
   renderOptions() {
     return this.props.boards.map((board) => {
       return (
-        <option key={ board._id } value={ board._id }>{ board.name }</option>
+        <option
+          key={ board._id }
+          value={ board._id }>
+          { board.name }
+        </option>
       );
     });
   }
@@ -195,7 +198,7 @@ class CreateTask extends React.Component {
   }
   handleChange(index, event) {
     this.setState({
-      [index]: event.target.value
+      [index]: event.target.value,
     });
   }
 }
@@ -240,7 +243,7 @@ class BoardsList extends React.Component {
         <Board
           key={ board._id }
           board={ board }
-          tasks={ tasks } 
+          tasks={ tasks }
           coordination={ this.props.coordination }
           setLocation={ this.props.setLocation } />
       );
@@ -255,8 +258,8 @@ class Board extends React.Component {
         <p className='text-center'>
           <b>{ this.props.board.name }</b>
         </p>
-        <TasksList 
-          tasks={ this.props.tasks } 
+        <TasksList
+          tasks={ this.props.tasks }
           coordination={ this.props.coordination }
           setLocation={ this.props.setLocation } />
       </div>
@@ -268,14 +271,14 @@ class TasksList extends React.Component {
     return (
       <div className='col-xs-12 tasks-list'>
         { this.renderTasks() }
-        { 
+        {
           this.props.coordination ? (
             <div className="form-group">
-              <input 
+              <input
                 id="usr"
-                className="form-control" 
-                onKeyDown={ this.handleKeyDown.bind(this) } 
-                placeholder="Agregue una nueva tarea" 
+                className="form-control"
+                onKeyDown={ this.handleKeyDown.bind(this) }
+                placeholder="Agregue una nueva tarea"
                 type="text" />
             </div>
           ) : ( null )
@@ -299,7 +302,7 @@ class TasksList extends React.Component {
       return (
         <Task
           key={ task._id }
-          task={ task } 
+          task={ task }
           coordination={ this.props.coordination } />
       );
     });
@@ -311,12 +314,16 @@ class Task extends React.Component {
       <div className='col-xs-12 task'>
         <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
         {
+<<<<<<< HEAD
           this.props.coordination && this.props.task.status === 'done' ? (
             <div className='col-xs-2 archive-task'></div>
           ) : (null)
         }
         {
           this.props.coordination && (this.props.task.status === 'not_doing' || this.props.task.status === 'doing') ? (
+=======
+          this.props.coordination ? (
+>>>>>>> e5a98cdc5cf6ebd886b9ec49737a68f832c905f9
             <div className='col-xs-2 edit-task'></div>
           ) : (null)
         }
@@ -370,8 +377,6 @@ class Task extends React.Component {
 ReactDOM.render(
   <Router history={ browserHistory }>
     <Route path='/' component={ TrelloPage }>
-      <IndexRoute component={ Information } />
-
       <Route path='/tasks/show' component={ BoardsList } />
       <Route path='/tasks/create' component={ CreateTask } />
     </Route>
