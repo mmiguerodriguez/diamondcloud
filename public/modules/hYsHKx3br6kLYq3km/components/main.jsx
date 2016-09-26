@@ -1,6 +1,7 @@
 const { DiamondAPI, React, ReactDOM, ReactRouter } = window;
 const { Router, Route, IndexRoute, browserHistory } = ReactRouter;
 
+// Start with '/' route
 browserHistory.push('/');
 
 class TrelloPage extends React.Component {
@@ -30,36 +31,37 @@ class TrelloPage extends React.Component {
     let self = this;
     let coordinationBoard, currentBoard;
 
-    const trelloHandle = DiamondAPI.subscribe({
-      request: {
-        collection: 'tasks',
-      },
-      callback(error, result) {
-        console.log('subscribe callback', result.tasks);
-        self.setState({
-          tasks: result.tasks,
-        });
-      }
-    });
-
     DiamondAPI.get({
       collection: 'coordinationBoard',
       filter: {},
       callback(error, result) {
-        coordinationBoard = result[0]._id;
-        currentBoard =  DiamondAPI.getCurrentBoard()._id;
+        coordinationBoard = result[0];
+        currentBoard =  DiamondAPI.getCurrentBoard();
 
         self.setState({
           coordinationBoard,
           currentBoard,
-          coordination: coordinationBoard === currentBoard,
-        })
-      }
-    });
+          coordination: coordinationBoard._id === currentBoard._id,
+        }, () => {
+          const trelloHandle = DiamondAPI.subscribe({
+            request: {
+              collection: 'tasks',
+            },
+            filter: {},
+            callback(error, result) {
+              console.log('subscribe callback', result.tasks);
+              self.setState({
+                tasks: result.tasks,
+              });
+            }
+          });
 
-    self.setState({
-      loading: trelloHandle.ready(),
-      ...DiamondAPI.getTeamData(),
+          self.setState({
+            loading: trelloHandle.ready(),
+            ...DiamondAPI.getTeamData(),
+          });
+        });
+      }
     });
   }
 }
@@ -217,6 +219,21 @@ class BoardsList extends React.Component {
         });
       }
 
+      // If it isn't a coordination board then render only
+      // one board tasks
+      if(!this.props.coordination) {
+        if(board._id === this.props.currentBoard._id) {
+          return (
+            <Board
+              key={ board._id }
+              board={ board }
+              tasks={ tasks } />
+          );
+        } else {
+          return;
+        }
+      }
+
       return (
         <Board
           key={ board._id }
@@ -311,13 +328,3 @@ ReactDOM.render(
   </Router>,
   document.getElementById('render-target')
 );
-
-/*
-<Router history={ browserHistory }>
-  <Route path='/' component={ TrelloPage }>
-    <IndexRoute path='/' component={ TrelloLayout } />
-    <Route path='/createTask' component={ CreateTask } />
-    <Route path='/showTasks' component={ TaskList } />
-  </Route>
-</Router>,
-*/
