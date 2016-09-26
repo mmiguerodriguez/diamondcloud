@@ -21,6 +21,8 @@ export const createBoard = new ValidatedMethod({
       'Must be logged in to create a board.');
     }
 
+    console.log('createBoard start users', users);
+
     let team = Teams.findOne(teamId);
     users = users || [];
 
@@ -47,7 +49,9 @@ export const createBoard = new ValidatedMethod({
       throw new Meteor.Error('Boards.methods.createBoard.userNotInTeam',
       'You cannot add yourself to a board when you are not part of the team.');
     }
-
+    
+    console.log('createBoard end users', users);
+  
     let board = {
       name,
       isPrivate,
