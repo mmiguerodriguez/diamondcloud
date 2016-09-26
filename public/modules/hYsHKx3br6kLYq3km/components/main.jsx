@@ -71,19 +71,22 @@ class TrelloLayout extends React.Component {
       <div className='col-xs-12 task-manager'>
         {
           this.props.coordination ? (
-            <div
-              className='col-xs-6 text-center'
-              onClick={ this.setLocation.bind(this, 'tasks/create') }>Crear tarea
-            </div>
+            /* <div
+              className='create-task'
+              onClick={ this.setLocation.bind(this, 'tasks/create') }>
+            </div> */
+            null
           ) : ( null )
         }
         <div
-          className={ (this.props.coordination ? 'col-xs-6' : 'col-xs-12') + ' ' + 'text-center' }
-          onClick={ this.setLocation.bind(this, 'tasks/show') }>Lista de tareas
+          className={ (this.props.coordination ? 'col-xs-12' : 'col-xs-12') + ' ' + 'text-center board-list-title' }
+          onClick={ this.setLocation.bind(this, 'tasks/show') }>
+            <b>Lista de tareas</b>
+            <hr className='hr-fix' />
         </div>
 
         {
-          React.cloneElement(this.props.children, { ...this.props })
+          React.cloneElement(this.props.children, { ...this.props, setLocation: this.setLocation })
         }
 
       </div>
@@ -99,10 +102,8 @@ class Information extends React.Component {
     return (
       <div>
         <p>
-          {
-            this.props.coordination ? (
-              'Mirá la información de los creativos o crea una tarea haciendo click en los botones'
-            ) : ( 'Mira tu lista de tareas haciendo click en el botón' )
+          { 
+            //borrar esto
           }
         </p>
       </div>
@@ -215,7 +216,7 @@ class BoardsList extends React.Component {
         this.props.tasks.forEach((task) => {
           if(task.boardId === board._id) {
             tasks.push(task);
-          };
+          }
         });
       }
 
@@ -227,7 +228,8 @@ class BoardsList extends React.Component {
             <Board
               key={ board._id }
               board={ board }
-              tasks={ tasks } />
+              tasks={ tasks }
+              setLocation={ this.props.setLocation } />
           );
         } else {
           return;
@@ -238,7 +240,9 @@ class BoardsList extends React.Component {
         <Board
           key={ board._id }
           board={ board }
-          tasks={ tasks } />
+          tasks={ tasks } 
+          coordination={ this.props.coordination }
+          setLocation={ this.props.setLocation } />
       );
     });
   }
@@ -247,11 +251,14 @@ class Board extends React.Component {
   render() {
     console.log(this.props.tasks);
     return (
-      <div className='col-xs-6 board'>
+      <div className='board'>
         <p className='text-center'>
           <b>{ this.props.board.name }</b>
         </p>
-        <TasksList tasks={ this.props.tasks } />
+        <TasksList 
+          tasks={ this.props.tasks } 
+          coordination={ this.props.coordination }
+          setLocation={ this.props.setLocation } />
       </div>
     );
   }
@@ -261,8 +268,25 @@ class TasksList extends React.Component {
     return (
       <div className='col-xs-12 tasks-list'>
         { this.renderTasks() }
+        { 
+          this.props.coordination ? (
+            <div className="form-group">
+              <input 
+                id="usr"
+                className="form-control" 
+                onKeyDown={ this.handleKeyDown.bind(this) } 
+                placeholder="Agregue una nueva tarea" 
+                type="text" />
+            </div>
+          ) : ( null )
+        }
       </div>
     );
+  }
+  handleKeyDown(event) {
+    if(event.which === 13) {
+      this.props.setLocation('tasks/create');
+    }
   }
   renderTasks() {
     if(this.props.tasks.length === 0) {
@@ -275,7 +299,8 @@ class TasksList extends React.Component {
       return (
         <Task
           key={ task._id }
-          task={ task } />
+          task={ task } 
+          coordination={ this.props.coordination } />
       );
     });
   }
@@ -284,7 +309,8 @@ class Task extends React.Component {
   render() {
     return (
       <div className='col-xs-12 task'>
-        <h5 className='task-title col-xs-12'>{ this.props.task.title }</h5>
+        <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
+        <div className='col-xs-2 edit-task'></div>
         <div className='col-xs-12'>
           {
             this.props.task.status === 'not_doing' ? (
@@ -293,7 +319,7 @@ class Task extends React.Component {
           }
           {
             this.props.task.status === 'doing' ? (
-              <p className='col-xs-12 btn truncate' onClick={ this.updateTask.bind(this, 'done') }>Marcar como finalizada</p>
+              <p className='col-xs-12 btn truncate' onClick={ this.updateTask.bind(this, 'done') }>Marcar como hecho</p>
             ) : ( null )
           }
         </div>
