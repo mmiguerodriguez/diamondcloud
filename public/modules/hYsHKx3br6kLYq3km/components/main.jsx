@@ -19,11 +19,11 @@ class TrelloPage extends React.Component {
   }
   render() {
     if(this.state.loading || this.state.loading === undefined) {
-      return ( <div>cargando...</div> );
+      return ( <div>Cargando...</div> );
     }
 
     return (
-      <TrelloLayout />
+      <TrelloLayout { ...this.state } { ...this.props } />
     );
   }
   componentDidMount() {
@@ -64,16 +64,7 @@ class TrelloPage extends React.Component {
   }
 }
 class TrelloLayout extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      location: '',
-    };
-  }
   render() {
-    console.log(this.props);
-    let self = this;
     return (
       <div className='col-xs-12 task-manager'>
         {
@@ -89,13 +80,31 @@ class TrelloLayout extends React.Component {
           onClick={ this.setLocation.bind(this, 'tasks/show') }>Lista de tareas
         </div>
 
-        { /* render children */ }
+        {
+          React.cloneElement(this.props.children, { ...this.props })
+        }
 
       </div>
     );
   }
   setLocation(location) {
     browserHistory.push(location);
+  }
+}
+
+class Information extends React.Component {
+  render() {
+    return (
+      <div>
+        <p>
+          {
+            this.props.coordination ? (
+              'Mirá la información de los creativos o crea una tarea haciendo click en los botones'
+            ) : ( 'Mira tu lista de tareas haciendo click en el botón' )
+          }
+        </p>
+      </div>
+    );
   }
 }
 
@@ -170,7 +179,7 @@ class CreateTask extends React.Component {
       obj: {
         title: self.state.title,
         boardId: self.state.boardId,
-        dueDate: self.state.dueDate,
+        dueDate: Number(self.state.dueDate),
         duration: [],
         status: 'not_doing',
         position: 0,
@@ -188,20 +197,60 @@ class CreateTask extends React.Component {
   }
 }
 
-class TaskList extends React.Component {
+class BoardsList extends React.Component {
   render() {
     return (
-      <div>
-        <h4 className='task-manager-title'>Tareas</h4>
-        <hr className='hr-fix' />
+      <div className='col-xs-12 board-list'>
+        { this.renderBoards() }
+      </div>
+    );
+  }
+  renderBoards() {
+    return this.props.boards.map((board) => {
+      let tasks = [];
+
+      if(this.props.tasks !== undefined) {
+        this.props.tasks.forEach((task) => {
+          if(task.boardId === board._id) {
+            tasks.push(task);
+          };
+        });
+      }
+
+      return (
+        <Board
+          key={ board._id }
+          board={ board }
+          tasks={ tasks } />
+      );
+    });
+  }
+}
+class Board extends React.Component {
+  render() {
+    console.log(this.props.tasks);
+    return (
+      <div className='col-xs-6 board'>
+        <p className='text-center'>
+          <b>{ this.props.board.name }</b>
+        </p>
+        <TasksList tasks={ this.props.tasks } />
+      </div>
+    );
+  }
+}
+class TasksList extends React.Component {
+  render() {
+    return (
+      <div className='col-xs-12 tasks-list'>
         { this.renderTasks() }
       </div>
     );
   }
   renderTasks() {
-    if(this.props.tasks === undefined) {
+    if(this.props.tasks.length === 0) {
       return (
-        <div>No hay tareas de este board</div>
+        <div>No hay tareas asignadas a este board</div>
       );
     }
 
@@ -218,20 +267,46 @@ class Task extends React.Component {
   render() {
     return (
       <div className='col-xs-12 task'>
-        <h5 className='task-title col-xs-6'>{ this.props.task.title }</h5>
-        <div className='col-xs-6'>
-          <p className='col-xs-12 btn truncate'>Marcar como haciendo</p>
+        <h5 className='task-title col-xs-12'>{ this.props.task.title }</h5>
+        <div className='col-xs-12'>
+          {
+            this.props.task.status === 'not_doing' ? (
+              <p className='col-xs-12 btn truncate' onClick={ this.updateTask.bind(this, 'doing') }>Marcar como haciendo</p>
+            ) : ( null )
+          }
+          {
+            this.props.task.status === 'doing' ? (
+              <p className='col-xs-12 btn truncate' onClick={ this.updateTask.bind(this, 'done') }>Marcar como finalizada</p>
+            ) : ( null )
+          }
         </div>
       </div>
     );
+  }
+  updateTask(status) {
+    let self = this;
+
+    DiamondAPI.update({
+      collection: 'tasks',
+      filter: {
+        _id: self.props.task._id,
+      },
+      updateQuery: {
+        $set: {
+          status,
+        },
+      },
+    });
   }
 }
 
 ReactDOM.render(
   <Router history={ browserHistory }>
     <Route path='/' component={ TrelloPage }>
+      <IndexRoute component={ Information } />
+
+      <Route path='/tasks/show' component={ BoardsList } />
       <Route path='/tasks/create' component={ CreateTask } />
-      <Route path='/tasks/show' component={ TaskList } />
     </Route>
   </Router>,
   document.getElementById('render-target')
