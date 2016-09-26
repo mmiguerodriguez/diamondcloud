@@ -310,7 +310,11 @@ class Task extends React.Component {
     return (
       <div className='col-xs-12 task'>
         <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
-        <div className='col-xs-2 edit-task'></div>
+        { 
+          this.props.coordination ? (
+            <div className='col-xs-2 edit-task'></div>
+          ) : ( null )
+        }
         <div className='col-xs-12'>
           {
             this.props.task.status === 'not_doing' ? (
