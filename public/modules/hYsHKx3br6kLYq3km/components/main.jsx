@@ -314,16 +314,12 @@ class Task extends React.Component {
       <div className='col-xs-12 task'>
         <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
         {
-<<<<<<< HEAD
           this.props.coordination && this.props.task.status === 'done' ? (
             <div className='col-xs-2 archive-task'></div>
           ) : (null)
         }
         {
           this.props.coordination && (this.props.task.status === 'not_doing' || this.props.task.status === 'doing') ? (
-=======
-          this.props.coordination ? (
->>>>>>> e5a98cdc5cf6ebd886b9ec49737a68f832c905f9
             <div className='col-xs-2 edit-task'></div>
           ) : (null)
         }
