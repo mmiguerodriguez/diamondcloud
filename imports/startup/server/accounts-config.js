@@ -4,6 +4,8 @@ Accounts.onCreateUser(function(options, user){
   let email = user.services[service].email;
   let picture = user.services[service].picture;
 
+  console.log('email on register', email, 'user', JSON.stringify(user.services[service], null, 2));
+
   user.emails = [{ address: email }];
   user.profile = {
     name,
