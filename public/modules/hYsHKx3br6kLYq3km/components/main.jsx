@@ -20,7 +20,7 @@ class TrelloPage extends React.Component {
   }
   render() {
     if(this.state.loading || this.state.loading === undefined) {
-      return ( <div>Cargando...</div> );
+      return ( <div className='loading'><div className='loader'></div></div> );
     }
 
     return (
@@ -310,19 +310,39 @@ class Task extends React.Component {
     return (
       <div className='col-xs-12 task'>
         <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
-        { 
-          this.props.coordination ? (
+        {
+          this.props.coordination && this.props.task.status === 'done' ? (
+            <div className='col-xs-2 archive-task'></div>
+          ) : (null)
+        }
+        {
+          this.props.coordination && (this.props.task.status === 'not_doing' || this.props.task.status === 'doing') ? (
             <div className='col-xs-2 edit-task'></div>
-          ) : ( null )
+          ) : (null)
+        }
+        {
+          !this.props.coordination && this.props.task.status === 'not_doing' ? (
+            <div className='col-xs-2 not-doing-task' onClick={ this.updateTask.bind(this, 'doing') }></div>
+          ) : (null)
+        }
+        {
+          !this.props.coordination && this.props.task.status === 'doing' ? (
+            <div className='col-xs-2 doing-task' onClick={ this.updateTask.bind(this, 'done') }></div>
+          ) : (null)
+        }
+        {
+          !this.props.coordination && this.props.task.status === 'done' ? (
+            <div className='col-xs-2 done-task'></div>
+          ) : (null)
         }
         <div className='col-xs-12'>
           {
-            this.props.task.status === 'not_doing' ? (
+            this.props.coordination && this.props.task.status === 'not_doing' ? (
               <p className='col-xs-12 btn truncate' onClick={ this.updateTask.bind(this, 'doing') }>Marcar como haciendo</p>
             ) : ( null )
           }
           {
-            this.props.task.status === 'doing' ? (
+            this.props.coordination && this.props.task.status === 'doing' ? (
               <p className='col-xs-12 btn truncate' onClick={ this.updateTask.bind(this, 'done') }>Marcar como hecho</p>
             ) : ( null )
           }
