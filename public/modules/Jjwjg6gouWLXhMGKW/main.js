@@ -12,9 +12,12 @@ window.onload = () => {
         insertStartupData((error, result) => {
           if (!!error) throw error;
           console.log('Inserted new data since there was none...');
+          console.log(result);
         });
       } else {
-        handleNewData(result[0]);
+        if(result.length > 0) {
+          handleNewData(result[0]);
+        }
       }
     },
   });
@@ -26,7 +29,12 @@ window.onload = () => {
     callback: (err, res) => {
       if (!!err) throw console.error(err);
       console.log('New data incoming...', res);
-      handleNewData(res.postIt[0]);
+
+      if(res.postIt) {
+        if(res.postIt.length > 0) {
+          handleNewData(res.postIt[0]);
+        }
+      }
     },
   });
 
