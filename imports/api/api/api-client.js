@@ -6,13 +6,13 @@ import { ModuleData } from '../module-data/module-data.js';
 export const generateApi = ({ moduleInstanceId, boards, users }) => {
   let subscriptions = [];
   return {
-    subscribe: ({ request, callback }) => {
+    subscribe({ request, callback }) {
       let validation = typeof request.collection == 'string';
       validation = validation && (typeof request.condition == 'object' || request.condition === undefined);
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         let serverSubscriptionCallback = {
-          onReady: () => {
+          onReady() {
             let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
 
             let moduleData = ModuleData.findOne({
@@ -39,7 +39,7 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
               removed: caller,
             });
           },
-          onError: (err) => {
+          onError(err) {
             console.log('bad 2');
             console.error(err);
             callback(console.error('Server Error when trying to subscribe'), undefined);
@@ -74,7 +74,7 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
         });
       }
     },
-    insert: ({ collection, obj, isGlobal, visibleBy, callback }) => {
+    insert({ collection, obj, isGlobal, visibleBy, callback }) {
       let validation = typeof collection == 'string';
       validation = validation && typeof obj == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
@@ -90,7 +90,7 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
         callback(console.error('The provided data is wrong.'), undefined);
       }
     },
-    update: ({ collection, filter, updateQuery, callback }) => {
+    update({ collection, filter, updateQuery, callback }) {
       let validation = typeof collection == 'string';
       validation = validation && typeof filter == 'object';
       validation = validation && typeof updateQuery == 'object';
@@ -106,7 +106,7 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
         callback(console.error('The provided data is wrong.'), undefined);
       }
     },
-    get: ({ collection, filter, callback }) => {
+    get({ collection, filter, callback }) {
       let validation = typeof collection == 'string';
       validation = validation && typeof filter == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
@@ -120,7 +120,7 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
         callback(console.error('The provided data is wrong.'), undefined);
       }
     },
-    remove: ({ collection, filter, callback }) => {
+    remove({ collection, filter, callback }) {
       let validation = typeof collection == 'string';
       validation = validation && typeof filter == 'object';
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
@@ -134,13 +134,16 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
         callback(console.error('The provided data is wrong.'), undefined);
       }
     },
-    getTeamData: () => {
+    getTeamData() {
       return {
         boards, // TODO: do not pass every property
         users,
       };
     },
-    getCurrentBoard: () => {
+    getCurrentUser() {
+      return Meteor.user();
+    },
+    getCurrentBoard() {
       return ModuleInstances.findOne(moduleInstanceId).board();
     },
   };

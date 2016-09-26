@@ -12,6 +12,7 @@ class TrelloPage extends React.Component {
       tasks: undefined,
       coordinationBoard: undefined,
       currentBoard: undefined,
+      currentUser: undefined,
       coordination: undefined,
       loading: undefined,
       users: undefined,
@@ -29,7 +30,7 @@ class TrelloPage extends React.Component {
   }
   componentDidMount() {
     let self = this;
-    let coordinationBoard, currentBoard, coordination;
+    let coordinationBoard, currentBoard, currentUser, coordination;
 
     DiamondAPI.get({
       collection: 'coordinationBoard',
@@ -37,11 +38,13 @@ class TrelloPage extends React.Component {
       callback(error, result) {
         coordinationBoard = result[0];
         currentBoard =  DiamondAPI.getCurrentBoard();
+        currentUser = DiamondAPI.getCurrentUser();
         coordination = coordinationBoard._id === currentBoard._id;
 
         self.setState({
           coordinationBoard,
           currentBoard,
+          currentUser,
           coordination,
         }, () => {
           let condition = coordination ? {} : {
@@ -98,7 +101,7 @@ class TrelloLayout extends React.Component {
         {
           React.cloneElement(this.props.children, {
             ...this.props,
-            setLocation: this.setLocation
+            setLocation: this.setLocation,
           })
         }
 
@@ -186,8 +189,8 @@ class CreateTask extends React.Component {
         title: self.state.title,
         boardId: self.state.boardId,
         dueDate: Number(self.state.dueDate),
-        duration: [],
-        status: 'not_doing',
+        durations: [],
+        status: 'not_finished',
         position: 0,
       },
       isGlobal: true,
@@ -232,7 +235,9 @@ class BoardsList extends React.Component {
               key={ board._id }
               board={ board }
               tasks={ tasks }
-              setLocation={ this.props.setLocation } />
+              coordination={ this.props.coordination }
+              setLocation={ this.props.setLocation }
+              currentUser={ this.props.currentUser } />
           );
         } else {
           return;
@@ -245,14 +250,14 @@ class BoardsList extends React.Component {
           board={ board }
           tasks={ tasks }
           coordination={ this.props.coordination }
-          setLocation={ this.props.setLocation } />
+          setLocation={ this.props.setLocation }
+          currentUser={ this.props.currentUser } />
       );
     });
   }
 }
 class Board extends React.Component {
   render() {
-    console.log(this.props.tasks);
     return (
       <div className='board'>
         <p className='text-center'>
@@ -261,7 +266,8 @@ class Board extends React.Component {
         <TasksList
           tasks={ this.props.tasks }
           coordination={ this.props.coordination }
-          setLocation={ this.props.setLocation } />
+          setLocation={ this.props.setLocation }
+          currentUser={ this.props.currentUser } />
       </div>
     );
   }
@@ -303,36 +309,142 @@ class TasksList extends React.Component {
         <Task
           key={ task._id }
           task={ task }
-          coordination={ this.props.coordination } />
+          coordination={ this.props.coordination }
+          currentUser={ this.props.currentUser } />
       );
     });
   }
 }
 class Task extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.startTask = this.startTask.bind(this);
+    this.finishTask = this.finishTask.bind(this);
+    this.isDoingTask = this.isDoingTask.bind(this);
+  }
   render() {
     return (
       <div className='col-xs-12 task'>
         <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
+
         {
           this.props.coordination ? (
             <div className='col-xs-2 edit-task'></div>
           ) : ( null )
         }
+
         <div className='col-xs-12'>
           {
-            this.props.task.status === 'not_doing' ? (
-              <p className='col-xs-12 btn truncate' onClick={ this.updateTask.bind(this, 'doing') }>Marcar como haciendo</p>
+            this.props.task.status === 'not_finished' || this.isDoingTask() ? (
+              <p className='col-xs-12 btn btn-success truncate' onClick={ this.updateTask.bind(this, 'finished') }>Finalizar tarea</p>
             ) : ( null )
           }
+
           {
-            this.props.task.status === 'doing' ? (
-              <p className='col-xs-12 btn truncate' onClick={ this.updateTask.bind(this, 'done') }>Marcar como hecho</p>
-            ) : ( null )
+            this.isDoingTask() ? (
+              <div>
+                <p className='col-xs-12 btn btn-danger truncate' onClick={ this.finishTask }>Frenar tarea</p>
+                <p className='col-xs-12 btn btn-danger truncate'>
+                  Estás laburando hace { this.prettyDate }
+                </p>
+              </div>
+            ) : (
+              <p className='col-xs-12 btn btn-primary truncate' onClick={ this.startTask }>Iniciar tarea</p>
+            )
           }
         </div>
       </div>
     );
   }
+  prettyDate() {
+    let start = this.lastTaskUpdate();
+    let end = new Date().getTime();
+
+    let difference_ms = end - start;
+    difference_ms = difference_ms / 1000;
+
+    let seconds = Math.floor(difference_ms % 60);
+    difference_ms = difference_ms / 60;
+
+    let minutes = Math.floor(difference_ms % 60);
+    difference_ms = difference_ms / 60;
+
+    let hours = Math.floor(difference_ms % 24);
+    let days = Math.floor(difference_ms / 24);
+
+    return days + ' ' + hours + ':' + minutes + ':' + seconds;
+  }
+
+  startTask() {
+    let self = this;
+
+    DiamondAPI.update({
+      collection: 'tasks',
+      filter: {
+        _id: self.props.task._id,
+      },
+      updateQuery: {
+        $push: {
+          durations: {
+            userId: self.props.currentUser._id,
+            startTime: new Date().getTime(),
+            endTime: undefined,
+          },
+        },
+      },
+      callback(error, result) {
+        if(error) {
+          console.error(error);
+        } else {
+          console.log('Started task correctly', result);
+        }
+      }
+    });
+  }
+  finishTask() {
+    let self = this;
+
+    DiamondAPI.update({
+      collection: 'tasks',
+      filter: {
+        _id: self.props.task._id,
+        'durations.userId': self.props.currentUser._id,
+        'durations.endTime': undefined,
+      },
+      updateQuery: {
+        $set: {
+          'durations.$.endTime': new Date().getTime()
+        },
+      },
+      callback() {
+
+      }
+    });
+  }
+  isDoingTask() {
+    let doingTask = false;
+
+    this.props.task.durations.forEach((duration) => {
+      if(duration.userId === this.props.currentUser._id) {
+        if(duration.endTime) {
+          doingTask = false;
+        } else {
+          doingTask = true;
+        }
+      }
+    });
+
+    return doingTask;
+  }
+  lastTaskUpdate() {
+    return Math.max(this.props.task.durations.map((duration) => {
+      if(duration.userId === this.props.currentUser._id) {
+        return duration.startTime;
+      }
+    }));
+  }
+
   updateTask(status) {
     let self = this;
 
@@ -349,6 +461,7 @@ class Task extends React.Component {
     });
   }
 }
+
 
 ReactDOM.render(
   <Router history={ browserHistory }>

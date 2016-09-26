@@ -12,6 +12,7 @@
 .app-wrapper-main::-webkit-scrollbar-track {
   background-color: #dfdfdf;
 }
+
 .truncate {
   white-space: nowrap;
   overflow: hidden;
@@ -21,12 +22,8 @@
   padding: 5px;
   margin-top: 5px;
   margin-bottom: 5px;
-  color: #fff;
-  background-color: #3498db;
 }
-.btn:hover {
-  color: #fff;
-}
+
 /*.create-task {
   position: fixed;
   bottom: 10px;
@@ -41,6 +38,7 @@
   background-repeat: no-repeat;
   z-index: 1;
 }*/
+
 .board-list {
   margin-top: 10px;
   display: -webkit-inline-box;
