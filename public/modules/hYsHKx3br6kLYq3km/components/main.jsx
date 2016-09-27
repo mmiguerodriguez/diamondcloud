@@ -337,7 +337,6 @@ class Task extends React.Component {
     return (
       <div className='col-xs-12 task'>
         <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
-
         {
           this.props.coordination && this.props.task.status === 'finished' ? (
             <div className='col-xs-2 archive-task' role='button'></div>
@@ -366,9 +365,20 @@ class Task extends React.Component {
         }
 
         {
-          !this.props.coordination && this.props.doing && this.props.task.status == 'not_finished' ? (
+          !this.props.coordination && this.props.doing ? (
             <p className='col-xs-12 btn btn-danger'>{ this.state.count } haciendo esta tarea</p>
           ) : ( null )
+        }
+        <p className='col-xs-12 expiration'>Vencimiento: 29/09/2016</p>
+        {
+          !this.props.coordination && this.props.doing ? (
+            <div className='col-xs-2 play active'><img src='/modules/hYsHKx3br6kLYq3km/img/pause-button.svg' width='15px' /></div>
+          ) : (null)
+        }
+        {
+          !this.props.coordination && !this.props.doing && this.props.task.status === 'not_finished' ? (
+            <div className='col-xs-2 pause active'><img src='/modules/hYsHKx3br6kLYq3km/img/play-arrow.svg' width='15px' /></div>
+          ) : (null)
         }
       </div>
     );

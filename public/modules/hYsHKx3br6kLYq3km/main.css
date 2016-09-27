@@ -103,7 +103,7 @@
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
 }
 .task-title {
-  margin: 15px 0;
+  margin: 15px 0 5px;
   font-weight: bold;
 }
 .tasks-list {
@@ -152,4 +152,24 @@
 }
 .task:hover {
   background-color: #eee;
+}
+.play, .pause {
+  height: 30px;
+  width: 30px;
+  margin: 0 0 15px 15px;
+  background-color: #27ae60;
+  border-radius: 50%;
+  opacity: 0;
+}
+.play img, .pause img {
+  position: absolute;
+  top: calc(50% - 7.5px);
+  left: calc(50% - 6.5px);
+}
+.play.active, .pause.active {
+  opacity: 1 !important;
+}
+.expiration {
+  margin: 0 0 5px;
+  font-size: 13px !important;
 }
