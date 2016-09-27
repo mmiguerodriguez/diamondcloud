@@ -31,7 +31,8 @@ if (Meteor.isServer) {
 
       beforeEach(function() {
         resetDatabase();
-
+        
+        createdGeneralBoard = false;
         users = [
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
@@ -61,7 +62,6 @@ if (Meteor.isServer) {
         Boards.insert(board);
 
         sinon.stub(createBoard, 'call', (obj, callback) => {
-          let team = Teams.findOne(obj.teamId);
           if(!createdGeneralBoard) {
             createdGeneralBoard = true;
             callback(null, { _id: generalBoardId });
@@ -138,6 +138,7 @@ if (Meteor.isServer) {
                 },
                 isGlobal: true,
               };
+
           chai.assert.deepEqual(result, expect);
           chai.assert.deepEqual(createModuleInstanceArgs, expectedCreateModuleInstanceArgs);
           chai.assert.deepEqual(apiInsertArgs, expectedApiInsertArgs);

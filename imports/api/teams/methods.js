@@ -25,7 +25,7 @@ export const createTeam = new ValidatedMethod({
       'Must be logged in to make a team.');
     }
 
-    let team, teamId, boardUsers = [];
+    let team, teamId, boardUsers = [{ email: Meteor.user().email() }];
     team = {
       name,
       plan,
@@ -52,17 +52,19 @@ export const createTeam = new ValidatedMethod({
     Teams.insert(team, (err, res) => {
       if(err) throw new Meteor.Error(err);
 
-      createModuleData();//creates the data storages for each module
+      createModuleData(); // Creates the data storages for each module
       teamId = res;
       team._id = teamId;
+
       createBoard.call({
         teamId,
         name: 'General',
         users: boardUsers,
         isPrivate: false,
       }, (err, res) => {
-        if(!!err)
+        if(!!err) {
           future.throw(err);
+        }
 
         team.boards.push({ _id: res._id });
 
@@ -72,8 +74,10 @@ export const createTeam = new ValidatedMethod({
           users: boardUsers,
           isPrivate: false,
         }, (err, coordinationBoard) => {
-          if(!!err)
+          if(!!err) {
             future.throw(err);
+          }
+
           team.boards.push({ _id: coordinationBoard._id });
           //create trello module instance
           createModuleInstance.call({
@@ -84,8 +88,10 @@ export const createTeam = new ValidatedMethod({
             width: 500,
             height: 200,
           }, (err, res) => {
-            if(!!err)
+            if(!!err) {
               future.throw(err);
+            }
+
             apiInsert.call({
               moduleInstanceId: res._id,
               collection: 'coordinationBoard',
@@ -94,8 +100,10 @@ export const createTeam = new ValidatedMethod({
               },
               isGlobal: true,
             }, (err, res) => {
-              if(!!err)
+              if(!!err) {
                 future.throw(err);
+              }
+
               usersEmails.forEach((email) => {
                 if(Meteor.users.findByEmail(email, {})) {
                   // If user is not registered in Diamond Cloud
