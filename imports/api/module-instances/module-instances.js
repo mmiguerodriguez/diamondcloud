@@ -48,6 +48,7 @@ export let generateMongoQuery = (input, collection) => {
     let isOperator = propertyName.charAt(0) === '$';
     if(!isOperator) {
       result[`data.${collection}.$.${propertyName}`] = input[propertyName];
+      delete input[propertyName];
     } else {
       result[propertyName] = input[propertyName];
     }
