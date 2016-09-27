@@ -51,7 +51,12 @@ class TrelloPage extends React.Component {
           currentUser,
           coordination,
         }, () => {
-          let condition = coordination ? {} : {
+          let condition = coordination ? {
+            $eq: [
+              'not_finished',
+              '$$element.status',
+            ],
+          } : {
             $eq: [
               currentBoard._id,
               '$$element.boardId',
@@ -63,7 +68,6 @@ class TrelloPage extends React.Component {
               collection: 'tasks',
               condition,
             },
-            filter: {},
             callback(error, result) {
               console.log('subscribe callback', result.tasks);
               self.setState({
@@ -461,11 +465,13 @@ class Task extends React.Component {
     });
   }
   lastTaskUpdate() {
-    return Math.max(this.props.task.durations.map((duration) => {
-      if(duration.userId === this.props.currentUser._id) {
-        return duration.startTime;
-      }
-    }));
+    return Math.max(
+      this.props.task.durations.map((duration) => {
+        if(duration.userId === this.props.currentUser._id) {
+          return duration.startTime;
+        }
+      })
+    );
   }
 
   updateTaskStatus(status) {
