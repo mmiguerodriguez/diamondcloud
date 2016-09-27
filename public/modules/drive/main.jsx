@@ -104,24 +104,34 @@ class FileManagerLayout extends React.Component {
 }
 
 class FileManagerPage extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      folders: [],
+      documents: [],
+      loading: true,
+    };
+  }
   renderFolders() {
 
   }
 
   render() {
-    if (this.props.loading) return null;
+    if (this.state.loading) return null;
     return (
-      <FileManagerLayout folders={ this.props.folders } documents={ this.props.documents } />
+      <FileManagerLayout folders={ this.state.folders } documents={ this.state.documents } />
     );
   }
 
   componentDidMount() {
-    console.log('cachin barin de don pinguin');
-    let obj = {
-      folders: [],
-      documents: [],
-      loading: false,
-    };
+    console.log('Loading module...');
+    
+    /*
+    
+    TODO: Fix the loading
+    
+    */
     
     const handle = DiamondAPI.subscribe({
       request: {
@@ -131,8 +141,8 @@ class FileManagerPage extends React.Component {
         }
       },
       callback: (err, res) => {
-        console.error(err);
-        console.log('newData:', res);
+        console.log('NEW DATA CALLBACK');
+        console.log('Error:', err, '- Res:', res);
         res[0].files.forEach((file) => {
           console.log(file);
           if (file.documentId) {
@@ -143,10 +153,10 @@ class FileManagerPage extends React.Component {
               },
               callback: (err, res) => {
                 console.log('doc got:', res);
-                obj.documents.push(res);
+                this.state.documents.push(res);
               }
             });
-            obj.loading = obj.loading || !subHandle.ready();
+            this.state.loading = this.state.loading && !subHandle.ready();
           } else if (file.folderId) {
             console.log(file.folderId);
             let subHandle = DiamondAPI.get({
@@ -156,20 +166,17 @@ class FileManagerPage extends React.Component {
               },
               callback: (err, res) => {
                 console.log('folder got:', res);
-                obj.folders.push(res);
+                this.state.folders.push(res);
               }
             });
-            obj.loading = obj.loading || !subHandle.ready();
+            this.state.loading = this.state.loading || !subHandle.ready();
           }
         });
       }
     });
 
-    obj.loading = obj.loading || !handle.ready();
-    this.props = {
-      ...obj,
-      ...this.props,
-    };
+    this.state.loading = this.state.loading || !handle.ready();
+    console.log('Loaded module');
   }
 }
 

@@ -4,26 +4,17 @@ export let Modules = new Mongo.Collection('Modules');
 
 export let createdModules = [
   {
-    _id: "Jjwjg6gouWLXhMGKW",
+    _id: "post-it",
     name: "Post it",
-    img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
+    img: "/modules/post-it/image.png",
     description: "I\"m a post it",
     validated: true,
   },
   {
-    _id: "wjQyQ6sGjzvNMDLiJ",
-    name: "File Manager",
-    img: "/modules/wjQyQ6sGjzvNMDLiJ/image.png",
-    description: "This is a File Manager",
+    _id: "drive",
+    name: "Drive",
+    img: "/modules/drive/image.png",
+    description: "This is Drive (Sparta)!",
     validated: true,
-  }
-  /*
-  {
-    _id: "Hwqpiuufhsdf735sj",
-    name: "File Picker",
-    img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
-    description: "Google Drive API test",
-    validated: true,
-  }
-  */
+  },
 ];

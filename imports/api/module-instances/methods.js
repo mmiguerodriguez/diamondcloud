@@ -13,7 +13,7 @@ export const createModuleInstance = new ValidatedMethod({
   name: 'ModuleInstances.methods.create',
   validate: new SimpleSchema({
     boardId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    moduleId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    moduleId: { type: String },
     x: { type: Number, min: 0 },
     y: { type: Number, min: 0 },
     width: { type: Number },
