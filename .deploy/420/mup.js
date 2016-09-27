@@ -11,7 +11,7 @@ module.exports = {
 
   meteor: {
     name: 'cloudDev',
-    path: '../../cloudDev',
+    path: '../../',
     servers: {
       one: {}
     },
