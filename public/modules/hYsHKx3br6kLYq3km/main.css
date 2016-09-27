@@ -64,7 +64,8 @@
 }*/
 
 .board-list {
-  max-height: calc(100vh - 58px);
+  max-height: calc(100vh - 73px);
+  height: calc(100vh - 73px);
   margin-top: 10px;
   display: -webkit-inline-box;
   overflow-x: auto;

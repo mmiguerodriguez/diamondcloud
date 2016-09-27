@@ -295,7 +295,7 @@ class TasksList extends React.Component {
   renderTasks() {
     if(this.props.tasks.length === 0) {
       return (
-        <div>No hay tareas asignadas a este board</div>
+        <div className='text-center'>No hay tareas asignadas a este board</div>
       );
     }
 
