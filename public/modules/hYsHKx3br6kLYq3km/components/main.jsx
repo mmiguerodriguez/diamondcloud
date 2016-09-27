@@ -21,7 +21,11 @@ class TrelloPage extends React.Component {
   }
   render() {
     if(this.state.loading || this.state.loading === undefined) {
-      return ( <div>Cargando...</div> );
+      return (
+        <div className='loading'>
+          <div className='loader'></div>
+        </div>
+      );
     }
 
     return (
@@ -81,15 +85,6 @@ class TrelloLayout extends React.Component {
   render() {
     return (
       <div className='col-xs-12 task-manager'>
-        {
-          this.props.coordination ? (
-            /* <div
-              className='create-task'
-              onClick={ this.setLocation.bind(this, 'tasks/create') }>
-            </div> */
-            null
-          ) : ( null )
-        }
         <div
           role='button'
           className='col-xs-12 text-center board-list-title'
@@ -305,10 +300,21 @@ class TasksList extends React.Component {
     }
 
     return this.props.tasks.map((task) => {
+
+      let doing = false;
+      task.durations.forEach((duration) => {
+        if(duration.userId === this.props.currentUser._id) {
+          if(!duration.endTime) {
+            doing = true;
+          }
+        }
+      });
+
       return (
         <Task
           key={ task._id }
           task={ task }
+          doing={ doing }
           coordination={ this.props.coordination }
           currentUser={ this.props.currentUser } />
       );
@@ -319,9 +325,13 @@ class Task extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      count: this.prettyDate.bind(this),
+      intervalId: undefined,
+    };
+
     this.startTask = this.startTask.bind(this);
     this.finishTask = this.finishTask.bind(this);
-    this.isDoingTask = this.isDoingTask.bind(this);
   }
   render() {
     return (
@@ -329,34 +339,54 @@ class Task extends React.Component {
         <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
 
         {
-          this.props.coordination ? (
-            <div className='col-xs-2 edit-task'></div>
+          this.props.coordination && this.props.task.status === 'finished' ? (
+            <div className='col-xs-2 archive-task' role='button'></div>
+          ) : ( null )
+        }
+        {
+          this.props.coordination && this.props.task.status === 'not_finished' ? (
+            <div className='col-xs-2 edit-task' role='button'></div>
           ) : ( null )
         }
 
-        <div className='col-xs-12'>
-          {
-            this.props.task.status === 'not_finished' || this.isDoingTask() ? (
-              <p className='col-xs-12 btn btn-success truncate' onClick={ this.updateTask.bind(this, 'finished') }>Finalizar tarea</p>
-            ) : ( null )
-          }
+        {
+          !this.props.coordination && !this.props.doing && this.props.task.status === 'not_finished' ? (
+            <div className='col-xs-2 not-doing-task' role='button' onClick={ this.startTask }></div>
+          ) : ( null )
+        }
+        {
+          !this.props.coordination && this.props.doing && this.props.task.status === 'not_finished' ? (
+            <div className='col-xs-2 doing-task' role='button' onClick={ this.updateTaskStatus.bind(this, 'finished') }></div>
+          ) : ( null )
+        }
+        {
+          !this.props.coordination && this.props.task.status === 'finished' ? (
+            <div className='col-xs-2 done-task' role='button'></div>
+          ) : ( null )
+        }
 
-          {
-            this.isDoingTask() ? (
-              <div>
-                <p className='col-xs-12 btn btn-danger truncate' onClick={ this.finishTask }>Frenar tarea</p>
-                <p className='col-xs-12 btn btn-danger truncate'>
-                  Estás laburando hace { this.prettyDate }
-                </p>
-              </div>
-            ) : (
-              <p className='col-xs-12 btn btn-primary truncate' onClick={ this.startTask }>Iniciar tarea</p>
-            )
-          }
-        </div>
+        {
+          !this.props.coordination && this.props.doing && this.props.task.status == 'not_finished' ? (
+            <p className='col-xs-12 btn btn-danger'>{ this.state.count } haciendo esta tarea</p>
+          ) : ( null )
+        }
       </div>
     );
   }
+  componentDidMount() {
+    if(this.props.doing) {
+      let intervalId = setInterval(this.prettyDate.bind(this), 1000);
+      this.setState({
+        intervalId,
+      });
+    }
+  }
+  componentWillUnmount() {
+    if(this.state.intervalId) {
+      clearInterval(this.state.intervalId);
+    }
+  }
+
   prettyDate() {
     let start = this.lastTaskUpdate();
     let end = new Date().getTime();
@@ -373,7 +403,15 @@ class Task extends React.Component {
     let hours = Math.floor(difference_ms % 24);
     let days = Math.floor(difference_ms / 24);
 
-    return days + ' ' + hours + ':' + minutes + ':' + seconds;
+    seconds = seconds > 9 ? "" + seconds: "0" + seconds;
+    minutes = minutes > 9 ? "" + minutes: "0" + minutes;
+    hours = hours > 9 ? "" + hours: "0" + hours;
+
+    let count = days + (days === 1 ? 'día' : ' días ') + hours + ':' + minutes + ':' + seconds;
+
+    this.setState({
+      count,
+    });
   }
 
   startTask() {
@@ -418,24 +456,9 @@ class Task extends React.Component {
         },
       },
       callback() {
-
+        clearInterval(self.state.intervalId);
       }
     });
-  }
-  isDoingTask() {
-    let doingTask = false;
-
-    this.props.task.durations.forEach((duration) => {
-      if(duration.userId === this.props.currentUser._id) {
-        if(duration.endTime) {
-          doingTask = false;
-        } else {
-          doingTask = true;
-        }
-      }
-    });
-
-    return doingTask;
   }
   lastTaskUpdate() {
     return Math.max(this.props.task.durations.map((duration) => {
@@ -445,8 +468,12 @@ class Task extends React.Component {
     }));
   }
 
-  updateTask(status) {
+  updateTaskStatus(status) {
     let self = this;
+
+    if(self.props.doing) {
+      this.finishTask();
+    }
 
     DiamondAPI.update({
       collection: 'tasks',
@@ -458,10 +485,12 @@ class Task extends React.Component {
           status,
         },
       },
+      callback() {
+
+      }
     });
   }
 }
-
 
 ReactDOM.render(
   <Router history={ browserHistory }>
