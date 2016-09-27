@@ -10,8 +10,8 @@ module.exports = {
   },
 
   meteor: {
-    name: 'cloud',
-    path: './',
+    name: 'cloudDev',
+    path: '../../cloudDev',
     servers: {
       one: {}
     },
@@ -19,10 +19,11 @@ module.exports = {
       serverOnly: true,
     },
     env: {
-      ROOT_URL: 'http://diamondcloud.tk',
+      ROOT_URL: 'http://diamondcloud.tk:420',
+      PORT:'420',
       // METEOR_DOWN_KEY: 'MY_SUPER_SECRET_KEY',
       // ROOT_URL: 'http://159.203.182.182',
-      // MONGO_URL: '159.203.182.182'
+      //MONGO_URL: 'http://diamondcloud.tk:420'
     },
 
     //dockerImage: 'kadirahq/meteord'
