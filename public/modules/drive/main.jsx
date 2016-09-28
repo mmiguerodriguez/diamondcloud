@@ -60,40 +60,65 @@ DiamondAPI.insert({
 */
 
 class FileManagerLayout extends React.Component {
+  getDocumentName(document) {
+    return document._id;
+  }
+  
+  openDocument(link) {
+    // TODO: Make an option to return to file manager
+    window.location = link;
+  }
+  
   renderFolders() {
-
+    return this.props.folders.length > 0 ?
+           (
+             this.props.folders.map((folder) => {
+               return (
+                 <div className="col-xs-4 fixed">
+                   <div className="folder">
+                     <p className="truncate">{ folder.name }</p>
+                   </div>
+                 </div>
+               );
+             })
+           ) :
+           (
+             <div>No hay carpetas</div>
+           );
   }
   
   renderDocuments() {
-    
+    return this.props.documents.length > 0 ?
+           (
+             this.props.documents.map((document) => {
+               return (
+                 <div className="col-xs-4 fixed">
+                   <div onClick={ this.openDocument.bind(this, document.link) } className="document">
+                     <p className="truncate">{ this.getDocumentName(document) }</p>
+                     <div className="preview"></div>
+                   </div>
+                 </div>
+               );
+             })
+           ) :
+           (
+             <div>No hay carpetas</div>
+           ) ;
   }
 
   render() {
     return (
       <div id='resizable' className='file-manager ui-widget-content'>
         <div className="container-fluid files-container">
-          <p className="folders-title-container">
-            Carpetas
-          </p>
+          <p className="folders-title-container">Carpetas</p>
           <hr className="divider" />
           <div className="folders-container">
-            <div className="col-xs-4 fixed">
-              <div className="folder">
-                <p className="truncate">Diamond Cloud</p>
-              </div>
-            </div>
+            { this.renderFolders() }
           </div>
-          <p className="documents-title-container">
-            Archivos
-          </p>
+          <p className="documents-title-container">Archivos</p>
           <hr className="divider" />
           <div className="documents-container">
-            <div className="col-xs-4 fixed">
-              <div className="document">
-                <p className="truncate">Soy un documento</p>
-                <div className="preview"></div>
-              </div>
-            </div>
+            { this.renderDocuments() }
           </div>
         </div>
         <div className="create">
@@ -114,18 +139,29 @@ class FileManagerPage extends React.Component {
     this.state = {
       folders: [],
       documents: [],
-      loadingBalance: 0,
+      loadingBalance: -1,
     };
   }
 
   render() {
-    if (this.state.loadingBalance != 0) return 'Cargando...';
+    if (this.state.loadingBalance != 0) {
+      return (
+        <div className='loading'>
+          <div className='loader'></div>
+        </div>
+      );
+    }
+    
     return (
       <FileManagerLayout folders={ this.state.folders } documents={ this.state.documents } />
     );
   }
 
   componentDidMount() {
+    let self = this;
+    let documents = this.state.documents;
+    let folders = this.state.folders;
+    
     const handle = DiamondAPI.subscribe({
       request: {
         collection: 'files',
@@ -133,8 +169,11 @@ class FileManagerPage extends React.Component {
           $eq: ['$$element.boardId', DiamondAPI.getCurrentBoard()._id],
         }
       },
-      callback: (err, res) => {
-        res[0].files.forEach((file) => {
+      callback: (err, subRes) => {
+        this.setState({
+          loadingBalance: this.state.loadingBalance + 1 - subRes[0].files.length,
+        });
+        subRes[0].files.forEach((file) => {
           if (file.documentId) {
             let subHandle = DiamondAPI.get({
               collection: 'documents',
@@ -142,11 +181,16 @@ class FileManagerPage extends React.Component {
                 _id: file.documentId
               },
               callback: (err, res) => {
-                this.state.documents.push(res);
-                this.state.loadingBalance++;
+                documents.push(res[0]);
+                console.log(documents);
+                self.setState({
+                  documents,
+                });
+                self.setState({
+                  loadingBalance: self.state.loadingBalance + 1
+                });
               }
             });
-            this.state.loadingBalance--;
           } else if (file.folderId) {
             let subHandle = DiamondAPI.get({
               collection: 'folders',
@@ -154,11 +198,15 @@ class FileManagerPage extends React.Component {
                 _id: file.folderId
               },
               callback: (err, res) => {
-                this.state.folders.push(res);
-                this.state.loadingBalance++;
+                folders.push(res[0]);
+                self.setState({
+                  folders,
+                });
+                self.setState({
+                  loadingBalance: self.state.loadingBalance + 1
+                });
               }
             });
-            this.state.loadingBalance--;
           }
         });
       }
