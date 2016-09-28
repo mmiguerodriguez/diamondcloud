@@ -86,6 +86,11 @@ class TrelloPage extends React.Component {
   }
 }
 class TrelloLayout extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = { task_title: '' };
+  }
   render() {
     return (
       <div className='col-xs-12 task-manager'>
@@ -100,7 +105,9 @@ class TrelloLayout extends React.Component {
         {
           React.cloneElement(this.props.children, {
             ...this.props,
+            ...this.state,
             setLocation: this.setLocation,
+            handleChange: this.handleChange.bind(this)
           })
         }
 
@@ -110,6 +117,11 @@ class TrelloLayout extends React.Component {
   setLocation(location) {
     browserHistory.push(location);
   }
+  handleChange(index, event) {
+    this.setState({
+      [index]: event.target.value,
+    });
+  }
 }
 
 class CreateTask extends React.Component {
@@ -117,7 +129,7 @@ class CreateTask extends React.Component {
     super(props);
 
     this.state = {
-      title: '',
+      title: this.props.task_title,
       dueDate: '',
       boardId: this.props.boards[0]._id,
     };
@@ -137,7 +149,7 @@ class CreateTask extends React.Component {
               id='create-task-title'
               className='form-control'
               value={ this.state.title }
-              onChange={ this.handleChange.bind(this, 'title') }
+              onChange={ this.handleChange.bind(null, 'task_title') }
               type='text'
               placeholder='Ingresá el título' />
           </div>
@@ -250,7 +262,8 @@ class BoardsList extends React.Component {
           tasks={ tasks }
           coordination={ this.props.coordination }
           setLocation={ this.props.setLocation }
-          currentUser={ this.props.currentUser } />
+          currentUser={ this.props.currentUser }
+          handleChange={ this.props.handleChange } />
       );
     });
   }
@@ -264,7 +277,8 @@ class Board extends React.Component {
           tasks={ this.props.tasks }
           coordination={ this.props.coordination }
           setLocation={ this.props.setLocation }
-          currentUser={ this.props.currentUser } />
+          currentUser={ this.props.currentUser }
+          handleChange={ this.props.handleChange }/>
       </div>
     );
   }
@@ -283,6 +297,7 @@ class TasksList extends React.Component {
               <input
                 id="usr"
                 className="form-control"
+                onChange={ this.props.handleChange.bind(null, 'task_title') }
                 onKeyDown={ this.handleKeyDown.bind(this) }
                 placeholder="Agregue una nueva tarea"
                 type="text" />
