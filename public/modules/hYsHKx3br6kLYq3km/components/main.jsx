@@ -4,19 +4,19 @@ const { Router, Route, IndexRoute, browserHistory } = ReactRouter;
 // Start with '/' route
 browserHistory.push('/tasks/show');
 
-class TrelloPage extends React.Component {
+class TaskManagerPage extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      tasks: undefined,
-      coordinationBoard: undefined,
-      currentBoard: undefined,
-      currentUser: undefined,
-      coordination: undefined,
+      tasks: [],
+      coordinationBoard: {},
+      currentBoard: {},
+      currentUser: {},
+      coordination: false,
       loading: undefined,
-      users: undefined,
-      boards: undefined,
+      users: [],
+      boards: [],
     };
   }
   render() {
@@ -29,7 +29,7 @@ class TrelloPage extends React.Component {
     }
 
     return (
-      <TrelloLayout { ...this.state } { ...this.props } />
+      <TaskManagerLayout { ...this.state } { ...this.props } />
     );
   }
   componentDidMount() {
@@ -51,16 +51,21 @@ class TrelloPage extends React.Component {
           currentUser,
           coordination,
         }, () => {
-          let condition = coordination ? {
-            $eq: [
-              'not_finished',
-              '$$element.status',
-            ],
-          } : {
-            $eq: [
-              currentBoard._id,
-              '$$element.boardId',
-            ],
+          let condition = coordination ? {} : {
+            $and: [
+              {
+                $eq: [
+                  currentBoard._id,
+                  '$$element.boardId',
+                ],
+              },
+              {
+                $eq: [
+                  'not_finished',
+                  '$$element.status',
+                ]
+              }
+            ]
           };
 
           const trelloHandle = DiamondAPI.subscribe({
@@ -85,11 +90,11 @@ class TrelloPage extends React.Component {
     });
   }
 }
-class TrelloLayout extends React.Component {
+class TaskManagerLayout extends React.Component {
   constructor(props) {
     super(props);
-    
-    this.state = { task_title: '' };
+
+    this.state = { task_title: '', selected_board_id: undefined };
   }
   render() {
     return (
@@ -114,12 +119,14 @@ class TrelloLayout extends React.Component {
       </div>
     );
   }
+  
   setLocation(location) {
     browserHistory.push(location);
   }
-  handleChange(index, event) {
+  handleChange(index, boardId, event) {
     this.setState({
       [index]: event.target.value,
+      selected_board_id: boardId,
     });
   }
 }
@@ -131,7 +138,7 @@ class CreateTask extends React.Component {
     this.state = {
       title: this.props.task_title,
       dueDate: '',
-      boardId: this.props.boards[0]._id,
+      boardId: this.props.selected_board_id || this.props.boards[0]._id,
     };
 
     this.createTask = this.createTask.bind(this);
@@ -149,7 +156,7 @@ class CreateTask extends React.Component {
               id='create-task-title'
               className='form-control'
               value={ this.state.title }
-              onChange={ this.handleChange.bind(null, 'task_title') }
+              onChange={ this.props.handleChange.bind(null, 'task_title', undefined) }
               type='text'
               placeholder='Ingresá el título' />
           </div>
@@ -168,6 +175,7 @@ class CreateTask extends React.Component {
             <select
               id='create-task-board'
               className='form-control'
+              value={ this.state.boardId }
               onChange={ this.handleChange.bind(this, 'boardId') }>
               { this.renderOptions() }
             </select>
@@ -180,17 +188,14 @@ class CreateTask extends React.Component {
       </div>
     );
   }
-  renderOptions() {
-    return this.props.boards.map((board) => {
-      return (
-        <option
-          key={ board._id }
-          value={ board._id }>
-          { board.name }
-        </option>
-      );
-    });
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.task_title !== this.props.task_title) {
+      this.setState({
+        title: nextProps.task_title,
+      });
+    }
   }
+
   createTask() {
     let self = this;
 
@@ -210,6 +215,18 @@ class CreateTask extends React.Component {
       }
     });
   }
+  renderOptions() {
+    return this.props.boards.map((board) => {
+      return (
+        <option
+          key={ board._id }
+          value={ board._id }>
+          { board.name }
+        </option>
+      );
+    });
+  }
+
   handleChange(index, event) {
     this.setState({
       [index]: event.target.value,
@@ -229,6 +246,8 @@ class BoardsList extends React.Component {
     return this.props.boards.map((board) => {
       let tasks = [];
 
+      // If there are tasks then push task to array if it is from
+      // the actual board
       if(this.props.tasks !== undefined) {
         this.props.tasks.forEach((task) => {
           if(task.boardId === board._id) {
@@ -255,6 +274,8 @@ class BoardsList extends React.Component {
         }
       }
 
+      // If it is a coordination board then it will return the
+      // information we want
       return (
         <Board
           key={ board._id }
@@ -284,6 +305,11 @@ class Board extends React.Component {
   }
 }
 class TasksList extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleKeyDown = this.handleKeyDown.bind(this;)
+  }
   render() {
     return (
       <div className='col-xs-12 tasks-list'>
@@ -297,8 +323,8 @@ class TasksList extends React.Component {
               <input
                 id="usr"
                 className="form-control"
-                onChange={ this.props.handleChange.bind(null, 'task_title') }
-                onKeyDown={ this.handleKeyDown.bind(this) }
+                onChange={ this.props.handleChange.bind(null, 'task_title', this.props.board._id) }
+                onKeyDown={ this.handleKeyDown }
                 placeholder="Agregue una nueva tarea"
                 type="text" />
             </div>
@@ -307,11 +333,7 @@ class TasksList extends React.Component {
       </div>
     );
   }
-  handleKeyDown(event) {
-    if(event.which === 13) {
-      this.props.setLocation('tasks/create');
-    }
-  }
+
   renderTasks() {
     if(this.props.tasks.length === 0) {
       return (
@@ -340,14 +362,19 @@ class TasksList extends React.Component {
       );
     });
   }
+  handleKeyDown(event) {
+    if(event.which === 13) {
+      this.props.setLocation('tasks/create');
+    }
+  }
 }
 class Task extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      count: this.prettyDate.bind(this),
-      intervalId: undefined,
+      count: this.prettyDate(),
+      intervalId: false,
     };
 
     this.startTask = this.startTask.bind(this);
@@ -367,53 +394,53 @@ class Task extends React.Component {
             <div className='col-xs-2 edit-task' title='Editar tarea' role='button'></div>
           ) : ( null )
         }
-        
-        <p className='col-xs-10 expiration'>Vencimiento: 29/09/2016</p>
-        
+
+        <p className='col-xs-10 expiration'>Vencimiento: { new Date(this.props.task.dueDate).toLocaleDateString() }</p>
+
         {
           !this.props.coordination && this.props.doing ? (
             <div>
-              <div 
-                className='done' 
-                title='Marcar como finalizado' 
-                role='button' 
+              <div
+                className='done'
+                title='Marcar como finalizado'
+                role='button'
                 onClick={ this.updateTaskStatus.bind(this, 'finished') }>
                   <img
-                    src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg' 
+                    src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg'
                     width='25px' />
               </div>
-              <div 
-                className='pause' 
-                title='Marcar como pausado' 
-                role='button' 
+              <div
+                className='pause'
+                title='Marcar como pausado'
+                role='button'
                 onClick={ this.finishTask }>
                   <img
-                    src='/modules/hYsHKx3br6kLYq3km/img/pause-button.svg' 
+                    src='/modules/hYsHKx3br6kLYq3km/img/pause-button.svg'
                     width='15px' />
               </div>
             </div>
           ) : ( null )
         }
-        
+
         {
           !this.props.coordination && !this.props.doing && this.props.task.status === 'not_finished' ? (
             <div>
-              <div 
-                className='done' 
-                title='Marcar como finalizado' 
-                role='button' 
+              <div
+                className='done'
+                title='Marcar como finalizado'
+                role='button'
                 onClick={ this.updateTaskStatus.bind(this, 'finished') }>
                   <img
-                    src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg' 
+                    src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg'
                     width='25px' />
               </div>
-              <div 
-                className='play' 
-                title='Marcar como haciendo' 
-                role='button' 
+              <div
+                className='play'
+                title='Marcar como haciendo'
+                role='button'
                 onClick={ this.startTask }>
                   <img
-                    src='/modules/hYsHKx3br6kLYq3km/img/play-arrow.svg' 
+                    src='/modules/hYsHKx3br6kLYq3km/img/play-arrow.svg'
                     width='15px' />
               </div>
             </div>
@@ -424,20 +451,114 @@ class Task extends React.Component {
   }
   componentDidMount() {
     if(this.props.doing) {
-      let intervalId = setInterval(this.prettyDate.bind(this), 100000000);
-      this.setState({
-        intervalId,
-      });
+      this.playInterval();
+    }
+  }
+  componentDidUpdate() {
+    if(this.props.doing) {
+      if(!this.state.interval) {
+        this.playInterval();
+      }
     }
   }
   componentWillUnmount() {
     if(this.state.intervalId) {
-      clearInterval(this.state.intervalId);
+      this.stopInterval();
     }
   }
 
+  startTask() {
+    let self = this;
+
+    DiamondAPI.update({
+      collection: 'tasks',
+      filter: {
+        _id: self.props.task._id,
+      },
+      updateQuery: {
+        $push: {
+          durations: {
+            $flags: {
+              insertAsPlainObject: true,
+            },
+            userId: self.props.currentUser._id,
+            startTime: new Date().getTime(),
+            endTime: undefined,
+          },
+        },
+      },
+      callback(error, result) {
+        if(error) {
+          console.error(error);
+        } else {
+          console.log('Started task correctly', result);
+        }
+      }
+    });
+  }
+  finishTask() {
+    let self = this;
+
+    DiamondAPI.update({
+      collection: 'tasks',
+      filter: {
+        _id: self.props.task._id,
+        'durations.userId': self.props.currentUser._id,
+        'durations.startTime': self.getLastTaskUpdate(),
+        'durations.endTime': undefined,
+      },
+      updateQuery: {
+        $set: {
+          'durations.0.endTime': new Date().getTime(),
+        },
+      },
+      callback(error, result) {
+        if(error) {
+          console.error(error);
+        } else {
+          console.log('Paused task correctly', result);
+          self.stopInterval();
+        }
+      }
+    });
+  }
+  updateTaskStatus(status) {
+    let self = this;
+
+    if(self.props.doing) {
+      this.finishTask();
+    }
+
+    DiamondAPI.update({
+      collection: 'tasks',
+      filter: {
+        _id: self.props.task._id,
+      },
+      updateQuery: {
+        $set: {
+          status,
+        },
+      },
+      callback() {
+
+      }
+    });
+  }
+
+  playInterval() {
+    let intervalId = setInterval(this.prettyDate.bind(this), 1000);
+    this.setState({
+      intervalId,
+    });
+  }
+  stopInterval() {
+    this.clearInterva(this.state.intervalId);
+    this.setState({
+      intervalId: false,
+    });
+  }
   prettyDate() {
-    let start = this.lastTaskUpdate();
+    let start = this.getLastTaskUpdate();
     let end = new Date().getTime();
 
     let difference_ms = end - start;
@@ -463,64 +584,7 @@ class Task extends React.Component {
     });
   }
 
-  startTask() {
-    let self = this;
-
-    DiamondAPI.update({
-      collection: 'tasks',
-      filter: {
-        _id: self.props.task._id,
-      },
-      updateQuery: {
-        $push: {
-          durations: {
-            $flags: { 
-              insertAsPlainObject: true,
-            },
-            userId: self.props.currentUser._id,
-            startTime: new Date().getTime(),
-            endTime: undefined,
-          },
-        },
-      },
-      callback(error, result) {
-        if(error) {
-          console.error(error);
-        } else {
-          console.log('Started task correctly', result);
-        }
-      }
-    });
-  }
-  finishTask() {
-    let self = this;
-
-    console.log('lastTaskUpdate', self.lastTaskUpdate());
-
-    DiamondAPI.update({
-      collection: 'tasks',
-      filter: {
-        _id: self.props.task._id,
-        'durations.userId': self.props.currentUser._id,
-        'durations.startTime': self.lastTaskUpdate(),
-        'durations.endTime': undefined,
-      },
-      updateQuery: {
-        $set: {
-          'durations.0.endTime': new Date().getTime(),
-        },
-      },
-      callback(error, result) {
-        if(error) {
-          console.error(error);
-        } else {
-          console.log('Paused task correctly', result);
-          clearInterval(self.state.intervalId);
-        }
-      }
-    });
-  }
-  lastTaskUpdate() {
+  getLastTaskUpdate() {
     let startTimes = this.props.task.durations.map((duration) => {
       if(duration.userId === this.props.currentUser._id) {
         if(duration.endTime === undefined) {
@@ -530,37 +594,14 @@ class Task extends React.Component {
         }
       }
     });
-    
+
     return Math.max(...startTimes);
-  }
-
-  updateTaskStatus(status) {
-    let self = this;
-
-    if(self.props.doing) {
-      this.finishTask();
-    }
-
-    DiamondAPI.update({
-      collection: 'tasks',
-      filter: {
-        _id: self.props.task._id,
-      },
-      updateQuery: {
-        $set: {
-          status,
-        },
-      },
-      callback() {
-
-      }
-    });
   }
 }
 
 ReactDOM.render(
   <Router history={ browserHistory }>
-    <Route path='/' component={ TrelloPage }>
+    <Route path='/' component={ TaskManagerPage }>
       <Route path='/tasks/show' component={ BoardsList } />
       <Route path='/tasks/create' component={ CreateTask } />
     </Route>
