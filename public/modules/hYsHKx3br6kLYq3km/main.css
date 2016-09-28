@@ -48,21 +48,6 @@
   margin-bottom: 5px;
 }
 
-/*.create-task {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  height: 55.5px;
-  width: 55.5px;
-  border-radius: 50%;
-  background-color: #f44336;
-  background-image: url(img/create-task.svg);
-  background-position: center;
-  background-size: 22px;
-  background-repeat: no-repeat;
-  z-index: 1;
-}*/
-
 .board-list {
   max-height: calc(100vh - 73px);
   height: calc(100vh - 73px);
@@ -145,31 +130,55 @@
 }
 .task:hover .edit-task,
 .task:hover .archive-task,
-.task:hover .not-doing-task,
-.task:hover .doing-task,
-.task:hover .done-task {
+.task:hover .play,
+.task:hover .pause,
+.task:hover .done {
   opacity: 0.7;
 }
 .task:hover {
   background-color: #eee;
 }
-.play, .pause {
+.play, .pause, .done {
+  position: absolute;
+  top: 15px;
   height: 30px;
   width: 30px;
-  margin: 0 0 15px 15px;
-  background-color: #27ae60;
   border-radius: 50%;
   opacity: 0;
 }
-.play img, .pause img {
+.play {
+  right: 50px;
+  background-color: #27ae60;
+}
+.pause {
+  right: 50px;
+  background-color: #f1c40f;
+}
+.done {
+  right: 15px;
+  background-color: #e74c3c;
+}
+.play img {
   position: absolute;
   top: calc(50% - 7.5px);
   left: calc(50% - 6.5px);
 }
-.play.active, .pause.active {
-  opacity: 1 !important;
+.pause img {
+  position: absolute;
+  top: calc(50% - 7.5px);
+  left: calc(50% - 7.5px);
+}
+.done img {
+  position: absolute;
+  top: calc(50% - 12px);
+  left: calc(50% - 12px);
+  -webkit-filter: invert(1);
 }
 .expiration {
   margin: 0 0 5px;
   font-size: 13px !important;
+}
+
+.create-task-form {
+  color: #fff;
 }

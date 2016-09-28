@@ -126,7 +126,7 @@ class CreateTask extends React.Component {
   }
   render() {
     return (
-      <div className='row'>
+      <div className='row create-task-form'>
         <div className='col-xs-12'>
           <h4>Crear una tarea</h4>
         </div>
@@ -343,45 +343,29 @@ class Task extends React.Component {
         <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
         {
           this.props.coordination && this.props.task.status === 'finished' ? (
-            <div className='col-xs-2 archive-task' role='button'></div>
+            <div className='col-xs-2 archive-task' title='Archivar tarea' role='button'></div>
           ) : ( null )
         }
         {
           this.props.coordination && this.props.task.status === 'not_finished' ? (
-            <div className='col-xs-2 edit-task' role='button'></div>
+            <div className='col-xs-2 edit-task' title='Editar tarea' role='button'></div>
           ) : ( null )
         }
-
-        {
-          !this.props.coordination && !this.props.doing && this.props.task.status === 'not_finished' ? (
-            <div className='col-xs-2 not-doing-task' role='button' onClick={ this.startTask }></div>
-          ) : ( null )
-        }
-        {
-          !this.props.coordination && this.props.doing && this.props.task.status === 'not_finished' ? (
-            <div className='col-xs-2 doing-task' role='button' onClick={ this.updateTaskStatus.bind(this, 'finished') }></div>
-          ) : ( null )
-        }
-        {
-          !this.props.coordination && this.props.task.status === 'finished' ? (
-            <div className='col-xs-2 done-task' role='button'></div>
-          ) : ( null )
-        }
-
+        <p className='col-xs-10 expiration'>Vencimiento: 29/09/2016</p>
         {
           !this.props.coordination && this.props.doing ? (
-            <p className='col-xs-12 btn btn-danger'>{ this.state.count } haciendo esta tarea</p>
-          ) : ( null )
-        }
-        <p className='col-xs-12 expiration'>Vencimiento: 29/09/2016</p>
-        {
-          !this.props.coordination && this.props.doing ? (
-            <div className='col-xs-2 play active'><img src='/modules/hYsHKx3br6kLYq3km/img/pause-button.svg' width='15px' /></div>
+            <div>
+              <div className='done' title='Marcar como finalizado' role='button' onClick={ this.updateTaskStatus.bind(this, 'finished') } ><img src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg' width='25px' /></div>
+              <div className='pause' title='Marcar como pausado' role='button' onClick={ this.updateTaskStatus.bind(this, 'finished') } ><img src='/modules/hYsHKx3br6kLYq3km/img/pause-button.svg' width='15px' /></div>
+            </div>
           ) : (null)
         }
         {
           !this.props.coordination && !this.props.doing && this.props.task.status === 'not_finished' ? (
-            <div className='col-xs-2 pause active'><img src='/modules/hYsHKx3br6kLYq3km/img/play-arrow.svg' width='15px' /></div>
+            <div>
+              <div className='done' title='Marcar como finalizado' role='button' onClick={ this.updateTaskStatus.bind(this, 'finished') } ><img src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg' width='25px' /></div>
+              <div className='play' title='Marcar como haciendo' role='button' onClick={ this.startTask } ><img src='/modules/hYsHKx3br6kLYq3km/img/play-arrow.svg' width='15px' /></div>
+            </div>
           ) : (null)
         }
       </div>
