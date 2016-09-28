@@ -450,11 +450,15 @@ class Task extends React.Component {
       },
       updateQuery: {
         $set: {
-          'durations.$.endTime': new Date().getTime()
+          'durations.$.endTime': new Date().getTime(),
         },
       },
-      callback() {
-        clearInterval(self.state.intervalId);
+      callback(error, result) {
+        if(error) {
+          console.error(error);
+        } else {
+          clearInterval(self.state.intervalId);
+        }
       }
     });
   }
@@ -462,7 +466,9 @@ class Task extends React.Component {
     return Math.max(
       this.props.task.durations.map((duration) => {
         if(duration.userId === this.props.currentUser._id) {
-          return duration.startTime;
+          if(duration.endTime === undefined) {
+            return duration.startTime;
+          }
         }
       })
     );

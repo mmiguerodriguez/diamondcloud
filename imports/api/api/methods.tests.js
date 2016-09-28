@@ -157,12 +157,13 @@ if (Meteor.isServer) {
               }
             }
           }, (err, res) => {
+            console.log('che loco, si anda esto rip: ', err);
             let expect = moduleData.data;
             expect.todos[0].color = 'Yellow';
             expect.todos[1].color = 'Yellow';
             expect.todos[2].color = 'Yellow';
         
-            console.log(JSON.stringify(ModuleData.findOne(moduleData._id).data, null, 2), JSON.stringify(expect, null, 2));
+            // console.log('moduleData.data',JSON.stringify(ModuleData.findOne(moduleData._id).data, null, 2), 'expect', JSON.stringify(expect, null, 2));
         
             chai.assert.deepEqual(ModuleData.findOne(moduleData._id).data, expect);
             done();
