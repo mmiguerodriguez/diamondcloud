@@ -64,8 +64,8 @@ class TaskManagerPage extends React.Component {
                   'not_finished',
                   '$$element.status',
                 ]
-              }
-            ]
+              },
+            ],
           };
 
           const trelloHandle = DiamondAPI.subscribe({
@@ -119,7 +119,7 @@ class TaskManagerLayout extends React.Component {
       </div>
     );
   }
-  
+
   setLocation(location) {
     browserHistory.push(location);
   }
@@ -188,6 +188,10 @@ class CreateTask extends React.Component {
       </div>
     );
   }
+  componentDidMount() {
+    // Focus title element
+    $('#create-task-title').focus();
+  }
   componentWillReceiveProps(nextProps) {
     if(nextProps.task_title !== this.props.task_title) {
       this.setState({
@@ -199,6 +203,8 @@ class CreateTask extends React.Component {
   createTask() {
     let self = this;
 
+    let position = self.getBiggestTaskPosition() + 1;
+
     DiamondAPI.insert({
       collection: 'tasks',
       obj: {
@@ -207,7 +213,7 @@ class CreateTask extends React.Component {
         dueDate: Number(self.state.dueDate),
         durations: [],
         status: 'not_finished',
-        position: 0,
+        position,
       },
       isGlobal: true,
       callback(error, result) {
@@ -215,6 +221,18 @@ class CreateTask extends React.Component {
       }
     });
   }
+  getBiggestTaskPosition() {
+    let positions = [];
+
+    this.props.tasks.forEach((task) => {
+      if(task.boardId === this.state.boardId) {
+        positions.push(task.position);
+      }
+    });
+
+    return Math.max(...positions);
+  }
+
   renderOptions() {
     return this.props.boards.map((board) => {
       return (
@@ -226,7 +244,6 @@ class CreateTask extends React.Component {
       );
     });
   }
-
   handleChange(index, event) {
     this.setState({
       [index]: event.target.value,
@@ -308,7 +325,7 @@ class TasksList extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleKeyDown = this.handleKeyDown.bind(this;)
+    this.handleKeyDown = this.handleKeyDown.bind(this);
   }
   render() {
     return (
@@ -451,14 +468,7 @@ class Task extends React.Component {
   }
   componentDidMount() {
     if(this.props.doing) {
-      this.playInterval();
-    }
-  }
-  componentDidUpdate() {
-    if(this.props.doing) {
-      if(!this.state.interval) {
-        this.playInterval();
-      }
+      this.startInterval();
     }
   }
   componentWillUnmount() {
@@ -545,14 +555,14 @@ class Task extends React.Component {
     });
   }
 
-  playInterval() {
+  startInterval() {
     let intervalId = setInterval(this.prettyDate.bind(this), 1000);
     this.setState({
       intervalId,
     });
   }
   stopInterval() {
-    this.clearInterva(this.state.intervalId);
+    clearInterval(this.state.intervalId);
     this.setState({
       intervalId: false,
     });
