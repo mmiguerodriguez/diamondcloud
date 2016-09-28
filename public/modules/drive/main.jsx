@@ -63,6 +63,10 @@ class FileManagerLayout extends React.Component {
   renderFolders() {
 
   }
+  
+  renderDocuments() {
+    
+  }
 
   render() {
     return (
@@ -110,29 +114,18 @@ class FileManagerPage extends React.Component {
     this.state = {
       folders: [],
       documents: [],
-      loading: true,
+      loadingBalance: 0,
     };
-  }
-  renderFolders() {
-
   }
 
   render() {
-    //if (this.state.loading) return null;
+    if (this.state.loadingBalance != 0) return 'Cargando...';
     return (
       <FileManagerLayout folders={ this.state.folders } documents={ this.state.documents } />
     );
   }
 
   componentDidMount() {
-    console.log('Loading module...');
-    
-    /*
-    
-    TODO: Fix the loading
-    
-    */
-    
     const handle = DiamondAPI.subscribe({
       request: {
         collection: 'files',
@@ -141,10 +134,7 @@ class FileManagerPage extends React.Component {
         }
       },
       callback: (err, res) => {
-        console.log('Callback called');
-        console.log('Error:', err, '- Res:', res);
         res[0].files.forEach((file) => {
-          console.log('File:', file);
           if (file.documentId) {
             let subHandle = DiamondAPI.get({
               collection: 'documents',
@@ -152,31 +142,27 @@ class FileManagerPage extends React.Component {
                 _id: file.documentId
               },
               callback: (err, res) => {
-                console.log('Doc got:', res);
                 this.state.documents.push(res);
+                this.state.loadingBalance++;
               }
             });
-            this.state.loading = this.state.loading && !subHandle.ready();
+            this.state.loadingBalance--;
           } else if (file.folderId) {
-            console.log(file.folderId);
             let subHandle = DiamondAPI.get({
               collection: 'folders',
               filter: {
                 _id: file.folderId
               },
               callback: (err, res) => {
-                console.log('Folder got:', res);
                 this.state.folders.push(res);
+                this.state.loadingBalance++;
               }
             });
-            this.state.loading = this.state.loading || !subHandle.ready();
+            this.state.loadingBalance--;
           }
         });
       }
     });
-
-    this.state.loading = this.state.loading || !handle.ready();
-    console.log('Loaded module');
   }
 }
 

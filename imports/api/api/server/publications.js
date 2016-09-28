@@ -79,16 +79,16 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
       }
     }
   );
-
+  
+  // Visible by
   let ids = [];
   let keys = {};
   let condOptions = [];
-
+  
   ModuleData.aggregate(pipeline, (err, res) => {
     if (res[0].data[obj.collection] !== null) {
       res[0].data[obj.collection].forEach((doc) => {
         for (let i in doc) {
-          console.log(i);
           keys[`data.${obj.collection}.${i}`] = 1;
         }
         if (doc.visibleBy === undefined) {
@@ -105,7 +105,7 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
         }
       });
     }
-
+    
     ids.forEach((id) => {
       condOptions.push({
         $eq: ['$$element._id', id]
@@ -143,8 +143,6 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
       );
     }
     
-    printObject('Pipeline:', pipeline);
-
     ReactiveAggregate(this, ModuleData, pipeline);
   });
 });
