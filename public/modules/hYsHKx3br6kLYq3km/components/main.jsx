@@ -130,7 +130,7 @@ class CreateTask extends React.Component {
         <div className='col-xs-12'>
           <h4>Crear una tarea</h4>
         </div>
-        <div className='col-xs-12'>
+        <div className='col-xs-12 create-task-inputs'>
           <div className='form-group'>
             <label className='control-label' htmlFor='create-task-title'>Título</label>
             <input
@@ -259,10 +259,8 @@ class Board extends React.Component {
   render() {
     return (
       <div className='board'>
-        <p className='text-center'>
-          <b>{ this.props.board.name }</b>
-        </p>
         <TasksList
+          board={ this.props.board }
           tasks={ this.props.tasks }
           coordination={ this.props.coordination }
           setLocation={ this.props.setLocation }
@@ -275,6 +273,9 @@ class TasksList extends React.Component {
   render() {
     return (
       <div className='col-xs-12 tasks-list'>
+        <p className='text-center'>
+          <b>{ this.props.board.name }</b>
+        </p>
         { this.renderTasks() }
         {
           this.props.coordination ? (
