@@ -48,7 +48,6 @@ export let generateMongoQuery = (input, collection) => {
     let isOperator = propertyName.charAt(0) === '$';
     if(!isOperator) {
       result[`data.${collection}.$.${propertyName}`] = input[propertyName];
-      delete input[propertyName];
     } else {
       result[propertyName] = input[propertyName];
     }
@@ -62,7 +61,7 @@ export let generateMongoQuery = (input, collection) => {
         }
       });
     } else if(typeof input[propertyName] === 'object') {
-      result[isOperator ? propertyName : `data.${collection}.${propertyName}`] =
+      result[isOperator ? propertyName : `data.${collection}.$.${propertyName}`] =
         generateMongoQuery(result[isOperator ? propertyName : `data.${collection}.$.${propertyName}`], collection);
     }
   }

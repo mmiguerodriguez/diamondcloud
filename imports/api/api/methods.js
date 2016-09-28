@@ -105,7 +105,9 @@ export const apiUpdate = new ValidatedMethod({
             { moduleInstanceId }
           ]
         },
-        filter
+        {
+          ...filter,
+        }
       ]
     }, newCollection);
 
