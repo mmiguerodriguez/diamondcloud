@@ -60,6 +60,14 @@ DiamondAPI.insert({
 */
 
 class FileManagerLayout extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      name: '',
+    };
+  }
+  
   renderFolders() {
 
   }
@@ -99,16 +107,16 @@ class FileManagerLayout extends React.Component {
   render() {
     return (
       <div>
-        <div id="authorize-div">
-          <span>Authorize access to Drive API</span>
-          {/*Button for the user to click to initiate auth sequence*/}
-          <button id="authorize-button" onClick={handleAuthClick.bind(null, event)}>{/*TODO: make this work*/}
-            Authorize
-          </button>
-        </div>
-        <pre id="output"></pre>
+        <input type="text" id="name" value={ this.state.name } onChange={this.handleChange.bind(this, event)} />
+        <button onClick={this.props.CreateDocument.bind(this, { name: this.state.name, fileType: 'application/vnd.google-apps.document' })}>Crear archivo</button>
       </div>
     );
+  }
+  
+  handleChange(event) {
+    this.setState({
+       name: event.target.value,
+    });
   }
 }
 
@@ -120,7 +128,7 @@ class FileManagerPage extends React.Component {
   render() {
     if (this.props.loading) return null;
     return (
-      <FileManagerLayout folders={ this.props.folders } documents={ this.props.documents } />
+      <FileManagerLayout folders={ this.props.folders } documents={ this.props.documents } CreateDocument={ this.CreateDocument } />
     );
   }
 
@@ -179,8 +187,26 @@ class FileManagerPage extends React.Component {
       ...obj,
       ...this.props,
     };
-    
-    //handleAuthClick();
+    checkAuth(); // configure google drive api
+  }
+  CreateDocument({ name, fileType }) {
+    checkAuth((() => {
+      console.log('testeo');
+      gapi.client.drive.files.create({
+        resource: {
+          name,
+          mimeType: fileType,
+        }
+      }).then(function(resp) {
+        console.log(resp.result);
+      }, function(reason) {
+        console.log('Error: ' + reason.result.error.message);
+      });
+    }));
+  }
+  
+  GetDocumentName() {
+    //todo: hacer esto
   }
 }
 
@@ -189,94 +215,27 @@ ReactDOM.render(
   document.getElementById('container')
 );
 
-let CreateDocument = () => {
-  
-};
-
-var CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
-
-var SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
-
 /**
  * Check if current user has authorized this application.
  */
-function checkAuth() {
-  gapi.auth.authorize(
-    {
+function checkAuth(callback) {
+  var CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
+
+  var SCOPES = [
+    'https://www.googleapis.com/auth/drive.metadata.readonly',
+    'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/drive.file',
+    'https://www.googleapis.com/auth/drive.appdata',
+  ];
+  gapi.auth.authorize({
       'client_id': CLIENT_ID,
       'scope': SCOPES.join(' '),
       'immediate': true
-    }, handleAuthResult);
-}
-
-/**
- * Handle response from authorization server.
- *
- * @param {Object} authResult Authorization result.
- */
-function handleAuthResult(authResult) {
-  var authorizeDiv = document.getElementById('authorize-div');
-  if (authResult && !authResult.error) {
-    // Hide auth UI, then load client library.
-    authorizeDiv.style.display = 'none';
-    loadDriveApi();
-  } else {
-    // Show auth UI, allowing the user to initiate authorization by
-    // clicking authorize button.
-    authorizeDiv.style.display = 'inline';
-  }
-}
-
-/**
- * Initiate auth flow in response to user clicking authorize button.
- *
- * @param {Event} event Button click event.
- */
-function handleAuthClick(event) {
-  gapi.auth.authorize(
-    {client_id: CLIENT_ID, scope: SCOPES, immediate: true},
-    handleAuthResult);
-  return false;
-}
-
-/**
- * Load Drive API client library.
- */
-function loadDriveApi() {
-  gapi.client.load('drive', 'v3', listFiles);
-}
-
-/**
- * Print files.
- */
-function listFiles() {
-  var request = gapi.client.drive.files.list({
-      'pageSize': 10,
-      'fields': "nextPageToken, files(id, name)"
-    });
-
-    request.execute(function(resp) {
-      appendPre('Files:');
-      var files = resp.files;
-      if (files && files.length > 0) {
-        for (var i = 0; i < files.length; i++) {
-          var file = files[i];
-          appendPre(file.name + ' (' + file.id + ')');
-        }
-      } else {
-        appendPre('No files found.');
-      }
-    });
-}
-
-/**
- * Append a pre element to the body containing the given message
- * as its text node.
- *
- * @param {string} message Text to be placed in pre element.
- */
-function appendPre(message) {
-  var pre = document.getElementById('output');
-  var textContent = document.createTextNode(message + '\n');
-  pre.appendChild(textContent);
+  }, () => {
+    console.log('caca');
+    gapi.load('drive', 'v3', callback);
+    /*if(!!callback) {
+      callback();
+    }*/
+  });
 }
