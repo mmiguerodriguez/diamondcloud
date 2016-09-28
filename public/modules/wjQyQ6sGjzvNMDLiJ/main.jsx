@@ -99,7 +99,7 @@ class FileManagerLayout extends React.Component {
   render() {
     return (
       <div>
-        <div id="authorize-div" style={{display: 'none'}}>
+        <div id="authorize-div">
           <span>Authorize access to Drive API</span>
           {/*Button for the user to click to initiate auth sequence*/}
           <button id="authorize-button" onClick={handleAuthClick.bind(null, event)}>{/*TODO: make this work*/}
@@ -179,6 +179,8 @@ class FileManagerPage extends React.Component {
       ...obj,
       ...this.props,
     };
+    
+    //handleAuthClick();
   }
 }
 
@@ -191,7 +193,7 @@ let CreateDocument = () => {
   
 };
 
-var CLIENT_ID = '<YOUR_CLIENT_ID>';
+var CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
 
 var SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
 
@@ -232,7 +234,7 @@ function handleAuthResult(authResult) {
  */
 function handleAuthClick(event) {
   gapi.auth.authorize(
-    {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
+    {client_id: CLIENT_ID, scope: SCOPES, immediate: true},
     handleAuthResult);
   return false;
 }
