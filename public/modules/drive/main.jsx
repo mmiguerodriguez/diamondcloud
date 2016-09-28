@@ -118,7 +118,7 @@ class FileManagerPage extends React.Component {
   }
 
   render() {
-    if (this.state.loading) return null;
+    //if (this.state.loading) return null;
     return (
       <FileManagerLayout folders={ this.state.folders } documents={ this.state.documents } />
     );
@@ -141,10 +141,10 @@ class FileManagerPage extends React.Component {
         }
       },
       callback: (err, res) => {
-        console.log('NEW DATA CALLBACK');
+        console.log('Callback called');
         console.log('Error:', err, '- Res:', res);
         res[0].files.forEach((file) => {
-          console.log(file);
+          console.log('File:', file);
           if (file.documentId) {
             let subHandle = DiamondAPI.get({
               collection: 'documents',
@@ -152,7 +152,7 @@ class FileManagerPage extends React.Component {
                 _id: file.documentId
               },
               callback: (err, res) => {
-                console.log('doc got:', res);
+                console.log('Doc got:', res);
                 this.state.documents.push(res);
               }
             });
@@ -165,7 +165,7 @@ class FileManagerPage extends React.Component {
                 _id: file.folderId
               },
               callback: (err, res) => {
-                console.log('folder got:', res);
+                console.log('Folder got:', res);
                 this.state.folders.push(res);
               }
             });

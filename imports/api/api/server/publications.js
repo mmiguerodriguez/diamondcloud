@@ -25,7 +25,8 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
     throw new Meteor.Error('ModuleData.data.notAValidMember',
     'Must be a valid member.');
   }
-
+  
+  // Get the correct moduleData
   let pipeline = [
     {
       $match: {
@@ -35,6 +36,7 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
   ];
 
   if (obj.condition) {
+    // Filter by consumer condition
     pipeline.push(
       {
         $project: {
@@ -51,7 +53,8 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
       }
     );
   }
-
+  
+  // Filter the data that should be private for that moduleInstance
   pipeline.push(
     {
       $project: {
@@ -85,6 +88,7 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
     if (res[0].data[obj.collection] !== null) {
       res[0].data[obj.collection].forEach((doc) => {
         for (let i in doc) {
+          console.log(i);
           keys[`data.${obj.collection}.${i}`] = 1;
         }
         if (doc.visibleBy === undefined) {
@@ -138,6 +142,8 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
         }
       );
     }
+    
+    printObject('Pipeline:', pipeline);
 
     ReactiveAggregate(this, ModuleData, pipeline);
   });

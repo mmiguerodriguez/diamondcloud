@@ -7,12 +7,15 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
   let subscriptions = [];
   return {
     subscribe: ({ request, callback }) => {
+      console.log('Trying to subscribe on client side');
       let validation = typeof request.collection == 'string';
       validation = validation && (typeof request.condition == 'object' || request.condition === undefined);
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         let serverSubscriptionCallback = {
           onReady: () => {
+            console.log('Subscribed and returned to client side');
+            
             let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
 
             let moduleData = ModuleData.findOne({
@@ -27,11 +30,10 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
                 teamId: moduleInstance.board().team()._id,
                 moduleId: moduleInstance.moduleId
               });
+              
+              console.log('Data changed:', moduleData);
   
-              console.log('cachin 2', moduleData.data);
-              console.log(fields);
               if (!!moduleData.data) {
-                console.log('chachin 3');
                 callback(undefined, moduleData.data[request.collection]);
               }
             };
