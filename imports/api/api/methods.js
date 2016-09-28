@@ -105,13 +105,18 @@ export const apiUpdate = new ValidatedMethod({
             { moduleInstanceId }
           ]
         },
-        {
-          ...filter,
-        }
+        filter
       ]
     }, newCollection);
-
+    
     selected.forEach((element) => {
+     // console.log('generatedMongoQuery', generateMongoQuery(updateQuery, collection));
+      console.log('element', element);
+      /*console.log('query', {
+        _id: moduleData._id,
+        [`data.${collection}._id`]: element._id,
+      }, generateMongoQuery(updateQuery, collection));*/
+      
       ModuleData.update({
         _id: moduleData._id,
         [`data.${collection}._id`]: element._id,

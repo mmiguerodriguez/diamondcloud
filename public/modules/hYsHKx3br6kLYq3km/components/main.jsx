@@ -351,29 +351,64 @@ class Task extends React.Component {
             <div className='col-xs-2 edit-task' title='Editar tarea' role='button'></div>
           ) : ( null )
         }
+        
         <p className='col-xs-10 expiration'>Vencimiento: 29/09/2016</p>
+        
         {
           !this.props.coordination && this.props.doing ? (
             <div>
-              <div className='done' title='Marcar como finalizado' role='button' onClick={ this.updateTaskStatus.bind(this, 'finished') } ><img src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg' width='25px' /></div>
-              <div className='pause' title='Marcar como pausado' role='button' onClick={ this.updateTaskStatus.bind(this, 'finished') } ><img src='/modules/hYsHKx3br6kLYq3km/img/pause-button.svg' width='15px' /></div>
+              <div 
+                className='done' 
+                title='Marcar como finalizado' 
+                role='button' 
+                onClick={ this.updateTaskStatus.bind(this, 'finished') }>
+                  <img
+                    src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg' 
+                    width='25px' />
+              </div>
+              <div 
+                className='pause' 
+                title='Marcar como pausado' 
+                role='button' 
+                onClick={ this.finishTask }>
+                  <img
+                    src='/modules/hYsHKx3br6kLYq3km/img/pause-button.svg' 
+                    width='15px' />
+              </div>
             </div>
-          ) : (null)
+          ) : ( null )
         }
+        
         {
           !this.props.coordination && !this.props.doing && this.props.task.status === 'not_finished' ? (
             <div>
-              <div className='done' title='Marcar como finalizado' role='button' onClick={ this.updateTaskStatus.bind(this, 'finished') } ><img src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg' width='25px' /></div>
-              <div className='play' title='Marcar como haciendo' role='button' onClick={ this.startTask } ><img src='/modules/hYsHKx3br6kLYq3km/img/play-arrow.svg' width='15px' /></div>
+              <div 
+                className='done' 
+                title='Marcar como finalizado' 
+                role='button' 
+                onClick={ this.updateTaskStatus.bind(this, 'finished') }>
+                  <img
+                    src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg' 
+                    width='25px' />
+              </div>
+              <div 
+                className='play' 
+                title='Marcar como haciendo' 
+                role='button' 
+                onClick={ this.startTask }>
+                  <img
+                    src='/modules/hYsHKx3br6kLYq3km/img/play-arrow.svg' 
+                    width='15px' />
+              </div>
             </div>
-          ) : (null)
+          ) : ( null )
         }
       </div>
     );
   }
   componentDidMount() {
     if(this.props.doing) {
-      let intervalId = setInterval(this.prettyDate.bind(this), 1000);
+      let intervalId = setInterval(this.prettyDate.bind(this), 100000000);
       this.setState({
         intervalId,
       });
@@ -423,6 +458,9 @@ class Task extends React.Component {
       updateQuery: {
         $push: {
           durations: {
+            $flags: { 
+              insertAsPlainObject: true,
+            },
             userId: self.props.currentUser._id,
             startTime: new Date().getTime(),
             endTime: undefined,
@@ -441,37 +479,43 @@ class Task extends React.Component {
   finishTask() {
     let self = this;
 
+    console.log('lastTaskUpdate', self.lastTaskUpdate());
+
     DiamondAPI.update({
       collection: 'tasks',
       filter: {
         _id: self.props.task._id,
         'durations.userId': self.props.currentUser._id,
+        'durations.startTime': self.lastTaskUpdate(),
         'durations.endTime': undefined,
       },
       updateQuery: {
         $set: {
-          'durations.$.endTime': new Date().getTime(),
+          'durations.0.endTime': new Date().getTime(),
         },
       },
       callback(error, result) {
         if(error) {
           console.error(error);
         } else {
+          console.log('Paused task correctly', result);
           clearInterval(self.state.intervalId);
         }
       }
     });
   }
   lastTaskUpdate() {
-    return Math.max(
-      this.props.task.durations.map((duration) => {
-        if(duration.userId === this.props.currentUser._id) {
-          if(duration.endTime === undefined) {
-            return duration.startTime;
-          }
+    let startTimes = this.props.task.durations.map((duration) => {
+      if(duration.userId === this.props.currentUser._id) {
+        if(duration.endTime === undefined) {
+          return duration.startTime;
+        } else {
+          return 0;
         }
-      })
-    );
+      }
+    });
+    
+    return Math.max(...startTimes);
   }
 
   updateTaskStatus(status) {
