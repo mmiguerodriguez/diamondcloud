@@ -432,12 +432,14 @@ class Task extends React.Component {
       <div className='col-xs-12 task'>
         {
           this.state.editing ? (
-            <input
-              className='form-control col-xs-10'
-              type='text'
-              value={ this.state.task_title }
-              onChange={ this.handleChange.bind(this, 'task_title') }
-              onKeyDown={ this.handleKeyDown } />
+            <div className='col-xs-12'>
+              <input
+                className='form-control edit-task-input'
+                type='text'
+                value={ this.state.task_title }
+                onChange={ this.handleChange.bind(this, 'task_title') }
+                onKeyDown={ this.handleKeyDown } />
+            </div>
           ) : (
             <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
           )
@@ -452,7 +454,7 @@ class Task extends React.Component {
           ) : ( null )
         }
         {
-          this.props.coordination && this.props.task.status === 'not_finished' ? (
+          this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
             <div
               className='col-xs-2 edit-task'
               title='Editar tarea'
