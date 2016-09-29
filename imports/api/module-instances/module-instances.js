@@ -43,26 +43,40 @@ export let generateMongoQuery = (input, collection) => {
   }
   */
   let result = {};
-  for(let propertyName in input) {
+  for(let property in input) {
     // If property starts with '$', it's an operator, so ignore it
-    let isOperator = propertyName.charAt(0) === '$';
+    let isOperator = property.charAt(0) === '$';
+    
     if(!isOperator) {
-      result[`data.${collection}.$.${propertyName}`] = input[propertyName];
+      result[`data.${ collection }.$.${ property }`] = input[property];
     } else {
-      result[propertyName] = input[propertyName];
+      result[property] = input[property];
     }
 
-    if(Array.isArray(input[propertyName])) {
-      result[isOperator ? propertyName : `data.${collection}.$.${propertyName}`].forEach((element, index, array) => {
+    let index = isOperator ? property : `data.${ collection }.$.${ property }`;
+
+    if(Array.isArray(input[property])) {
+      result[index].forEach((element, i, array) => {
         if(typeof element === 'object') {
-          array[index] = generateMongoQuery(element, collection);
+          array[i] = generateMongoQuery(element, collection);
         } else {
-          array[index] = element;
+          array[i] = element;
         }
       });
-    } else if(typeof input[propertyName] === 'object') {
-      result[isOperator ? propertyName : `data.${collection}.${propertyName}`] =
-        generateMongoQuery(result[isOperator ? propertyName : `data.${collection}.$.${propertyName}`], collection);
+    } else if(typeof input[property] === 'object') {
+      let flags = input[property].$flags;
+      
+      // If consumer passed a flags element then check attributes
+      if(flags) {
+        if(!flags.insertAsPlainObject) {
+          result[index] = generateMongoQuery(result[index], collection);
+        }
+        
+        // Delete the flags object so it doesn't get inserted
+        delete result[index].$flags;
+      } else {
+        result[index] = generateMongoQuery(result[index], collection);
+      }
     }
   }
   return result;

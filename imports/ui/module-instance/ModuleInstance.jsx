@@ -21,6 +21,12 @@ export default class ModuleInstance extends React.Component {
     };
   }
   render() {
+    if(this.props.loading) {
+      return (
+        <div>Cargando modulo :)</div>
+      );
+    }
+
     return (
       <div className='module-container'
            ref='module'

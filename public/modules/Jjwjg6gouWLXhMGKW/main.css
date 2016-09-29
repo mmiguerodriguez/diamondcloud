@@ -5,7 +5,6 @@ body {
 input:focus {
   border:none;
 }
-
 .title-container {
   padding-top: 10px;
 }
@@ -17,7 +16,6 @@ input:focus {
   background: transparent;
   margin-top: 5px;
 }
-
 .description-container {
   height: 80%;
   padding-top: 10px;
