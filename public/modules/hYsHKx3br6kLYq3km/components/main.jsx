@@ -40,52 +40,61 @@ class TaskManagerPage extends React.Component {
       collection: 'coordinationBoard',
       filter: {},
       callback(error, result) {
-        coordinationBoard = result[0];
-        currentBoard =  DiamondAPI.getCurrentBoard();
-        currentUser = DiamondAPI.getCurrentUser();
-        coordination = coordinationBoard._id === currentBoard._id;
-
-        self.setState({
-          coordinationBoard,
-          currentBoard,
-          currentUser,
-          coordination,
-        }, () => {
-          let condition = coordination ? {} : {
-            $and: [
-              {
-                $eq: [
-                  currentBoard._id,
-                  '$$element.boardId',
-                ],
-              },
-              {
-                $eq: [
-                  'not_finished',
-                  '$$element.status',
-                ]
-              },
-            ],
-          };
-
-          const trelloHandle = DiamondAPI.subscribe({
-            request: {
-              collection: 'tasks',
-              condition,
-            },
-            callback(error, result) {
-              console.log('subscribe callback', result.tasks);
-              self.setState({
-                tasks: result.tasks,
-              });
-            }
-          });
+        if(error) {
+          console.error(error);
+        } else {
+          coordinationBoard = result[0];
+          currentBoard =  DiamondAPI.getCurrentBoard();
+          currentUser = DiamondAPI.getCurrentUser();
+          coordination = coordinationBoard._id === currentBoard._id;
 
           self.setState({
-            loading: trelloHandle.ready(),
-            ...DiamondAPI.getTeamData(),
+            coordinationBoard,
+            currentBoard,
+            currentUser,
+            coordination,
+          }, () => {
+            let condition = coordination ? {
+              $eq: [
+                false,
+                '$$element.archived',
+              ],
+            } : {
+              $and: [
+                {
+                  $eq: [
+                    currentBoard._id,
+                    '$$element.boardId',
+                  ],
+                },
+                {
+                  $eq: [
+                    'not_finished',
+                    '$$element.status',
+                  ]
+                },
+              ],
+            };
+
+            const trelloHandle = DiamondAPI.subscribe({
+              request: {
+                collection: 'tasks',
+                condition,
+              },
+              callback(error, result) {
+                console.log('Subscribe callback', result.tasks);
+                self.setState({
+                  tasks: result.tasks,
+                });
+              }
+            });
+
+            self.setState({
+              loading: trelloHandle.ready(),
+              ...DiamondAPI.getTeamData(),
+            });
           });
-        });
+        }
       }
     });
   }
@@ -214,10 +223,15 @@ class CreateTask extends React.Component {
         durations: [],
         status: 'not_finished',
         position,
+        archived: false,
       },
       isGlobal: true,
       callback(error, result) {
-        console.log('insert task result', error, result);
+        if(error) {
+          console.error(error);
+        } else {
+          console.log('Inserted task correctly');
+        }
       }
     });
   }
@@ -392,23 +406,48 @@ class Task extends React.Component {
     this.state = {
       count: this.prettyDate(),
       intervalId: false,
+      task_title: this.props.task.title,
+      editing: false,
     };
 
     this.startTask = this.startTask.bind(this);
     this.finishTask = this.finishTask.bind(this);
+    this.startEditing = this.startEditing.bind(this);
+    this.stopEditing = this.stopEditing.bind(this);
+    this.archiveTask = this.archiveTask.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
   }
   render() {
     return (
       <div className='col-xs-12 task'>
-        <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
+        {
+          this.state.editing ? (
+            <input
+              className='form-control col-xs-10'
+              type='text'
+              value={ this.state.task_title }
+              onChange={ this.handleChange.bind(this, 'task_title') }
+              onKeyDown={ this.handleKeyDown } />
+          ) : (
+            <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
+          )
+        }
         {
           this.props.coordination && this.props.task.status === 'finished' ? (
-            <div className='col-xs-2 archive-task' title='Archivar tarea' role='button'></div>
+            <div
+              className='col-xs-2 archive-task'
+              title='Archivar tarea'
+              role='button'
+              onClick={ this.archiveTask }></div>
           ) : ( null )
         }
         {
           this.props.coordination && this.props.task.status === 'not_finished' ? (
-            <div className='col-xs-2 edit-task' title='Editar tarea' role='button'></div>
+            <div
+              className='col-xs-2 edit-task'
+              title='Editar tarea'
+              role='button'
+              onClick={ this.startEditing }></div>
           ) : ( null )
         }
 
@@ -532,6 +571,30 @@ class Task extends React.Component {
       }
     });
   }
+  archiveTask() {
+    let self = this;
+
+    if(self.props.coordination) {
+      DiamondAPI.update({
+        collection: 'tasks',
+        filter: {
+          _id: self.props.task._id,
+        },
+        updateQuery: {
+          $set: {
+            archived: true,
+          },
+        },
+        callback(error, result) {
+          if(error) {
+            console.error(error);
+          } else {
+            console.log('Archived task correctly');
+          }
+        }
+      });
+    }
+  }
   updateTaskStatus(status) {
     let self = this;
 
@@ -549,10 +612,39 @@ class Task extends React.Component {
           status,
         },
       },
-      callback() {
-
+      callback(error, result) {
+        if(error) {
+          console.error(error);
+        } else {
+          console.log('Updated task status correctly');
+        }
       }
     });
+  }
+  updateTaskTitle() {
+    let self = this;
+
+    if(self.props.coordination) {
+      DiamondAPI.update({
+        collection: 'tasks',
+        filter: {
+          _id: self.props.task._id,
+        },
+        updateQuery: {
+          $set: {
+            title: self.state.task_title,
+          },
+        },
+        callback(error, result) {
+          if(error) {
+            console.error(error);
+          } else {
+            console.log('Updated task status correctly');
+            self.stopEditing();
+          }
+        }
+      });
+    }
   }
 
   startInterval() {
@@ -606,6 +698,31 @@ class Task extends React.Component {
     });
 
     return Math.max(...startTimes);
+  }
+
+  startEditing() {
+    this.setState({
+      editing: true,
+    });
+  }
+  stopEditing() {
+    this.setState({
+      editing: false,
+    });
+  }
+  handleChange(index, event) {
+    if(this.props.coordination) {
+      this.setState({
+        [index]: event.target.value,
+      });
+    }
+  }
+  handleKeyDown() {
+    if(this.props.coordination) {
+      if(event.which === 13) {
+        this.updateTaskTitle();
+      }
+    }
   }
 }
 
