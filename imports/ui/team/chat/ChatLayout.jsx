@@ -20,6 +20,9 @@ export default class ChatLayout extends React.Component {
     this.refs = {
       chat_body: null,
     };
+
+    this.handleKey = this.handleKey.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
   render() {
     let classes = classNames({
@@ -63,8 +66,8 @@ export default class ChatLayout extends React.Component {
               className='form-control message-input'
               type='text'
               placeholder='Escriba el mensaje'
-              onKeyDown={ this.handleKey.bind(this) }
-              onChange={ this.changeText.bind(this) }  />
+              onKeyDown={ this.handleKey }
+              onChange={ this.handleChange }  />
           </div>
         </div>
       );
@@ -100,8 +103,8 @@ export default class ChatLayout extends React.Component {
               className='form-control'
               type='text'
               placeholder='Escriba el mensaje'
-              onKeyDown={ this.handleKey.bind(this) }
-              onChange={ this.changeText.bind(this) } />
+              onKeyDown={ this.handleKey }
+              onChange={ this.handleChange } />
           </div>
         </div>
       );
@@ -127,8 +130,8 @@ export default class ChatLayout extends React.Component {
               className='form-control message-input'
               type='text'
               placeholder='Escriba el mensaje'
-              onKeyDown={ this.handleKey.bind(this) }
-              onChange={ this.changeText.bind(this) }  />
+              onKeyDown={ this.handleKey }
+              onChange={ this.handleChange }  />
           </div>
         </div>
       );
@@ -167,7 +170,7 @@ export default class ChatLayout extends React.Component {
       // this.props.togglePosition('minimized');
     }
   }
-  changeText(event) {
+  handleChange(event) {
     this.setState({
       message: event.target.value,
     });
@@ -204,28 +207,26 @@ export default class ChatLayout extends React.Component {
     });
   }
   renderMessages() {
-    let arr = [];
-
-    this.props.chat.messages.forEach((message) => {
+    return this.props.chat.messages.map((message) => {
       let isSender = message.senderId === Meteor.userId();
-      arr.push(
+      return (
         <Message
           key={ message._id }
           message={ message }
           isSender={ isSender }
-          position={ this.state.position } />);
+          position={ this.state.position } />
+      );
     });
-    return arr;
   }
   getName() {
     if(this.props.chat.boardId) {
       let boardId = this.props.chat.boardId;
       return Boards.findOne(boardId).name;
-      
+
     } else if(this.props.chat.directChatId) {
       let directChatId = this.props.chat.directChatId;
       let directChat = DirectChats.findOne(directChatId);
-      
+
       return directChat.getUser().profile.name;
     }
   }

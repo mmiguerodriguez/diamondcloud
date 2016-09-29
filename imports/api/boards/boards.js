@@ -50,7 +50,7 @@ Boards.helpers({
       }
     });
 
-    return notifications;
+    return notifications || 0;
   },
   getUsers() {
     let f = (x, p) => x.map((e) => e[p]);

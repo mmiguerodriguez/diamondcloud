@@ -154,20 +154,27 @@ if (Meteor.isServer) {
     it('should show a notification correctly', function(done) {
       sendMessage.call(test_1, (err, result_1) => {
         if (err) throw new Meteor.Error(err);
-        chai.assert.equal(board.name, title);
-        chai.assert.equal(test_1.content, text);
-        chai.assert.deepEqual({
+        let expectText = users[0].profile.name + ': ' + test_1.content;
+        let expectQuery = {
           userId: {
             $in: [users[1]._id],
           }
-        }, query);
+        };
+        
+        chai.assert.equal(board.name, title);
+        chai.assert.equal(expectText, text);
+        chai.assert.deepEqual(expectQuery, query);
+
         sendMessage.call(test_2, (err, result_2) => {
           if (err) throw new Meteor.Error(err);
+          let expectQuery = {
+            userId: users[1]._id,
+          };
+
           chai.assert.equal(users[1].profile.name, title);
           chai.assert.equal(test_2.content, text);
-          chai.assert.deepEqual({
-            userId: users[1]._id,
-          }, query);
+          chai.assert.deepEqual(expectQuery, query);
+
           done();
         });
       });

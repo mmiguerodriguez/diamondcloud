@@ -1,4 +1,4 @@
-import React from 'react';
+import React      from 'react';
 
 import DirectChat from './direct-chat/DirectChat.jsx';
 
@@ -16,33 +16,17 @@ export default class DirectChatsLayout extends React.Component {
       </div>
     );
   }
-
   renderDirectChats() {
-    let arr = [];
-
-    this.props.directChats.map((directChat) => {
-      let notifications, user;
-      directChat.users.map((_user) => {
-        if(_user._id !== Meteor.userId()) {
-          user = Meteor.users.findOne(_user._id).profile.name;
-        } else {
-          notifications = _user.notifications;
-        }
-      });
-
-      notifications = notifications || 0;
-
-      arr.push(
+    return this.props.directChats.map((directChat) => {
+      return (
         <DirectChat
           key={ directChat._id }
           directChat={ directChat }
-          user={ user }
-          notifications={ notifications }
+          user={ directChat.getUser() }
+          notifications={ directChat.getNotifications() }
           addChat={ this.props.addChat } />
       );
     });
-
-    return arr;
   }
 }
 

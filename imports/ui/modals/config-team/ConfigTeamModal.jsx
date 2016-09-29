@@ -17,9 +17,10 @@ export default class ConfigTeamModal extends React.Component {
       plan: this.props.team.plan,
       type: this.props.team.type,
     };
-    this.addUser    = this.addUser.bind(this);
+
+    this.addUser = this.addUser.bind(this);
     this.removeUser = this.removeUser.bind(this);
-    this.saveTeam   = this.saveTeam.bind(this);
+    this.saveTeam = this.saveTeam.bind(this);
   }
 
   render() {
