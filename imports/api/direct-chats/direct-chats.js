@@ -36,7 +36,7 @@ DirectChats.helpers({
       }
     });
 
-    return notifications;
+    return notifications || 0;
   }
 });
 

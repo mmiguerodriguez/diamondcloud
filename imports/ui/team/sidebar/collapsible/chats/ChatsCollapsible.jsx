@@ -1,4 +1,4 @@
-import React from 'react';
+import React              from 'react';
 
 import Collapsible        from '../Collapsible.jsx';
 import BoardsLayout       from './boards/BoardsLayout.jsx';
@@ -11,9 +11,10 @@ export default class ChatsCollapsible extends React.Component {
         id={ 'chats-collapsible' }
         header={
           <div>
-            <div  type='button'
-                  className='close col-xs-2'
-                  onClick={ this.props.toggleCollapsible.bind(null, 'chats') }>
+            <div
+              type='button'
+              className='close col-xs-2'
+              onClick={ this.props.toggleCollapsible.bind(null, 'chats') }>
               <img src='/img/close-modal-icon.svg' width='18px' />
             </div>
             <h3 className='col-xs-10 title'>Mensajes</h3>

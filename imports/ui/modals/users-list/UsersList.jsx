@@ -10,11 +10,12 @@ import  '../../../api/users/users.js';
 export default class UsersList extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      email: '',
-    };
-  }
 
+    this.state = { email: '' };
+
+    this.handleKey = this.handleKey.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
   render() {
     let email = this.state.email;
     let isOwner = this.props.team ? this.props.team.owner() === Meteor.user().email() : true;
@@ -30,8 +31,8 @@ export default class UsersList extends React.Component {
                         type='text'
                         value={ email }
                         onChange={ this.handleChange.bind(this, 'email') }
-                        onKeyDown={ this.handleKey.bind(this) } />
-                <div className='input-group-addon search-input' onClick={ this.handleSubmit.bind(this) }>
+                        onKeyDown={ this.handleKey } />
+                <div className='input-group-addon search-input' onClick={ this.handleSubmit }>
                   <img src='/img/add-people-icon.svg'
                        width='24px' />
                 </div>
@@ -65,6 +66,7 @@ export default class UsersList extends React.Component {
     this.props.addUser(this.state.email);
     this.setState({ email: '' });
   }
+
   renderUsers() {
     let arr = [],
         users,
