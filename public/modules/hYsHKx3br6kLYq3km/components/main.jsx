@@ -48,12 +48,18 @@ class TaskManagerPage extends React.Component {
           currentUser = DiamondAPI.getCurrentUser();
           coordination = coordinationBoard._id === currentBoard._id;
 
+          // Set coordinationBoard, currentBoard, user and if it's a
+          // coordinationBoard boolean
           self.setState({
             coordinationBoard,
             currentBoard,
             currentUser,
             coordination,
           }, () => {
+            // If it's a coordinationBoard then fetch all tasks, even finished
+            // ones, except archived
+            // If not, fetch the ones that are from the currentBoard and
+            // that are not finished
             let condition = coordination ? {
               $eq: [
                 false,
@@ -82,10 +88,14 @@ class TaskManagerPage extends React.Component {
                 condition,
               },
               callback(error, result) {
-                console.log('Subscribe callback', result.tasks);
-                self.setState({
-                  tasks: result.tasks,
-                });
+                if(error) {
+                  console.error(error);
+                } else {
+                  console.log('Subscribe callback', result.tasks);
+                  self.setState({
+                    tasks: result.tasks,
+                  });
+                }
               }
             });
 
