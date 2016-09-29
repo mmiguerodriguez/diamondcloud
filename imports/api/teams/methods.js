@@ -7,7 +7,9 @@ import { Mail }                 from '../mails/mails.js';
 import { Teams }                from './teams.js';
 import { Boards }               from '../boards/boards.js';
 import { createBoard }          from '../boards/methods.js';
+import { createModuleInstance } from '../module-instances/methods.js';
 import { createModuleData }     from '../module-data/module-data-creation.js';
+import { apiInsert }            from '../api/methods.js';
 
 export const createTeam = new ValidatedMethod({
   name: 'Teams.methods.create',
@@ -23,7 +25,7 @@ export const createTeam = new ValidatedMethod({
       'Must be logged in to make a team.');
     }
 
-    let team, teamId, boardUsers = [];
+    let team, teamId, boardUsers = [{ email: Meteor.user().email() }];
     team = {
       name,
       plan,
@@ -50,8 +52,9 @@ export const createTeam = new ValidatedMethod({
     Teams.insert(team, (err, res) => {
       if(err) throw new Meteor.Error(err);
 
-      createModuleData();
+      createModuleData(); // Creates the data storages for each module
       teamId = res;
+      team._id = teamId;
 
       createBoard.call({
         teamId,
@@ -59,31 +62,71 @@ export const createTeam = new ValidatedMethod({
         users: boardUsers,
         isPrivate: false,
       }, (err, res) => {
-        if(!!err) future.throw(err);
+        if(!!err) {
+          future.throw(err);
+        }
 
         team.boards.push({ _id: res._id });
-        team._id = teamId;
 
-        usersEmails.forEach((email) => {
-          if(Meteor.users.findByEmail(email, {})) {
-            // If user is not registered in Diamond Cloud
-            Mail.sendMail({
-              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
-              to: email,
-              subject: 'Te invitaron a colaborar en Diamond Cloud',
-              html: Mail.messages.sharedTeamRegistered(teamId),
-            });
-          } else {
-            Mail.sendMail({
-              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
-              to: email,
-              subject: 'Te invitaron a colaborar en Diamond Cloud',
-              html: Mail.messages.sharedTeamNotRegistered(teamId),
-            });
+        createBoard.call({
+          teamId,
+          name: 'Coordinación',
+          users: boardUsers,
+          isPrivate: false,
+        }, (err, coordinationBoard) => {
+          if(!!err) {
+            future.throw(err);
           }
-        });
 
-        future.return(team);
+          team.boards.push({ _id: coordinationBoard._id });
+          //create trello module instance
+          createModuleInstance.call({
+            boardId: coordinationBoard._id,
+            moduleId: 'hYsHKx3br6kLYq3km',
+            x: 100,
+            y: 100,
+            width: 500,
+            height: 200,
+          }, (err, res) => {
+            if(!!err) {
+              future.throw(err);
+            }
+
+            apiInsert.call({
+              moduleInstanceId: res._id,
+              collection: 'coordinationBoard',
+              obj: {
+                _id: coordinationBoard._id,
+              },
+              isGlobal: true,
+            }, (err, res) => {
+              if(!!err) {
+                future.throw(err);
+              }
+
+              usersEmails.forEach((email) => {
+                if(Meteor.users.findByEmail(email, {})) {
+                  // If user is not registered in Diamond Cloud
+                  Mail.sendMail({
+                    from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+                    to: email,
+                    subject: 'Te invitaron a colaborar en Diamond Cloud',
+                    html: Mail.messages.sharedTeamRegistered(teamId),
+                  });
+                } else {
+                  Mail.sendMail({
+                    from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+                    to: email,
+                    subject: 'Te invitaron a colaborar en Diamond Cloud',
+                    html: Mail.messages.sharedTeamNotRegistered(teamId),
+                  });
+                }
+              });
+
+              future.return(team);
+            });
+          });
+        });
       });
     });
 

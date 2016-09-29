@@ -103,8 +103,11 @@ export default class Board extends React.Component {
     if(this.props.moduleInstances) {
       this.props.moduleInstances.map((moduleInstance) => {
 
-        let module = this.props.modules.find((module) => {
-          return module._id = moduleInstance.moduleId;
+        let module;
+        this.props.modules.forEach((_module) => {
+          if(_module._id === moduleInstance.moduleId) {
+            module = _module; 
+          }
         });
 
         arr.push(

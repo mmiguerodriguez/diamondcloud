@@ -19,8 +19,11 @@ export let createModuleData = () => {
           data: {},
         });
       } else if (moduleData.data === undefined) {
-        moduleData.data = {};
-        ModuleData.update(moduleData._id, moduleData);
+        ModuleData.update(moduleData._id, {
+          $set: {
+            data: {},
+          }
+        });
       }
     });
   });

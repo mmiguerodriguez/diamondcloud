@@ -7,9 +7,10 @@ import { Random }               from 'meteor/random';
 import   faker                  from 'faker';
 import                               '../factories/factories.js';
 
-import { ModuleData }      from '../module-data/module-data.js';
+import { ModuleData }           from '../module-data/module-data.js';
+import { ModuleInstances }      from '../module-instances/module-instances.js';
 
-import { generateApi }           from './api-client.js';
+import { generateApi }          from './api-client.js';
 
 if (Meteor.isClient) {
   describe('API', () => {
@@ -191,11 +192,26 @@ if (Meteor.isClient) {
         });
         chai.assert.equal(myCallback(), 'value');
       });
-      it('should return the correct team data', () => {
+
+      it('should return the correct team data', (done) => {
         let DiamondAPI = generateApi({ boards: 'boards', users: 'users' });
         let result = DiamondAPI.getTeamData();
         chai.assert.equal(result.boards, 'boards');
         chai.assert.equal(result.users, 'users');
+        done();
+      });
+
+      it('should return the current board', (done) => {
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
+        let board = ModuleInstances.findOne(moduleInstances[0]._id).board();
+        chai.assert.deepEqual(DiamondAPI.getCurrentBoard(), board);
+        done();
+      });
+
+      it('should return the current user', (done) => {
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
+        chai.assert.deepEqual(DiamondAPI.getCurrentUser(), user);
+        done();
       });
     });
   });
