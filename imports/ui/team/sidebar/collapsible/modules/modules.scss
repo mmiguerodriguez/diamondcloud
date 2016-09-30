@@ -3,12 +3,22 @@
 .module-item {
   margin-left: 0px !important;
   margin-right: 0px !important;
+  padding: 5px 0;
+  overflow: auto;
+  cursor: grab !important;
+  transition: 0.3s all ease;
+  &:active {
+    cursor: -webkit-grabbing !important;
+  }
+  &:hover {
+    background-color: #eee;
+  }
 }
 .close {
   margin-left: 0px !important;
 }
 .module-preview {
-  margin-top: 12px;
+  margin-top: 4px;
 }
 .module-name {
   margin-top: 16px !important;

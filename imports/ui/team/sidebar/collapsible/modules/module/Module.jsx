@@ -21,7 +21,7 @@ export default class Module extends React.Component {
             className='img module-preview'
             width='32px' />
         </div>
-        <h4 className='col-xs-10 module-name'>{ this.props.module.name }</h4>
+        <h4 className='col-xs-10 module-name truncate'>{ this.props.module.name }</h4>
       </div>
     );
   }
@@ -30,7 +30,7 @@ export default class Module extends React.Component {
     let module = this.refs['module-item'];
 
     $(module).draggable({
-      cursor: 'pointer',
+      cursor: '-webkit-grabbing !important',
       containment: $('.board'),
       helper(event) {
         return $('<img src="' + self.props.module.img + '">');
