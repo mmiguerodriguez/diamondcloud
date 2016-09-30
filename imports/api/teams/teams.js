@@ -65,6 +65,7 @@ Teams.dashboardUsersFields = {
 };
 
 Teams.teamUsersFields = {
+  _id: 1,
   profile: 1,
   emails: 1,
 };

@@ -129,32 +129,18 @@ export default class Board extends React.Component {
   renderUsers() {
     let arr = [];
 
-    if(this.props.board.isPrivate) {
-      this.props.board.users.map((_user) => {
-        let user = Meteor.users.findByEmail(_user.email, {}) || _user;
-        arr.push(
-          <img  key={ user._id || user.email }
-            className='img-circle shared-people'
-            src={ user.profile ? user.profile.picture : '/img/user-shape.svg' }
-            alt={ user.profile ? user.profile.name : user.email }
-            title={ user.profile ? user.profile.name : user.email }
-            width='32px' />
-        );
-      });
-    } else {
-      this.props.users.map((_user) => {
-        let user = Meteor.users.findByEmail(_user.email, {}) || _user;
-        arr.push(
-          <img  key={ user._id || user.email }
-                className='img-circle shared-people'
-                src={ user.profile ? user.profile.picture : '/img/user-shape.svg' }
-                alt={ user.profile ? user.profile.name : user.email }
-                title={ user.profile ? user.profile.name : user.email }
-                width='32px' />
-        );
-      });
-    }
-
+    this.props.board.users.map((_user) => {
+      let user = Meteor.users.findByEmail(_user.email, {}) || _user;
+      arr.push(
+        <img  
+          key={ user._id || user.email }
+          className='img-circle shared-people'
+          src={ user.profile ? user.profile.picture : '/img/user-shape.svg' }
+          title={ user.profile ? user.profile.name : _user.email }
+          width='32px' />
+      );
+    });
+  
     return arr;
   }
 }

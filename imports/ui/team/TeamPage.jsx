@@ -48,14 +48,15 @@ export default class Team extends React.Component {
         <TeamLayout
           teams={ this.props.teams }
           team={ this.props.team }
+          users={ this.props.users }
           owner={ this.props.team.owner() === Meteor.user().email() }
 
           boards={ this.props.boards }
           board={ board }
 
+          modules={ this.props.modules }
           moduleInstances={ this.props.moduleInstances }
           moduleInstancesFrames={ this.state.moduleInstancesFrames }
-          modules={ this.props.modules }
 
           directChats={ this.props.directChats }
           chats={ this.getChats() }
@@ -221,6 +222,7 @@ export default TeamPageContainer = createContainer(({ params }) => {
     loading,
     team: Teams.findOne(teamId),
     teams: Teams.find({}, { sort: { name: - 1 } }).fetch(),
+    users: Meteor.users.find({}).fetch(),
     boards: Boards.find({}, { sort: { name: -1 } }).fetch(),
     directChats: DirectChats.find().fetch(),
     messages: Messages.find().fetch(),

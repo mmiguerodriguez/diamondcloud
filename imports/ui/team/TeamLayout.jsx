@@ -73,7 +73,7 @@ export default class TeamLayout extends React.Component {
         <Board
           boards={ this.props.boards }
           board={ this.props.board }
-          users={ this.props.team.users }
+          users={ this.props.users }
           moduleInstances={ this.props.moduleInstances }
           moduleInstancesFrames={ this.props.moduleInstancesFrames }
           modules={ this.props.modules }
