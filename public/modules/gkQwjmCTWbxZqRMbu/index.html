@@ -15,10 +15,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/6.0.7/simplepeer.min.js"></script>
   </head>
   <body>
-    <div id="render-target">
-      <iframe id='my-video' muted='true' autoplay></iframe>
-      <iframe id='their-video' autoplay></iframe>
-    </div>
+    
+      <label>Your ID:</label><br/>
+      <textarea id="yourId"></textarea><br/>
+      <label>Other ID:</label><br/>
+      <textarea id="otherId"></textarea>
+      <button id="connect">connect</button>
+      <button id="initiate" onclick='initiate(true);'>Initiate: true</button>
+      <button id="initiate" onclick='initiate(false);'>Initiate: false</button>
+      <br/>
+      
+      <label>Enter Message:</label><br/>
+      <textarea id="yourMessage"></textarea>
+      <button id="send">send</button>
+      <pre id="messages"></pre>
+    
     <script type='text/javascript' src='components/main.js'></script>
     <!-- <script type='text/babel' src='components/main.jsx'></script> -->
   </body>
