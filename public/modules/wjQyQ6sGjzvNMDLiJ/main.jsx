@@ -187,7 +187,7 @@ class FileManagerPage extends React.Component {
     };
     checkAuth(); // configure google drive api
   }
-  CreateDocument({ name, fileType, callback }) {
+  createDocument({ name, fileType, callback }) {
     /**
      * callback(err, res)
      * fileType is the mimeType of the file
@@ -203,10 +203,6 @@ class FileManagerPage extends React.Component {
     }, function(reason) {
       callback(reason, resp);
     });
-  }
-  
-  GetDocumentName() {
-    //todo: hacer esto
   }
 }
 
