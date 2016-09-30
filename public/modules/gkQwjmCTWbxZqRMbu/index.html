@@ -12,11 +12,12 @@
     <script src="https://npmcdn.com/react-dom@latest/dist/react-dom.min.js"></script>
     <script src="https://unpkg.com/react-router/umd/ReactRouter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/classnames/2.2.5/index.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.14/peer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/6.0.7/simplepeer.min.js"></script>
   </head>
   <body>
     <div id="render-target">
-      <button onClick='connectToUser();'>boton xd</button>
+      <iframe id='my-video' muted='true' autoplay></iframe>
+      <iframe id='their-video' autoplay></iframe>
     </div>
     <script type='text/javascript' src='components/main.js'></script>
     <!-- <script type='text/babel' src='components/main.jsx'></script> -->
