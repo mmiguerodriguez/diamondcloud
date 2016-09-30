@@ -27,11 +27,8 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
                 teamId: moduleInstance.board().team()._id,
                 moduleId: moduleInstance.moduleId
               });
-  
-              console.log('cachin 2', moduleData.data);
-              console.log(fields);
+              
               if (!!moduleData.data) {
-                console.log('chachin 3');
                 callback(undefined, moduleData.data[request.collection]);
               }
             };

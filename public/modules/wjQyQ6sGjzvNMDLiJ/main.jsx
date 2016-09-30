@@ -72,7 +72,10 @@ class FileManagerLayout extends React.Component {
 
   }
 
-      /*<div id='resizable' className='file-manager ui-widget-content'>
+  render() {
+    return (
+      <div>
+        <div id='resizable' className='file-manager ui-widget-content'>
         <div className="container-fluid files-container">
           <p className="folders-title-container">
             Carpetas
@@ -103,13 +106,9 @@ class FileManagerLayout extends React.Component {
             <div className="option drive"></div>
             <div className="option new"></div>
           </div>
-        </div>*/
-  render() {
-    return (
-      <div>
-        <input type="text" id="name" value={ this.state.name } onChange={this.handleChange.bind(this, event)} />
-        <button onClick={this.props.CreateDocument.bind(this, { name: this.state.name, fileType: 'application/vnd.google-apps.document' })}>Crear archivo</button>
+        </div>
       </div>
+    </div>
     );
   }
   
@@ -133,7 +132,6 @@ class FileManagerPage extends React.Component {
   }
 
   componentDidMount() {
-    console.log('cachin barin de don pinguin');
     let obj = {
       folders: [],
       documents: [],
@@ -189,20 +187,22 @@ class FileManagerPage extends React.Component {
     };
     checkAuth(); // configure google drive api
   }
-  CreateDocument({ name, fileType }) {
-    checkAuth((() => {
-      console.log('testeo');
-      gapi.client.drive.files.create({
-        resource: {
-          name,
-          mimeType: fileType,
-        }
-      }).then(function(resp) {
-        console.log(resp.result);
-      }, function(reason) {
-        console.log('Error: ' + reason.result.error.message);
-      });
-    }));
+  CreateDocument({ name, fileType, callback }) {
+    /**
+     * callback(err, res)
+     * fileType is the mimeType of the file
+     * https://developers.google.com/drive/v3/web/mime-types
+     */
+    gapi.client.drive.files.create({
+      resource: {
+        name,
+        mimeType: fileType,
+      }
+    }).then(function(resp) {
+      callback(null, resp);
+    }, function(reason) {
+      callback(reason, resp);
+    });
   }
   
   GetDocumentName() {
@@ -218,24 +218,18 @@ ReactDOM.render(
 /**
  * Check if current user has authorized this application.
  */
-function checkAuth(callback) {
+function checkAuth() {
+  console.log('checkAuth se llamó');
   var CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
 
   var SCOPES = [
-    'https://www.googleapis.com/auth/drive.metadata.readonly',
-    'https://www.googleapis.com/auth/drive',
-    'https://www.googleapis.com/auth/drive.file',
-    'https://www.googleapis.com/auth/drive.appdata',
+    'https://www.googleapis.com/auth/drive'
   ];
   gapi.auth.authorize({
-      'client_id': CLIENT_ID,
-      'scope': SCOPES.join(' '),
-      'immediate': true
+    'client_id': CLIENT_ID,
+    'scope': SCOPES.join(' '),
+    'immediate': true
   }, () => {
-    console.log('caca');
-    gapi.load('drive', 'v3', callback);
-    /*if(!!callback) {
-      callback();
-    }*/
+    gapi.client.load('drive', 'v3');
   });
 }
