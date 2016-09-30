@@ -16,14 +16,18 @@ export const Notifications = {
       let directChat = DirectChats.findOne(directChatId);
 
       title = Meteor.user().profile.name;
+      text = message.content;
       query = {
         userId: directChat.getUser()._id,
       };
     } else if(!!boardId) {
       let board = Boards.findOne(boardId);
       let boardUsers = board.getUsers();
+      let sender = Meteor.users.findOne(message.senderId);
 
       title = board.name;
+      text = sender.profile.name + ': ' + message.content;
+      
       if(boardUsers.length > 0) {
         query = {
           userId: {
@@ -36,8 +40,6 @@ export const Notifications = {
       }
     }
 
-    text = message.content;
-
     let notification = {
       from: sender,
       title,
@@ -48,6 +50,7 @@ export const Notifications = {
         summaryText: 'There are %n% notifications',
       }
     };
+
     Push.send(notification);
   },
 };

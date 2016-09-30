@@ -17,4 +17,20 @@ export let createdModules = [
     description: "This is Drive (Sparta)!",
     validated: true,
   },
+  {
+    _id: "trello",
+    name: "Organizador de tareas",
+    img: "/modules/trello/image.png",
+    description: "Organizador de tareas",
+    validated: true,
+  },
+  /*
+  {
+    _id: "Hwqpiuufhsdf735sj",
+    name: "File Picker",
+    img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
+    description: "Google Drive API test",
+    validated: true,
+  }
+  */
 ];

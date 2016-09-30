@@ -1,32 +1,38 @@
-import { Meteor }        from 'meteor/meteor';
-import { resetDatabase } from 'meteor/xolvio:cleaner';
-import { sinon }         from 'meteor/practicalmeteor:sinon';
-import { chai }          from 'meteor/practicalmeteor:chai';
-import   faker           from 'faker';
-import { Random }        from 'meteor/random';
-import { Mail }          from '../mails/mails.js';
+import { Meteor }               from 'meteor/meteor';
+import { resetDatabase }        from 'meteor/xolvio:cleaner';
+import { sinon }                from 'meteor/practicalmeteor:sinon';
+import { chai }                 from 'meteor/practicalmeteor:chai';
+import   faker                  from 'faker';
+import { Random }               from 'meteor/random';
+import { Mail }                 from '../mails/mails.js';
 
-import { Teams }         from './teams.js';
-import { Boards }         from '../boards/boards.js';
+import { Teams }                from './teams.js';
+import { Boards }               from '../boards/boards.js';
 import { createTeam,
          editTeam,
          shareTeam,
          removeUserFromTeam,
          archiveTeam,
          dearchiveTeam,
-}                        from './methods.js';
-import { createBoard }   from '../boards/methods.js';
+}                               from './methods.js';
+import { createBoard }          from '../boards/methods.js';
+import { createModuleInstance } from '../module-instances/methods.js';
+import { apiInsert }            from '../api/methods.js';
 
 import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Teams', function() {
     describe('Methods', function() {
-      let users, team, board, boardId = Random.id();
+      let users, team, board, generalBoardId = Random.id(), coordinationBoardId = Random.id(),
+          createModuleInstanceArgs,
+          apiInsertArgs,
+          createdGeneralBoard = false;
 
       beforeEach(function() {
         resetDatabase();
-
+        
+        createdGeneralBoard = false;
         users = [
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
@@ -56,13 +62,21 @@ if (Meteor.isServer) {
         Boards.insert(board);
 
         sinon.stub(createBoard, 'call', (obj, callback) => {
-          let team = Teams.findOne(obj.teamId);
-
-          team.boards.push({ _id: boardId });
-
-          callback(null, { _id: boardId });
+          if(!createdGeneralBoard) {
+            createdGeneralBoard = true;
+            callback(null, { _id: generalBoardId });
+          } else {
+            callback(null, { _id: coordinationBoardId });
+          }
         });
-
+        sinon.stub(createModuleInstance, 'call', (obj, callback) => {
+          createModuleInstanceArgs = obj;
+          callback(null, { _id: 'moduleInstanceId' });
+        });
+        sinon.stub(apiInsert, 'call', (obj, callback) => {
+          apiInsertArgs = obj;
+          callback(null, null);
+        });
         sinon.stub(Mail, 'sendMail', () => true);
       });
 
@@ -70,6 +84,8 @@ if (Meteor.isServer) {
         createBoard.call.restore();
         Meteor.user.restore();
         Mail.sendMail.restore();
+        createModuleInstance.call.restore();
+        apiInsert.call.restore();
       });
 
       it('should create a team', function(done) {
@@ -90,7 +106,11 @@ if (Meteor.isServer) {
           name: team.name,
           plan: 'free',
           type: 'web',
-          boards: [{ _id: boardId }],
+          boards: [
+            { _id: generalBoardId },
+            { _id: coordinationBoardId },
+
+          ],
           users: [
             { email: users[0].emails[0].address, permission: 'owner' },
             { email: users[1].emails[0].address, permission: 'member' },
@@ -102,8 +122,26 @@ if (Meteor.isServer) {
         createTeam.call(args, (err, res) => {
           result = res;
           delete result._id;
+          let expectedCreateModuleInstanceArgs = {
+                boardId: coordinationBoardId,
+                moduleId: 'hYsHKx3br6kLYq3km',
+                x: 100,
+                y: 100,
+                width: 500,
+                height: 200,
+              },
+              expectedApiInsertArgs = {
+                moduleInstanceId: 'moduleInstanceId',
+                collection: 'coordinationBoard',
+                obj: {
+                  _id: coordinationBoardId,
+                },
+                isGlobal: true,
+              };
 
           chai.assert.deepEqual(result, expect);
+          chai.assert.deepEqual(createModuleInstanceArgs, expectedCreateModuleInstanceArgs);
+          chai.assert.deepEqual(apiInsertArgs, expectedApiInsertArgs);
           done();
         });
       });

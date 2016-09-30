@@ -7,10 +7,10 @@ import { Random }               from 'meteor/random';
 import   faker                  from 'faker';
 import                               '../factories/factories.js';
 
-import { ModuleData }      from '../module-data/module-data.js';
-import { ModuleInstances } from '../module-instances/module-instances.js';
+import { ModuleData }           from '../module-data/module-data.js';
+import { ModuleInstances }      from '../module-instances/module-instances.js';
 
-import { generateApi }           from './api-client.js';
+import { generateApi }          from './api-client.js';
 
 if (Meteor.isClient) {
   describe('API', () => {
@@ -201,10 +201,16 @@ if (Meteor.isClient) {
         done();
       });
 
-      it('should get current board using Diamond API', (done) => {
+      it('should return the current board', (done) => {
         let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
         let board = ModuleInstances.findOne(moduleInstances[0]._id).board();
         chai.assert.deepEqual(DiamondAPI.getCurrentBoard(), board);
+        done();
+      });
+
+      it('should return the current user', (done) => {
+        let DiamondAPI = generateApi({ moduleInstanceId: moduleInstances[0]._id });
+        chai.assert.deepEqual(DiamondAPI.getCurrentUser(), user);
         done();
       });
     });

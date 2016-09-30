@@ -10,9 +10,10 @@ export default class Board extends React.Component {
         {
           this.props.owner ? (
             <div className='col-xs-2' onClick={ this.props.openBoardContextMenu.bind(null, this.props.board._id) }>
-              <img  className='img board-preview'
-                    src='/img/sidebar/vertical-ellipsis.svg'
-                    width='22px' />
+              <img
+                className='img board-preview'
+                src='/img/sidebar/vertical-ellipsis.svg'
+                width='22px' />
             </div>
           ) : ( null )
         }

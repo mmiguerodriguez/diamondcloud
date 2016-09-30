@@ -1,5 +1,5 @@
 body {
-  background: #ffffa5;
+  background: #fafafa;
   font-family: 'roboto' !important;
 }
 
@@ -48,8 +48,8 @@ body {
 
 .file-manager {
   overflow: auto;
-  height: 100%;
-  background-color: #eee;
+  height: 100vh;
+  background-color: #fafafa;
   border: 1px solid #ccc;
 }
 .documents-container {
@@ -66,7 +66,7 @@ body {
   cursor: pointer;
   text-align: center;
   height: 40px;
-  background-color: #fff;
+  background-color: #eee;
   border-radius: 3px;
   padding: 10px;
   box-shadow: 0.5px 0.5px 2px 0px rgba(0,0,0, 0.3);
@@ -75,7 +75,7 @@ body {
   cursor: pointer;
   text-align: center;
   height: 150px;
-  background-color: #fff;
+  background-color: #eee;
   border-radius: 3px;
   padding: 10px;
   box-shadow: 0.5px 0.5px 2px 0px rgba(0,0,0, 0.3);

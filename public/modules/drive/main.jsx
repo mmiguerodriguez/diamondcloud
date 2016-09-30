@@ -182,7 +182,6 @@ class FileManagerPage extends React.Component {
               },
               callback: (err, res) => {
                 documents.push(res[0]);
-                console.log(documents);
                 self.setState({
                   documents,
                 });

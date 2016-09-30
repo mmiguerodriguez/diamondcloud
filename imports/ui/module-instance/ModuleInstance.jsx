@@ -21,6 +21,12 @@ export default class ModuleInstance extends React.Component {
     };
   }
   render() {
+    if(this.props.loading) {
+      return (
+        <div>Cargando modulo :)</div>
+      );
+    }
+
     return (
       <div className='module-container'
            ref='module'
@@ -88,8 +94,6 @@ export default class ModuleInstance extends React.Component {
         iframeFix: true,
       })
       .resizable({
-        minHeight: 320,
-        minWidth: 550,
         containment: 'parent',
         disabled: this.state.minimized,
         stop(event, ui) {
