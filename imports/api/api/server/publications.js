@@ -25,7 +25,7 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
     throw new Meteor.Error('ModuleData.data.notAValidMember',
     'Must be a valid member.');
   }
-  
+
   // Get the correct moduleData
   let pipeline = [
     {
@@ -53,7 +53,7 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
       }
     );
   }
-  
+
   // Filter the data that should be private for that moduleInstance
   pipeline.push(
     {
@@ -79,12 +79,12 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
       }
     }
   );
-  
+
   // Visible by
   let ids = [];
   let keys = {};
   let condOptions = [];
-  
+
   ModuleData.aggregate(pipeline, (err, res) => {
     if (res[0].data[obj.collection] !== null) {
       res[0].data[obj.collection].forEach((doc) => {
@@ -105,14 +105,12 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
         }
       });
     }
-    
+
     ids.forEach((id) => {
       condOptions.push({
         $eq: ['$$element._id', id]
       });
     });
-    
-    printObject('condOptions', condOptions);
 
     pipeline.push(
       {
@@ -144,7 +142,7 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
         }
       );
     }
-    
+
     ReactiveAggregate(this, ModuleData, pipeline);
   });
 });
