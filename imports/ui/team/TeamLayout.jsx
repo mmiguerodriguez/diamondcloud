@@ -71,6 +71,7 @@ export default class TeamLayout extends React.Component {
           openCreateChatModal={ this.openCreateChatModal }
           openConfigTeamModal={ this.openConfigTeamModal } />
         <Board
+          team={ this.props.team }
           boards={ this.props.boards }
           board={ this.props.board }
           users={ this.props.team.users }

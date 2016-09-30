@@ -15,21 +15,30 @@
     height: calc(100% - 40px);
     margin-top: 40px;
     position: relative;
+    background: url("http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/cork-wallet.png")
   }
 }
 .sub-header {
   display: flex;
   height: 40px;
   width: 100%;
-  background-color: #c4c4c4;
+  background-color: #6BB2E2;
+  color: #27343E;
+  position: relative;
   margin-right: 0px !important;
   margin-left: 0px !important;
+  z-index: 1;
+  box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.3);
   float: right;
   transition: all $sidebar-speed ease-in-out;
 
   .sub-header-data {
     padding: 0px !important;
     display: flex;
+  }
+  .right-data {
+    padding-top: 4px;
+    text-align: right;
   }
   .title {
     max-width: 50%;
@@ -38,7 +47,27 @@
     margin-bottom: 0 !important;
     border-right: solid 1px #3f3f3f;
   }
+  .breadcrumb {
+    padding: 6px 15px;
+    margin: 0 !important;
+    font-size: 20px;
+    background-color: transparent !important;
+    li {
+      a {
+        color: $sidebar-color !important;
+        text-decoration: none !important;
+      }
+      &.active {
+        font-weight: bold;
+        color: $sidebar-color !important;
+        &:before {
+          content: '/' !important;
+        }
+      }
+    }
+  }
   .members {
+    display: inline;
     max-width: 50%;
     padding: 5px;
     margin-top: 0px !important;
@@ -49,15 +78,15 @@
     background-color: $sidebar-text-color;
   }
   .message-text {
-    position: absolute;
-    right: 40px;
+    
   }
-  .message-icon {
-    position: absolute;
-    right: 6px;
-    margin-top: 6px;
-    cursor: pointer;
-    -webkit-filter: invert(0.855);
+  .message-icon-span {
+    display: inline;
+    margin-left: 6px;
+    .message-icon {
+      cursor: pointer;
+      -webkit-filter: invert(0.855);
+    }
   }
 }
 .sub-header-collapsed {

@@ -11,20 +11,25 @@ export default class Board extends React.Component {
     return (
       <div className={ classes }>
         <div className='sub-header'>
-          <div className='sub-header-data col-xs-10'>
-            <h4 className='title truncate'>{ this.props.board.name }</h4>
+          <div className='sub-header-data col-xs-6'>
+            <ol className="breadcrumb truncate">
+              <li><a href="#">{ this.props.team.name }</a></li>
+              <li className="active">{ this.props.board.name }</li>
+            </ol>
+            { /* <h4 className='title truncate'>{ this.props.board.name }</h4> */ }
+          </div>
+          <div className='col-xs-6 right-data'>
             <h4 className='members truncate'>
-              Miembros:
               { this.renderUsers() }
             </h4>
+            <span className='message-icon-span' onClick={ this.props.addChat.bind(null, { boardId: this.props.board._id }) }>
+              { /* <h4 className='message-text'>Chat del board</h4> */ }
+              <img  src='/img/sidebar/messages.svg'
+                    title='Abrir chat del board'
+                    className='message-icon'
+                    width='28px'/>
+            </span>
           </div>
-          <span onClick={ this.props.addChat.bind(null, { boardId: this.props.board._id }) }>
-            <h4 className='message-text'>Chat del board</h4>
-            <img  src='/img/sidebar/messages.svg'
-                  title='Abrir chat del board'
-                  className='message-icon'
-                  width='28px'/>
-          </span>
         </div>
         <div className='board'>
           { this.renderModules() }
@@ -160,6 +165,7 @@ export default class Board extends React.Component {
 }
 
 Board.propTypes = {
+  team: React.PropTypes.object.isRequired,
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,
   moduleInstances: React.PropTypes.array,
