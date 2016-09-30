@@ -1,5 +1,8 @@
 // File Manager
 
+// Google Drive API
+let CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
+
 /*
 
 DiamondAPI.insert({
@@ -215,10 +218,8 @@ ReactDOM.render(
  * Check if current user has authorized this application.
  */
 function checkAuth() {
-  console.log('checkAuth se llamó');
-  var CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
 
-  var SCOPES = [
+  let SCOPES = [
     'https://www.googleapis.com/auth/drive'
   ];
   gapi.auth.authorize({
@@ -228,4 +229,16 @@ function checkAuth() {
   }, () => {
     gapi.client.load('drive', 'v3');
   });
+}
+
+function initPicker() { // https://gist.github.com/Daniel15/5994054#file-filepicker-js
+	let picker = new FilePicker({
+		apiKey: 'PUT_YOUR_API_KEY_HERE',
+		clientId: CLIENT_ID,
+		buttonEl: document.getElementById('pick'),
+		onSelect: function(file) {
+			console.log(file);
+			alert('Selected ' + file.title);
+		}
+	});	
 }
