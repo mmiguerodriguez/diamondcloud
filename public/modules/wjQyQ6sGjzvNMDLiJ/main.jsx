@@ -74,6 +74,10 @@ class FileManagerLayout extends React.Component {
   renderFolders() {
 
   }
+  
+  componentDidMount() {
+    this.props.initPicker('import-file', (file) => {console.log(file)});
+  }
 
   render() {
     return (
@@ -106,7 +110,10 @@ class FileManagerLayout extends React.Component {
         </div>
         <div className="create">
           <div className="options">
-            <div className="option drive"></div>
+            <div
+              className="option drive"
+              id="import-file"
+            ></div>
             <div className="option new"></div>
           </div>
         </div>
@@ -128,10 +135,18 @@ class FileManagerPage extends React.Component {
   }
 
   render() {
-    if (this.props.loading) return null;
-    return (
-      <FileManagerLayout folders={ this.props.folders } documents={ this.props.documents } CreateDocument={ this.CreateDocument } />
-    );
+    if (this.props.loading) {
+      return null;
+    } else {
+      return (
+        <FileManagerLayout
+          folders={ this.props.folders }
+          documents={ this.props.documents }
+          CreateDocument={ this.createDocument }
+          initPicker={ this.initPicker }
+        />
+      );
+    }
   }
 
   componentDidMount() {
@@ -193,6 +208,7 @@ class FileManagerPage extends React.Component {
   createDocument({ name, fileType, callback }) {
     /**
      * callback(err, res)
+     *  res: file
      * fileType is the mimeType of the file
      * https://developers.google.com/drive/v3/web/mime-types
      */
@@ -207,6 +223,20 @@ class FileManagerPage extends React.Component {
       callback(reason, resp);
     });
   }
+  
+  initPicker(openButtonId, callback) {
+    /**
+     * openButtonId is the button that is used to open the file picker
+     * callback(file)
+     */
+  	let picker = new FilePicker({
+  		apiKey: 'AIzaSyCb04iiO8_pvdHsuf3XCNbdGw8SIbR9CxQ',
+  		clientId: CLIENT_ID,
+  		buttonEl: document.getElementById(openButtonId),
+  		onSelect: callback,
+  		gapi
+  	});	
+  }
 }
 
 ReactDOM.render(
@@ -217,28 +247,28 @@ ReactDOM.render(
 /**
  * Check if current user has authorized this application.
  */
-function checkAuth() {
-
-  let SCOPES = [
-    'https://www.googleapis.com/auth/drive'
-  ];
-  gapi.auth.authorize({
-    'client_id': CLIENT_ID,
-    'scope': SCOPES.join(' '),
-    'immediate': true
-  }, () => {
-    gapi.client.load('drive', 'v3');
-  });
-}
-
-function initPicker() { // https://gist.github.com/Daniel15/5994054#file-filepicker-js
-	let picker = new FilePicker({
-		apiKey: 'PUT_YOUR_API_KEY_HERE',
-		clientId: CLIENT_ID,
-		buttonEl: document.getElementById('pick'),
-		onSelect: function(file) {
-			console.log(file);
-			alert('Selected ' + file.title);
-		}
-	});	
+function checkAuth(i) {
+  i = i || 0;
+  if (i < 5) {
+    if (!!gapi.auth) {
+      let SCOPES = [
+        'https://www.googleapis.com/auth/drive'
+      ];
+      gapi.auth.authorize({
+        'client_id': CLIENT_ID,
+        'scope': SCOPES.join(' '),
+        'immediate': true
+      }, () => {
+        gapi.client.load('drive', 'v3');
+      });
+    } else {
+      i++;
+      console.log(i);
+      setTimeout(() => {
+        checkAuth(i);
+      }, 100);
+    }
+  } else {
+    console.error('Google API did not load properly. Reload or try later.');
+  }
 }

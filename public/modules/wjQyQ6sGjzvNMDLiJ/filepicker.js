@@ -20,10 +20,7 @@
 	
 		// Disable the button until the API loads, as it won't work properly until then.
 		this.buttonEl.disabled = true;
-
-		// Load the drive API
-		gapi.client.setApiKey(this.apiKey);
-		gapi.client.load('drive', 'v2', this._driveApiLoaded.bind(this));
+		
 		google.load('picker', '1', { callback: this._pickerApiLoaded.bind(this) });
 	}
 
@@ -51,6 +48,9 @@
 			var accessToken = gapi.auth.getToken().access_token;
 			this.picker = new google.picker.PickerBuilder().
 				addView(google.picker.ViewId.DOCUMENTS).
+				addView(google.picker.ViewId.DRAWINGS).
+				addView(google.picker.ViewId.PRESENTATIONS).
+				addView(google.picker.ViewId.SPREADSHEETS).
 				setAppId(this.clientId).
 				setOAuthToken(accessToken).
 				setCallback(this._pickerCallback.bind(this)).

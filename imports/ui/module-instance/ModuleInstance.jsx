@@ -98,12 +98,6 @@ export default class ModuleInstance extends React.Component {
             moduleInstanceId,
             width,
             height,
-          }, (error, result) => {
-            if(error) {
-              console.error(error);
-            } else {
-              console.log(result);
-            }
           });
         }
       });
