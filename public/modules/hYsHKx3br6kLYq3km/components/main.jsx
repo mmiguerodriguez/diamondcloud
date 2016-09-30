@@ -442,9 +442,7 @@ class Task extends React.Component {
             </div>
           ) : (
             <div>
-              <h5 className='task-title col-xs-12'>{ this.props.task.title }</h5>
-              <p className='col-xs-12 expiration'>Tiempo activo: { this.state.count }</p>
-              <p className='col-xs-12 expiration'>Vencimiento: { new Date(this.props.task.dueDate).toLocaleDateString() }</p>
+              <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
             </div>
           )
         }
@@ -466,6 +464,8 @@ class Task extends React.Component {
               onClick={ this.startEditing }></div>
           ) : ( null )
         }
+          <p className='col-xs-10 time-active'>Tiempo activo: { this.state.count }</p>
+          <p className='col-xs-10 expiration'>Vencimiento: { new Date(this.props.task.dueDate).toLocaleDateString() }</p>
         {
           !this.props.coordination && this.props.doing ? (
             <div>
