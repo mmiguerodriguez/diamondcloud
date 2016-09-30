@@ -7,12 +7,15 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
   let subscriptions = [];
   return {
     subscribe({ request, callback }) {
+      console.log('Trying to subscribe')
       let validation = typeof request.collection == 'string';
       validation = validation && (typeof request.condition == 'object' || request.condition === undefined);
       validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
       if (validation) {
         let serverSubscriptionCallback = {
           onReady() {
+            console.log('Server subscription callback');
+            
             let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
 
             let moduleData = ModuleData.findOne({
@@ -27,6 +30,8 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
                 teamId: moduleInstance.board().team()._id,
                 moduleId: moduleInstance.moduleId
               });
+              
+              console.log('Data changed', moduleData.data);
   
               if (!!moduleData.data) {
                 callback(undefined, moduleData.data[request.collection]);
@@ -55,6 +60,7 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
         callback(console.error('The provided data is wrong.'), undefined);
       }
     },
+    
     unsubscribe(subscriptionId) {
       if(subscriptionId) {
         subscriptions.forEach((sub, index) => {

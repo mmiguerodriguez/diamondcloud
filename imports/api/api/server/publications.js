@@ -111,6 +111,8 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
         $eq: ['$$element._id', id]
       });
     });
+    
+    printObject('condOptions', condOptions);
 
     pipeline.push(
       {
