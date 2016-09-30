@@ -19,11 +19,12 @@ export default class NavbarLayout extends React.Component {
       <nav className='navbar header'>
         <div className='container-fluid'>
           <div className='navbar-header row'>
-            <button className='navbar-toggle collapsed'
-                    type='button'
-                    data-toggle='collapse'
-                    data-target='#navbar'
-                    aria-expanded='false'>
+            <button
+              className='navbar-toggle collapsed'
+              type='button'
+              data-toggle='collapse'
+              data-target='#navbar'
+              aria-expanded='false'>
               <span className='sr-only'>Toggle navigation</span>
               <span className='icon-bar'></span>
               <span className='icon-bar'></span>
