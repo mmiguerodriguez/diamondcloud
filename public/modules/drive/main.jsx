@@ -11,14 +11,12 @@ class FileManagerLayout extends React.Component {
   }
 
   openFolder(folderId) {
-    console.log(folderId);
     browserHistory.push('/folder/JJCrf9CYeBDMdeDRt');
     //browserHistory.push(`/folder/${folderId}`);
   }
 
   openDocument(link) {
     // TODO: Make an option to return to file manager
-    console.log(link);
     browserHistory.push(link);
   }
 
@@ -123,7 +121,7 @@ class FileManagerPage extends React.Component {
 
     let folderId = nextProps.params.folderId;
 
-    console.log(this.props.params);
+    console.log('folderId:', folderId);
 
     let showFile = (file) => {
       if (file.documentId) {
@@ -133,7 +131,7 @@ class FileManagerPage extends React.Component {
             _id: file.documentId
           },
           callback: (err, res) => {
-            documents.push(res[0]);
+            //documents.push(res[0]);
             self.setState({
               documents,
             });
@@ -149,7 +147,7 @@ class FileManagerPage extends React.Component {
             _id: file.folderId
           },
           callback: (err, res) => {
-            folders.push(res[0]);
+            //folders.push(res[0]);
             self.setState({
               folders,
             });
@@ -173,11 +171,14 @@ class FileManagerPage extends React.Component {
         }
       },
       callback: (err, res) => {
+        /*
         self.setState({
           loadingBalance: self.state.loadingBalance + 10 - res[0].files.length,
         });
+        */
 
-        res[0].files.forEach(showFile);
+        console.log(res);
+        //res[0].files.forEach(showFile);
       }
     });
   }
@@ -188,8 +189,6 @@ class FileManagerPage extends React.Component {
     let folders = self.state.folders;
 
     let folderId = this.props.params.folderId;
-
-    console.log(this.props.params);
 
     let showFile = (file) => {
       if (file.documentId) {
