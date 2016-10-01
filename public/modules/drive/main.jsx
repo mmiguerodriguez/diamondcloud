@@ -70,11 +70,11 @@ class FileManagerLayout extends React.Component {
       name: '',
     };
   }
-  
+
   renderFolders() {
 
   }
-  
+
   componentDidMount() {
     this.props.initPicker('import-file', (file) => {console.log(file)});
   }
@@ -121,13 +121,20 @@ class FileManagerLayout extends React.Component {
     </div>
     );
   }
-  
+
   handleChange(event) {
     this.setState({
        name: event.target.value,
     });
   }
 }
+
+FileManagerLayout.propTypes = {
+  folders: React.PropTypes.array.isRequired,
+  documents: React.PropTypes.array.isRequired,
+  createDocument: React.PropTypes.func.isRequired,
+  initPicker: React.PropTypes.func.isRequired,
+};
 
 class FileManagerPage extends React.Component {
   renderFolders() {
@@ -142,7 +149,7 @@ class FileManagerPage extends React.Component {
         <FileManagerLayout
           folders={ this.props.folders }
           documents={ this.props.documents }
-          CreateDocument={ this.createDocument }
+          createDocument={ this.createDocument }
           initPicker={ this.initPicker }
         />
       );
@@ -155,7 +162,7 @@ class FileManagerPage extends React.Component {
       documents: [],
       loading: false,
     };
-    
+
     const handle = DiamondAPI.subscribe({
       request: {
         collection: 'files',
@@ -223,7 +230,7 @@ class FileManagerPage extends React.Component {
       callback(reason, resp);
     });
   }
-  
+
   initPicker(openButtonId, callback) {
     /**
      * openButtonId is the button that is used to open the file picker
@@ -235,7 +242,13 @@ class FileManagerPage extends React.Component {
   		buttonEl: document.getElementById(openButtonId),
   		onSelect: callback,
   		gapi
-  	});	
+  	});
+  }
+}
+
+class FileViewerPage extends React.Component {
+  render() {
+
   }
 }
 
