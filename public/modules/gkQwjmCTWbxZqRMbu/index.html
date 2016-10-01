@@ -15,24 +15,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/6.0.7/simplepeer.min.js"></script>
   </head>
   <body>
-
-      <label>Your ID:</label><br/>
-      <textarea id="yourId"></textarea><br/>
-      <label>Other ID:</label><br/>
+      <label>User ID:</label>
+      <br/>
+      <textarea id="yourId"></textarea>
+      <br/>
+      <label>Other ID:</label>
+      <br/>
       <textarea id="otherId"></textarea>
-      <button id="connect">connect</button>
-      <button id="initiate" onclick='initiate(true);'>Initiate: true</button>
-      <button id="initiate" onclick='initiate(false);'>Initiate: false</button>
+      
+      <button id="connect">Connect</button>
+      <button id="disconnect">Disconnect</button>
+      <button onclick='initiate(true);'>Initiator</button>
+      <button onclick='initiate(false);'>Non initiator</button>
       <br/>
 
-      <label>Enter Message:</label><br/>
-      <textarea id="yourMessage"></textarea>
-      <button id="send">send</button>
-      <pre id="messages"></pre>
-
+      <select id='users-list'>
+        
+      </select>
+  
+      <label>Status</label>
+      <div id="status"></div>
+      
       <video id='my-video' muted="false" autoplay="true"></video>
       <video id='their-video' muted="false" autoplay="true"></video>
-
+  
     <script type='text/javascript' src='components/main.js'></script>
     <!-- <script type='text/babel' src='components/main.jsx'></script> -->
   </body>
