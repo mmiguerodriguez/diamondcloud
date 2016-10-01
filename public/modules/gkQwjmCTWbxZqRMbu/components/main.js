@@ -9,37 +9,47 @@ var user = DiamondAPI.getCurrentUser();
 var users = DiamondAPI.getTeamData().users;
 
 function initiate(initiator) {
-  getUserMedia({ video: true, audio: true }, function (stream) {
+  getUserMedia({ video: true, audio: true }, (stream) => {
+    console.log('My stream (initialization)', stream);
+
+    let video = document.getElementById('my-video');
+    video.src = window.URL.createObjectURL(stream);
+
     var peer = new SimplePeer({
       initiator,
+      stream,
       trickle: false,
-      stream: stream
-    })
-  
-    peer.on('signal', function (data) {
-      document.getElementById('yourId').value = JSON.stringify(data)
-    })
-  
+    });
+
+    peer.on('signal', (data) => {
+      console.log('signal', data);
+      document.getElementById('yourId').value = JSON.stringify(data);
+    });
+
     document.getElementById('connect').addEventListener('click', function () {
-      var otherId = JSON.parse(document.getElementById('otherId').value)
-      peer.signal(otherId)
-    })
-  
+      let otherId = JSON.parse(document.getElementById('otherId').value);
+      peer.signal(otherId);
+    });
+
     document.getElementById('send').addEventListener('click', function () {
-      var yourMessage = document.getElementById('yourMessage').value
-      peer.send(yourMessage)
-    })
-  
-    peer.on('data', function (data) {
-      document.getElementById('messages').textContent += data + '\n'
-    })
-  
-    peer.on('stream', function (stream) {
-      var video = document.createElement('video')
-      document.body.appendChild(video)
-  
-      video.src = window.URL.createObjectURL(stream)
-      video.play()
-    })
-  }, (error) => { console.log(error); })
+      let message = document.getElementById('yourMessage').value;
+      peer.send(message);
+
+      console.log('Sent message', message);
+    });
+
+    peer.on('data', (data) => {
+      console.log('Received data', data);
+      document.getElementById('messages').textContent += data + '\n';
+    });
+
+    peer.on('stream', (stream) => {
+      console.log('Streaming received', stream);
+      let video = document.getElementById('their-video');
+      video.src = window.URL.createObjectURL(stream);
+    });
+
+  }, (error) => {
+    console.log(error);
+  });
 }

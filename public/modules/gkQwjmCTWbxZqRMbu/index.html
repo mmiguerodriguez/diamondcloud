@@ -4,7 +4,7 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css" rel="stylesheet">
     <link href='main.css' rel='stylesheet'>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
     <script src="https://unpkg.com/babel-core@5.8.38/browser.min.js"></script>
@@ -15,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/6.0.7/simplepeer.min.js"></script>
   </head>
   <body>
-    
+
       <label>Your ID:</label><br/>
       <textarea id="yourId"></textarea><br/>
       <label>Other ID:</label><br/>
@@ -24,12 +24,15 @@
       <button id="initiate" onclick='initiate(true);'>Initiate: true</button>
       <button id="initiate" onclick='initiate(false);'>Initiate: false</button>
       <br/>
-      
+
       <label>Enter Message:</label><br/>
       <textarea id="yourMessage"></textarea>
       <button id="send">send</button>
       <pre id="messages"></pre>
-    
+
+      <video id='my-video' muted="false" autoplay="true"></video>
+      <video id='their-video' muted="false" autoplay="true"></video>
+
     <script type='text/javascript' src='components/main.js'></script>
     <!-- <script type='text/babel' src='components/main.jsx'></script> -->
   </body>
