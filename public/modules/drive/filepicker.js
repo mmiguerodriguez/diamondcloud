@@ -10,25 +10,25 @@
 		// Config
 		this.apiKey = options.apiKey;
 		this.clientId = options.clientId;
-		
+
 		// Elements
 		this.buttonEl = options.buttonEl;
-		
+
 		// Events
 		this.onSelect = options.onSelect;
-		this.buttonEl.addEventListener('click', this.open.bind(this));		
-	
+		this.buttonEl.addEventListener('click', this.open.bind(this));
+
 		// Disable the button until the API loads, as it won't work properly until then.
 		this.buttonEl.disabled = true;
-		
+
 		google.load('picker', '1', { callback: this._pickerApiLoaded.bind(this) });
-	}
+	};
 
 	FilePicker.prototype = {
 		/**
 		 * Open the file picker.
 		 */
-		open: function() {		
+		open: function() {
 			// Check if the user has already authenticated
 			var token = gapi.auth.getToken();
 			if (token) {
@@ -39,7 +39,7 @@
 				this._doAuth(false, function() { this._showPicker(); }.bind(this));
 			}
 		},
-		
+
 		/**
 		 * Show the file picker once authentication has been done.
 		 * @private
@@ -57,7 +57,7 @@
 				build().
 				setVisible(true);
 		},
-		
+
 		/**
 		 * Called when a file has been selected in the Google Drive file picker.
 		 * @private
@@ -69,7 +69,7 @@
 					request = gapi.client.drive.files.get({
 						fileId: id
 					});
-					
+
 				request.execute(this._fileGetCallback.bind(this));
 			}
 		},
@@ -82,7 +82,7 @@
 				this.onSelect(file);
 			}
 		},
-		
+
 		/**
 		 * Called when the Google Drive file picker API has finished loading.
 		 * @private
@@ -90,7 +90,7 @@
 		_pickerApiLoaded: function() {
 			this.buttonEl.disabled = false;
 		},
-		
+
 		/**
 		 * Called when the Google Drive API has finished loading.
 		 * @private
@@ -98,14 +98,14 @@
 		_driveApiLoaded: function() {
 			this._doAuth(true);
 		},
-		
+
 		/**
 		 * Authenticate with Google Drive via the Google JavaScript API.
 		 * @private
 		 */
-		_doAuth: function(immediate, callback) {	
+		_doAuth: function(immediate, callback) {
 			gapi.auth.authorize({
-				client_id: this.clientId + '.apps.googleusercontent.com',
+				client_id: this.clientId,
 				scope: 'https://www.googleapis.com/auth/drive.readonly',
 				immediate: immediate
 			}, callback);
