@@ -22,16 +22,19 @@ function initiate(initiator) {
     });
 
     peer.on('signal', (data) => {
-      console.log('signal', data);
+      console.log('Received a signal', data);
+
       document.getElementById('yourId').value = JSON.stringify(data);
     });
 
-    document.getElementById('connect').addEventListener('click', function () {
+    document.getElementById('connect').addEventListener('click', (event) => {
       let otherId = JSON.parse(document.getElementById('otherId').value);
       peer.signal(otherId);
+
+      console.log('Connected to another peer', otherId);
     });
 
-    document.getElementById('send').addEventListener('click', function () {
+    document.getElementById('send').addEventListener('click', (event) => {
       let message = document.getElementById('yourMessage').value;
       peer.send(message);
 
