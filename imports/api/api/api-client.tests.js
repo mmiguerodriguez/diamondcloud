@@ -83,8 +83,8 @@ if (Meteor.isClient) {
         chai.assert.equal(subscriptionName, 'moduleData.data');
         chai.assert.equal(moduleInstanceId, moduleInstances[0]._id);
         chai.assert.deepEqual(request, requests[0]);
-        done();
         */
+        done();
       });
 
       it('should insert object to a module instance data', () => {
