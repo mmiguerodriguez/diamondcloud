@@ -13,14 +13,14 @@ export let createdModules = [
   {
     _id: "trello",
     name: "Organizador de tareas",
-    img: "/modules/hYsHKx3br6kLYq3km/image.png",
+    img: "/modules/trello/image.png",
     description: "Organizador de tareas",
     validated: true,
   },
   {
     _id: "drive",
     name: "File Manager",
-    img: "/modules/wjQyQ6sGjzvNMDLiJ/image.png",
+    img: "/modules/drive/image.png",
     description: "This is a File Manager",
     validated: true,
   },
