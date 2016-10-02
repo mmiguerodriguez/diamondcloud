@@ -4,21 +4,21 @@ export let Modules = new Mongo.Collection('Modules');
 
 export let createdModules = [
   {
-    _id: "Jjwjg6gouWLXhMGKW",
+    _id: "post-it",
     name: "Post it",
-    img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
+    img: "/modules/post-it/image.png",
     description: "I\"m a post it",
     validated: true,
   },
   {
-    _id: "hYsHKx3br6kLYq3km",
+    _id: "trello",
     name: "Organizador de tareas",
     img: "/modules/hYsHKx3br6kLYq3km/image.png",
     description: "Organizador de tareas",
     validated: true,
   },
   {
-    _id: "wjQyQ6sGjzvNMDLiJ",
+    _id: "drive",
     name: "File Manager",
     img: "/modules/wjQyQ6sGjzvNMDLiJ/image.png",
     description: "This is a File Manager",
