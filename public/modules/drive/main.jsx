@@ -247,10 +247,37 @@ class FileManagerPage extends React.Component {
 }
 
 class FileViewerPage extends React.Component {
-  render() {
 
+  render() {
+    let url = 'https://docs.google.com/document/d/' + this.props.params.documentId + '/edit';
+
+    return (
+      <FileViewerLayout
+        url={url}
+        />
+    );
   }
 }
+
+class FileViewerLayout extends React.Component {
+  render() {
+    return (
+      <iframe
+        src={this.props.url}
+        style={
+          {
+            width: '100%',
+            height: '100%'
+          }
+        }
+      />
+    );
+  }
+}
+
+FileViewerLayout.propTypes = {
+  url: React.PropTypes.string.isRequired,
+};
 
 ReactDOM.render(
   <FileManagerPage />,
