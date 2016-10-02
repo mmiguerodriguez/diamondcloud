@@ -152,6 +152,25 @@ class VideoChatPage extends React.Component {
   disconnect() {
     this.state.peer.destroy(() => {
       console.log('On disconnect..');
+      
+      DiamondAPI.update({
+        collection: 'users',
+        filter: {
+          _id: self.state.user._id,
+        },
+        updateQuery: {
+          $unset: {
+            _id: self.state.user._id,
+          },
+        },
+        callback(error, result) {
+          if (error) {
+            console.log('Error closing cornnection (update)', error);
+          } else {
+            console.log('Updated users collection correctly');
+          }
+        }
+      });
     });
   }
   
@@ -182,6 +201,28 @@ class VideoChatPage extends React.Component {
         initiator: isInitiator,
         stream,
         trickle: false,
+        config: {
+          iceServers: [
+            {
+              url: 'stun:23.21.150.121',
+            },
+            {
+              url: 'stun.l.google.com:19302',
+            },
+            {
+              url: 'stun1.l.google.com:19302',
+            },
+            {
+              url: 'stun2.l.google.com:19302',
+            },
+            {
+              url: 'stun3.l.google.com:19302',
+            },
+            {
+              url: 'stun4.l.google.com:19302',
+            },
+          ]
+        }
       });
       
       peer.on('signal', (data) => {
@@ -264,26 +305,7 @@ class VideoChatPage extends React.Component {
       });
       
       peer.on('close', () => {
-        console.log('Closed connection');
-        
-        DiamondAPI.update({
-          collection: 'users',
-          filter: {
-            _id: self.state.user._id,
-          },
-          updateQuery: {
-            $unset: {
-              _id: self.state.user._id,
-            },
-          },
-          callback(error, result) {
-            if (error) {
-              console.log('Error closing cornnection (update)', error);
-            } else {
-              console.log('Updated users collection correctly');
-            }
-          }
-        });
+        console.log('Closed connection...'); // For some reason this never gets called
       });
       
       self.setState({
