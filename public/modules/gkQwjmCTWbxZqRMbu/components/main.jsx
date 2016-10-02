@@ -1,4 +1,4 @@
-const { 
+const {
   DiamondAPI,
   React,
   ReactDOM,
@@ -8,19 +8,18 @@ const {
   navigator,
   URL,
 } = window;
-const { 
+const {
   Router,
   Route,
   IndexRoute,
   browserHistory,
 } = ReactRouter;
 
-var getUserMedia = 
-  navigator.getUserMedia || 
-  navigator.webkitGetUserMedia || 
-  navigator.mozGetUserMedia || 
+var getUserMedia =
+  navigator.getUserMedia ||
+  navigator.webkitGetUserMedia ||
+  navigator.mozGetUserMedia ||
   navigator.msGetUserMedia;
-  
 if (getUserMedia) {
   getUserMedia = getUserMedia.bind(navigator);
 }
@@ -30,24 +29,20 @@ browserHistory.push('/');
 class VideoChatPage extends React.Component {
   constructor() {
     super();
-    
+
     this.state = {
       user: {}, // Actual user object
-      users: [], // Team users
       signal: {}, // Peer signal (another users' signals)
       usersList: [], // Users list containing a dictionary of <_id, signal>
-      
-      boards: [], // Team boards
-      currentBoard: [], // Current board
-      
+
       peer: null, // User peer
-      
+
       myVideo: null, // User video
       videos: [], // Whole videos array
-      
+
       callStatus: 'Nada', // Call status (not working)
     };
-    
+
     // Auto-bind functions that need binding
     this.connect = this.connect.bind(this);
     this.disconnect = this.disconnect.bind(this);
@@ -58,47 +53,44 @@ class VideoChatPage extends React.Component {
       <div>
         <button onClick={ this.connect }>Connect</button>
         <button onClick={ this.disconnect }>Disconnect</button>
-        <button onClick={ this.getPoopData }>Get poop data</button>
-        
+        <button onClick={ this.getPoopData }>Get signals</button>
+
         <button onClick={ this.initiate.bind(this, true) }>Initiator</button>
         <button onClick={ this.initiate.bind(this, false) }>Not initiator</button>
-        
-        <select 
+
+        <select
           id='users-list-select'
           value={ JSON.stringify(this.state.signal) }
           onChange={ this.handleChange.bind(this, 'signal') }>
           { this.renderUsersOptions() }
         </select>
-        
-        
-        <Video 
-          id={ 'my-video' } 
+
+        <Video
+          id={ 'my-video' }
           options={
-            { 
-              autoplay: true,
-              muted: false,
+            {
+              autoplay: 'true',
+              muted: 'false',
               width: '250px',
               src: this.state.myVideo ? this.state.myVideo.src : '',
             }
           } />
-          
+
         { this.renderVideos() }
-        
+
         <p>{ this.state.callStatus }</p>
       </div>
     );
   }
   componentDidMount() {
     let self = this;
-    
+
     // Set team and user data
     self.setState({
-      ...DiamondAPI.getTeamData(),
       user: DiamondAPI.getCurrentUser(),
-      currentBoard: DiamondAPI.getCurrentBoard(),
       myVideo: {},
     });
-    
+
     // Subscribe to users data and set signal to the first signal it finds
     DiamondAPI.subscribe({
       request: {
@@ -120,11 +112,11 @@ class VideoChatPage extends React.Component {
       }
     });
   }
-  
+
   // Fake subscribe
   getPoopData() {
     let self = this;
-    
+
     DiamondAPI.get({
       collection: 'users',
       filter: {},
@@ -141,18 +133,17 @@ class VideoChatPage extends React.Component {
       }
     });
   }
-  
+
   // Connects to another peer
   connect() {
     console.log('Connecting to...', this.state.signal);
     this.state.peer.signal(this.state.signal);
   }
-  
   // Disconnects from peer
   disconnect() {
     this.state.peer.destroy(() => {
       console.log('On disconnect..');
-      
+
       DiamondAPI.update({
         collection: 'users',
         filter: {
@@ -173,30 +164,30 @@ class VideoChatPage extends React.Component {
       });
     });
   }
-  
+  // Adds peer to current connection
   addPeer({ src }) {
     let videos = this.state.videos;
-    
+
     videos.push({
       id: 'random_id',
       src,
     });
-    
+
     this.setState({
       videos,
     });
   }
-  
+
   // Initiates peer and sets its callbacks
   // Ask for userMedia
   initiate(isInitiator) {
     let self = this;
-    
+
     getUserMedia({ video: true, audio: true }, (stream) => {
       console.log('My stream (initialization)', stream);
 
       this.state.myVideo.src = window.URL.createObjectURL(stream);
-  
+
       let peer = new SimplePeer({
         initiator: isInitiator,
         stream,
@@ -224,20 +215,20 @@ class VideoChatPage extends React.Component {
           ]
         }
       });
-      
+
       peer.on('signal', (data) => {
         console.log('Received a signal', data);
-        
-        if (data.type === 'offer') { 
-          self.setState({
-            callStatus: 'Llamandoooooo',
-          });
-        } else if (data.type === 'answer') {
+
+        if (data.type === 'offer') {
           self.setState({
             callStatus: 'Atendeeeeeee',
           });
+        } else if (data.type === 'answer') {
+          self.setState({
+            callStatus: 'Llamandoooooo',
+          });
         }
-  
+
         DiamondAPI.get({
           collection: 'users',
           filter: {
@@ -249,12 +240,12 @@ class VideoChatPage extends React.Component {
             } else {
               if(result.length > 0) {
                 console.log('User is inserted proceeding to update its collection');
-                
+
                 // Set flags so update works correctly
                 data.$flags = {
                   insertAsPlainObject: true,
                 };
-                
+
                 DiamondAPI.update({
                   collection: 'users',
                   filter: {
@@ -275,7 +266,7 @@ class VideoChatPage extends React.Component {
                 });
               } else {
                 console.log('User isn\'t inserted in the collection, inserting');
-                
+
                 DiamondAPI.insert({
                   collection: 'users',
                   obj: {
@@ -300,14 +291,14 @@ class VideoChatPage extends React.Component {
       });
       peer.on('stream', (stream) => {
         let src = URL.createObjectURL(stream);
-        
+
         self.addPeer({ src });
       });
-      
+
       peer.on('close', () => {
         console.log('Closed connection...'); // For some reason this never gets called
       });
-      
+
       self.setState({
         peer,
       });
@@ -315,16 +306,16 @@ class VideoChatPage extends React.Component {
       console.log('There was an error getting user media', error);
     });
   }
-  
+
   // Renders videos
   renderVideos() {
     if(this.state.videos) {
       if(this.state.videos.length > 0) {
         return this.state.videos.map((video) => {
           return (
-            <Video 
-              id={ video._id } 
-              options={{ 
+            <Video
+              id={ video._id }
+              options={{
                 autoplay: true,
                 muted: false,
                 width: '',
@@ -344,15 +335,17 @@ class VideoChatPage extends React.Component {
     console.log('UsersList', this.state.usersList);
     if (this.state.usersList) {
       if (this.state.usersList.length > 0) {
+        let users = DiamondAPI.getTeamData().users;
+
         return this.state.usersList.map((user) => {
           if(this.state.user._id !== user._id) {
             let user_name;
-            this.state.users.forEach((_user) => {
+            users.forEach((_user) => {
               if(user._id === _user._id) {
                 user_name = _user.profile.name;
               }
             });
-  
+
             return (
               <option
                 value={ JSON.stringify(user.signal) }>
@@ -373,10 +366,10 @@ class VideoChatPage extends React.Component {
   // Handles <select> change
   handleChange(index, event) {
     let value = event.target.value;
-    if(index === 'signal') {
+    if (index === 'signal') {
       value = JSON.parse(value);
     }
-    
+
     this.setState({
       [index]: value,
     });
