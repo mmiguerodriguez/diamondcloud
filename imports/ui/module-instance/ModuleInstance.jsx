@@ -88,7 +88,7 @@ export default class ModuleInstance extends React.Component {
       .draggable({
         containment: 'parent',
         handle: '.module-pin',
-        cursor: 'pointer',
+        cursor: '-webkit-grabbing !important',
         cursorAt: { top: -6 },
         distance: 5,
         iframeFix: true,

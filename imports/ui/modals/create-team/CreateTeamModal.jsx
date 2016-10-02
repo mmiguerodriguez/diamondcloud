@@ -22,10 +22,11 @@ export default class CreateTeamModal extends React.Component {
       otherType: '',
       usersEmails: [],
     };
-    this.addUser    = this.addUser.bind(this);
+
+    this.addUser = this.addUser.bind(this);
     this.removeUser = this.removeUser.bind(this);
-    this.backPage   = this.backPage.bind(this);
-    this.nextPage   = this.nextPage.bind(this);
+    this.backPage = this.backPage.bind(this);
+    this.nextPage = this.nextPage.bind(this);
   }
   render() {
     return (

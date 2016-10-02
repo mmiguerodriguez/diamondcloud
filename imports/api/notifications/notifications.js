@@ -27,7 +27,7 @@ export const Notifications = {
 
       title = board.name;
       text = sender.profile.name + ': ' + message.content;
-      
+
       if(boardUsers.length > 0) {
         query = {
           userId: {

@@ -32,6 +32,18 @@ export default class TeamLayout extends React.Component {
       'board-context-menu': null,
       'moduleinstance-context-menu': null,
     };
+
+    this.removeBoard = this.removeBoard.bind(this);
+    this.changeBoard = this.changeBoard.bind(this);
+    this.removeModuleInstance = this.removeModuleInstance.bind(this);
+    this.openCreateBoardModal = this.openCreateBoardModal.bind(this);
+    this.openCreateChatModal = this.openCreateChatModal.bind(this);
+    this.openConfigTeamModal = this.openConfigTeamModal.bind(this);
+    this.loadTeam = this.loadTeam.bind(this);
+    this.toggleCollapsible = this.toggleCollapsible.bind(this);
+    this.closePermissionAsker = this.closePermissionAsker.bind(this);
+    this.openModuleInstanceContextMenu = this.openModuleInstanceContextMenu.bind(this);
+    this.openBoardContextMenu = this.openBoardContextMenu.bind(this);
   }
   render() {
     let chatsContainer = classNames({
@@ -45,20 +57,21 @@ export default class TeamLayout extends React.Component {
       <div>
         {
           this.state.permissionAsker && !isMobile.any ? (
-            <NotificationsPermissionAsker close={ this.closePermissionAsker.bind(this) } />
+            <NotificationsPermissionAsker close={ this.closePermissionAsker } />
           ) : ( null )
         }
         <SidebarLayout
           { ...this.props }
           addChat={ this.props.addChat }
-          changeBoard={ this.changeBoard.bind(this) }
+          changeBoard={ this.changeBoard }
           permissionAsker={ this.state.permissionAsker }
-          openBoardContextMenu={ this.openBoardContextMenu.bind(this) }
-          toggleCollapsible={ this.toggleCollapsible.bind(this) }
-          openCreateBoardModal={ this.openCreateBoardModal.bind(this) }
-          openCreateChatModal={ this.openCreateChatModal.bind(this) }
-          openConfigTeamModal={ this.openConfigTeamModal.bind(this) } />
+          openBoardContextMenu={ this.openBoardContextMenu }
+          toggleCollapsible={ this.toggleCollapsible }
+          openCreateBoardModal={ this.openCreateBoardModal }
+          openCreateChatModal={ this.openCreateChatModal }
+          openConfigTeamModal={ this.openConfigTeamModal } />
         <Board
+          team={ this.props.team }
           boards={ this.props.boards }
           board={ this.props.board }
           users={ this.props.team.users }
@@ -66,7 +79,7 @@ export default class TeamLayout extends React.Component {
           moduleInstancesFrames={ this.props.moduleInstancesFrames }
           modules={ this.props.modules }
           addChat={ this.props.addChat }
-          openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu.bind(this) }
+          openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu }
           permissionAsker={ this.state.permissionAsker } />
         <div className={ chatsContainer }>
           { this.renderChats() }
@@ -110,7 +123,7 @@ export default class TeamLayout extends React.Component {
                 <div
                   className='new-chat visible-xs-block'
                   role='button'
-                  onClick={ this.openCreateBoardModal.bind(this) }>
+                  onClick={ this.openCreateBoardModal }>
                   <img className='icon boards active' src='/img/sidebar/messages.svg' width='26px' />
                 </div>
               ) : ( null )
@@ -120,14 +133,14 @@ export default class TeamLayout extends React.Component {
             { this.renderDirectChats() }
             <div
               className='new-chat visible-xs-block'
-              onClick={ this.openCreateChatModal.bind(this) }>
+              onClick={ this.openCreateChatModal }>
               <img className='icon users' src='/img/add-people-icon.svg' width='26px' />
             </div>
           </div>
         </div>
 
         <div className='moduleinstance-context-menu context-menu' ref='moduleinstance-context-menu'>
-          <div className='row' onClick={ this.removeModuleInstance.bind(this) }>
+          <div className='row' onClick={ this.removeModuleInstance }>
             <div className='col-xs-4'>
               <img src='http://image0.flaticon.com/icons/svg/60/60761.svg' width='20px' />
             </div>
@@ -139,7 +152,7 @@ export default class TeamLayout extends React.Component {
           this.props.owner ? (
             <div>
               <div className='board-context-menu context-menu' ref='board-context-menu'>
-                <div className='row' onClick={ this.removeBoard.bind(this) }>
+                <div className='row' onClick={ this.removeBoard }>
               		<div className='col-xs-4'>
               			<img src='http://image0.flaticon.com/icons/svg/60/60761.svg' width='20px' />
             	  	</div>
@@ -149,19 +162,19 @@ export default class TeamLayout extends React.Component {
               <CreateBoardModal
                 team={ this.props.team }
                 addChat={ this.props.addChat }
-                changeBoard={ this.changeBoard.bind(this) }
-                toggleCollapsible={ this.toggleCollapsible.bind(this) } />
+                changeBoard={ this.changeBoard }
+                toggleCollapsible={ this.toggleCollapsible } />
               <ConfigTeamModal
                 key={ this.props.team._id }
                 team={ this.props.team }
-                loadTeam={ this.loadTeam.bind(this) } />
+                loadTeam={ this.loadTeam } />
             </div>
           ) : ( null )
         }
         <CreateChatModal
           team={ this.props.team }
           addChat={ this.props.addChat }
-          toggleCollapsible={ this.toggleCollapsible.bind(this) } />
+          toggleCollapsible={ this.toggleCollapsible } />
       </div>
     );
   }
@@ -196,7 +209,7 @@ export default class TeamLayout extends React.Component {
           boards={ this.props.boards }
           directChats={ this.props.directChats }
           position={ isMobile.any ? 'mobile' : 'medium' }
-          togglePosition={ this.togglePosition.bind(this) }
+          togglePosition={ this.togglePosition }
           removeChat={ this.props.removeChat }
           hasMaximizedChats={ this.state['has-maximized-chats']}/>
       );
@@ -307,9 +320,9 @@ export default class TeamLayout extends React.Component {
           <div className={ infoClasses }>
             <p className='user truncate'>{ board.name }</p>
             <p className='last-message truncate'>
-              { 
+              {
                 lastMessage.content !== '' ? (
-                  Meteor.users.findOne(lastMessage.senderId).profile.name + ': ' + lastMessage.content 
+                  Meteor.users.findOne(lastMessage.senderId).profile.name + ': ' + lastMessage.content
                 ) : ( lastMessage.content )
               }
             </p>

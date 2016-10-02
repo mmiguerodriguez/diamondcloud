@@ -4,7 +4,12 @@
 .row-fixed-margin {
   margin-left: 0px !important;
   margin-right: 0px !important;
+  overflow: auto;
   cursor: pointer;
+  transition: 0.3s all ease;
+  &:hover {
+    background-color: #eee;
+  }
 }
 
 .img-fixed-margin {

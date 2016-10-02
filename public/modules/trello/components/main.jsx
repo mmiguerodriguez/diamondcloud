@@ -432,14 +432,20 @@ class Task extends React.Component {
       <div className='col-xs-12 task'>
         {
           this.state.editing ? (
-            <input
-              className='form-control col-xs-10'
-              type='text'
-              value={ this.state.task_title }
-              onChange={ this.handleChange.bind(this, 'task_title') }
-              onKeyDown={ this.handleKeyDown } />
+            <div className='col-xs-12'>
+              <input
+                className='form-control edit-task-input'
+                type='text'
+                value={ this.state.task_title }
+                onChange={ this.handleChange.bind(this, 'task_title') }
+                onKeyDown={ this.handleKeyDown } />
+            </div>
           ) : (
-            <h5 className='task-title col-xs-10'>{ this.props.task.title }</h5>
+            <div>
+              <h5 className='task-title col-xs-12'>{ this.props.task.title }</h5>
+              <p className='col-xs-12 expiration'>Tiempo activo: { this.state.count }</p>
+              <p className='col-xs-12 expiration'>Vencimiento: { new Date(this.props.task.dueDate).toLocaleDateString() }</p>
+            </div>
           )
         }
         {
@@ -452,7 +458,7 @@ class Task extends React.Component {
           ) : ( null )
         }
         {
-          this.props.coordination && this.props.task.status === 'not_finished' ? (
+          this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
             <div
               className='col-xs-2 edit-task'
               title='Editar tarea'
@@ -460,12 +466,14 @@ class Task extends React.Component {
               onClick={ this.startEditing }></div>
           ) : ( null )
         }
-
-        <p className='col-xs-10 expiration'>Vencimiento: { new Date(this.props.task.dueDate).toLocaleDateString() }</p>
-
         {
           !this.props.coordination && this.props.doing ? (
             <div>
+              <div className='record'>
+                <img
+                  src='/modules/hYsHKx3br6kLYq3km/img/record.svg'
+                  width='25px' />
+              </div>
               <div
                 className='done'
                 title='Marcar como finalizado'
@@ -689,7 +697,7 @@ class Task extends React.Component {
     minutes = minutes > 9 ? "" + minutes: "0" + minutes;
     hours = hours > 9 ? "" + hours: "0" + hours;
 
-    let count = days + (days === 1 ? 'día' : ' días ') + hours + ':' + minutes + ':' + seconds;
+    let count = hours + ':' + minutes + ':' + seconds;
 
     this.setState({
       count,

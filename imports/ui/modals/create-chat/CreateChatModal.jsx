@@ -14,8 +14,8 @@ export default class CreateChatModal extends React.Component {
 
     this.state = { userId: '' };
 
-    this.clearData          = this.clearData.bind(this);
-    this.createChat         = this.createChat.bind(this);
+    this.clearData = this.clearData.bind(this);
+    this.createChat = this.createChat.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
   }
 

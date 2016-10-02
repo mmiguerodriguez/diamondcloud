@@ -17,8 +17,9 @@ export default class CreateBoardModal extends React.Component {
       isPrivate: false,
       users: '',
     };
-    this.onClose            = this.onClose.bind(this);
-    this.createBoard        = this.createBoard.bind(this);
+
+    this.onClose = this.onClose.bind(this);
+    this.createBoard = this.createBoard.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
   }
 
