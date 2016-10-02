@@ -5,7 +5,6 @@ const {
   ReactRouter,
   SimpleWebRTC,
   classNames,
-  navigator,
   URL,
 } = window;
 const {
@@ -14,15 +13,6 @@ const {
   IndexRoute,
   browserHistory,
 } = ReactRouter;
-
-var getUserMedia =
-  navigator.getUserMedia ||
-  navigator.webkitGetUserMedia ||
-  navigator.mozGetUserMedia ||
-  navigator.msGetUserMedia;
-if (getUserMedia) {
-  getUserMedia = getUserMedia.bind(navigator);
-}
 
 browserHistory.push('/');
 
@@ -33,13 +23,16 @@ class VideoChatPage extends React.Component {
     this.state = {
       localVideoId: 'user-video',
       videos: [],
+      peers: [],
       webrtc: {},
     };
   }
   render() {
     return (
       <div>
-        <UserVideo 
+        <UsersList 
+          peers={ this.state.peers } />
+        <UserVideo
           id={ this.state.localVideoId } 
           width={ 250 }
           height={ 250 }
@@ -73,9 +66,19 @@ class VideoChatPage extends React.Component {
           VIDEO_START = 'playing',
           AUDIO_START = 'unmuted';
     
+    // RTC ready event
+    webrtc.on('readyToCall', () => {
+      webrtc.joinRoom(currentBoard._id);
+    });
+    
+    // Remote peer created event
+    webrtc.on('createdPeer', (peer) => {
+      // Created peer on room
+    });
+    
     // New/Removed videos events
     webrtc.on('videoAdded', (video, peer) => {
-      let videos = self.state.videos;
+      let { videos, peers } = self.state;
       
       videos.push({
         id: peer.id,
@@ -87,12 +90,15 @@ class VideoChatPage extends React.Component {
         peer,
       });
       
+      peers.push(peer);
+      
       self.setState({
         videos,
+        peers,
       });
     });
     webrtc.on('videoRemoved', (video, peer) => {
-      let videos = self.state.videos;
+      let { videos, peers } = self.state;
       let videoDomId =  webrtc.getDomId(peer);
       
       videos.forEach((video, index) => {
@@ -101,8 +107,15 @@ class VideoChatPage extends React.Component {
         }
       });
       
+      peers.forEach((_peer, index) => {
+        if (_peer.id === peer.id) {
+          peers.splice(index, 1);
+        }
+      });
+      
       self.setState({
         videos,
+        peers,
       });
     });
     
@@ -121,11 +134,11 @@ class VideoChatPage extends React.Component {
     });
     
     // Volume changes events
-    webrtc.on('volumeChange', (volume, treshold) => {
-      console.log('Local volume change', volume, treshold);
+    webrtc.on('volumeChange', (volume, threshold) => {
+      console.log('Local volume change', volume, threshold);
     });
-    webrtc.on('remoteVolumeChange', (volume, treshold) => {
-      console.log('Remote volume change', volume, treshold);
+    webrtc.on('remoteVolumeChange', (volume, threshold) => {
+      console.log('Remote volume change', volume, threshold);
     });
     
     webrtc.on('mute', (data) => {
@@ -159,8 +172,40 @@ class VideoChatPage extends React.Component {
       });
     });
     
-    // Joins to the currentBoard room
-    webrtc.joinRoom(currentBoard._id);
+    // Failure events
+    webrtc.on('iceFailed', (peer) => {
+      // Local p2p/ice failure
+      let pc = peer.pc;
+      console.log('Had local relay candidate', pc.hadLocalRelayCandidate);
+      console.log('Had remote relay candidate', pc.hadRemoteRelayCandidate);
+    });
+    webrtc.on('connectivityError', (peer) => {
+      // Remote p2p/ice failure
+      let pc = peer.pc;
+      console.log('Had local relay candidate', pc.hadLocalRelayCandidate);
+      console.log('Had remote relay candidate', pc.hadRemoteRelayCandidate);
+    });
+  }
+}
+
+class UsersList extends React.Component {
+  render() {
+    return (
+      <div>
+        <h4>Lista de usuarios</h4>
+        <div>
+          <p>Vos</p>
+          { this.renderPeers() }
+        </div>
+      </div>
+    );
+  }
+  renderPeers() {
+    return this.props.peers.map((peer) => {
+      return (
+        <p>{ peer.nick }</p>
+      );
+    });
   }
 }
 
