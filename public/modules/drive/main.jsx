@@ -94,12 +94,12 @@ class FileManagerPage extends React.Component {
     this.state = {
       folders: [],
       documents: [],
-      loadingBalance: -10,
+      loadingBalance: 0,
     };
   }
 
   render() {
-    if (this.state.loadingBalance != 0) {
+    if (this.state.loadingBalance < 0) {
       return (
         <div className='loading'>
           <div className='loader'></div>
@@ -121,8 +121,6 @@ class FileManagerPage extends React.Component {
 
     let folderId = nextProps.params.folderId;
 
-    console.log('folderId:', folderId);
-
     let showFile = (file) => {
       if (file.documentId) {
         let subHandle = DiamondAPI.get({
@@ -131,7 +129,7 @@ class FileManagerPage extends React.Component {
             _id: file.documentId
           },
           callback: (err, res) => {
-            //documents.push(res[0]);
+            documents.push(res[0]);
             self.setState({
               documents,
             });
@@ -147,7 +145,7 @@ class FileManagerPage extends React.Component {
             _id: file.folderId
           },
           callback: (err, res) => {
-            //folders.push(res[0]);
+            folders.push(res[0]);
             self.setState({
               folders,
             });
@@ -160,25 +158,25 @@ class FileManagerPage extends React.Component {
     };
 
     DiamondAPI.subscribe({
-      request: {
-        collection: !!folderId ? 'folders' : 'files',
-        condition: {
-          $eq: (
-            !!folderId ?
-            ['$$element._id', folderId] :
-            ['$$element.boardId', DiamondAPI.getCurrentBoard()._id]
-          )
-        }
-      },
+      collection: (!!folderId ? 'folders' : 'files'),
+      filter: !!folderId ?
+              {
+                _id: folderId,
+              } :
+              {
+                boardId: DiamondAPI.getCurrentBoard()._id,
+              },
       callback: (err, res) => {
-        /*
-        self.setState({
-          loadingBalance: self.state.loadingBalance + 10 - res[0].files.length,
-        });
-        */
-
-        console.log(res);
-        //res[0].files.forEach(showFile);
+        let deepEqual = () => false;
+        if (!deepEqual(res, oldRes)) {
+          self.setState({
+            loadingBalance: self.state.loadingBalance - res[0].files.length,
+          });
+          documents = [];
+          folders = [];
+          res[0].files.forEach(showFile);
+          oldRes = res;
+        }
       }
     });
   }
@@ -226,23 +224,28 @@ class FileManagerPage extends React.Component {
       }
     };
 
-    DiamondAPI.subscribe({
-      request: {
-        collection: !!folderId ? 'folders' : 'files',
-        condition: {
-          $eq: (
-            !!folderId ?
-            ['$$element._id', folderId] :
-            ['$$element.boardId', DiamondAPI.getCurrentBoard()._id]
-          )
-        }
-      },
-      callback: (err, res) => {
-        self.setState({
-          loadingBalance: self.state.loadingBalance + 10 - res[0].files.length,
-        });
+    let oldRes;
 
-        res[0].files.forEach(showFile);
+    DiamondAPI.subscribe({
+      collection: (!!folderId ? 'folders' : 'files'),
+      filter: !!folderId ?
+              {
+                _id: folderId,
+              } :
+              {
+                boardId: DiamondAPI.getCurrentBoard()._id,
+              },
+      callback: (err, res) => {
+        let deepEqual = () => false;
+        if (!deepEqual(res, oldRes)) {
+          self.setState({
+            loadingBalance: self.state.loadingBalance - res[0].files.length,
+          });
+          documents = [];
+          folders = [];
+          res[0].files.forEach(showFile);
+          oldRes = res;
+        }
       }
     });
   }
