@@ -7,12 +7,16 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
   let subscriptions = [];
   let DiamondAPI = {
     subscribe({ collection, filter, callback }) {
+      let oldRes;
       let recursiveGet = () => {
         DiamondAPI.get({
           collection,
           filter,
           callback: (err, res) => {
-            callback(err, res);
+            if (!_.isEqual(res, oldRes)) {
+              oldRes = res;
+              callback(err, res);
+            }
             setTimeout(recursiveGet, 1000);
           },
         });
