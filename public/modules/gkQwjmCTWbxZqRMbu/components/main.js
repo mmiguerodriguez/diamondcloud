@@ -67,7 +67,7 @@ function initiate(initiator) {
                 },
                 updateQuery: {
                   $unset: {
-                    _id: "5e5pFqhaKa7gvj8Sz",
+                    _id: user._id,
                   },
                 },
                 callback(error, result) {
