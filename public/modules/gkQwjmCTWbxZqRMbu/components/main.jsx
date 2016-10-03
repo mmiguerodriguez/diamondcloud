@@ -34,16 +34,17 @@ class VideoChatPage extends React.Component {
   render() {
     return (
       <div>
+        <UserVideo
+          id={ this.state.localVideoId } 
+          width={ 250 }
+          height={ 250 }
+          webrtc={ this.state.webrtc }
+          connected={ this.state.connected } />
         {
           this.state.connected ? (
             <div>
               <UsersList 
                 peers={ this.state.peers } />
-              <UserVideo
-                id={ this.state.localVideoId } 
-                width={ 250 }
-                height={ 250 }
-                webrtc={ this.state.webrtc } />
               <RemoteVideos 
                 videos={ this.state.videos } />
             </div>
@@ -215,8 +216,8 @@ class VideoChatPage extends React.Component {
   connect() {
     if (this.state.readyToCall) {
       let board = DiamondAPI.getCurrentBoard();
-      this.state.webrtc.joinRoom(board._id);
       
+      this.state.webrtc.joinRoom(board._id);
       this.setState({
         connected: true,
       });
@@ -259,37 +260,43 @@ class UserVideo extends React.Component {
   render() {
     return (
       <div>
-        { 
-          this.state.video === 'playing' ? (
-            <button
-              className='btn btn-danger'
-              onClick={ this.pause }>Pause call
-            </button> // Replace with lovely image, maybe put it inside user video
-          ) : (
-            <button
-              className='btn btn-success'
-              onClick={ this.resume }>Resume call
-            </button> // Replace with lovely image, maybe put it inside user video
-          )
-        }
-        {
-          this.state.audio === 'unmuted' ? (
-            <button
-              className='btn btn-danger'
-              onClick={ this.mute }>Mute audio
-            </button> // Replace with lovely image, maybe put it inside user video
-          ) : (
-            <button
-              className='btn btn-success'
-              onClick={ this.unmute }>Unmute audio
-            </button> // Replace with lovely image, maybe put it inside user video
-          )
-        }
-
         <video
           id={ this.props.id }
           width={ this.props.width }>
         </video>
+        { 
+          this.props.connected ? (
+            <div>
+            {
+              this.state.video === 'playing' ? (
+                <button
+                  className='btn btn-danger'
+                  onClick={ this.pause }>Pause call
+                </button> // Replace with lovely image, maybe put it inside user video
+              ) : (
+                <button
+                  className='btn btn-success'
+                  onClick={ this.resume }>Resume call
+                </button> // Replace with lovely image, maybe put it inside user video
+              )
+            }
+            {
+              this.state.audio === 'unmuted' ? (
+                <button
+                  className='btn btn-danger'
+                  onClick={ this.mute }>Mute audio
+                </button> // Replace with lovely image, maybe put it inside user video
+              ) : (
+                <button
+                  className='btn btn-success'
+                  onClick={ this.unmute }>Unmute audio
+                </button> // Replace with lovely image, maybe put it inside user video
+              )
+            }
+            </div>
+          ) : ( null )
+        }
+
       </div>
     );
   }
