@@ -5,41 +5,6 @@ browserHistory.push('/'); // initialize the router
 
 // Google Drive API
 let CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
-
-/*
-
-DiamondAPI.insert({
-  collection: 'files',
-  obj: {
-		boardId: DiamondAPI.getCurrentBoard()._id,
-		files: [
-			{
-				documentId: "gmQ7JZMtMB2n8GnS2",
-			},
-			{
-				documentId: "Hzt6gdcLjie6nBJ4L",
-			},
-			{
-				folderId: "JJCrf9CYeBDMdeDRt"
-			},
-		]
-	}
-});
-
-DiamondAPI.insert({
-  collection: 'documents',
-  obj: {
-    _id: "gmQ7JZMtMB2n8GnS2",
-		link: "https://docs.google.com/document/d/1-cOSVJNpVqjBObCqu-OfyqTDLoUB5is_29Pk0zAjINo/edit#"
-  }
-});
-
-DiamondAPI.insert({
-  collection: 'documents',
-  obj: {
-    _id: "Hzt6gdcLjie6nBJ4L",
-		link: "https://docs.google.com/document/d/1-cOSVJNpVqjBObCqu-OfyqTDLoUB5is_29Pk0zAjINo/edit#"
-  }
 });
 
 DiamondAPI.insert({
@@ -348,10 +313,6 @@ class FileManagerPage extends React.Component {
     }
 
     checkAuth(); // configure google drive api
-    /*setTimeout(() => {this.createDocument({
-      name: 'hola',
-      fileType: 'application/vnd.google-apps.document',
-    });}, 1000);*/
   }
 
   createDocument({ name, parentFolderId, fileType, callback = () => {} }) {
