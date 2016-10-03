@@ -403,11 +403,15 @@ class Video extends React.Component {
   }
 }
 
+UsersList.propTypes = { 
+  peers: React.PropTypes.object.isRequired,
+};
 UserVideo.propTypes = { 
   id: React.PropTypes.string.isRequired,
   width: React.PropTypes.number.isRequired,
   height: React.PropTypes.number.isRequired,
   webrtc: React.PropTypes.object.isRequired,
+  connected: React.PropTypes.boolean.isRequired,
 };
 RemoteVideos.propTypes = {
   videos: React.PropTypes.array.isRequired
