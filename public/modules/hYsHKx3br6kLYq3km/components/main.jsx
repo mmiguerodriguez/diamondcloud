@@ -20,7 +20,7 @@ class TaskManagerPage extends React.Component {
     };
   }
   render() {
-    if(this.state.loading || this.state.loading === undefined) {
+    if (this.state.loading || this.state.loading === undefined) {
       return (
         <div className='loading'>
           <div className='loader'></div>
@@ -40,7 +40,7 @@ class TaskManagerPage extends React.Component {
       collection: 'coordinationBoard',
       filter: {},
       callback(error, result) {
-        if(error) {
+        if (error) {
           console.error(error);
         } else {
           coordinationBoard = result[0];
@@ -61,10 +61,14 @@ class TaskManagerPage extends React.Component {
             // If not, fetch the ones that are from the currentBoard and
             // that are not finished
             let condition = coordination ? {
-              $eq: [
-                false,
-                '$$element.archived',
-              ],
+              $and: [
+                {
+                  $eq: [
+                    false,
+                    '$$element.archived',
+                  ],
+                }
+              ]
             } : {
               $and: [
                 {
@@ -88,7 +92,7 @@ class TaskManagerPage extends React.Component {
                 condition,
               },
               callback(error, result) {
-                if(error) {
+                if (error) {
                   console.error(error);
                 } else {
                   console.log('Subscribe callback', result.tasks);
@@ -208,11 +212,10 @@ class CreateTask extends React.Component {
     );
   }
   componentDidMount() {
-    // Focus title element
     $('#create-task-title').focus();
   }
   componentWillReceiveProps(nextProps) {
-    if(nextProps.task_title !== this.props.task_title) {
+    if (nextProps.task_title !== this.props.task_title) {
       this.setState({
         title: nextProps.task_title,
       });
@@ -222,7 +225,7 @@ class CreateTask extends React.Component {
   createTask() {
     let self = this;
 
-    let position = self.getBiggestTaskPosition() + 1;
+    let position = self.getBiggestTaskPosition();
 
     DiamondAPI.insert({
       collection: 'tasks',
@@ -237,7 +240,7 @@ class CreateTask extends React.Component {
       },
       isGlobal: true,
       callback(error, result) {
-        if(error) {
+        if (error) {
           console.error(error);
         } else {
           console.log('Inserted task correctly');
@@ -245,16 +248,21 @@ class CreateTask extends React.Component {
       }
     });
   }
+  
   getBiggestTaskPosition() {
     let positions = [];
-
+    
     this.props.tasks.forEach((task) => {
-      if(task.boardId === this.state.boardId) {
+      if (task.boardId === this.state.boardId) {
         positions.push(task.position);
       }
     });
 
-    return Math.max(...positions);
+    if (positions.length > 0) {
+      return Math.max(...positions) + 1;
+    } else {
+      return 0;
+    }
   }
 
   renderOptions() {
@@ -289,9 +297,9 @@ class BoardsList extends React.Component {
 
       // If there are tasks then push task to array if it is from
       // the actual board
-      if(this.props.tasks !== undefined) {
+      if (this.props.tasks !== undefined) {
         this.props.tasks.forEach((task) => {
-          if(task.boardId === board._id) {
+          if (task.boardId === board._id) {
             tasks.push(task);
           }
         });
@@ -299,8 +307,8 @@ class BoardsList extends React.Component {
 
       // If it isn't a coordination board then render only
       // one board tasks
-      if(!this.props.coordination) {
-        if(board._id === this.props.currentBoard._id) {
+      if (!this.props.coordination) {
+        if (board._id === this.props.currentBoard._id) {
           return (
             <Board
               key={ board._id }
@@ -376,18 +384,18 @@ class TasksList extends React.Component {
   }
 
   renderTasks() {
-    if(this.props.tasks.length === 0) {
+    if (this.props.tasks.length === 0) {
       return (
         <div className='text-center'>No hay tareas asignadas a este board</div>
       );
     }
 
     return this.props.tasks.map((task) => {
-
       let doing = false;
+
       task.durations.forEach((duration) => {
-        if(duration.userId === this.props.currentUser._id) {
-          if(!duration.endTime) {
+        if (duration.userId === this.props.currentUser._id) {
+          if (!duration.endTime) {
             doing = true;
           }
         }
@@ -404,7 +412,7 @@ class TasksList extends React.Component {
     });
   }
   handleKeyDown(event) {
-    if(event.which === 13) {
+    if (event.which === 13) {
       this.props.setLocation('tasks/create');
     }
   }
@@ -426,10 +434,14 @@ class Task extends React.Component {
     this.stopEditing = this.stopEditing.bind(this);
     this.archiveTask = this.archiveTask.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.openTask = this.openTask.bind(this);
   }
   render() {
     return (
-      <div className='col-xs-12 task'>
+      <div 
+        className='col-xs-12 task' 
+        onClick={ this.props.coordination ? this.openTask : () => {} }
+        role={ this.props.coordination ? 'button' : '' }>
         {
           this.state.editing ? (
             <div className='col-xs-12'>
@@ -495,7 +507,6 @@ class Task extends React.Component {
             </div>
           ) : ( null )
         }
-
         {
           !this.props.coordination && !this.props.doing && this.props.task.status === 'not_finished' ? (
             <div>
@@ -524,12 +535,12 @@ class Task extends React.Component {
     );
   }
   componentDidMount() {
-    if(this.props.doing) {
+    if (this.props.doing) {
       this.startInterval();
     }
   }
   componentWillUnmount() {
-    if(this.state.intervalId) {
+    if (this.state.intervalId) {
       this.stopInterval();
     }
   }
@@ -555,7 +566,7 @@ class Task extends React.Component {
         },
       },
       callback(error, result) {
-        if(error) {
+        if (error) {
           console.error(error);
         } else {
           console.log('Started task correctly', result);
@@ -580,7 +591,7 @@ class Task extends React.Component {
         },
       },
       callback(error, result) {
-        if(error) {
+        if (error) {
           console.error(error);
         } else {
           console.log('Paused task correctly', result);
@@ -592,7 +603,7 @@ class Task extends React.Component {
   archiveTask() {
     let self = this;
 
-    if(self.props.coordination) {
+    if (self.props.coordination) {
       DiamondAPI.update({
         collection: 'tasks',
         filter: {
@@ -604,7 +615,7 @@ class Task extends React.Component {
           },
         },
         callback(error, result) {
-          if(error) {
+          if (error) {
             console.error(error);
           } else {
             console.log('Archived task correctly');
@@ -616,7 +627,7 @@ class Task extends React.Component {
   updateTaskStatus(status) {
     let self = this;
 
-    if(self.props.doing) {
+    if (self.props.doing) {
       this.finishTask();
     }
 
@@ -631,7 +642,7 @@ class Task extends React.Component {
         },
       },
       callback(error, result) {
-        if(error) {
+        if (error) {
           console.error(error);
         } else {
           console.log('Updated task status correctly');
@@ -642,25 +653,26 @@ class Task extends React.Component {
   updateTaskTitle() {
     let self = this;
 
-    if(self.props.coordination) {
-      DiamondAPI.update({
-        collection: 'tasks',
-        filter: {
-          _id: self.props.task._id,
-        },
-        updateQuery: {
-          $set: {
-            title: self.state.task_title,
+    if (self.props.coordination) {
+      self.stopEditing(() => {
+        DiamondAPI.update({
+          collection: 'tasks',
+          filter: {
+            _id: self.props.task._id,
           },
-        },
-        callback(error, result) {
-          if(error) {
-            console.error(error);
-          } else {
-            console.log('Updated task status correctly');
-            self.stopEditing();
+          updateQuery: {
+            $set: {
+              title: self.state.task_title,
+            },
+          },
+          callback(error, result) {
+            if (error) {
+              console.error(error);
+            } else {
+              console.log('Updated task status correctly');
+            }
           }
-        }
+        });
       });
     }
   }
@@ -706,8 +718,8 @@ class Task extends React.Component {
 
   getLastTaskUpdate() {
     let startTimes = this.props.task.durations.map((duration) => {
-      if(duration.userId === this.props.currentUser._id) {
-        if(duration.endTime === undefined) {
+      if (duration.userId === this.props.currentUser._id) {
+        if (duration.endTime === undefined) {
           return duration.startTime;
         } else {
           return 0;
@@ -723,24 +735,75 @@ class Task extends React.Component {
       editing: true,
     });
   }
-  stopEditing() {
+  stopEditing(callback) {
     this.setState({
       editing: false,
+    }, () => {
+      callback();
     });
   }
   handleChange(index, event) {
-    if(this.props.coordination) {
+    if (this.props.coordination) {
       this.setState({
         [index]: event.target.value,
       });
     }
   }
   handleKeyDown() {
-    if(this.props.coordination) {
-      if(event.which === 13) {
+    if (this.props.coordination) {
+      if (event.which === 13) {
         this.updateTaskTitle();
       }
     }
+  }
+  openTask() {
+    if (this.props.coordination) {
+      browserHistory.push('/tasks/' + this.props.task._id);
+    }
+  }
+}
+
+class TaskInfo extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = { task: {}, board: {} };
+  }
+  render() {
+    return (
+      <div>
+        <div>Tarea: { this.state.task.title }</div>
+        <div>Fecha de vencimiento: { new Date(this.state.task.dueDate).toLocaleDateString() }</div>
+        <div>Estado: { this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada' }</div>
+        <div>Board: { this.state.board.name }</div>
+      </div>
+    );
+  }
+  componentWillMount() {
+    this.props.tasks.forEach((task) => {
+      if (task._id === this.props.params.taskId) {
+        let board;
+        this.props.boards.forEach((_board) => {
+          if (_board._id === task.boardId) {
+            board = _board;
+          }
+        });
+        // todo: Add duration information for each user ?
+        /*
+          task.durations.forEach((_duration) => {
+            if (_duration.startTime && _duration.endTime) {
+              let duration = _duration.endTime - _duration.startTime;
+              
+              
+            }
+          });
+        */
+        this.setState({
+          task,
+          board,
+        });
+      }
+    });
   }
 }
 
@@ -749,6 +812,7 @@ ReactDOM.render(
     <Route path='/' component={ TaskManagerPage }>
       <Route path='/tasks/show' component={ BoardsList } />
       <Route path='/tasks/create' component={ CreateTask } />
+      <Route path='/tasks/:taskId' component={ TaskInfo } />
     </Route>
   </Router>,
   document.getElementById('render-target')
