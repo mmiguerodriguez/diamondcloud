@@ -11,17 +11,17 @@ export let createdModules = [
     validated: true,
   },
   {
-    _id: "drive",
-    name: "Drive",
-    img: "/modules/drive/image.png",
-    description: "This is Drive (Sparta)!",
-    validated: true,
-  },
-  {
     _id: "trello",
     name: "Organizador de tareas",
     img: "/modules/trello/image.png",
     description: "Organizador de tareas",
+    validated: true,
+  },
+  {
+    _id: "drive",
+    name: "File Manager",
+    img: "/modules/drive/image.png",
+    description: "This is a File Manager",
     validated: true,
   },
   /*
