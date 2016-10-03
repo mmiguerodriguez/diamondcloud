@@ -31,18 +31,20 @@ export default class NotificationSystem extends React.Component {
         let title, body;
 
         if (!!message.boardId) {
+          let sender = Meteor.users.findOne(message.senderId).profile.name;
+
           title = Boards.findOne(message.boardId).name;
+          body = sender + ': ' + message.content
         } else {
           title = Meteor.users.findOne(message.senderId).profile.name;
+          body = message.content;
         }
-
-        body = message.content;
 
         arr.push(
           <Notification
             key={ message._id }
             title={ title }
-            body={ body} />
+            body={ body } />
         );
       }
     });
