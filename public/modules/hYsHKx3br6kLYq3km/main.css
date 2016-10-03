@@ -171,6 +171,10 @@
   -webkit-filter: invert(1);
 }
 .expiration {
+  margin: 0 0 15px;
+  font-size: 13px !important;
+}
+.time-active {
   margin: 0 0 5px;
   font-size: 13px !important;
 }

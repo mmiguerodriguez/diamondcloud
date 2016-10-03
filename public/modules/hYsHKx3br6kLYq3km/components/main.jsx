@@ -483,15 +483,14 @@ class Task extends React.Component {
                 <h5 className='task-title col-xs-12'>{ this.props.task.title }</h5>
                 {
                   !this.props.coordination && this.props.doing ? (
-                    <p className='col-xs-12 expiration'>Tiempo activo: { this.state.count }</p>
+                    <p className='col-xs-10 time-active'>Tiempo activo: { this.state.count }</p>
                   ) : ( null )
                 }
-                <p className='col-xs-12 expiration'>Vencimiento: { new Date(this.props.task.dueDate).toLocaleDateString() }</p>
+                <p className='col-xs-10 expiration'>Vencimiento: { new Date(this.props.task.dueDate).toLocaleDateString() }</p>
               </div>
             )
           }
         </div>
-
         {
           this.props.coordination && this.props.task.status === 'finished' ? (
             <div
