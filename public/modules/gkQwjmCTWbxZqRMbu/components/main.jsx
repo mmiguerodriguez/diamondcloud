@@ -48,11 +48,13 @@ class VideoChatPage extends React.Component {
               <RemoteVideos 
                 videos={ this.state.videos } />
             </div>
-          ) : ( 
-            <button 
-              className='btn btn-primary'
-              onClick={ this.connect }>Join board room
-            </button>
+          ) : (
+            <div className='join-background'>
+              <button 
+                className='btn btn-primary join'
+                onClick={ this.connect }>
+              </button>
+            </div>
           )
         }
       </div>
@@ -228,13 +230,13 @@ class VideoChatPage extends React.Component {
 class UsersList extends React.Component {
   render() {
     return (
-      <div>
+      /* <div>
         <h4>Lista de usuarios</h4>
         <div>
           <p>Vos</p>
           { this.renderPeers() }
         </div>
-      </div>
+      </div> */ null
     );
   }
   renderPeers() {
@@ -259,38 +261,39 @@ class UserVideo extends React.Component {
   }
   render() {
     return (
-      <div>
+      <div className='user-video-container'>
         <video
           id={ this.props.id }
+          className='user-video'
           width={ this.props.width }>
         </video>
         { 
           this.props.connected ? (
-            <div>
+            <div className='user-video-btn'>
             {
               this.state.video === 'playing' ? (
                 <button
-                  className='btn btn-danger'
-                  onClick={ this.pause }>Pause call
-                </button> // Replace with lovely image, maybe put it inside user video
+                  className='btn btn-danger pause'
+                  onClick={ this.pause }>
+                </button>
               ) : (
                 <button
-                  className='btn btn-success'
-                  onClick={ this.resume }>Resume call
-                </button> // Replace with lovely image, maybe put it inside user video
+                  className='btn btn-success play'
+                  onClick={ this.resume }>
+                </button>
               )
             }
             {
               this.state.audio === 'unmuted' ? (
                 <button
-                  className='btn btn-danger'
-                  onClick={ this.mute }>Mute audio
-                </button> // Replace with lovely image, maybe put it inside user video
+                  className='btn btn-danger mute'
+                  onClick={ this.mute }>
+                </button>
               ) : (
                 <button
-                  className='btn btn-success'
-                  onClick={ this.unmute }>Unmute audio
-                </button> // Replace with lovely image, maybe put it inside user video
+                  className='btn btn-success unmute'
+                  onClick={ this.unmute }>
+                </button>
               )
             }
             </div>
@@ -304,16 +307,12 @@ class UserVideo extends React.Component {
     this.props.webrtc.pauseVideo();
     this.setState({
       video: 'paused',
-    }, () => {
-      this.mute();
     });
   }
   resume() {
     this.props.webrtc.resumeVideo();
     this.setState({
       video: 'playing',
-    }, () => {
-      this.unmute();
     });
   }
   mute() {
@@ -333,7 +332,7 @@ class UserVideo extends React.Component {
 class RemoteVideos extends React.Component {
   render() {
     return ( 
-      <div>
+      <div className='minimized-video-container'>
         { this.renderVideos() }
       </div>
     );
@@ -359,22 +358,24 @@ class Video extends React.Component {
   }
   render() {
     return (
-      <div style={{ border: '1px solid black' }}>
-        <p>{ this.props.peer.nick }</p>
-        {
-          this.props.audio === 'muted' ? (
-            <p>Muted</p> // Replace with lovely image
-          ) : (
-            <p>Unmuted</p> // Replace with lovely image
-          )
-        }
-        {
-          this.props.video === 'paused' ? (
-            <p>Paused</p> // Replace with lovely image
-          ) : (
-            <p>Playing</p> // Replace with lovely image
-          )
-        }
+      <div className='minimized-video'>
+        <div className='minimized-user-data'>
+          <p className='nick'>{ this.props.peer.nick }</p>
+          {
+            this.props.audio === 'muted' ? (
+              <p>
+                <i className="material-icons">mic_off</i>
+              </p>
+            ) : ( null )
+          }
+          {
+            this.props.video === 'paused' ? (
+              <p>
+                <i className="material-icons">videocam_off</i>
+              </p>
+            ) : ( null )
+          }
+        </div>
         <video
           id={ this.props.domId }
           src={ URL.createObjectURL(this.props.peer.stream) }
@@ -384,8 +385,10 @@ class Video extends React.Component {
           onContextMenu={ () => { return false; } }
           autoPlay>
         </video>
-        <button className='btn btn-primary' onClick={ this.mute }>Mute user</button>
-        <button className='btn btn-primary' onClick={ this.unmute }>Unmute user</button>
+        {
+          // <button className='btn btn-primary' onClick={ this.mute }>Mute user</button>
+          // <button className='btn btn-primary' onClick={ this.unmute }>Unmute user</button>
+        }
       </div>
     );
   }

@@ -1,0 +1,98 @@
+.user-video-container:hover .user-video-btn {
+  left: 10px;
+}
+.user-video {
+  width: 100%;
+  height: 100%;
+  background-color: #111;
+}
+.user-video-btn {
+  position: absolute;
+  left: -60px;
+  bottom: 0px;
+  width: 55.5px;
+  transition: all 0.3s ease;
+}
+.play,
+.pause,
+.mute,
+.unmute {
+  height: 55.5px;
+  width: 55.5px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  background-size: 22px;
+  background-repeat: no-repeat;
+}
+.play {
+  background-position: 18px;
+}
+.pause,
+.mute,
+.unmute {
+  background-position: 16px;
+}
+.play {
+  background-image: url(img/video.svg);
+}
+.pause {
+  background-image: url(img/video-off.svg);
+}
+.unmute {
+  background-image: url(img/mic.svg);
+}
+.mute {
+  background-image: url(img/mic-off.svg);
+}
+.join-background {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+.join {
+  position: absolute;
+  width: 55.5px;
+  height: 55.5px;
+  border-radius: 50%;
+  left: calc(50% - 27.75px);
+  top: calc(50% - 27.75px);
+  background-size: 22px;
+  background-position: 16px;
+  background-repeat: no-repeat;
+  background-image: url(img/video.svg);
+}
+.minimized-video-container {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: auto;
+  max-width: calc(100% - 65.5px)
+}
+.minimized-video {
+  margin-left: 10px;
+  display: inline-block;
+  float: right;
+}
+.minimized-video video {
+  width: 200px;
+  height: 150px;
+}
+.minimized-user-data {
+  position: absolute;
+  bottom: 0;
+  color: #fff;
+  margin-left: 15px;
+  z-index: 1;
+}
+.minimized-user-data p {
+  display: none;
+  vertical-align: bottom;
+}
+.minimized-video:hover .minimized-user-data p {
+  display: inline-block;
+}
+.minimized-video:hover video {
+  -webkit-filter: brightness(0.4);
+}
