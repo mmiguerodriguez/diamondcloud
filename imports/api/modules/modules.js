@@ -33,4 +33,11 @@ export let createdModules = [
     validated: true,
   }
   */
+  {
+    _id: "gkQwjmCTWbxZqRMbu",
+    name: "Web RTC",
+    img: "/modules/gkQwjmCTWbxZqRMbu/image.png",
+    description: "This is a Web RTC module",
+    validated: true,
+  },
 ];
