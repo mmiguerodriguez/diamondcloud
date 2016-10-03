@@ -38,7 +38,7 @@ export const createModuleInstance = new ValidatedMethod({
 
     let future = new Future();
     ModuleInstances.insert(moduleInstance, (err, res) => {
-      if(err) future.throw(err);
+      if (err) future.throw(err);
 
       let moduleInstanceId = res;
       Boards.addModuleInstance(boardId, moduleInstanceId);

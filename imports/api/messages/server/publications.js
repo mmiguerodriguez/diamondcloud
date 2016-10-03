@@ -10,20 +10,20 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
     'Must be logged in to view chats.');
   }
 
-  if((!directChatId && !boardId) || (!!directChatId && !!boardId)) {
+  if ((!directChatId && !boardId) || (!!directChatId && !!boardId)) {
     throw new Meteor.Error('Messages.chat.wrongParameters',
     'There are errors in the passed parameters.');
   }
 
-  if(!!directChatId){
-    if(!DirectChats.isValid(directChatId, this.userId)) {
+  if (!!directChatId){
+    if (!DirectChats.isValid(directChatId, this.userId)) {
       throw new Meteor.Error('Messages.chat.wrongParameters',
       'There are errors in the passed parameters.');
     } else {
       boardId = '';
     }
   } else {
-    if(!Boards.isValid(boardId, this.userId)) {
+    if (!Boards.isValid(boardId, this.userId)) {
       throw new Meteor.Error('Messages.chat.wrongParameters',
       'There are errors in the passed parameters.');
     } else {

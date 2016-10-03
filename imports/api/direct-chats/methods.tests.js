@@ -60,14 +60,14 @@ if (Meteor.isServer) {
       };
 
       createDirectChat.call(args, (err, res) => {
-        if(err) throw new Meteor.Error(err);
+        if (err) throw new Meteor.Error(err);
         result = res;
 
         expect._id = result._id;
       });
 
       createDirectChat.call(args, (err, res) => {
-        if(err) {
+        if (err) {
           chai.assert.equal(err.details, 'chat_exists');
         }
       });

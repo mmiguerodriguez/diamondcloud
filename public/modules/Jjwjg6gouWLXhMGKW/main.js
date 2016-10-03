@@ -10,14 +10,14 @@ window.onload = () => {
     callback: (error, result) => {
       if (error) throw error;
       console.log('Grabbed data...');
-      if(!result) {
+      if (!result) {
         insertStartupData((error, result) => {
           if (!!error) throw error;
           console.log('Inserted new data since there was none...');
           console.log(result);
         });
       } else {
-        if(result.length > 0) {
+        if (result.length > 0) {
           handleNewData(result[0]);
         }
       }
@@ -32,8 +32,8 @@ window.onload = () => {
       if (!!err) throw console.error(err);
       console.log('New data incoming...', res);
 
-      if(res.postIt) {
-        if(res.postIt.length > 0) {
+      if (res.postIt) {
+        if (res.postIt.length > 0) {
           handleNewData(res.postIt[0]);
         }
       }

@@ -12,7 +12,7 @@ export const Notifications = {
   send({ directChatId, boardId, message }) {
     let sender = 'Diamond Cloud', title, text, query;
 
-    if(!!directChatId) {
+    if (!!directChatId) {
       let directChat = DirectChats.findOne(directChatId);
 
       title = Meteor.user().profile.name;
@@ -20,7 +20,7 @@ export const Notifications = {
       query = {
         userId: directChat.getUser()._id,
       };
-    } else if(!!boardId) {
+    } else if (!!boardId) {
       let board = Boards.findOne(boardId);
       let boardUsers = board.getUsers();
       let sender = Meteor.users.findOne(message.senderId);
@@ -28,7 +28,7 @@ export const Notifications = {
       title = board.name;
       text = sender.profile.name + ': ' + message.content;
 
-      if(boardUsers.length > 0) {
+      if (boardUsers.length > 0) {
         query = {
           userId: {
             $in: boardUsers,

@@ -22,7 +22,7 @@ export const apiInsert = new ValidatedMethod({
     visibleBy: { type: [Object], blackbox: true, optional: true },
   }).validator(),
   run({ moduleInstanceId, collection, obj, isGlobal, visibleBy }) {
-    if(!Meteor.user()) {
+    if (!Meteor.user()) {
       throw new Meteor.Error('API.methods.apiInsert.notLoggedIn',
       'Must be logged in to use a module.');
     }
@@ -68,7 +68,7 @@ export const apiUpdate = new ValidatedMethod({
     updateQuery: { type: Object, blackbox: true },
   }).validator(),
   run({ moduleInstanceId, collection, filter, updateQuery }) {
-    if(!Meteor.user()) {
+    if (!Meteor.user()) {
       throw new Meteor.Error('API.methods.apiInsert.notLoggedIn',
       'Must be logged in to use a module.');
     }
@@ -126,7 +126,7 @@ export const apiGet = new ValidatedMethod({
     filter: { type: Object, blackbox: true },
   }).validator(),
   run({ moduleInstanceId, collection, filter }) {
-    if(!Meteor.user()) {
+    if (!Meteor.user()) {
       throw new Meteor.Error('API.methods.apiGet.notLoggedIn',
       'Must be logged in to use a module.');
     }
@@ -137,7 +137,7 @@ export const apiGet = new ValidatedMethod({
       moduleId: moduleInstance.moduleId
     });
 
-    if(!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
+    if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('API.methods.apiGet.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
@@ -177,7 +177,7 @@ export const apiRemove = new ValidatedMethod({
     filter: { type: Object, blackbox: true },
   }).validator(),
   run({ moduleInstanceId, collection, filter }) {
-    if(!Meteor.user()) {
+    if (!Meteor.user()) {
       throw new Meteor.Error('API.methods.apiRemove.notLoggedIn',
       'Must be logged in to use a module.');
     }
@@ -187,7 +187,7 @@ export const apiRemove = new ValidatedMethod({
       moduleId: moduleInstance.moduleId
     });
 
-    if(!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
+    if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('API.methods.apiRemove.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
@@ -222,7 +222,7 @@ export const apiRemove = new ValidatedMethod({
         [`data.${collection}`]: filter,
       }
     }, { multi: true }, (err, res) => {
-      if(err) {
+      if (err) {
         throw new Meteor.Error('API.methods.apiRemove.queryError',
       'There was an error removing the entry.');
       } else {

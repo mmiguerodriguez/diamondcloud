@@ -4,8 +4,8 @@ import { Boards } from '/imports/api/boards/boards.js';
 
 export default class Message extends React.Component {
   render() {
-    if(this.props.position === 'medium') {
-      if(this.props.isSender) {
+    if (this.props.position === 'medium') {
+      if (this.props.isSender) {
         let user = Meteor.user();
         return (
           <div className='message-me'>
@@ -32,8 +32,8 @@ export default class Message extends React.Component {
           </div>
         );
       }
-    } else if(this.props.position === 'maximized') {
-      if(this.props.isSender) {
+    } else if (this.props.position === 'maximized') {
+      if (this.props.isSender) {
         let user = Meteor.user();
         return (
           <div className='message-me'>
@@ -60,8 +60,8 @@ export default class Message extends React.Component {
           </div>
         );
       }
-    } else if(this.props.position === 'mobile') {
-      if(this.props.isSender) {
+    } else if (this.props.position === 'mobile') {
+      if (this.props.isSender) {
         let user = Meteor.user();
         return (
           <div className='message-me'>
@@ -93,30 +93,30 @@ export default class Message extends React.Component {
   componentDidMount() {
     this.props.scrollDown();
 
-    if(!this.props.isSender) {
-      if(this.props.position !== 'minimized') {
-        if(this.props.message.directChatId) {
-          if(!this.props.message.seen) {
+    if (!this.props.isSender) {
+      if (this.props.position !== 'minimized') {
+        if (this.props.message.directChatId) {
+          if (!this.props.message.seen) {
             Meteor.call('Messages.methods.see', {
               messageId: this.props.message._id
             }, (error, result) => {
-              if(error) {
+              if (error) {
                 console.error(error);
               } else {
                 // console.log(result);
               }
             });
           }
-        } else if(this.props.message.boardId) {
+        } else if (this.props.message.boardId) {
           let seenMessage = this.props.message.seers.find((seer) => {
             return seer === Meteor.userId();
           });
 
-          if(!seenMessage) {
+          if (!seenMessage) {
             Meteor.call('Messages.methods.see', {
               messageId: this.props.message._id,
             }, (error, result) => {
-              if(error) {
+              if (error) {
                 console.error(error);
               } else {
                 console.log(result);

@@ -62,7 +62,7 @@ if (Meteor.isServer) {
         Boards.insert(board);
 
         sinon.stub(createBoard, 'call', (obj, callback) => {
-          if(!createdGeneralBoard) {
+          if (!createdGeneralBoard) {
             createdGeneralBoard = true;
             callback(null, { _id: generalBoardId });
           } else {
@@ -221,7 +221,7 @@ if (Meteor.isServer) {
         expect.archived = true;
 
         archiveTeam.call(args, (err, res) => {
-          if(err) throw new Meteor.Error(err);
+          if (err) throw new Meteor.Error(err);
           result = res;
         });
         chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
@@ -238,7 +238,7 @@ if (Meteor.isServer) {
         expect.archived = false;
 
         dearchiveTeam.call(args, (err, res) => {
-          if(err) throw new Meteor.Error(err);
+          if (err) throw new Meteor.Error(err);
           result = res;
         });
         chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));

@@ -19,7 +19,7 @@ export default class NotificationSystem extends React.Component {
       let isSender = message.senderId === Meteor.userId();
       let seenMessage;
 
-      if(message.seers) {
+      if (message.seers) {
         seenMessage = message.seers.find((seer) => {
           return seer === Meteor.userId();
         });
@@ -27,10 +27,10 @@ export default class NotificationSystem extends React.Component {
         seenMessage = message.seen;
       }
 
-      if(!isSender && !seenMessage) {
+      if (!isSender && !seenMessage) {
         let title, body;
 
-        if(!!message.boardId) {
+        if (!!message.boardId) {
           title = Boards.findOne(message.boardId).name;
         } else {
           title = Meteor.users.findOne(message.senderId).profile.name;

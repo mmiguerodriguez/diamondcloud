@@ -115,13 +115,13 @@ if (Meteor.isServer) {
       };
 
       createBoard.call(test_1, (err, res) => {
-        if(err) throw new Meteor.Error(err);
+        if (err) throw new Meteor.Error(err);
 
         result_1 = res;
         delete result_1._id;
 
         createBoard.call(test_2, (err, res) => {
-          if(err) throw new Meteor.Error(err);
+          if (err) throw new Meteor.Error(err);
 
           result_2 = res;
           delete result_2._id;
@@ -137,7 +137,7 @@ if (Meteor.isServer) {
           expect = board;
 
       archiveBoard.call({ _id: board._id }, (err, res) => {
-        if(err) throw new Meteor.Error(err);
+        if (err) throw new Meteor.Error(err);
 
         result = res;
         expect.archived = true;
@@ -151,7 +151,7 @@ if (Meteor.isServer) {
           expect = board;
 
       dearchiveBoard.call({ _id: board._id }, (err, res) => {
-        if(err) throw new Meteor.Error(err);
+        if (err) throw new Meteor.Error(err);
 
         result = res;
         expect.archived = false;

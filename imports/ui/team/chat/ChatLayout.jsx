@@ -147,9 +147,9 @@ export default class ChatLayout extends React.Component {
   }
   componentWillMount() {
     let type;
-    if(this.props.chat.boardId) {
+    if (this.props.chat.boardId) {
       type = { boardId: this.props.chat.boardId };
-    } else if(this.props.chat.directChatId) {
+    } else if (this.props.chat.directChatId) {
       type = { directChatId: this.props.chat.directChatId };
     }
 
@@ -171,15 +171,15 @@ export default class ChatLayout extends React.Component {
       createdAt: new Date().getTime(),
     };
 
-    if(this.props.chat.directChatId) {
+    if (this.props.chat.directChatId) {
       obj.directChatId = this.props.chat.directChatId;
-    } else if(this.props.chat.boardId) {
+    } else if (this.props.chat.boardId) {
       obj.boardId = this.props.chat.boardId;
     }
 
-    if(text != '' && /\S/.test(text)) {
+    if (text != '' && /\S/.test(text)) {
       Meteor.call('Messages.methods.send', obj, (error, response) => {
-        if(error) {
+        if (error) {
           console.error(error);
         } else {
           // Message sent correctly
@@ -207,11 +207,11 @@ export default class ChatLayout extends React.Component {
     });
   }
   getName() {
-    if(this.props.chat.boardId) {
+    if (this.props.chat.boardId) {
       let boardId = this.props.chat.boardId;
       return Boards.findOne(boardId).name;
 
-    } else if(this.props.chat.directChatId) {
+    } else if (this.props.chat.directChatId) {
       let directChatId = this.props.chat.directChatId;
       let directChat = DirectChats.findOne(directChatId);
 
@@ -221,16 +221,16 @@ export default class ChatLayout extends React.Component {
 
   scrollDown() {
     let chat_body = this.refs.chat_body;
-    if(chat_body !== null && chat_body !== undefined) {
+    if (chat_body !== null && chat_body !== undefined) {
       let e = $(chat_body);
       e.scrollTop(e.prop("scrollHeight"));
     }
   }
 
   handleKey(event){
-    if(event.which === 13) {
+    if (event.which === 13) {
       this.sendMessage();
-    } else if(event.which === 27) {
+    } else if (event.which === 27) {
       this.props.removeChat(this.state.chatType);
       // this.props.togglePosition('minimized');
     }

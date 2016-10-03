@@ -51,7 +51,7 @@ export const createBoard = new ValidatedMethod({
 
     let future = new Future();
     Boards.insert(board, (err, res) => {
-      if(!!err) future.throw(err);
+      if (!!err) future.throw(err);
 
       let boardId = res;
       let _board = Boards.findOne(boardId);

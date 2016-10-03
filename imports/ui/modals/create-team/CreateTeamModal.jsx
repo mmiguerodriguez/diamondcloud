@@ -201,7 +201,7 @@ export default class CreateTeamModal extends React.Component {
 
   addUser(user) {
     let users = this.state.usersEmails;
-    if(users.indexOf(user) === -1) {
+    if (users.indexOf(user) === -1) {
       users.push(user);
       this.setState({
         usersEmails: users,
@@ -211,7 +211,7 @@ export default class CreateTeamModal extends React.Component {
   removeUser(user){
     let users = this.state.usersEmails;
     let index = users.indexOf(user);
-    if(index !== -1) {
+    if (index !== -1) {
       users.splice(index, 1);
       this.setState({
         usersEmails: users,
@@ -228,7 +228,7 @@ export default class CreateTeamModal extends React.Component {
   }
   backPage() {
     let page = this.state.page;
-    if(page - 1 < 1) return;
+    if (page - 1 < 1) return;
 
     $('#createTeamModal #create-team-page-' + (page - 1)).effect('slide', {
       direction: 'left',
@@ -243,18 +243,18 @@ export default class CreateTeamModal extends React.Component {
   }
   nextPage() {
     let page = this.state.page;
-    if(page === 1){
-      if($('#projectName').val().length < 3) {
+    if (page === 1){
+      if ($('#projectName').val().length < 3) {
         this.errorBorder('#projectName');
         return;
       }
     } else if (page === 2) {
-      if(this.state.plan !== 'free'){
+      if (this.state.plan !== 'free'){
         this.errorBorder('.btn-free');
         return;
       }
     }
-    if(page + 1 > 3) {
+    if (page + 1 > 3) {
       this.createTeam();
       return;
     }
@@ -267,7 +267,7 @@ export default class CreateTeamModal extends React.Component {
 
     $('#createTeamModal #actual-page').html(page + 1);
 
-    if(page + 1 === 3) {
+    if (page + 1 === 3) {
       $('#createTeamModal #next-page-btn').html('Crear');
     } else {
       $('#createTeamModal #next-page-btn').html('Siguiente');

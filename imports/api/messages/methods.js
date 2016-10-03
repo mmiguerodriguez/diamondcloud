@@ -65,7 +65,7 @@ export const seeMessage = new ValidatedMethod({
     messageId: { type: String, regEx: SimpleSchema.RegEx.Id, },
   }).validator(),
   run({ messageId }) {
-    if(!Meteor.user()) {
+    if (!Meteor.user()) {
       throw new Meteor.Error('Messages.methods.see.notLoggedIn',
       'Must be logged in to see a message.');
     }
@@ -78,7 +78,7 @@ export const seeMessage = new ValidatedMethod({
         }
       });
       Boards.resetNotifications(message.boardId, message.senderId);
-    } else if(message.directChatId) {
+    } else if (message.directChatId) {
       Messages.update(messageId, {
         $set: {
           seen: true,

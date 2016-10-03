@@ -60,9 +60,9 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
       }
     },
     unsubscribe(subscriptionId) {
-      if(subscriptionId) {
+      if (subscriptionId) {
         subscriptions.forEach((sub, index) => {
-          if(sub.subscriptionId === subscriptionId) {
+          if (sub.subscriptionId === subscriptionId) {
             sub.stop();
             subscriptions.splice(index, 1);
           }
