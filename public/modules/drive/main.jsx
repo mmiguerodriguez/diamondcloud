@@ -1,4 +1,7 @@
-// File Manager
+const { DiamondAPI, React, ReactDOM, ReactRouter, classNames } = window;
+const { Router, Route, IndexRoute, browserHistory } = ReactRouter;
+
+browserHistory.push('/'); // initialize the router
 
 // Google Drive API
 let CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
@@ -72,7 +75,44 @@ class FileManagerLayout extends React.Component {
   }
 
   renderFolders() {
+    console.log(this.props);
+    if(this.props.folders.length === 0) {
+      return (
+        <p>
+          No hay carpetas
+        </p>
+      );
+    } else {
+      return this.props.folders.map((folder) => {
+        return (
+          <div className="folder col-xs-4 fixed">
+            <p className="truncate">{folder.name}</p>
+          </div>
+        );
+      });
+    }
+  }
 
+  renderDocuments() {
+    if(this.props.documents.length === 0) {
+      return (
+        <p>
+          No hay documentos
+        </p>
+      );
+    } else {
+      return this.props.documents.map((document) => {
+        return (
+          <div
+            className="document col-xs-4 fixed"
+            onClick={() => {
+              browserHistory.push('/document/' + document._id);
+            }}>
+            <p className="truncate">{document.name}</p>
+          </div>
+        );
+      });
+    }
   }
 
   componentDidMount() {
@@ -89,23 +129,29 @@ class FileManagerLayout extends React.Component {
           </p>
           <hr className="divider" />
           <div className="folders-container">
-            <div className="col-xs-4 fixed">
-              <div className="folder">
-                <p className="truncate">Diamond Cloud</p>
-              </div>
-            </div>
+            {
+              (this.props.loadingFolders) ?
+                (
+                  <p>Cargando...</p>
+                ) : (
+                  this.renderFolders()
+                )
+            }
+
           </div>
           <p className="documents-title-container">
             Archivos
           </p>
           <hr className="divider" />
           <div className="documents-container">
-            <div className="col-xs-4 fixed">
-              <div className="document">
-                <p className="truncate">Soy un documento</p>
-                <div className="preview"></div>
-              </div>
-            </div>
+            {
+              (this.props.loadingDocuments) ?
+                (
+                  <p>Cargando...</p>
+                ) : (
+                  this.renderDocuments()
+                )
+            }
           </div>
         </div>
         <div className="create">
@@ -114,7 +160,14 @@ class FileManagerLayout extends React.Component {
               className="option drive"
               id="import-file"
             ></div>
-            <div className="option new"></div>
+            <div
+              className="option new"
+              onClick={this.props.createDocument.bind(this, {
+                name: 'caca',
+                parentFolderId: this.props.folderId,
+                fileType: 'application/vnd.google-apps.document',
+
+              })}></div>
           </div>
         </div>
       </div>
@@ -130,101 +183,219 @@ class FileManagerLayout extends React.Component {
 }
 
 FileManagerLayout.propTypes = {
+  folderId: React.PropTypes.string.isRequired,
+  loadingFolders: React.PropTypes.bool.isRequired,
   folders: React.PropTypes.array.isRequired,
+  loadingDocuments: React.PropTypes.bool.isRequired,
   documents: React.PropTypes.array.isRequired,
   createDocument: React.PropTypes.func.isRequired,
   initPicker: React.PropTypes.func.isRequired,
 };
 
 class FileManagerPage extends React.Component {
-  renderFolders() {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      loadingFolders: true, /** indicates if the folders subscription
+                             *  has already returned data
+                             */
+      folders: [],
+      loadingDocuments: true, /** indicates if the documents subscription
+                               *  has already returned data
+                               */
+      documents: [],
+    };
   }
 
   render() {
-    if (this.props.loading) {
-      return null;
-    } else {
-      return (
-        <FileManagerLayout
-          folders={ this.props.folders }
-          documents={ this.props.documents }
-          createDocument={ this.createDocument }
-          initPicker={ this.initPicker }
-        />
-      );
-    }
+    return (
+      <FileManagerLayout
+        folderId={this.props.params.folderId}
+        loadingFolders={this.state.loadingFolders}
+        folders={this.state.folders}
+        loadingDocuments={this.state.loadingDocuments}
+        documents={this.state.documents}
+        createDocument={this.createDocument}
+        initPicker={this.initPicker}
+      />
+    );
   }
+
 
   componentDidMount() {
-    let obj = {
-      folders: [],
-      documents: [],
-      loading: false,
-    };
 
-    const handle = DiamondAPI.subscribe({
-      request: {
-        collection: 'files',
-        condition: {
-          $eq: ['$$element.boardId', DiamondAPI.getCurrentBoard()._id],
-        }
-      },
-      callback: (err, res) => {
-        console.error(err);
-        console.log('newData:', res);
-        res[0].files.forEach((file) => {
-          console.log(file);
-          if (file.documentId) {
-            let subHandle = DiamondAPI.get({
-              collection: 'documents',
-              filter: {
-                _id: file.documentId
-              },
-              callback: (err, res) => {
-                console.log('doc got:', res);
-                obj.documents.push(res);
-              }
-            });
-            obj.loading = obj.loading || !subHandle.ready();
-          } else if (file.folderId) {
-            console.log(file.folderId);
-            let subHandle = DiamondAPI.get({
-              collection: 'folders',
-              filter: {
-                _id: file.folderId
-              },
-              callback: (err, res) => {
-                console.log('folder got:', res);
-                obj.folders.push(res);
-              }
-            });
-            obj.loading = obj.loading || !subHandle.ready();
+    let self = this;
+
+    ////////////////////////////////////////
+    // Check if we are in the root folder //
+    ////////////////////////////////////////
+
+    if (!this.props.params.folderId) {
+      //////////////////////////////////////////////////////////
+      // Get the list of folders and documents in root folder //
+      //////////////////////////////////////////////////////////
+
+      DiamondAPI.subscribe({
+        collection: 'rootFiles',
+        filter: {
+          boardId: DiamondAPI.getCurrentBoard()._id,
+        },
+        callback(err, res) {
+          if (!!err) {
+            console.error(err);
+          } else {
+            if (!res || res.length === 0) {
+              self.setState({
+                loadingFolders: false,
+                folders: [],
+                loadingDocuments: false,
+                documents: [],
+              })
+            } else {
+              getFiles({
+                // returns only the folders id's
+                foldersIds: res.filter((element) => {
+                  return !!element.folderId
+                }).map((element) => {
+                  return element.folderId
+                }),
+
+                // returns only the documents id's
+                documentsIds: res.filter((element) => {
+                  return !!element.documentId;
+                }).map((element) => {
+                  return element.documentId
+                }),
+              });
+            }
           }
+        }
+      });
+    } else {
+
+      ///////////////////////////////////
+      // we are not in the root folder //
+      ///////////////////////////////////
+
+      getFiles({
+        parentFolderId: this.props.params.folderId,
+      });
+    }
+
+    /////////////////////////////////////////
+    // Get the files of the current folder //
+    /////////////////////////////////////////
+
+    const getFiles = ({ parentFolderId = null, foldersIds = [], documentsIds = [] }) => {
+      if (foldersIds.length !== 0) {
+        const foldersHandle = DiamondAPI.subscribe({
+          collection: 'folders',
+          filter: (!!parentFolderId) ? { // if we are not in the root folder
+            parentFolderId,
+          } : { //if we are in the root folder
+            _id: {
+              $in: foldersIds,
+            },
+          },
+          callback(err, res) {
+            if (!!err) {
+              console.error(err);
+            } else {
+              self.setState({
+                loadingFolders: false,
+                folders: res
+              });
+            }
+          },
+        });
+      } else {
+        self.setState({
+          loadingFolders: false,
+          folders: []
         });
       }
-    });
 
-    obj.loading = obj.loading || !handle.ready();
-    this.props = {
-      ...obj,
-      ...this.props,
-    };
+      if (documentsIds.length !== 0) {
+        console.log(documentsIds);
+        const documentsHandle = DiamondAPI.subscribe({
+          collection: 'documents',
+          filter: (!!parentFolderId) ? { // if we are not in the root folder
+            parentFolderId,
+          } : { //if we are in the root folder
+            _id: {
+              $in: documentsIds,
+            },
+          },
+          callback(err, res) {
+            if (!!err) {
+              console.error(err);
+            } else {
+              self.setState({
+                loadingDocuments: false,
+                documents: res
+              });
+            }
+          },
+        });
+      } else {
+        self.setState({
+          loadingDocuments: false,
+          documents: [],
+        });
+      }
+    }
+
     checkAuth(); // configure google drive api
+    /*setTimeout(() => {this.createDocument({
+      name: 'hola',
+      fileType: 'application/vnd.google-apps.document',
+    });}, 1000);*/
   }
-  createDocument({ name, fileType, callback }) {
-    /**
-     * callback(err, res)
-     *  res: file
-     * fileType is the mimeType of the file
-     * https://developers.google.com/drive/v3/web/mime-types
-     */
+
+  createDocument({ name, parentFolderId, fileType, callback = () => {} }) {
+
+     /**
+      * callback(err, res)
+      * res: file
+      * fileType is the mimeType of the file
+      *   https://developers.google.com/drive/v3/web/mime-types
+      */
+
     gapi.client.drive.files.create({
       resource: {
         name,
         mimeType: fileType,
       }
     }).then(function(resp) {
+      if (!parentFolderId) {
+        DiamondAPI.insert({
+          collection: 'rootFiles',
+          obj: {
+            documentId: resp.result.id,
+            boardId: DiamondAPI.getCurrentBoard()._id,
+          },
+          callback(err, res) {
+            if (!!err) {
+              console.error(err);
+            }
+          }
+        });
+      }
+      DiamondAPI.insert({
+        collection: 'documents',
+        obj: {
+          _id: resp.result.id,
+          parentFolderId,
+          name
+        },
+        callback(err, res) {
+          if (!!err) {
+            console.error(err);
+          }
+        },
+      });
       callback(null, resp);
     }, function(reason) {
       callback(reason, resp);
@@ -280,8 +451,12 @@ FileViewerLayout.propTypes = {
 };
 
 ReactDOM.render(
-  <FileManagerPage />,
-  document.getElementById('container')
+  <Router history={browserHistory}>
+    <Route path='/' component={FileManagerPage} />
+    <Route path='/:folderId' component={FileManagerPage} />
+    <Route path='/document/:documentId' component={FileViewerPage} />
+  </Router>,
+  document.getElementById('render-target')
 );
 
 /**
