@@ -22,23 +22,38 @@ class VideoChatPage extends React.Component {
     
     this.state = {
       localVideoId: 'user-video',
+      readyToCall: false,
+      connected: false,
       videos: [],
       peers: [],
       webrtc: {},
     };
+    
+    this.connect = this.connect.bind(this);
   }
   render() {
     return (
       <div>
-        <UsersList 
-          peers={ this.state.peers } />
-        <UserVideo
-          id={ this.state.localVideoId } 
-          width={ 250 }
-          height={ 250 }
-          webrtc={ this.state.webrtc } />
-        <RemoteVideos 
-          videos={ this.state.videos } />
+        {
+          this.state.connected ? (
+            <div>
+              <UsersList 
+                peers={ this.state.peers } />
+              <UserVideo
+                id={ this.state.localVideoId } 
+                width={ 250 }
+                height={ 250 }
+                webrtc={ this.state.webrtc } />
+              <RemoteVideos 
+                videos={ this.state.videos } />
+            </div>
+          ) : ( 
+            <button 
+              className='btn btn-primary'
+              onClick={ this.connect }>Join board room
+            </button>
+          )
+        }
       </div>
     );
   }
@@ -49,6 +64,7 @@ class VideoChatPage extends React.Component {
       localVideoEl: self.state.localVideoId,
       remoteVideosEl: '',
       autoRequestMedia: true,
+      detectSpeakingEvents: true,
       nick: DiamondAPI.getCurrentUser().profile.name,
     });
     
@@ -59,7 +75,6 @@ class VideoChatPage extends React.Component {
   componentDidMount() {
     let self = this;
     let webrtc = self.state.webrtc;
-    let currentBoard = DiamondAPI.getCurrentBoard();
     
     const VIDEO_WIDTH = 250, 
           VIDEO_HEIGHT = 250,
@@ -68,7 +83,9 @@ class VideoChatPage extends React.Component {
     
     // RTC ready event
     webrtc.on('readyToCall', () => {
-      webrtc.joinRoom(currentBoard._id);
+      self.setState({
+        readyToCall: true,
+      });
     });
     
     // Remote peer created event
@@ -119,6 +136,14 @@ class VideoChatPage extends React.Component {
       });
     });
     
+    // Access to media stream events
+    webrtc.on('localStream', (stream) => {
+      console.log('Access to media stream', stream);
+    });
+    webrtc.on('localMediaError', (error) => {
+      console.log('Failed access to media stream', error);
+    });
+    
     // Local video/audio events
     webrtc.on('videoOn', () => {
       // Local video just turned on
@@ -135,12 +160,13 @@ class VideoChatPage extends React.Component {
     
     // Volume changes events
     webrtc.on('volumeChange', (volume, threshold) => {
-      console.log('Local volume change', volume, threshold);
+      // console.log('Local volume change', volume, threshold);
     });
-    webrtc.on('remoteVolumeChange', (volume, threshold) => {
-      console.log('Remote volume change', volume, threshold);
+    webrtc.on('remoteVolumeChange', (peer, volume) => {
+      // console.log('Remote volume change', peer, volume);
     });
     
+    // Audio mute/unmute events
     webrtc.on('mute', (data) => {
       webrtc.getPeers(data.id).forEach((peer) => {
         let videos = self.state.videos;
@@ -185,6 +211,16 @@ class VideoChatPage extends React.Component {
       console.log('Had local relay candidate', pc.hadLocalRelayCandidate);
       console.log('Had remote relay candidate', pc.hadRemoteRelayCandidate);
     });
+  }
+  connect() {
+    if (this.state.readyToCall) {
+      let board = DiamondAPI.getCurrentBoard();
+      this.state.webrtc.joinRoom(board._id);
+      
+      this.setState({
+        connected: true,
+      });
+    }
   }
 }
 
@@ -298,7 +334,9 @@ class RemoteVideos extends React.Component {
   renderVideos() {
     return this.props.videos.map((video) => {
       return (
-        <Video { ...video } />
+        <Video 
+          key={ video.id }
+          { ...video } />
       );
     });
   }
