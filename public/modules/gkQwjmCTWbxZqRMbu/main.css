@@ -33,16 +33,16 @@
   background-position: 16px;
 }
 .play {
-  background-image: url(http://image.flaticon.com/icons/svg/60/60999.svg);
+  background-image: url(img/video.svg);
 }
 .pause {
-  background-image: url(http://image.flaticon.com/icons/svg/61/61042.svg);
+  background-image: url(img/video-off.svg);
 }
 .unmute {
-  background-image: url(http://image.flaticon.com/icons/svg/60/60540.svg);
+  background-image: url(img/mic.svg);
 }
 .mute {
-  background-image: url(http://image.flaticon.com/icons/svg/61/61056.svg);
+  background-image: url(img/mic-off.svg);
 }
 .join-background {
   position: absolute;
@@ -61,7 +61,7 @@
   background-size: 22px;
   background-position: 16px;
   background-repeat: no-repeat;
-  background-image: url(http://image.flaticon.com/icons/svg/60/60999.svg);
+  background-image: url(img/video.svg);
 }
 .minimized-video-container {
   position: absolute;
