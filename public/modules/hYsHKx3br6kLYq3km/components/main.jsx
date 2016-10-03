@@ -226,27 +226,44 @@ class CreateTask extends React.Component {
     let self = this;
 
     let position = self.getBiggestTaskPosition();
+    let dueDate = Number(self.state.dueDate);
 
-    DiamondAPI.insert({
-      collection: 'tasks',
-      obj: {
-        title: self.state.title,
-        boardId: self.state.boardId,
-        dueDate: Number(self.state.dueDate),
-        durations: [],
-        status: 'not_finished',
-        position,
-        archived: false,
-      },
-      isGlobal: true,
-      callback(error, result) {
-        if (error) {
-          console.error(error);
+    if (self.state.title.length > 0 && self.state.title !== '') {
+      if (self.state.boardId !== '') {
+        if (Number.isInteger(dueDate)) {
+          if (position >= 0) {
+            DiamondAPI.insert({
+              collection: 'tasks',
+              obj: {
+                title: self.state.title,
+                boardId: self.state.boardId,
+                durations: [],
+                dueDate,
+                position,
+                status: 'not_finished',
+                archived: false,
+              },
+              isGlobal: true,
+              callback(error, result) {
+                if (error) {
+                  console.error(error);
+                } else {
+                  console.log('Inserted task correctly');
+                }
+              }
+            });
+          } else {
+            console.error('There was error inserting task position', position);
+          }
         } else {
-          console.log('Inserted task correctly');
+          console.error('There was an error inserting task dueDate', self.state.dueDate);
         }
+      } else {
+        console.error('There was an error inserting task boardId', self.state.boardId);
       }
-    });
+    } else {
+      console.error('There was an error inserting task title', self.state.title);
+    }
   }
 
   getBiggestTaskPosition() {
@@ -505,7 +522,7 @@ class Task extends React.Component {
                 className='done'
                 title='Marcar como finalizado'
                 role='button'
-                onClick={ this.updateTaskStatus.bind(this, 'finished') }>
+                onClick={ this.setTaskStatus.bind(this, 'finished') }>
                   <img
                     src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg'
                     width='25px' />
@@ -529,7 +546,7 @@ class Task extends React.Component {
                 className='done'
                 title='Marcar como finalizado'
                 role='button'
-                onClick={ this.updateTaskStatus.bind(this, 'finished') }>
+                onClick={ this.setTaskStatus.bind(this, 'finished') }>
                   <img
                     src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg'
                     width='25px' />
@@ -560,6 +577,11 @@ class Task extends React.Component {
     }
   }
 
+  openTask() {
+    if (this.props.coordination) {
+      browserHistory.push('/tasks/' + this.props.task._id);
+    }
+  }
   startTask() {
     let self = this;
 
@@ -640,7 +662,8 @@ class Task extends React.Component {
       });
     }
   }
-  updateTaskStatus(status) {
+
+  setTaskStatus(status) {
     let self = this;
 
     if (self.props.doing) {
@@ -666,7 +689,7 @@ class Task extends React.Component {
       }
     });
   }
-  updateTaskTitle() {
+  setTaskTitle() {
     let self = this;
 
     if (self.props.coordination) {
@@ -691,6 +714,19 @@ class Task extends React.Component {
         });
       });
     }
+  }
+  getLastTaskUpdate() {
+    let startTimes = this.props.task.durations.map((duration) => {
+      if (duration.userId === this.props.currentUser._id) {
+        if (duration.endTime === undefined) {
+          return duration.startTime;
+        } else {
+          return 0;
+        }
+      }
+    });
+
+    return Math.max(...startTimes);
   }
 
   startInterval() {
@@ -732,20 +768,6 @@ class Task extends React.Component {
     });
   }
 
-  getLastTaskUpdate() {
-    let startTimes = this.props.task.durations.map((duration) => {
-      if (duration.userId === this.props.currentUser._id) {
-        if (duration.endTime === undefined) {
-          return duration.startTime;
-        } else {
-          return 0;
-        }
-      }
-    });
-
-    return Math.max(...startTimes);
-  }
-
   startEditing() {
     this.setState({
       editing: true,
@@ -768,13 +790,8 @@ class Task extends React.Component {
   handleKeyDown() {
     if (this.props.coordination) {
       if (event.which === 13) {
-        this.updateTaskTitle();
+        this.setTaskTitle();
       }
-    }
-  }
-  openTask() {
-    if (this.props.coordination) {
-      browserHistory.push('/tasks/' + this.props.task._id);
     }
   }
 }
