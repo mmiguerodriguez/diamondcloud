@@ -411,10 +411,10 @@ UserVideo.propTypes = {
   width: React.PropTypes.number.isRequired,
   height: React.PropTypes.number.isRequired,
   webrtc: React.PropTypes.object.isRequired,
-  connected: React.PropTypes.boolean.isRequired,
+  connected: React.PropTypes.bool.isRequired,
 };
 RemoteVideos.propTypes = {
-  videos: React.PropTypes.array.isRequired
+  videos: React.PropTypes.array.isRequired,
 };
 Video.propTypes = { 
   id: React.PropTypes.string.isRequired,
