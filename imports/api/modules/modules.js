@@ -24,19 +24,10 @@ export let createdModules = [
     description: "This is a File Manager",
     validated: true,
   },
-  /*
   {
-    _id: "Hwqpiuufhsdf735sj",
-    name: "File Picker",
-    img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
-    description: "Google Drive API test",
-    validated: true,
-  }
-  */
-  {
-    _id: "gkQwjmCTWbxZqRMbu",
+    _id: "webrtc",
     name: "Web RTC",
-    img: "/modules/gkQwjmCTWbxZqRMbu/image.png",
+    img: "/modules/webrtc/image.png",
     description: "This is a Web RTC module",
     validated: true,
   },
