@@ -615,17 +615,21 @@ class Task extends React.Component {
   finishTask() {
     let self = this;
 
+    let index = this.getLastTaskEndTimeIndex();
+
     DiamondAPI.update({
       collection: 'tasks',
       filter: {
         _id: self.props.task._id,
+        // This doesn't work
         'durations.userId': self.props.currentUser._id,
         'durations.startTime': self.getLastTaskUpdate(),
         'durations.endTime': undefined,
+        // End this doesn't work
       },
       updateQuery: {
         $set: {
-          'durations.0.endTime': new Date().getTime(),
+          [`durations.${ index }.endTime`]: new Date().getTime(),
         },
       },
       callback(error, result) {
@@ -723,10 +727,23 @@ class Task extends React.Component {
         } else {
           return 0;
         }
+      } else {
+        return 0;
       }
     });
 
     return Math.max(...startTimes);
+  }
+  getLastTaskEndTimeIndex() {
+    let i;
+
+    this.props.task.durations.forEach((duration, index) => {
+      if (!duration.endTime && duration.userId === this.props.currentUser._id) {
+        i = index;
+      }
+    });
+
+    return i;
   }
 
   startInterval() {
