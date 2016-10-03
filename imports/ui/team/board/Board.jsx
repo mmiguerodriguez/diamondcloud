@@ -24,10 +24,11 @@ export default class Board extends React.Component {
             </h4>
             <span className='message-icon-span' onClick={ this.props.addChat.bind(null, { boardId: this.props.board._id }) }>
               { /* <h4 className='message-text'>Chat del board</h4> */ }
-              <img  src='/img/sidebar/messages.svg'
-                    title='Abrir chat del board'
-                    className='message-icon'
-                    width='28px'/>
+              <img
+                src='/img/sidebar/messages.svg'
+                title='Abrir chat del board'
+                className='message-icon'
+                width='28px'/>
             </span>
           </div>
         </div>
@@ -132,21 +133,31 @@ export default class Board extends React.Component {
     return arr;
   }
   renderUsers() {
-    let arr = [];
-
-    this.props.board.users.map((_user) => {
-      let user = Meteor.users.findByEmail(_user.email, {}) || _user;
-      arr.push(
-        <img  
-          key={ user._id || user.email }
-          className='img-circle shared-people'
-          src={ user.profile ? user.profile.picture : '/img/user-shape.svg' }
-          title={ user.profile ? user.profile.name : _user.email }
-          width='32px' />
-      );
-    });
-  
-    return arr;
+    if(this.props.board.isPrivate) {
+      return this.props.board.users.map((_user) => {
+        let user = Meteor.users.findByEmail(_user.email, {}) || _user;
+        
+        return (
+          <img
+            key={ user._id || _user.email }
+            className='img-circle shared-people'
+            src={ user.profile ? user.profile.picture : '/img/user-shape.svg' }
+            title={ user.profile ? user.profile.name : _user.email }
+            width='32px' />
+        );
+      });
+    } else {
+      return this.props.users.map((user) => {
+        return (
+          <img
+            key={ user._id }
+            className='img-circle shared-people'
+            src={ user.profile.picture  }
+            title={ user.profile.name }
+            width='32px' />
+        );
+      });
+    }
   }
 }
 

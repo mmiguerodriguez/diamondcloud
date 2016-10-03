@@ -41,9 +41,7 @@ export const createBoard = new ValidatedMethod({
       });
     }
 
-    if(team.hasUser({ _id: Meteor.userId() })) {
-      users.push({ email: Meteor.user().email(), notifications: 0 });
-    } else {
+    if(!team.hasUser({ _id: Meteor.userId() })) {
       throw new Meteor.Error('Boards.methods.createBoard.userNotInTeam',
       'You cannot add yourself to a board when you are not part of the team.');
     }
