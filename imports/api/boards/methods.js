@@ -24,7 +24,7 @@ export const createBoard = new ValidatedMethod({
     let team = Teams.findOne(teamId);
     users = users || [];
 
-    if(users.length > 0) {
+    if (isPrivate) {
       users.forEach((user, index, array) => {
         if (!team.hasUser({ email: user.email })) {
           throw new Meteor.Error('Boards.methods.createBoard.userNotInTeam',
@@ -33,17 +33,12 @@ export const createBoard = new ValidatedMethod({
 
         array[index].notifications = 0;
       });
-    } else if(users.length === 0 && !isPrivate) {
-      team.users.forEach((user) => {
-        if(user.email !== Meteor.user().email()) {
-          users.push({ email: user.email, notifications: 0 });
-        }
-      });
-    }
+    } else {
+      users = [];
 
-    if(!team.hasUser({ _id: Meteor.userId() })) {
-      throw new Meteor.Error('Boards.methods.createBoard.userNotInTeam',
-      'You cannot add yourself to a board when you are not part of the team.');
+      team.users.forEach((user) => {
+        users.push({ email: user.email, notifications: 0 });
+      });
     }
 
     let board = {

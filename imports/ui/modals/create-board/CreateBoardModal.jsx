@@ -154,6 +154,7 @@ export default class CreateBoardModal extends React.Component {
 
     if(board.isPrivate) {
       let arr = [];
+
       if(board.users !== '') {
         board.users.split(',').map((email) => {
           arr.push({ email });
@@ -162,6 +163,8 @@ export default class CreateBoardModal extends React.Component {
       } else {
         board.users = [];
       }
+
+      board.users.push({ email: Meteor.user().email() });
     } else {
       board.users = [];
     }
