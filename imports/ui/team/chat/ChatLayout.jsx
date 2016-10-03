@@ -48,12 +48,14 @@ export default class ChatLayout extends React.Component {
       return (
         <div className={ classes }>
           <div className='chat-header'>
-            <p  className='col-xs-10 chat-text truncate'
-                onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'minimized') }>
+            <p
+              className='col-xs-10 chat-text truncate'
+              onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'minimized') }>
                 <b>{ this.getName() }</b>
             </p>
-            <div  className='col-xs-2 chat-image'
-                  onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'maximized') }>
+            <div
+              className='col-xs-2 chat-image'
+              onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'maximized') }>
                   <div className="maximize-image chat-back-image"></div>
             </div>
           </div>
@@ -77,21 +79,25 @@ export default class ChatLayout extends React.Component {
           <div className='chat-header'>
             <div className='col-xs-10 row chat-tabs'>
               <div className="tab">
-                <p  className='col-xs-10 chat-text truncate'
-                    onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'minimized') }>
+                <p
+                  className='col-xs-10 chat-text truncate'
+                  onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'minimized') }>
                   <b>{ this.getName() }</b>
                 </p>
-                <div  className='col-xs-2 chat-image'
-                      onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
+                <div
+                  className='col-xs-2 chat-image'
+                  onClick={ this.props.removeChat.bind(this, this.state.chatType) }>
                   <div className="close-image chat-back-image"></div>
                 </div>
               </div>
             </div>
-            <div  className='col-xs-2 chat-image'
-                  onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'medium') }>
-              <img  className='exit-maximize-image'
-                    src='http://image.flaticon.com/icons/svg/60/60801.svg'
-                    width='16px' />
+            <div
+              className='col-xs-2 chat-image'
+              onClick={ this.props.togglePosition.bind(null, this, this.state.position, 'medium') }>
+              <img
+                className='exit-maximize-image'
+                src='http://image.flaticon.com/icons/svg/60/60801.svg'
+                width='16px' />
             </div>
           </div>
           <div className='chat-body container-fluid' ref='chat_body'>
@@ -151,29 +157,8 @@ export default class ChatLayout extends React.Component {
       chatType: type,
     });
   }
-  componentDidUpdate(prevProps, prevState) {
-    // Scroll to bottom if a new message is sent or received
-    if(this.props.chat.messages.length > prevProps.chat.messages.length) {
-      let chat_body = this.refs.chat_body;
-      if(chat_body !== null && chat_body !== undefined) {
-        let e = $(chat_body);
-        e.scrollTop(e.prop("scrollHeight"));
-      }
-    }
-  }
-
-  handleKey(event){
-    if(event.which === 13) {
-      this.sendMessage();
-    } else if(event.which === 27) {
-      this.props.removeChat(this.state.chatType);
-      // this.props.togglePosition('minimized');
-    }
-  }
-  handleChange(event) {
-    this.setState({
-      message: event.target.value,
-    });
+  componentDidMount() {
+    this.scrollDown();
   }
 
   sendMessage() {
@@ -207,6 +192,8 @@ export default class ChatLayout extends React.Component {
     });
   }
   renderMessages() {
+    let scrollDown = this.scrollDown.bind(this);
+
     return this.props.chat.messages.map((message) => {
       let isSender = message.senderId === Meteor.userId();
       return (
@@ -214,6 +201,7 @@ export default class ChatLayout extends React.Component {
           key={ message._id }
           message={ message }
           isSender={ isSender }
+          scrollDown={ scrollDown }
           position={ this.state.position } />
       );
     });
@@ -229,6 +217,28 @@ export default class ChatLayout extends React.Component {
 
       return directChat.getUser().profile.name;
     }
+  }
+
+  scrollDown() {
+    let chat_body = this.refs.chat_body;
+    if(chat_body !== null && chat_body !== undefined) {
+      let e = $(chat_body);
+      e.scrollTop(e.prop("scrollHeight"));
+    }
+  }
+
+  handleKey(event){
+    if(event.which === 13) {
+      this.sendMessage();
+    } else if(event.which === 27) {
+      this.props.removeChat(this.state.chatType);
+      // this.props.togglePosition('minimized');
+    }
+  }
+  handleChange(event) {
+    this.setState({
+      message: event.target.value,
+    });
   }
 }
 

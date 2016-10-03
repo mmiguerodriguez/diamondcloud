@@ -91,6 +91,8 @@ export default class Message extends React.Component {
     }
   }
   componentDidMount() {
+    this.props.scrollDown();
+
     if(!this.props.isSender) {
       if(this.props.position !== 'minimized') {
         if(this.props.message.directChatId) {
@@ -131,4 +133,5 @@ Message.propTypes = {
   message: React.PropTypes.object.isRequired,
   position: React.PropTypes.string.isRequired,
   isSender: React.PropTypes.bool.isRequired,
+  scrollDown: React.PropTypes.func.isRequired,
 };
