@@ -248,10 +248,10 @@ class CreateTask extends React.Component {
       }
     });
   }
-  
+
   getBiggestTaskPosition() {
     let positions = [];
-    
+
     this.props.tasks.forEach((task) => {
       if (task.boardId === this.state.boardId) {
         positions.push(task.position);
@@ -437,29 +437,44 @@ class Task extends React.Component {
     this.openTask = this.openTask.bind(this);
   }
   render() {
+    const role = classNames({
+      'button': this.props.coordination,
+    });
+    const containerClass = classNames({
+      'col-xs-12': this.state.editing,
+      'col-xs-10': !this.state.editing,
+    });
+    const onClick = this.props.coordination ? this.openTask : () => {};
+
     return (
-      <div 
-        className='col-xs-12 task' 
-        onClick={ this.props.coordination ? this.openTask : () => {} }
-        role={ this.props.coordination ? 'button' : '' }>
-        {
-          this.state.editing ? (
-            <div className='col-xs-12'>
+      <div
+        className='col-xs-12 task'
+        onClick={ onClick }
+        role={ role }>
+
+        <div className={ containerClass }>
+          {
+            this.state.editing ? (
               <input
                 className='form-control edit-task-input'
                 type='text'
                 value={ this.state.task_title }
                 onChange={ this.handleChange.bind(this, 'task_title') }
                 onKeyDown={ this.handleKeyDown } />
-            </div>
-          ) : (
-            <div>
-              <h5 className='task-title col-xs-12'>{ this.props.task.title }</h5>
-              <p className='col-xs-12 expiration'>Tiempo activo: { this.state.count }</p>
-              <p className='col-xs-12 expiration'>Vencimiento: { new Date(this.props.task.dueDate).toLocaleDateString() }</p>
-            </div>
-          )
-        }
+            ) : (
+              <div>
+                <h5 className='task-title col-xs-12'>{ this.props.task.title }</h5>
+                {
+                  !this.props.coordination && this.props.doing ? (
+                    <p className='col-xs-12 expiration'>Tiempo activo: { this.state.count }</p>
+                  ) : ( null )
+                }
+                <p className='col-xs-12 expiration'>Vencimiento: { new Date(this.props.task.dueDate).toLocaleDateString() }</p>
+              </div>
+            )
+          }
+        </div>
+
         {
           this.props.coordination && this.props.task.status === 'finished' ? (
             <div
@@ -534,7 +549,7 @@ class Task extends React.Component {
       </div>
     );
   }
-  componentDidMount() {
+  componentWillMount() {
     if (this.props.doing) {
       this.startInterval();
     }
@@ -570,6 +585,7 @@ class Task extends React.Component {
           console.error(error);
         } else {
           console.log('Started task correctly', result);
+          self.startInterval();
         }
       }
     });
@@ -766,7 +782,7 @@ class Task extends React.Component {
 class TaskInfo extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = { task: {}, board: {} };
   }
   render() {
@@ -793,8 +809,8 @@ class TaskInfo extends React.Component {
           task.durations.forEach((_duration) => {
             if (_duration.startTime && _duration.endTime) {
               let duration = _duration.endTime - _duration.startTime;
-              
-              
+
+
             }
           });
         */
