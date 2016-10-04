@@ -93,7 +93,7 @@ export default class NavbarLayout extends React.Component {
     });
   }
   componentDidUpdate() {
-    if(this.props.user && !this.state.createdPopover) {
+    if (this.props.user && !this.state.createdPopover) {
       let onLogout = () => {
         // Change createdPopover state to false when the user logs out
         this.setState({

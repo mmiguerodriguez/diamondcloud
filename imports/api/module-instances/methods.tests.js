@@ -21,7 +21,7 @@ import {
 
 import '../factories/factories.js';
 
-if(Meteor.isServer){
+if (Meteor.isServer){
   describe('Module Instances', function() {
     describe('Methods', function() {
       let module, user, board, team;
@@ -100,7 +100,7 @@ if(Meteor.isServer){
         };
 
         editModuleInstance.call(args, (err, res) => {
-          if(err) throw new Meteor.Error(err);
+          if (err) throw new Meteor.Error(err);
           result = res;
           delete result.boardId;
         });
@@ -126,7 +126,7 @@ if(Meteor.isServer){
         };
 
         archiveModuleInstance.call(args, (err, res) => {
-          if(err) throw new Meteor.Error(err);
+          if (err) throw new Meteor.Error(err);
           result = res;
         });
 
@@ -140,7 +140,7 @@ if(Meteor.isServer){
         };
 
         dearchiveModuleInstance.call(args, (err, res) => {
-          if(err) throw new Meteor.Error(err);
+          if (err) throw new Meteor.Error(err);
           result = res;
         });
 

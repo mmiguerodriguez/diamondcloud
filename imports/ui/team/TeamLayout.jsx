@@ -71,9 +71,10 @@ export default class TeamLayout extends React.Component {
           openCreateChatModal={ this.openCreateChatModal }
           openConfigTeamModal={ this.openConfigTeamModal } />
         <Board
+          team={ this.props.team }
           boards={ this.props.boards }
           board={ this.props.board }
-          users={ this.props.team.users }
+          users={ this.props.users }
           moduleInstances={ this.props.moduleInstances }
           moduleInstancesFrames={ this.props.moduleInstancesFrames }
           modules={ this.props.modules }
@@ -180,16 +181,16 @@ export default class TeamLayout extends React.Component {
 
   componentDidMount() {
     let self = this;
-    if(this.props.owner) {
+    if (this.props.owner) {
       $(document).bind('mousedown', (e) => {
-        if(!$(e.target).parents('.board-context-menu').length > 0) {
+        if (!$(e.target).parents('.board-context-menu').length > 0) {
           self.closeContextMenu(this.refs['board-context-menu']);
         }
       });
     }
 
     $(document).bind('mousedown', (e) => {
-      if(!$(e.target).parents('.moduleinstance-context-menu').length > 0) {
+      if (!$(e.target).parents('.moduleinstance-context-menu').length > 0) {
         self.closeContextMenu(this.refs['moduleinstance-context-menu']);
       }
     });
@@ -220,7 +221,7 @@ export default class TeamLayout extends React.Component {
     chat.setState({
       position: newPosition,
     }, () => {
-      if(newPosition === 'maximized' || oldPosition === 'maximized') {
+      if (newPosition === 'maximized' || oldPosition === 'maximized') {
         this.setState({
           'has-maximized-chats': !this.state['has-maximized-chats'],
         });
@@ -233,7 +234,7 @@ export default class TeamLayout extends React.Component {
     let arr = [];
 
     this.props.teams.map((team) => {
-      if(this.props.team._id !== team._id) {
+      if (this.props.team._id !== team._id) {
         arr.push(
           <li key={ team._id } className='item-li'>
             <Link to={ '/team/' + team._id } className='item-a truncate'>{ team.name }</Link>
@@ -347,15 +348,15 @@ export default class TeamLayout extends React.Component {
     this.props.boardSubscribe(boardId);
   }
   removeBoard() {
-    if(this.props.owner) {
+    if (this.props.owner) {
       let boardId = this.state['board-context-menu-id'];
       Meteor.call('Boards.methods.archiveBoard', { _id: boardId }, (error, result) => {
-        if(error) {
+        if (error) {
           console.error(error);
         } else {
           let newBoardId;
           this.props.boards.map((board) => {
-            if(board._id !== boardId) {
+            if (board._id !== boardId) {
               newBoardId = board._id;
             }
           });
@@ -368,7 +369,7 @@ export default class TeamLayout extends React.Component {
     }
   }
   openBoardContextMenu(boardId, event) {
-    if(this.props.owner) {
+    if (this.props.owner) {
       event.persist();
 
       $(this.refs['board-context-menu'])
@@ -393,7 +394,7 @@ export default class TeamLayout extends React.Component {
     let iframe = this.state['moduleinstance-iframe'];
 
     Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
-      if(error) {
+      if (error) {
         console.error(error);
       } else {
         iframe.contentWindow.DiamondAPI.unsubscribe();
@@ -435,7 +436,7 @@ export default class TeamLayout extends React.Component {
 
     this.hideAllActiveBackgrounds();
 
-    if(active) {
+    if (active) {
       this.hideActive();
       this.toggleSubHeader();
     } else {
@@ -453,9 +454,9 @@ export default class TeamLayout extends React.Component {
     $('.collapsible').each((index, item) => {
       let elem = $(item);
 
-      if(elem.css('display') === 'block')  {
+      if (elem.css('display') === 'block')  {
         let id = elem.attr('id');
-        if(name === id) {
+        if (name === id) {
           result = true;
         }
       }
@@ -467,12 +468,12 @@ export default class TeamLayout extends React.Component {
     $('.collapsible').each((index, item) => {
       let elem = $(item);
 
-      if(elem.css('display') === 'block') {
+      if (elem.css('display') === 'block') {
         activeElement = elem;
       }
     });
 
-    if(!!activeElement) {
+    if (!!activeElement) {
       this.effect(activeElement, 'slide', 'left', 'hide', 350, callback);
     } else {
       callback();
@@ -496,8 +497,8 @@ export default class TeamLayout extends React.Component {
     $('.item').each((index, item) => {
       let elem = $(item);
 
-      if(!elem.hasClass('bottom')){
-        if(elem.css('backgroundColor') === 'rgb(255, 255, 255)'){
+      if (!elem.hasClass('bottom')){
+        if (elem.css('backgroundColor') === 'rgb(255, 255, 255)'){
           this.hideBackground(elem);
         }
       }

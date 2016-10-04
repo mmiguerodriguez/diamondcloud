@@ -19,17 +19,17 @@ Meteor.users.helpers({
       fields,
     });
 
-    if(teams)
+    if (teams)
       return teams;
   },
   boards(teamId, fields) {
     fields = fields || {};
     let team = Teams.findOne(teamId);
-    if(!team) {
+    if (!team) {
       throw new Meteor.Error('Users.boards.wrongTeamId',
       'There is no team with the given id');
     }
-    if(!team.hasUser({ _id: this._id })) {
+    if (!team.hasUser({ _id: this._id })) {
       throw new Meteor.Error('Users.boards.userNotInTeam',
       'The user is not in the team');
     }
@@ -46,7 +46,7 @@ Meteor.users.dashboardFields = {
 };
 
 Meteor.users.findByEmail = (emails, fields) => {
-  if(typeof emails === 'string') {
+  if (typeof emails === 'string') {
     return Meteor.users.findOne({ 'emails.address': emails }, { fields });
   }
 

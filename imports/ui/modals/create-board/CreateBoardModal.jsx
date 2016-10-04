@@ -134,8 +134,8 @@ export default class CreateBoardModal extends React.Component {
 
     this.props.team.users.map((_user) => {
       let user = Meteor.users.findByEmail(_user.email, {});
-      if(user) {
-        if(user._id !== Meteor.userId()) {
+      if (user) {
+        if (user._id !== Meteor.userId()) {
           arr.push({
             label: user.profile.name,
             value: user.email(),
@@ -152,9 +152,10 @@ export default class CreateBoardModal extends React.Component {
       ...this.state
     };
 
-    if(board.isPrivate) {
+    if (board.isPrivate) {
       let arr = [];
-      if(board.users !== '') {
+
+      if (board.users !== '') {
         board.users.split(',').map((email) => {
           arr.push({ email });
         });
@@ -162,13 +163,15 @@ export default class CreateBoardModal extends React.Component {
       } else {
         board.users = [];
       }
+
+      board.users.push({ email: Meteor.user().email() });
     } else {
       board.users = [];
     }
 
-    if(board.name != '' && board.name.length >= 3) {
+    if (board.name != '' && board.name.length >= 3) {
       Meteor.call('Boards.methods.create', board, (error, result) => {
-        if(error) {
+        if (error) {
           console.error(error);
         } else {
           this.onClose();
@@ -186,7 +189,7 @@ export default class CreateBoardModal extends React.Component {
   // helpers
   handleChange(index, event) {
     let val = event.target.value;
-    if(index === 'isPrivate')  {
+    if (index === 'isPrivate')  {
       val = val === 'true' ? true : false;
     }
 

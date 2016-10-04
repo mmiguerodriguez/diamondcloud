@@ -54,7 +54,7 @@ export default class TeamsLayout extends React.Component {
     });
   }
   renderTeams() {
-    if(this.props.hasTeams) {
+    if (this.props.hasTeams) {
       return this.props.teams.map((team) => {
         return team.name.toLowerCase().indexOf(this.state.search.toLowerCase()) > -1 ? (
           <TeamCard
@@ -75,7 +75,7 @@ export default class TeamsLayout extends React.Component {
   searchResults() {
     let results = 0;
     this.props.teams.forEach((team) => {
-      if(team.name.toLowerCase().indexOf(this.state.search.toLowerCase()) > -1) {
+      if (team.name.toLowerCase().indexOf(this.state.search.toLowerCase()) > -1) {
         results++;
       }
     });

@@ -20,7 +20,7 @@ DirectChats.helpers({
     let user;
 
     this.users.forEach((_user) => {
-      if(_user._id !== Meteor.userId()) {
+      if (_user._id !== Meteor.userId()) {
         user = Meteor.users.findOne(_user._id);
       }
     });
@@ -31,7 +31,7 @@ DirectChats.helpers({
     let notifications;
 
     this.users.forEach((_user) => {
-      if(_user._id === Meteor.userId()) {
+      if (_user._id === Meteor.userId()) {
         notifications = _user.notifications;
       }
     });
@@ -60,7 +60,7 @@ DirectChats.isValid = (directChatId, userId) => {
     }
   });
 
-  if(!directChat){
+  if (!directChat){
     return false;
   } else {
     let team = Teams.findOne(directChat.teamId);
@@ -71,7 +71,7 @@ DirectChats.isValid = (directChatId, userId) => {
 DirectChats.addNotification = (directChatId, userId) => {
 	let users = DirectChats.findOne(directChatId).users;
 	users.forEach((user, index, array) => {
-		if(user._id !== userId) {
+		if (user._id !== userId) {
 			array[index].notifications = user.notifications + 1;
 		}
 	});
@@ -85,7 +85,7 @@ DirectChats.addNotification = (directChatId, userId) => {
 DirectChats.resetNotifications = (directChatId, userId) => {
 	let users = DirectChats.findOne(directChatId).users;
 	users.forEach((user, index, array) => {
-		if(user._id !== userId) {
+		if (user._id !== userId) {
 			array[index].notifications = 0;
 		}
 	});

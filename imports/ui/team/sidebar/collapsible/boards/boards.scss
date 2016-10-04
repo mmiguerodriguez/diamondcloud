@@ -1,7 +1,9 @@
 @import 'board/board';
 
 .board-item-container {
+  overflow: auto;
   cursor: pointer;
+  transition: 0.3s all ease;
   .board-item {
     margin-left: 0px !important;
     margin-right: 0px !important;
@@ -11,5 +13,8 @@
   }
   .board-name {
     margin-top: 16px !important;
+  }
+  &:hover {
+    background-color: #eee;
   }
 }

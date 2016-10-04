@@ -51,7 +51,7 @@ if (Meteor.isServer) {
       };
       
       createDrawing.call(args, (err, res) => {
-        if(err) throw new Meteor.Error(err);
+        if (err) throw new Meteor.Error(err);
         result = res;
       });
       
@@ -73,7 +73,7 @@ if (Meteor.isServer) {
       };
       
       archiveDrawing.call(test, (err, res) => {
-        if(err) throw new Meteor.Error(err);
+        if (err) throw new Meteor.Error(err);
         result = res;
       });
       
@@ -95,7 +95,7 @@ if (Meteor.isServer) {
       };
       
       dearchiveDrawing.call(test, (err, res) => {
-        if(err) throw new Meteor.Error(err);
+        if (err) throw new Meteor.Error(err);
         result = res;
       });
       

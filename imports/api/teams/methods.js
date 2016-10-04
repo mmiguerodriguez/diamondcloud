@@ -38,7 +38,7 @@ export const createTeam = new ValidatedMethod({
     };
 
     usersEmails.forEach((email) => {
-      if(email === Meteor.user().email()) {
+      if (email === Meteor.user().email()) {
         throw new Meteor.Error('Teams.methods.create.emailIsActualUser',
         'You can\'t add yourself to a team',
         'user_adds_himself');
@@ -50,7 +50,7 @@ export const createTeam = new ValidatedMethod({
 
     let future = new Future(); // Needed to make asynchronous call to db
     Teams.insert(team, (err, res) => {
-      if(err) throw new Meteor.Error(err);
+      if (err) throw new Meteor.Error(err);
 
       createModuleData(); // Creates the data storages for each module
       teamId = res;
@@ -62,7 +62,7 @@ export const createTeam = new ValidatedMethod({
         users: boardUsers,
         isPrivate: false,
       }, (err, res) => {
-        if(!!err) {
+        if (!!err) {
           future.throw(err);
         }
 
@@ -74,7 +74,7 @@ export const createTeam = new ValidatedMethod({
           users: boardUsers,
           isPrivate: false,
         }, (err, coordinationBoard) => {
-          if(!!err) {
+          if (!!err) {
             future.throw(err);
           }
 
@@ -82,13 +82,13 @@ export const createTeam = new ValidatedMethod({
           //create trello module instance
           createModuleInstance.call({
             boardId: coordinationBoard._id,
-            moduleId: 'hYsHKx3br6kLYq3km',
+            moduleId: 'trello',
             x: 100,
             y: 100,
             width: 500,
             height: 200,
           }, (err, res) => {
-            if(!!err) {
+            if (!!err) {
               future.throw(err);
             }
 
@@ -100,12 +100,12 @@ export const createTeam = new ValidatedMethod({
               },
               isGlobal: true,
             }, (err, res) => {
-              if(!!err) {
+              if (!!err) {
                 future.throw(err);
               }
 
               usersEmails.forEach((email) => {
-                if(Meteor.users.findByEmail(email, {})) {
+                if (Meteor.users.findByEmail(email, {})) {
                   // If user is not registered in Diamond Cloud
                   Mail.sendMail({
                     from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
@@ -168,14 +168,14 @@ export const shareTeam = new ValidatedMethod({
       'Must be logged in to edit a team.');
     }
     let team = Teams.findOne(teamId);
-    if(Meteor.user().emails[0].address !== team.owner()){
+    if (Meteor.user().emails[0].address !== team.owner()){
       throw new Meteor.Error('Teams.methods.share.notOwner',
       "Must be team's owner to share");
     }
     let user = { email, permission: 'member' };
 
     Teams.addUser(teamId, user);
-    if(Meteor.users.findByEmail(email, {})) {
+    if (Meteor.users.findByEmail(email, {})) {
       //if user is not registered in Diamond Cloud
       Mail.sendMail({
         from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
@@ -209,7 +209,7 @@ export const removeUserFromTeam = new ValidatedMethod({
 
     let team = Teams.findOne(teamId);
     let user = Meteor.users.findByEmail(email, {});
-    if(Meteor.user().emails[0].address !== team.owner()){
+    if (Meteor.user().emails[0].address !== team.owner()){
       throw new Meteor.Error('Teams.methods.removeUser.notOwner',
       "Must be team's owner to remove user");
     }

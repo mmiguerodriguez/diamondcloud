@@ -76,6 +76,9 @@ if (Meteor.isServer) {
       test_1 = {
         teamId: team._id,
         name: faker.lorem.word(),
+        users: [
+          { email: users[0].emails[0].address },
+        ],
         isPrivate: false,
       };
       test_2 = {
@@ -83,17 +86,18 @@ if (Meteor.isServer) {
         name: faker.lorem.word(),
         isPrivate: true,
         users: [
+          { email: users[0].emails[0].address },
           { email: users[1].emails[0].address },
-          { email: users[2].emails[0].address }
+          { email: users[2].emails[0].address },
         ],
       };
       expect_1 = {
         name: test_1.name,
         isPrivate: test_1.isPrivate,
         users: [
+          { email: users[0].emails[0].address, notifications: 0 },
           { email: users[1].emails[0].address, notifications: 0 },
           { email: users[2].emails[0].address, notifications: 0 },
-          { email: users[0].emails[0].address, notifications: 0 },
         ],
         moduleInstances: [],
         archived: false,
@@ -102,22 +106,22 @@ if (Meteor.isServer) {
         name: test_2.name,
         isPrivate: test_2.isPrivate,
         users: [
+          { email: users[0].emails[0].address, notifications: 0 },
           { email: users[1].emails[0].address, notifications: 0 },
           { email: users[2].emails[0].address, notifications: 0 },
-          { email: users[0].emails[0].address, notifications: 0 }
         ],
         moduleInstances: [],
         archived: false,
       };
 
       createBoard.call(test_1, (err, res) => {
-        if(err) throw new Meteor.Error(err);
+        if (err) throw new Meteor.Error(err);
 
         result_1 = res;
         delete result_1._id;
 
         createBoard.call(test_2, (err, res) => {
-          if(err) throw new Meteor.Error(err);
+          if (err) throw new Meteor.Error(err);
 
           result_2 = res;
           delete result_2._id;
@@ -133,7 +137,7 @@ if (Meteor.isServer) {
           expect = board;
 
       archiveBoard.call({ _id: board._id }, (err, res) => {
-        if(err) throw new Meteor.Error(err);
+        if (err) throw new Meteor.Error(err);
 
         result = res;
         expect.archived = true;
@@ -147,7 +151,7 @@ if (Meteor.isServer) {
           expect = board;
 
       dearchiveBoard.call({ _id: board._id }, (err, res) => {
-        if(err) throw new Meteor.Error(err);
+        if (err) throw new Meteor.Error(err);
 
         result = res;
         expect.archived = false;

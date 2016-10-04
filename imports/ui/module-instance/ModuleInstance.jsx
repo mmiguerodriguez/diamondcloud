@@ -21,7 +21,7 @@ export default class ModuleInstance extends React.Component {
     };
   }
   render() {
-    if(this.props.loading) {
+    if (this.props.loading) {
       return (
         <div>Cargando modulo :)</div>
       );
@@ -77,7 +77,7 @@ export default class ModuleInstance extends React.Component {
     this.props.moduleInstancesFrames.push(this.refs.iframe.contentWindow);
   }
   componentDidUpdate() {
-    if(this.props.moduleInstance.archived) {
+    if (this.props.moduleInstance.archived) {
       this.refs.iframe.contentWindow.DiamondAPI.unsubscribe();
     }
   }
@@ -88,7 +88,7 @@ export default class ModuleInstance extends React.Component {
       .draggable({
         containment: 'parent',
         handle: '.module-pin',
-        cursor: 'pointer',
+        cursor: '-webkit-grabbing !important',
         cursorAt: { top: -6 },
         distance: 5,
         iframeFix: true,
@@ -105,10 +105,8 @@ export default class ModuleInstance extends React.Component {
             width,
             height,
           }, (error, result) => {
-            if(error) {
+            if (error) {
               console.error(error);
-            } else {
-              console.log(result);
             }
           });
         }
@@ -133,7 +131,7 @@ export default class ModuleInstance extends React.Component {
       moduleInstanceId,
       minimized,
     }, (error, result) => {
-      if(error) {
+      if (error) {
         this.setState({
           minimized: !minimized
         }, () => {

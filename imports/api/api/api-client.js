@@ -5,64 +5,31 @@ import { ModuleData } from '../module-data/module-data.js';
 
 export const generateApi = ({ moduleInstanceId, boards, users }) => {
   let subscriptions = [];
-  return {
-    subscribe({ request, callback }) {
-      let validation = typeof request.collection == 'string';
-      validation = validation && (typeof request.condition == 'object' || request.condition === undefined);
-      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
-      if (validation) {
-        let serverSubscriptionCallback = {
-          onReady() {
-            let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-
-            let moduleData = ModuleData.findOne({
-              teamId: moduleInstance.board().team()._id,
-              moduleId: moduleInstance.moduleId
-            });
-
-            let query = ModuleData.find(moduleData._id);
-
-            let caller = (id, fields) => {
-              moduleData = ModuleData.findOne({
-                teamId: moduleInstance.board().team()._id,
-                moduleId: moduleInstance.moduleId
-              });
-
-              if (!!moduleData.data) {
-                callback(undefined, moduleData.data);
-              }
-            };
-
-            let handle = query.observeChanges({
-              added: caller,
-              changed: caller,
-              removed: caller,
-            });
+  let DiamondAPI = {
+    subscribe({ collection, filter, callback }) {
+      let oldRes = null;
+      let recursiveGet = () => {
+        DiamondAPI.get({
+          collection,
+          filter,
+          callback: (err, res) => {
+            if (!!err) {
+              callback(err, res);
+            } else if (!_.isEqual(res, oldRes)) {
+              oldRes = res;
+              callback(err, res);
+            }
+            setTimeout(recursiveGet, 1000);
           },
-          onError(err) {
-            console.log('bad 2');
-            console.error(err);
-            callback(console.error('Server Error when trying to subscribe'), undefined);
-          },
-        };
+        });
+      };
 
-        console.log('1');
-
-        let subscription = Meteor.subscribe('moduleData.data',
-                                            moduleInstanceId,
-                                            request,
-                                            serverSubscriptionCallback);
-
-        subscriptions.push(subscription);
-        return subscription;
-      } else {
-        callback(console.error('The provided data is wrong.'), undefined);
-      }
+      recursiveGet();
     },
     unsubscribe(subscriptionId) {
-      if(subscriptionId) {
+      if (subscriptionId) {
         subscriptions.forEach((sub, index) => {
-          if(sub.subscriptionId === subscriptionId) {
+          if (sub.subscriptionId === subscriptionId) {
             sub.stop();
             subscriptions.splice(index, 1);
           }
@@ -147,4 +114,8 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
       return ModuleInstances.findOne(moduleInstanceId).board();
     },
   };
+
+  return DiamondAPI;
 };
+
+// Copyright (c) 2016 Copyright Diamond All Rights Reserved.

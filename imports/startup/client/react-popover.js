@@ -7,7 +7,7 @@ import ReactDOM from 'react-dom';
 import isMobile from 'ismobilejs';
 
 // Extend only if jQuery object exists and $.n (jquery functions) is an object
-if(!isMobile.any) {
+if (!isMobile.any) {
   $.extend($.fn.popover.Constructor.DEFAULTS, {
     react: false
   });
@@ -28,7 +28,7 @@ if(!isMobile.any) {
     if (!$tip.find('.popover-content').html()) {
       // Render title, if any
       let $title = $tip.find('.popover-title');
-      if(title) {
+      if (title) {
         ReactDOM.render(title, $title[0]);
       } else {
         $title.hide();

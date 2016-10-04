@@ -47,7 +47,7 @@ export class TextInput extends React.Component {
   handleChange(event) {
     this.validation(event.target.value);
 
-    if(this.props.onChange) {
+    if (this.props.onChange) {
       this.props.onChange(event);
     }
   }
@@ -98,7 +98,7 @@ export class TextInput extends React.Component {
   handleBlur(event) {
     let valid;
     //Complete final validation from parent element when complete
-    if(this.props.validate){
+    if (this.props.validate){
       valid = this.props.validate(event.target.value);
     }
     //pass the result to the local validation element for displaying the error
@@ -151,7 +151,7 @@ export class SelectInput extends React.Component {
   }
 
   handleChange(event) {
-    if(this.props.onChange) {
+    if (this.props.onChange) {
       this.props.onChange(event);
     }
   }
@@ -159,7 +159,7 @@ export class SelectInput extends React.Component {
   render() {
     let arr = [];
     this.props.options.forEach((option) => {
-      if(option.isDefault){
+      if (option.isDefault){
         arr.push(
           <option key={option.name} disabled defaultValue>{option.name}</option>
         );

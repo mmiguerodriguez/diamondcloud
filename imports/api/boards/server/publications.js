@@ -8,11 +8,11 @@ Meteor.publishComposite('boards.board', function(boardId) {
     'Must be logged in to view boards.');
   }
   let board = Boards.findOne(boardId);
-  if(!board){
+  if (!board){
     throw new Meteor.Error('Boards.publication.board.boardDoesNotExist',
     'There is no board with given id.');
   }
-  if(!board.team().hasUser({ _id: this.userId })){
+  if (!board.team().hasUser({ _id: this.userId })){
     throw new Meteor.Error('Boards.publication.board.userDoesNotBelongToTeam',
     'You must be in the team to view one of its boards.');
   }
