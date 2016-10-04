@@ -7,7 +7,7 @@ import ChatsCollapsible   from './collapsible/chats/ChatsCollapsible.jsx';
 
 export default class SidebarLayout extends React.Component {
   render() {
-    let classes = classNames('sidebar', 'hidden-xs', {
+    let classes = classNames('sidebar', {
       'permission-asker-opened': this.props.permissionAsker,
     });
 

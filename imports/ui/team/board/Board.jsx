@@ -5,7 +5,7 @@ import ModuleInstance from '../../module-instance/ModuleInstance.jsx';
 
 export default class Board extends React.Component {
   render() {
-    let classes = classNames('board-container', 'hidden-xs', {
+    let classes = classNames('board-container', {
       'permission-asker-opened': this.props.permissionAsker
     });
     return (
@@ -112,7 +112,7 @@ export default class Board extends React.Component {
         let module;
         this.props.modules.forEach((_module) => {
           if (_module._id === moduleInstance.moduleId) {
-            module = _module; 
+            module = _module;
           }
         });
 
@@ -136,7 +136,7 @@ export default class Board extends React.Component {
     if (this.props.board.isPrivate) {
       return this.props.board.users.map((_user) => {
         let user = Meteor.users.findByEmail(_user.email, {}) || _user;
-        
+
         return (
           <img
             key={ user._id || _user.email }
