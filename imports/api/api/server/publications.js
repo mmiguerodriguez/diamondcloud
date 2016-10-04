@@ -26,6 +26,7 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
     'Must be a valid member.');
   }
 
+  // Get the correct moduleData
   let pipeline = [
     {
       $match: {
@@ -35,6 +36,7 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
   ];
 
   if (obj.condition) {
+    // Filter by consumer condition
     pipeline.push(
       {
         $project: {
@@ -52,6 +54,7 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
     );
   }
 
+  // Filter the data that should be private for that moduleInstance
   pipeline.push(
     {
       $project: {
@@ -77,6 +80,7 @@ Meteor.publish('moduleData.data', function(moduleInstanceId, obj) {
     }
   );
 
+  // Visible by
   let ids = [];
   let keys = {};
   let condOptions = [];

@@ -32,6 +32,8 @@ export const apiInsert = new ValidatedMethod({
       teamId: moduleInstance.board().team()._id,
       moduleId: moduleInstance.moduleId
     });
+    
+    console.log(moduleInstance.board().team()._id, moduleInstance.moduleId);
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('API.methods.apiInsert.boardAccessDenied',
@@ -108,7 +110,7 @@ export const apiUpdate = new ValidatedMethod({
         filter
       ]
     }, newCollection);
-    
+
     selected.forEach((element) => {
       ModuleData.update({
         _id: moduleData._id,

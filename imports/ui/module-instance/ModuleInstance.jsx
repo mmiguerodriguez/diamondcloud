@@ -107,8 +107,6 @@ export default class ModuleInstance extends React.Component {
           }, (error, result) => {
             if (error) {
               console.error(error);
-            } else {
-              console.log(result);
             }
           });
         }

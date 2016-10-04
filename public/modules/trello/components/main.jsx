@@ -14,7 +14,7 @@ class TaskManagerPage extends React.Component {
       currentBoard: {},
       currentUser: {},
       coordination: false,
-      loading: undefined,
+      loading: true,
       users: [],
       boards: [],
     };
@@ -60,51 +60,30 @@ class TaskManagerPage extends React.Component {
             // ones, except archived
             // If not, fetch the ones that are from the currentBoard and
             // that are not finished
-            let condition = coordination ? {
-              $and: [
-                {
-                  $eq: [
-                    false,
-                    '$$element.archived',
-                  ],
-                }
-              ]
+            let filter = coordination ? {
+              archived: false,
             } : {
-              $and: [
-                {
-                  $eq: [
-                    currentBoard._id,
-                    '$$element.boardId',
-                  ],
-                },
-                {
-                  $eq: [
-                    'not_finished',
-                    '$$element.status',
-                  ]
-                },
-              ],
+              boardId: currentBoard._id,
+              status: 'not_finished',
             };
 
             const trelloHandle = DiamondAPI.subscribe({
-              request: {
-                collection: 'tasks',
-                condition,
-              },
+              collection: 'tasks',
+              filter,
               callback(error, result) {
                 if (error) {
                   console.error(error);
                 } else {
-                  console.log('Subscribe callback', result.tasks);
+                  console.log('Subscribe callback', result ? result : []);
                   self.setState({
-                    tasks: result.tasks,
+                    tasks: result ? result : [],
+                    loading: false,
                   });
                 }
               }
             });
 
             self.setState({
-              loading: trelloHandle.ready(),
               ...DiamondAPI.getTeamData(),
             });
           });
@@ -514,7 +493,7 @@ class Task extends React.Component {
             <div>
               <div className='record'>
                 <img
-                  src='/modules/hYsHKx3br6kLYq3km/img/record.svg'
+                  src='/modules/trello/img/record.svg'
                   width='25px' />
               </div>
               <div
@@ -523,7 +502,7 @@ class Task extends React.Component {
                 role='button'
                 onClick={ this.setTaskStatus.bind(this, 'finished') }>
                   <img
-                    src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg'
+                    src='/modules/trello/img/finished-task.svg'
                     width='25px' />
               </div>
               <div
@@ -532,7 +511,7 @@ class Task extends React.Component {
                 role='button'
                 onClick={ this.finishTask }>
                   <img
-                    src='/modules/hYsHKx3br6kLYq3km/img/pause-button.svg'
+                    src='/modules/trello/img/pause-button.svg'
                     width='15px' />
               </div>
             </div>
@@ -547,7 +526,7 @@ class Task extends React.Component {
                 role='button'
                 onClick={ this.setTaskStatus.bind(this, 'finished') }>
                   <img
-                    src='/modules/hYsHKx3br6kLYq3km/img/finished-task.svg'
+                    src='/modules/trello/img/finished-task.svg'
                     width='25px' />
               </div>
               <div
@@ -556,7 +535,7 @@ class Task extends React.Component {
                 role='button'
                 onClick={ this.startTask }>
                   <img
-                    src='/modules/hYsHKx3br6kLYq3km/img/play-arrow.svg'
+                    src='/modules/trello/img/play-arrow.svg'
                     width='15px' />
               </div>
             </div>

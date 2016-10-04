@@ -124,7 +124,7 @@ if (Meteor.isServer) {
           delete result._id;
           let expectedCreateModuleInstanceArgs = {
                 boardId: coordinationBoardId,
-                moduleId: 'hYsHKx3br6kLYq3km',
+                moduleId: 'trello',
                 x: 100,
                 y: 100,
                 width: 500,
