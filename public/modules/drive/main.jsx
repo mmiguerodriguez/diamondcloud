@@ -5,30 +5,6 @@ browserHistory.push('/'); // initialize the router
 
 // Google Drive API
 let CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
-});
-
-DiamondAPI.insert({
-  collection: 'documents',
-  obj: {
-    _id: "n4ckjK9n4n9psGeDD",
-		link: "https://docs.google.com/document/d/1-cOSVJNpVqjBObCqu-OfyqTDLoUB5is_29Pk0zAjINo/edit#"
-  }
-});
-
-DiamondAPI.insert({
-  collection: 'folders',
-  obj: {
-    _id: "JJCrf9CYeBDMdeDRt",
-		name: "Pepinos",
-		files: [
-			{
-				documentId: "n4ckjK9n4n9psGeDD",
-			}
-		]
-  }
-});
-
-*/
 
 class FileManagerLayout extends React.Component {
   constructor(props) {
