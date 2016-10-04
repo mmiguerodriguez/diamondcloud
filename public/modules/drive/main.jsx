@@ -12,8 +12,7 @@ class FileManagerLayout extends React.Component {
 
     this.state = {
       name: '',
-      parentFolderId: '', // uat
-      fileType: 'fileType.docs', // put default fileType here
+      fileType: 'application/vnd.google-apps.document',
     };
   }
 
@@ -35,7 +34,6 @@ class FileManagerLayout extends React.Component {
       });
     }
   }
-
   renderDocuments() {
     if(this.props.documents.length === 0) {
       return (
@@ -43,12 +41,7 @@ class FileManagerLayout extends React.Component {
           <div className='document-container col-xs-4'>
             <div
               className="document fixed"
-              onClick={this.props.createDocument.bind(this, {
-                  name: 'caca',
-                  parentFolderId: this.props.folderId,
-                  fileType: 'application/vnd.google-apps.document',
-  
-                })}>
+              onClick={this.openModal.bind(this)}>
               <p className="truncate">Cree un documento</p>
             </div>
           </div>
@@ -86,7 +79,7 @@ class FileManagerLayout extends React.Component {
     return (
       <div>
         <div id='resizable' className='file-manager ui-widget-content'>
-          <div className="modal-container">
+          <div className="modal-container" id='create-doc-modal'>
             <div className="create-doc-modal">
               <div className="modal-head">
               <div className="header-data">
@@ -113,28 +106,24 @@ class FileManagerLayout extends React.Component {
                 className="form-control"
                 value={ this.state.fileType }
                 onChange={ this.handleChange.bind(this, 'fileType') }>
-                { /* todo: add correct filetypes */ }
-                <option value='fileType.docs'>Docs</option>
-                <option value='fileType.excel'>Excel</option>
-                <option value='fileType.slides'>Slides</option>
+                <option value='application/vnd.google-apps.document'>Docs</option>
+                <option value='application/vnd.google-apps.spreadsheet'>Excel</option>
+                <option value='application/vnd.google-apps.presentation'>Slides</option>
               </select>
-              <div className="form-group folder-picker">
-                <label for="folder-picker">Elige una carpeta</label>
-                <input type="file" id="folder-picker" />
-              </div>
             </div>
               <div className="modal-footer">
                 <button 
                   type="button" 
                   className="btn btn-default" 
-                  data-dismiss="modal">Cancelar</button>
+                  data-dismiss="modal"
+                  onClick={ this.closeModal.bind(this) }>Cancelar</button>
                 <button 
                   type="button" 
                   className="btn btn-primary"
                   onClick={ this.props.createDocument.bind(this, {
                     name: this.state.name,
                     fileType: this.state.fileType,
-                    parentFolderId: 'i_dont_know_what_to_put',
+                    parentFolderId: this.props.folderId,
                   }) }>Crear</button>
               </div>
             </div>
@@ -177,12 +166,7 @@ class FileManagerLayout extends React.Component {
               ></div>
               <div
                 className="option new"
-                onClick={this.props.createDocument.bind(this, {
-                  name: 'caca',
-                  parentFolderId: this.props.folderId,
-                  fileType: 'application/vnd.google-apps.document',
-  
-                })}></div>
+                onClick={this.openModal.bind(this)}></div>
             </div>
           </div>
         </div>
@@ -194,6 +178,13 @@ class FileManagerLayout extends React.Component {
     this.setState({
        [index]: event.target.value,
     });
+  }
+  
+  closeModal() {
+    $('#create-doc-modal').removeClass('active');
+  }
+  openModal() {
+    $('#create-doc-modal').addClass('active');
   }
 }
 
@@ -374,6 +365,7 @@ class FileManagerPage extends React.Component {
       *   https://developers.google.com/drive/v3/web/mime-types
       */
 
+    $('#create-doc-modal').removeClass('active');
     gapi.client.drive.files.create({
       resource: {
         name,
