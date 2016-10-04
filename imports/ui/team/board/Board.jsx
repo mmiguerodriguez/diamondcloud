@@ -147,13 +147,15 @@ export default class Board extends React.Component {
         );
       });
     } else {
-      return this.props.users.map((user) => {
+      return this.props.team.users.map((_user) => {
+        let user = Meteor.users.findByEmail(_user.email, {}) || _user;
+
         return (
           <img
-            key={ user._id }
+            key={ user._id || _user.email }
             className='img-circle shared-people'
-            src={ user.profile.picture  }
-            title={ user.profile.name }
+            src={ user.profile ? user.profile.picture : '/img/user-shape.svg'  }
+            title={ user.profile ? user.profile.name : user.email }
             width='32px' />
         );
       });
