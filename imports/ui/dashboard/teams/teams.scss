@@ -19,4 +19,7 @@
 .team-container {
   min-height: calc(100vh - 450px);
   margin-bottom: 50px;
+  h3 {
+    padding-left: 15px;
+  }
 }

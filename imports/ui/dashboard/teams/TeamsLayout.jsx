@@ -42,7 +42,7 @@ export default class TeamsLayout extends React.Component {
             </div>
           ) : ( null )
         }
-        <div className='row'>
+        <div className=''>
           { this.renderTeams() }
         </div>
       </div>
