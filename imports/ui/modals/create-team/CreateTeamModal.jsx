@@ -35,7 +35,7 @@ export default class CreateTeamModal extends React.Component {
         header={
           <div>
             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-              <img src='/img/close-modal-icon.svg' width='18px' />
+              <img src='/img/close-icon.svg' width='18px' />
             </button>
             <h4 className='modal-title'>Crear equipo</h4>
           </div>
