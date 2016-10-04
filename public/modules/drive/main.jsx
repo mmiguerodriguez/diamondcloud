@@ -12,6 +12,8 @@ class FileManagerLayout extends React.Component {
 
     this.state = {
       name: '',
+      parentFolderId: '', // uat
+      fileType: 'fileType.docs', // put default fileType here
     };
   }
 
@@ -96,13 +98,25 @@ class FileManagerLayout extends React.Component {
               <div className="modal-body">
               <div className="form-group name">
                 <label for="file-name">Nombre del archivo</label>
-                <input type="text" className="form-control" id="file-name" placeholder="Nombre del archivo" />
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  id="file-name" 
+                  placeholder="Nombre del archivo"
+                  value={ this.state.name }
+                  onChange={ this.handleChange.bind(this, 'name') } />
               </div>
               
-              <label for="file-type">Tipo de archivo</label><select id="file-type" className="form-control">
-                <option>Docs</option>
-                <option>Excel</option>
-                <option>Slides</option>
+              <label for="file-type">Tipo de archivo</label>
+              <select
+                id="file-type" 
+                className="form-control"
+                value={ this.state.fileType }
+                onChange={ this.handleChange.bind(this, 'fileType') }>
+                { /* todo: add correct filetypes */ }
+                <option value='fileType.docs'>Docs</option>
+                <option value='fileType.excel'>Excel</option>
+                <option value='fileType.slides'>Slides</option>
               </select>
               <div className="form-group folder-picker">
                 <label for="folder-picker">Elige una carpeta</label>
@@ -110,8 +124,18 @@ class FileManagerLayout extends React.Component {
               </div>
             </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" className="btn btn-primary">Crear</button>
+                <button 
+                  type="button" 
+                  className="btn btn-default" 
+                  data-dismiss="modal">Cancelar</button>
+                <button 
+                  type="button" 
+                  className="btn btn-primary"
+                  onClick={ this.props.createDocument.bind(this, {
+                    name: this.state.name,
+                    fileType: this.state.fileType,
+                    parentFolderId: 'i_dont_know_what_to_put',
+                  }) }>Crear</button>
               </div>
             </div>
           </div>
@@ -129,7 +153,6 @@ class FileManagerLayout extends React.Component {
                     this.renderFolders()
                   )
               }
-  
             </div>
             <p className="documents-title-container">
               Archivos
@@ -167,9 +190,9 @@ class FileManagerLayout extends React.Component {
     );
   }
 
-  handleChange(event) {
+  handleChange(index, event) {
     this.setState({
-       name: event.target.value,
+       [index]: event.target.value,
     });
   }
 }
