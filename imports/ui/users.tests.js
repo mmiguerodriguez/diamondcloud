@@ -5,7 +5,7 @@ import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
-if(Meteor.isClient) {
+if (Meteor.isClient) {
   describe('Users', function() {
     describe('Helpers', function() {
       let user = {

@@ -5,7 +5,7 @@ import ModuleInstance from '../../module-instance/ModuleInstance.jsx';
 
 export default class Board extends React.Component {
   render() {
-    let classes = classNames('board-container', 'hidden-xs', {
+    let classes = classNames('board-container', {
       'permission-asker-opened': this.props.permissionAsker
     });
     return (
@@ -24,10 +24,11 @@ export default class Board extends React.Component {
             </h4>
             <span className='message-icon-span' onClick={ this.props.addChat.bind(null, { boardId: this.props.board._id }) }>
               { /* <h4 className='message-text'>Chat del board</h4> */ }
-              <img  src='/img/sidebar/messages.svg'
-                    title='Abrir chat del board'
-                    className='message-icon'
-                    width='28px'/>
+              <img
+                src='/img/sidebar/messages.svg'
+                title='Abrir chat del board'
+                className='message-icon'
+                width='28px'/>
             </span>
           </div>
         </div>
@@ -52,14 +53,14 @@ export default class Board extends React.Component {
         let item = ui.draggable.hasClass('module-item');
         let container = ui.draggable.hasClass('module-container');
 
-        if(item) {
+        if (item) {
           let boardId = self.props.board._id;
           let moduleId = ui.draggable.data('module-id');
 
           let x = ui.position.top - 40;
           let y = ui.position.left;
 
-          if(x >= 0 && y >= 0) {
+          if (x >= 0 && y >= 0) {
             Meteor.call('ModuleInstances.methods.create', {
               boardId,
               moduleId,
@@ -68,7 +69,7 @@ export default class Board extends React.Component {
               width: 350, // must change to fixed
               height: 400, // must change to fixed
             }, (error, result) => {
-              if(error) {
+              if (error) {
                 console.error(error);
               } else {
                 console.log(result);
@@ -77,19 +78,19 @@ export default class Board extends React.Component {
           } else {
             console.error('Can\'t create module on those coordinates.');
           }
-        } else if(container) {
+        } else if (container) {
           let moduleInstanceId = ui.draggable.data('moduleinstance-id');
 
           let x = ui.position.top;
           let y = ui.position.left;
 
-          if(x >= 0 && y >= 0) {
+          if (x >= 0 && y >= 0) {
             Meteor.call('ModuleInstances.methods.edit', {
               moduleInstanceId,
               x,
               y,
             }, (error, result) => {
-              if(error) {
+              if (error) {
                 console.error(error);
               } else {
                 console.log(result);
@@ -105,13 +106,13 @@ export default class Board extends React.Component {
   renderModules() {
     let arr = [];
 
-    if(this.props.moduleInstances) {
+    if (this.props.moduleInstances) {
       this.props.moduleInstances.map((moduleInstance) => {
 
         let module;
         this.props.modules.forEach((_module) => {
-          if(_module._id === moduleInstance.moduleId) {
-            module = _module; 
+          if (_module._id === moduleInstance.moduleId) {
+            module = _module;
           }
         });
 
@@ -132,35 +133,33 @@ export default class Board extends React.Component {
     return arr;
   }
   renderUsers() {
-    let arr = [];
-
-    if(this.props.board.isPrivate) {
-      this.props.board.users.map((_user) => {
+    if (this.props.board.isPrivate) {
+      return this.props.board.users.map((_user) => {
         let user = Meteor.users.findByEmail(_user.email, {}) || _user;
-        arr.push(
-          <img  key={ user._id || user.email }
+
+        return (
+          <img
+            key={ user._id || _user.email }
             className='img-circle shared-people'
             src={ user.profile ? user.profile.picture : '/img/user-shape.svg' }
-            alt={ user.profile ? user.profile.name : user.email }
-            title={ user.profile ? user.profile.name : user.email }
+            title={ user.profile ? user.profile.name : _user.email }
             width='32px' />
         );
       });
     } else {
-      this.props.users.map((_user) => {
+      return this.props.team.users.map((_user) => {
         let user = Meteor.users.findByEmail(_user.email, {}) || _user;
-        arr.push(
-          <img  key={ user._id || user.email }
-                className='img-circle shared-people'
-                src={ user.profile ? user.profile.picture : '/img/user-shape.svg' }
-                alt={ user.profile ? user.profile.name : user.email }
-                title={ user.profile ? user.profile.name : user.email }
-                width='32px' />
+
+        return (
+          <img
+            key={ user._id || _user.email }
+            className='img-circle shared-people'
+            src={ user.profile ? user.profile.picture : '/img/user-shape.svg'  }
+            title={ user.profile ? user.profile.name : user.email }
+            width='32px' />
         );
       });
     }
-
-    return arr;
   }
 }
 

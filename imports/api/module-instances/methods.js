@@ -13,7 +13,7 @@ export const createModuleInstance = new ValidatedMethod({
   name: 'ModuleInstances.methods.create',
   validate: new SimpleSchema({
     boardId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    moduleId: { type: String },
+    moduleId: { type: String/*, regEx: SimpleSchema.RegEx.Id*/ },
     x: { type: Number, min: 0 },
     y: { type: Number, min: 0 },
     width: { type: Number },
@@ -38,7 +38,7 @@ export const createModuleInstance = new ValidatedMethod({
 
     let future = new Future();
     ModuleInstances.insert(moduleInstance, (err, res) => {
-      if(err) future.throw(err);
+      if (err) future.throw(err);
 
       let moduleInstanceId = res;
       Boards.addModuleInstance(boardId, moduleInstanceId);

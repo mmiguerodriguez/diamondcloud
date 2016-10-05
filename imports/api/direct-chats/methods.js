@@ -29,7 +29,7 @@ export const createDirectChat = new ValidatedMethod({
     let userChats = DirectChats.getUserDirectChats(Meteor.userId(), teamId).fetch();
     userChats.map((chats) => {
       chats.users.map((user) => {
-        if(user._id === userId) {
+        if (user._id === userId) {
           throw new Meteor.Error('DirectChats.methods.create.chatExists',
           'The chat with this user already exists.',
           'chat_exists');
@@ -47,7 +47,7 @@ export const createDirectChat = new ValidatedMethod({
 
     let future = new Future();
     DirectChats.insert(directChat, (err, res) => {
-      if(!!err) future.throw(err);
+      if (!!err) future.throw(err);
 
       directChat._id = res;
       future.return(directChat);

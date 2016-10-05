@@ -99,7 +99,7 @@ if (Meteor.isClient) {
           visibleBy: [
             { userId: 'userId' },
           ],
-          callback: () => {
+          callback() {
             return "value";
           },
         });
@@ -131,7 +131,7 @@ if (Meteor.isClient) {
               color: 'Yellow',
             }
           },
-          callback: (err, res) => {
+          callback(err, res) {
             return 'value';
           }
         });
@@ -158,7 +158,7 @@ if (Meteor.isClient) {
           filter: {
             categoryId: 'categoryId1',
           },
-          callback: (err, res) => {
+          callback(err, res) {
             return 'value';
           }
         });
@@ -180,7 +180,7 @@ if (Meteor.isClient) {
           filter: {
             categoryId: 'categoryId1',
           },
-          callback: (err, res) => {
+          callback(err, res) {
             return 'value';
           }
         });

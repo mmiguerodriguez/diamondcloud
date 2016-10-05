@@ -11,26 +11,24 @@ export let createdModules = [
     validated: true,
   },
   {
-    _id: "drive",
-    name: "Drive",
-    img: "/modules/drive/image.png",
-    description: "This is Drive (Sparta)!",
-    validated: true,
-  },
-  {
     _id: "trello",
     name: "Organizador de tareas",
     img: "/modules/trello/image.png",
     description: "Organizador de tareas",
     validated: true,
   },
-  /*
   {
-    _id: "Hwqpiuufhsdf735sj",
-    name: "File Picker",
-    img: "/modules/Jjwjg6gouWLXhMGKW/image.png",
-    description: "Google Drive API test",
+    _id: "drive",
+    name: "File Manager",
+    img: "/modules/drive/image.png",
+    description: "This is a File Manager",
     validated: true,
-  }
-  */
+  },
+  {
+    _id: "webrtc",
+    name: "Web RTC",
+    img: "/modules/webrtc/image.png",
+    description: "This is a Web RTC module",
+    validated: true,
+  },
 ];

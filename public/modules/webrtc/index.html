@@ -1,9 +1,11 @@
 <html>
   <head>
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.css" rel="stylesheet">
     <link href='main.css' rel='stylesheet'>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
     <script src="https://unpkg.com/babel-core@5.8.38/browser.min.js"></script>
@@ -11,12 +13,12 @@
     <script src="https://npmcdn.com/react-dom@latest/dist/react-dom.min.js"></script>
     <script src="https://unpkg.com/react-router/umd/ReactRouter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/classnames/2.2.5/index.min.js"></script>
+    <script src="https://simplewebrtc.com/latest-v2.js"></script>
   </head>
   <body>
-    <div id="render-target"></div>
-    <script src="https://apis.google.com/js/client.js"></script>
-    <script src="https://www.google.com/jsapi?key=AIzaSyCb04iiO8_pvdHsuf3XCNbdGw8SIbR9CxQ"></script>
-    <script src="filepicker.js"></script>
-    <script type='text/babel' src='main.jsx'></script>
+    <div id='render-target'></div>
+    
+    <script type='text/babel' src='components/main.jsx'></script> 
+    <!-- <script src='components/test-webrtc.js'></script> -->
   </body>
 </html>

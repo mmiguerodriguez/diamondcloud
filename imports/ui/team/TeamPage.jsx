@@ -31,15 +31,15 @@ export default class Team extends React.Component {
   render() {
     const board = Team.board.get();
 
-    if(this.props.loading) {
+    if (this.props.loading) {
       return ( null );
     }
 
-    if(this.props.team === undefined) {
+    if (this.props.team === undefined) {
       return ( null );
     }
 
-    if(!board) {
+    if (!board) {
       return ( null );
     }
 
@@ -48,14 +48,15 @@ export default class Team extends React.Component {
         <TeamLayout
           teams={ this.props.teams }
           team={ this.props.team }
+          users={ this.props.users }
           owner={ this.props.team.owner() === Meteor.user().email() }
 
           boards={ this.props.boards }
           board={ board }
 
+          modules={ this.props.modules }
           moduleInstances={ this.props.moduleInstances }
           moduleInstancesFrames={ this.state.moduleInstancesFrames }
-          modules={ this.props.modules }
 
           directChats={ this.props.directChats }
           chats={ this.getChats() }
@@ -78,12 +79,12 @@ export default class Team extends React.Component {
     // If it already loaded and team doesn't exist then we
     // should return the user to a NotFound Layout or
     // error route...
-    if(!this.props.loading && !this.props.team) {
+    if (!this.props.loading && !this.props.team) {
       browserHistory.push('/404');
     }
   }
   componentWillUnmount() {
-    if(Team.boardSubscription.get()) {
+    if (Team.boardSubscription.get()) {
       Team.boardSubscription.get().stop();
     }
   }
@@ -91,7 +92,7 @@ export default class Team extends React.Component {
   getChats() {
     let chats = this.state.chats;
     chats = chats.map((chat) => {
-      if(!!chat.boardId) {
+      if (!!chat.boardId) {
         chat.messages = Boards.findOne(chat.boardId).getMessages().fetch();
       } else {
         chat.messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
@@ -103,14 +104,14 @@ export default class Team extends React.Component {
   addChat(obj) {
     //obj: { boardId || directChatId }
     let chats = this.state.chats;
-    if(!!obj.boardId) {
+    if (!!obj.boardId) {
       let found = false;
       chats.forEach((chat) => {
-        if(chat.boardId === obj.boardId) {
+        if (chat.boardId === obj.boardId) {
           found = true;
         }
       });
-      if(!found) {
+      if (!found) {
         let messages = Boards.findOne(obj.boardId).getMessages().fetch();
         chats.push({
           boardId: obj.boardId,
@@ -120,11 +121,11 @@ export default class Team extends React.Component {
     } else {
       let found = false;
       chats.forEach((chat) => {
-        if(chat.directChatId === obj.directChatId) {
+        if (chat.directChatId === obj.directChatId) {
           found = true;
         }
       });
-      if(!found) {
+      if (!found) {
         let messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
         chats.push({
           directChatId: obj.directChatId,
@@ -139,15 +140,15 @@ export default class Team extends React.Component {
   removeChat(obj) {
     //obj: { boardId || directChatId }
     let chats = this.state.chats;
-    if(!!obj.boardId) {
+    if (!!obj.boardId) {
       chats.forEach((chat, index) => {
-        if(chat.boardId === obj.boardId) {
+        if (chat.boardId === obj.boardId) {
           chats.splice(index, 1);
         }
       });
     } else {
       chats.forEach((chat, index) => {
-        if(chat.directChatId === obj.directChatId) {
+        if (chat.directChatId === obj.directChatId) {
           chats.splice(index, 1);
         }
       });
@@ -158,11 +159,11 @@ export default class Team extends React.Component {
   }
 
   boardSubscribe(boardId) {
-    if(Team.board.get()._id === boardId) {
+    if (Team.board.get()._id === boardId) {
       return;
     }
-    
-    if(Team.boardSubscription.get()) {
+
+    if (Team.boardSubscription.get()) {
       this.state.moduleInstancesFrames.map((frame) => {
         frame.DiamondAPI.unsubscribe();
       });
@@ -170,10 +171,10 @@ export default class Team extends React.Component {
     }
 
     let subscription = Meteor.subscribe('boards.board', boardId, {
-      onReady: () => {
+      onReady() {
         Team.board.set(Boards.findOne(boardId));
       },
-      onError: (error) => {
+      onError(error) {
         console.error(error);
       }
     });
@@ -186,7 +187,7 @@ Team.board = new ReactiveVar();
 Team.boardSubscription = new ReactiveVar();
 
 export default TeamPageContainer = createContainer(({ params }) => {
-  if(!Meteor.user()) {
+  if (!Meteor.user()) {
     browserHistory.push('/');
   }
 
@@ -221,6 +222,7 @@ export default TeamPageContainer = createContainer(({ params }) => {
     loading,
     team: Teams.findOne(teamId),
     teams: Teams.find({}, { sort: { name: - 1 } }).fetch(),
+    users: Meteor.users.find({}).fetch(),
     boards: Boards.find({}, { sort: { name: -1 } }).fetch(),
     directChats: DirectChats.find().fetch(),
     messages: Messages.find().fetch(),

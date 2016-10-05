@@ -45,7 +45,7 @@ Boards.helpers({
     let notifications;
 
     this.users.forEach((_user) => {
-      if(_user.email === Meteor.user().email()) {
+      if (_user.email === Meteor.user().email()) {
         notifications = _user.notifications;
       }
     });
@@ -97,7 +97,7 @@ Boards.moduleInstancesFields = {
 
 Boards.getBoards = (boardsIds, userId, fields) => {
   fields = fields || {};
-  if(Object.prototype.toString.call(boardsIds[0]) === "[object Object]"){
+  if (Object.prototype.toString.call(boardsIds[0]) === "[object Object]"){
     boardsIds.forEach((board, index) => {
       boardsIds[index] = board._id;
     });
@@ -148,7 +148,7 @@ Boards.isValid = (boardId, userId) => {
     ],
   });
 
-  if(!board) {
+  if (!board) {
     return false;
   } else {
     return board.team().hasUser({ _id: userId });
@@ -169,7 +169,7 @@ Boards.addModuleInstance = (boardId, moduleInstanceId) => {
 };
 
 Boards.addUser = (boardId, userId) => {
-  if(!Boards.isValid(boardId, Meteor.userId())){
+  if (!Boards.isValid(boardId, Meteor.userId())){
     throw new Meteor.Error('Boards.addUser.notInBoard',
     'Must be a member of a board to add users to it.');
   }
@@ -200,7 +200,7 @@ Boards.addNotification = (boardId, userId) => {
   let users = Boards.findOne(boardId).users;
 
   users.forEach((_user, index, array) => {
-    if(_user.email !== user.email()) {
+    if (_user.email !== user.email()) {
       array[index].notifications = _user.notifications + 1;
     }
   });
@@ -216,7 +216,7 @@ Boards.resetNotifications = (boardId, userId) => {
 	let users = Boards.findOne(boardId).users;
 
 	users.forEach((_user, index, array) => {
-		if(_user.email !== user.email()) {
+		if (_user.email !== user.email()) {
 			array[index].notifications = 0;
 		}
 	});

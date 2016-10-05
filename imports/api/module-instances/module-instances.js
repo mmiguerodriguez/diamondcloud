@@ -47,7 +47,7 @@ export let generateMongoQuery = (input, collection) => {
     // If property starts with '$', it's an operator, so ignore it
     let isOperator = property.charAt(0) === '$';
     
-    if(!isOperator) {
+    if (!isOperator) {
       result[`data.${ collection }.$.${ property }`] = input[property];
     } else {
       result[property] = input[property];
@@ -55,20 +55,20 @@ export let generateMongoQuery = (input, collection) => {
 
     let index = isOperator ? property : `data.${ collection }.$.${ property }`;
 
-    if(Array.isArray(input[property])) {
+    if (Array.isArray(input[property])) {
       result[index].forEach((element, i, array) => {
-        if(typeof element === 'object') {
+        if (typeof element === 'object') {
           array[i] = generateMongoQuery(element, collection);
         } else {
           array[i] = element;
         }
       });
-    } else if(typeof input[property] === 'object') {
+    } else if (typeof input[property] === 'object') {
       let flags = input[property].$flags;
       
       // If consumer passed a flags element then check attributes
-      if(flags) {
-        if(!flags.insertAsPlainObject) {
+      if (flags) {
+        if (!flags.insertAsPlainObject) {
           result[index] = generateMongoQuery(result[index], collection);
         }
         

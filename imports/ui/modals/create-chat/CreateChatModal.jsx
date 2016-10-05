@@ -26,7 +26,7 @@ export default class CreateChatModal extends React.Component {
         header={
           <div>
             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-              <img src='/img/close-modal-icon.svg' width='18px' />
+              <img src='/img/close-icon.svg' width='18px' />
             </button>
             <h4 className='modal-title'>Crear un chat</h4>
           </div>
@@ -71,8 +71,8 @@ export default class CreateChatModal extends React.Component {
 
     this.props.team.users.map((_user) => {
       let user = Meteor.users.findByEmail(_user.email, {});
-      if(user) {
-        if(user._id !== Meteor.userId()) {
+      if (user) {
+        if (user._id !== Meteor.userId()) {
           arr.push({
             label: user.profile.name,
             value: user._id,
@@ -89,9 +89,9 @@ export default class CreateChatModal extends React.Component {
       ...this.state
     };
 
-    if(chat.userId != '') {
+    if (chat.userId != '') {
       Meteor.call('DirectChats.methods.create', chat, (error, response) => {
-        if(error) {
+        if (error) {
           console.error(error);
         } else {
           this.props.addChat({ directChatId: response._id });

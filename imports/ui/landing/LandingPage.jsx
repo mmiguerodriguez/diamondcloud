@@ -10,7 +10,7 @@ export default class Landing extends React.Component {
     return (<LandingLayout />);
   }
   componentWillMount() {
-    if(Meteor.user()) {
+    if (Meteor.user()) {
       browserHistory.push('/dashboard');
     }
   }
