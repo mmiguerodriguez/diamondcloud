@@ -7,7 +7,7 @@ import { Random }               from 'meteor/random';
 import   faker                  from 'faker';
 import                               '../factories/factories.js';
 
-import { ModuleData }           from '../module-data/module-data.js';
+import { APICollection }        from '../api-collection/api-collection.js';
 import { ModuleInstances }      from '../module-instances/module-instances.js';
 
 import { generateApi }          from './api-client.js';
@@ -103,7 +103,7 @@ if (Meteor.isClient) {
             return "value";
           },
         });
-        chai.assert.equal(name, 'API.methods.apiInsert');
+        chai.assert.equal(name, 'API.methods.APIInsert');
         chai.assert.deepEqual(params, {
           moduleInstanceId: moduleInstances[0]._id,
           collection: 'testCollection',
@@ -135,7 +135,7 @@ if (Meteor.isClient) {
             return 'value';
           }
         });
-        chai.assert.equal(name, 'API.methods.apiUpdate');
+        chai.assert.equal(name, 'API.methods.APIUpdate');
         chai.assert.deepEqual(params, {
           moduleInstanceId: moduleInstances[0]._id,
           collection: 'categories',
@@ -162,7 +162,7 @@ if (Meteor.isClient) {
             return 'value';
           }
         });
-        chai.assert.equal(name, 'API.methods.apiGet');
+        chai.assert.equal(name, 'API.methods.APIGet');
         chai.assert.deepEqual(params, {
           moduleInstanceId: moduleInstances[0]._id,
           collection: 'todos',
@@ -184,7 +184,7 @@ if (Meteor.isClient) {
             return 'value';
           }
         });
-        chai.assert.equal(name, 'API.methods.apiRemove');
+        chai.assert.equal(name, 'API.methods.APIRemove');
         chai.assert.deepEqual(params, {
           moduleInstanceId: moduleInstances[0]._id,
           collection: 'todos',

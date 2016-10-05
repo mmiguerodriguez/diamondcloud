@@ -9,17 +9,17 @@ import                                  '../factories/factories.js';
 
 import { Boards }                  from '../boards/boards.js';
 import { ModuleInstances }         from '../module-instances/module-instances.js';
-import { ModuleData }              from '../module-data/module-data.js';
+import { APICollection }           from '../api-collection/api-collection.js';
 import { Teams }                   from '../teams/teams.js';
 import {
   createModuleInstance,
   editModuleInstance,
   archiveModuleInstance,
   dearchiveModuleInstance,
-  apiInsert,
-  apiUpdate,
-  apiGet,
-  apiRemove,
+  APIInsert,
+  APIUpdate,
+  APIGet,
+  APIRemove,
 }                                  from './methods.js';
 
 if (Meteor.isServer) {
@@ -121,7 +121,7 @@ if (Meteor.isServer) {
           moduleInstanceId: moduleInstance._id,
         };
 
-        apiInsert.call(args);
+        APIInsert.call(args);
         expect = {
           todos: [
             {
@@ -143,7 +143,7 @@ if (Meteor.isServer) {
 
       it('should update an entry in module data', function(done) {
         ModuleData.update(moduleData._id, moduleData, () => {
-          apiUpdate.call({
+          APIUpdate.call({
             moduleInstanceId: moduleInstance._id,
             collection: 'todos',
             filter: {
@@ -171,7 +171,7 @@ if (Meteor.isServer) {
 
       it('should get an entry from module data', function(done) {
         ModuleData.update(moduleData._id, moduleData, () => {
-          apiGet.call({
+          APIGet.call({
             moduleInstanceId: moduleInstance._id,
             collection: 'todos',
             filter: {
@@ -192,7 +192,7 @@ if (Meteor.isServer) {
 
       it('should remove an entry from module data', function(done) {
         ModuleData.update(moduleData._id, moduleData, () => {
-          apiRemove.call({
+          APIRemove.call({
             moduleInstanceId: moduleInstance._id,
             collection: 'todos',
             filter: {
@@ -236,7 +236,7 @@ if (Meteor.isServer) {
 
       it('should get using persistent data when indicated', function(done) {
         ModuleData.update(moduleData._id, moduleData, () => {
-          apiGet.call({
+          APIGet.call({
             moduleInstanceId: otherModuleInstance._id,
             collection: 'todos',
             filter: {

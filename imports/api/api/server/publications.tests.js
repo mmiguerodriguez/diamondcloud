@@ -1,19 +1,19 @@
-import { Meteor }               from 'meteor/meteor';
-import { resetDatabase }        from 'meteor/xolvio:cleaner';
-import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
-import { sinon }                from 'meteor/practicalmeteor:sinon';
-import { chai }                 from 'meteor/practicalmeteor:chai';
-import { Random }               from 'meteor/random';
 import   faker                  from 'faker';
-
+import { Meteor }               from 'meteor/meteor';
+import { Random }               from 'meteor/random';
+import { resetDatabase }        from 'meteor/xolvio:cleaner';
+import { chai }                 from 'meteor/practicalmeteor:chai';
+import { sinon }                from 'meteor/practicalmeteor:sinon';
 import { printObject }          from '../../helpers/print-objects.js';
-import                               './publications.js';
+import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import                               '../../factories/factories.js';
 
-import { Boards }               from '../../boards/boards.js';
+import                               './publications.js';
+
 import { Teams }                from '../../teams/teams.js';
+import { Boards }               from '../../boards/boards.js';
 import { ModuleInstances }      from '../../module-instances/module-instances.js';
-import { ModuleData }           from '../../module-data/module-data.js';
+import { APICollection }        from '../../api-collection/api-collection.js';
 
 if (Meteor.isServer) {
   describe('API', function() {

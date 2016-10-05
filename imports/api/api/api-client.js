@@ -1,30 +1,13 @@
-import { Meteor } from 'meteor/meteor';
+import { Meteor }             from 'meteor/meteor';
 
-import { ModuleInstances } from '../module-instances/module-instances.js';
-import { ModuleData } from '../module-data/module-data.js';
+import { ModuleInstances }    from '../module-instances/module-instances.js';
+import { APICollection }      from '../api-collection/api-collection.js';
 
 export const generateApi = ({ moduleInstanceId, boards, users }) => {
   let subscriptions = [];
   let DiamondAPI = {
     subscribe({ collection, filter, callback }) {
-      let oldRes = null;
-      let recursiveGet = () => {
-        DiamondAPI.get({
-          collection,
-          filter,
-          callback: (err, res) => {
-            if (!!err) {
-              callback(err, res);
-            } else if (!_.isEqual(res, oldRes)) {
-              oldRes = res;
-              callback(err, res);
-            }
-            setTimeout(recursiveGet, 1000);
-          },
-        });
-      };
-
-      recursiveGet();
+      
     },
     unsubscribe(subscriptionId) {
       if (subscriptionId) {
@@ -41,65 +24,36 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
         });
       }
     },
-    insert({ collection, obj, isGlobal, visibleBy, callback }) {
-      let validation = typeof collection == 'string';
-      validation = validation && typeof obj == 'object';
-      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
-      if (validation) {
-        Meteor.call('API.methods.apiInsert', {
-          moduleInstanceId,
-          collection,
-          obj,
-          isGlobal,
-          visibleBy,
-        }, callback);
-      } else {
-        callback(console.error('The provided data is wrong.'), undefined);
-      }
+    insert({ collection, object, isGlobal, visibleBy, callback }) {
+      Meteor.call('API.methods.APIInsert', {
+        moduleInstanceId,
+        collection,
+        object,
+        isGlobal,
+        visibleBy,
+      }, callback);
     },
     update({ collection, filter, updateQuery, callback }) {
-      let validation = typeof collection == 'string';
-      validation = validation && typeof filter == 'object';
-      validation = validation && typeof updateQuery == 'object';
-      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
-      if (validation) {
-        Meteor.call('API.methods.apiUpdate', {
-          moduleInstanceId,
-          collection,
-          filter,
-          updateQuery,
-        }, callback);
-      } else {
-        callback(console.error('The provided data is wrong.'), undefined);
-      }
+      Meteor.call('API.methods.APIUpdate', {
+        moduleInstanceId,
+        collection,
+        filter,
+        updateQuery,
+      }, callback);
     },
     get({ collection, filter, callback }) {
-      let validation = typeof collection == 'string';
-      validation = validation && typeof filter == 'object';
-      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
-      if (validation) {
-        Meteor.call('API.methods.apiGet', {
-          moduleInstanceId,
-          collection,
-          filter,
-        }, callback);
-      } else {
-        callback(console.error('The provided data is wrong.'), undefined);
-      }
+      Meteor.call('API.methods.APIGet', {
+        moduleInstanceId,
+        collection,
+        filter,
+      }, callback);
     },
     remove({ collection, filter, callback }) {
-      let validation = typeof collection == 'string';
-      validation = validation && typeof filter == 'object';
-      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
-      if (validation) {
-        Meteor.call('API.methods.apiRemove', {
-          moduleInstanceId,
-          collection,
-          filter,
-        }, callback);
-      } else {
-        callback(console.error('The provided data is wrong.'), undefined);
-      }
+      Meteor.call('API.methods.APIRemove', {
+        moduleInstanceId,
+        collection,
+        filter,
+      }, callback);
     },
     getTeamData() {
       return {

@@ -6,24 +6,22 @@ import Future                                    from 'fibers/future';
 
 import { printObject }                           from '../helpers/print-objects.js';
 
-import { ModuleInstances, generateMongoQuery }   from '../module-instances/module-instances.js';
-import { ModuleData }                            from '../module-data/module-data.js';
+import { ModuleInstances }                       from '../module-instances/module-instances.js';
+import { APICollection }                         from '../api-collection/api-collection.js';
 import { Boards }                                from '../boards/boards.js';
 
-let sift = require('sift');
-
-export const apiInsert = new ValidatedMethod({
-  name: 'API.methods.apiInsert',
+export const APIInsert = new ValidatedMethod({
+  name: 'API.methods.APIInsert',
   validate: new SimpleSchema({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
     collection: { type: String },
-    obj: { type: Object, blackbox: true },
+    object: { type: Object, blackbox: true },
     isGlobal: { type: Boolean, optional: true },
-    visibleBy: { type: [Object], blackbox: true, optional: true },
+    visibleBy: { type: [Object], blackbox: true, optional: true }
   }).validator(),
-  run({ moduleInstanceId, collection, obj, isGlobal, visibleBy }) {
+  run({ moduleInstanceId, collection, object, isGlobal, visibleBy }) {
     if (!Meteor.user()) {
-      throw new Meteor.Error('API.methods.apiInsert.notLoggedIn',
+      throw new Meteor.Error('API.methods.APIInsert.notLoggedIn',
       'Must be logged in to use a module.');
     }
 
@@ -32,15 +30,13 @@ export const apiInsert = new ValidatedMethod({
       teamId: moduleInstance.board().team()._id,
       moduleId: moduleInstance.moduleId
     });
-    
-    console.log(moduleInstance.board().team()._id, moduleInstance.moduleId);
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
-      throw new Meteor.Error('API.methods.apiInsert.boardAccessDenied',
+      throw new Meteor.Error('API.methods.APIInsert.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
 
-    let entry = obj;
+    let entry = object;
     entry.isGlobal = isGlobal;
     if (!isGlobal)
       entry.moduleInstanceId = moduleInstanceId;
@@ -61,8 +57,8 @@ export const apiInsert = new ValidatedMethod({
   }
 });
 
-export const apiUpdate = new ValidatedMethod({
-  name: 'API.methods.apiUpdate',
+export const APIUpdate = new ValidatedMethod({
+  name: 'API.methods.APIUpdate',
   validate: new SimpleSchema({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
     collection: { type: String },
@@ -71,7 +67,7 @@ export const apiUpdate = new ValidatedMethod({
   }).validator(),
   run({ moduleInstanceId, collection, filter, updateQuery }) {
     if (!Meteor.user()) {
-      throw new Meteor.Error('API.methods.apiInsert.notLoggedIn',
+      throw new Meteor.Error('API.methods.APIUpdate.notLoggedIn',
       'Must be logged in to use a module.');
     }
 
@@ -82,7 +78,7 @@ export const apiUpdate = new ValidatedMethod({
     });
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
-      throw new Meteor.Error('API.methods.apiInsert.boardAccessDenied',
+      throw new Meteor.Error('API.methods.APIUpdate.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
 
@@ -120,8 +116,8 @@ export const apiUpdate = new ValidatedMethod({
   }
 });
 
-export const apiGet = new ValidatedMethod({
-  name: 'API.methods.apiGet',
+export const APIGet = new ValidatedMethod({
+  name: 'API.methods.APIGet',
   validate: new SimpleSchema({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
     collection: { type: String },
@@ -129,7 +125,7 @@ export const apiGet = new ValidatedMethod({
   }).validator(),
   run({ moduleInstanceId, collection, filter }) {
     if (!Meteor.user()) {
-      throw new Meteor.Error('API.methods.apiGet.notLoggedIn',
+      throw new Meteor.Error('API.methods.APIGet.notLoggedIn',
       'Must be logged in to use a module.');
     }
 
@@ -140,7 +136,7 @@ export const apiGet = new ValidatedMethod({
     });
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
-      throw new Meteor.Error('API.methods.apiGet.boardAccessDenied',
+      throw new Meteor.Error('API.methods.APIGet.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
 
@@ -171,8 +167,8 @@ export const apiGet = new ValidatedMethod({
   }
 });
 
-export const apiRemove = new ValidatedMethod({
-  name: 'API.methods.apiRemove',
+export const APIRemove = new ValidatedMethod({
+  name: 'API.methods.APIRemove',
   validate: new SimpleSchema({
     moduleInstanceId: { type: String, regEx: SimpleSchema.RegEx.Id },
     collection: { type: String },
@@ -180,7 +176,7 @@ export const apiRemove = new ValidatedMethod({
   }).validator(),
   run({ moduleInstanceId, collection, filter }) {
     if (!Meteor.user()) {
-      throw new Meteor.Error('API.methods.apiRemove.notLoggedIn',
+      throw new Meteor.Error('API.methods.APIRemove.notLoggedIn',
       'Must be logged in to use a module.');
     }
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
@@ -190,7 +186,7 @@ export const apiRemove = new ValidatedMethod({
     });
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
-      throw new Meteor.Error('API.methods.apiRemove.boardAccessDenied',
+      throw new Meteor.Error('API.methods.APIRemove.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
 
@@ -225,7 +221,7 @@ export const apiRemove = new ValidatedMethod({
       }
     }, { multi: true }, (err, res) => {
       if (err) {
-        throw new Meteor.Error('API.methods.apiRemove.queryError',
+        throw new Meteor.Error('API.methods.APIRemove.queryError',
       'There was an error removing the entry.');
       } else {
         future.return(res);
