@@ -164,13 +164,12 @@ class CreateTask extends React.Component {
           </div>
           <div className='form-group'>
             <label className='control-label' htmlFor='create-task-duedate'>Fecha de vencimiento</label>
-            <input
+            <input 
               id='create-task-duedate'
               className='form-control'
-              value={ this.state.dueDate }
-              onChange={ this.handleChange.bind(this, 'dueDate') }
-              type='text'
-              placeholder='Ingresá la fecha de vencimiento' />
+              type='date'
+              placeholder='Ingresá la fecha de vencimiento'
+              onChange={ this.handleChange.bind(this, 'dueDate') } />
           </div>
           <div className='form-group'>
             <label className='control-label' htmlFor='create-task-board'>Board</label>
@@ -228,6 +227,7 @@ class CreateTask extends React.Component {
                   console.error(error);
                 } else {
                   console.log('Inserted task correctly');
+                  browserHistory.push('/tasks/show');
                 }
               }
             });
@@ -273,8 +273,14 @@ class CreateTask extends React.Component {
     });
   }
   handleChange(index, event) {
+    let value = event.target.value;
+
+    if (index === 'dueDate') {
+      value = new Date(value).getTime();
+    }
+
     this.setState({
-      [index]: event.target.value,
+      [index]: value,
     });
   }
 }
@@ -800,6 +806,9 @@ class TaskInfo extends React.Component {
   render() {
     return (
       <div>
+        <div>
+          <h4>Información de la tarea</h4>
+        </div>
         <div>Tarea: { this.state.task.title }</div>
         <div>Fecha de vencimiento: { new Date(this.state.task.dueDate).toLocaleDateString() }</div>
         <div>Estado: { this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada' }</div>
