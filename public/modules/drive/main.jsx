@@ -86,7 +86,9 @@ class FileManagerLayout extends React.Component {
               <div className="modal-head">
               <div className="header-data">
               <h4 className="modal-title">Cree un documento</h4>
-              <i className="material-icons close">close</i>
+              <i 
+                className="material-icons close" 
+                onClick={ this.closeModal.bind(this) }>close</i>
             </div>
               
             </div>
