@@ -81,8 +81,7 @@ class FileManagerLayout extends React.Component {
         <div id='resizable' className='file-manager ui-widget-content'>
           <div
             className="modal-container"
-            id='create-doc-modal'
-            onClick={ this.closeModal.bind(this) }>
+            id='create-doc-modal'>
             <div className="create-doc-modal">
               <div className="modal-head">
               <div className="header-data">
