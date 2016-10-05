@@ -69,6 +69,7 @@ class VideoChatPage extends React.Component {
       autoRequestMedia: true,
       detectSpeakingEvents: true,
       nick: DiamondAPI.getCurrentUser().profile.name,
+      // url: 'http://diamondcloud.tk:8888',
     });
     
     self.setState({
