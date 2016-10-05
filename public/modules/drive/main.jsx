@@ -76,27 +76,27 @@ class FileManagerLayout extends React.Component {
               <div className="modal-head">
               <div className="header-data">
               <h4 className="modal-title">Cree un documento</h4>
-              <i 
-                className="material-icons close" 
+              <i
+                className="material-icons close"
                 onClick={ this.closeModal.bind(this) }>close</i>
             </div>
-              
+
             </div>
               <div className="modal-body">
               <div className="form-group name">
                 <label for="file-name">Nombre del archivo</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
-                  id="file-name" 
+                <input
+                  type="text"
+                  className="form-control"
+                  id="file-name"
                   placeholder="Nombre del archivo"
                   value={ this.state.name }
                   onChange={ this.handleChange.bind(this, 'name') } />
               </div>
-              
+
               <label for="file-type">Tipo de archivo</label>
               <select
-                id="file-type" 
+                id="file-type"
                 className="form-control"
                 value={ this.state.fileType }
                 onChange={ this.handleChange.bind(this, 'fileType') }>
@@ -106,13 +106,13 @@ class FileManagerLayout extends React.Component {
               </select>
             </div>
               <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="btn btn-default" 
+                <button
+                  type="button"
+                  className="btn btn-default"
                   data-dismiss="modal"
                   onClick={ this.closeModal.bind(this) }>Cancelar</button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="btn btn-primary"
                   onClick={ this.props.createDocument.bind(this, {
                     name: this.state.name,
@@ -173,7 +173,7 @@ class FileManagerLayout extends React.Component {
        [index]: event.target.value,
     });
   }
-  
+
   closeModal() {
     $('#create-doc-modal').removeClass('active');
   }
@@ -365,15 +365,18 @@ class FileManagerPage extends React.Component {
         mimeType: fileType,
       }
     }).then((resp) => {
+      // Make the document editable to everyone with the link
       gapi.client.drive.permissions.create({
         fileId: resp.result.id,
-        
-      }).then((resp) => {
+        role: 'writer',
+        type: 'anyone',
+      }).then(() => {
         if (!parentFolderId) {
           DiamondAPI.insert({
             collection: 'rootFiles',
             obj: {
-              documentId: resp.result.id,
+              documentId: resp.result.id, // resp is the response to the create
+                                          // request, not to the permission one
               boardId: DiamondAPI.getCurrentBoard()._id,
             },
             isGlobal: true,
