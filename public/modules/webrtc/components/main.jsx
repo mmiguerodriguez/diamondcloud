@@ -46,7 +46,8 @@ class VideoChatPage extends React.Component {
               <UsersList 
                 peers={ this.state.peers } />
               <RemoteVideos 
-                videos={ this.state.videos } />
+                videos={ this.state.videos }
+                webrtc={this.state.webrtc} />
             </div>
           ) : (
             <div className='join-background'>
@@ -161,15 +162,7 @@ class VideoChatPage extends React.Component {
     webrtc.on('audioOff', () => {
       // Local audio just turned off
     });
-    
-    // Volume changes events
-    webrtc.on('volumeChange', (volume, threshold) => {
-      // console.log('Local volume change', volume, threshold);
-    });
-    webrtc.on('remoteVolumeChange', (peer, volume) => {
-      // console.log('Remote volume change', peer, volume);
-    });
-    
+
     // Audio mute/unmute events
     webrtc.on('mute', (data) => {
       webrtc.getPeers(data.id).forEach((peer) => {
@@ -304,6 +297,11 @@ class UserVideo extends React.Component {
       </div>
     );
   }
+  componentDidMount() {
+    this.props.webrtc.on('volumeChange', (volume, threshold) => {
+      console.log('Local volume change', volume, threshold);
+    });
+  }
   pause() {
     this.props.webrtc.pauseVideo();
     this.setState({
@@ -343,6 +341,7 @@ class RemoteVideos extends React.Component {
       return (
         <Video 
           key={ video.id }
+          webrtc={this.props.webrtc}
           { ...video } />
       );
     });
@@ -390,12 +389,21 @@ class Video extends React.Component {
           // <button className='btn btn-primary' onClick={ this.mute }>Mute user</button>
           // <button className='btn btn-primary' onClick={ this.unmute }>Unmute user</button>
         }
+        {
+          this.state.volume  
+        }
       </div>
     );
   }
   componentDidMount() {
     this.setState({
       startVolume: this.video.volume,
+    });
+
+    this.props.webrtc.on('remoteVolumeChange', (peer, volume) => {
+      if (peer.id === this.props.peer.id) {
+        console.log('Remote volume change for id = ', peer.id, 'volume: ', volume);
+      }
     });
   }
   mute() {
