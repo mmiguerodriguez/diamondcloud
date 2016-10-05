@@ -12,6 +12,7 @@ class FileManagerLayout extends React.Component {
 
     this.state = {
       name: '',
+      fileType: 'application/vnd.google-apps.document',
     };
   }
 
@@ -33,23 +34,37 @@ class FileManagerLayout extends React.Component {
       });
     }
   }
-
   renderDocuments() {
     if(this.props.documents.length === 0) {
       return (
-        <p>
-          No hay documentos
-        </p>
+        <div>
+          <div className='document-container col-xs-4'>
+            <div
+              className="document fixed"
+              onClick={this.openModal.bind(this)}>
+              <p className="truncate">Cree un documento</p>
+            </div>
+          </div>
+          <div className='document-container col-xs-4'>
+            <div
+              className="document fixed"
+              id="import-file">
+              <p className="truncate">Importe desde drive</p>
+            </div>
+          </div>
+        </div>
       );
     } else {
       return this.props.documents.map((document) => {
         return (
-          <div
-            className="document col-xs-4 fixed"
-            onClick={() => {
-              browserHistory.push('/document/' + document._id);
-            }}>
-            <p className="truncate">{document.name}</p>
+          <div className='document-container col-xs-4'>
+            <div
+              className="document fixed"
+              onClick={() => {
+                browserHistory.push('/document/' + document._id);
+              }}>
+              <p className="truncate">{document.name}</p>
+            </div>
           </div>
         );
       });
@@ -64,62 +79,115 @@ class FileManagerLayout extends React.Component {
     return (
       <div>
         <div id='resizable' className='file-manager ui-widget-content'>
-        <div className="container-fluid files-container">
-          <p className="folders-title-container">
-            Carpetas
-          </p>
-          <hr className="divider" />
-          <div className="folders-container">
-            {
-              (this.props.loadingFolders) ?
-                (
-                  <p>Cargando...</p>
-                ) : (
-                  this.renderFolders()
-                )
-            }
-
+          <div
+            className="modal-container"
+            id='create-doc-modal'
+            onClick={ this.closeModal.bind(this) }>
+            <div className="create-doc-modal">
+              <div className="modal-head">
+              <div className="header-data">
+              <h4 className="modal-title">Cree un documento</h4>
+              <i className="material-icons close">close</i>
+            </div>
+              
+            </div>
+              <div className="modal-body">
+              <div className="form-group name">
+                <label for="file-name">Nombre del archivo</label>
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  id="file-name" 
+                  placeholder="Nombre del archivo"
+                  value={ this.state.name }
+                  onChange={ this.handleChange.bind(this, 'name') } />
+              </div>
+              
+              <label for="file-type">Tipo de archivo</label>
+              <select
+                id="file-type" 
+                className="form-control"
+                value={ this.state.fileType }
+                onChange={ this.handleChange.bind(this, 'fileType') }>
+                <option value='application/vnd.google-apps.document'>Docs</option>
+                <option value='application/vnd.google-apps.spreadsheet'>Excel</option>
+                <option value='application/vnd.google-apps.presentation'>Slides</option>
+              </select>
+            </div>
+              <div className="modal-footer">
+                <button 
+                  type="button" 
+                  className="btn btn-default" 
+                  data-dismiss="modal"
+                  onClick={ this.closeModal.bind(this) }>Cancelar</button>
+                <button 
+                  type="button" 
+                  className="btn btn-primary"
+                  onClick={ this.props.createDocument.bind(this, {
+                    name: this.state.name,
+                    fileType: this.state.fileType,
+                    parentFolderId: this.props.folderId,
+                  }) }>Crear</button>
+              </div>
+            </div>
           </div>
-          <p className="documents-title-container">
-            Archivos
-          </p>
-          <hr className="divider" />
-          <div className="documents-container">
-            {
-              (this.props.loadingDocuments) ?
-                (
-                  <p>Cargando...</p>
-                ) : (
-                  this.renderDocuments()
-                )
-            }
+          <div className="container-fluid files-container">
+            <p className="folders-title-container">
+              Carpetas
+            </p>
+            <hr className="divider" />
+            <div className="folders-container">
+              {
+                (this.props.loadingFolders) ?
+                  (
+                    <p>Cargando...</p>
+                  ) : (
+                    this.renderFolders()
+                  )
+              }
+            </div>
+            <p className="documents-title-container">
+              Archivos
+            </p>
+            <hr className="divider" />
+            <div className="documents-container">
+              {
+                (this.props.loadingDocuments) ?
+                  (
+                    <p>Cargando...</p>
+                  ) : (
+                    this.renderDocuments()
+                  )
+              }
+            </div>
           </div>
-        </div>
-        <div className="create">
-          <div className="options">
-            <div
-              className="option drive"
-              id="import-file"
-            ></div>
-            <div
-              className="option new"
-              onClick={this.props.createDocument.bind(this, {
-                name: 'caca',
-                parentFolderId: this.props.folderId,
-                fileType: 'application/vnd.google-apps.document',
-
-              })}></div>
+          <div className="create">
+            <div className="options">
+              <div
+                className="option drive"
+                id="import-file"
+              ></div>
+              <div
+                className="option new"
+                onClick={this.openModal.bind(this)}></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     );
   }
 
-  handleChange(event) {
+  handleChange(index, event) {
     this.setState({
-       name: event.target.value,
+       [index]: event.target.value,
     });
+  }
+  
+  closeModal() {
+    $('#create-doc-modal').removeClass('active');
+  }
+  openModal() {
+    $('#create-doc-modal').addClass('active');
   }
 }
 
@@ -300,6 +368,7 @@ class FileManagerPage extends React.Component {
       *   https://developers.google.com/drive/v3/web/mime-types
       */
 
+    $('#create-doc-modal').removeClass('active');
     gapi.client.drive.files.create({
       resource: {
         name,
