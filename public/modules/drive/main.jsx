@@ -35,23 +35,13 @@ class FileManagerLayout extends React.Component {
     }
   }
   renderDocuments() {
+    console.log('DOCUMENTS: ', this.props.documents);
     if(this.props.documents.length === 0) {
       return (
         <div>
-          <div className='document-container col-xs-4'>
-            <div
-              className="document fixed"
-              onClick={this.openModal.bind(this)}>
-              <p className="truncate">Cree un documento</p>
-            </div>
-          </div>
-          <div className='document-container col-xs-4'>
-            <div
-              className="document fixed"
-              id="import-file">
-              <p className="truncate">Importe desde drive</p>
-            </div>
-          </div>
+          <p>
+            No hay documentos para mostrar
+          </p>
         </div>
       );
     } else {
@@ -328,7 +318,6 @@ class FileManagerPage extends React.Component {
       }
 
       if (documentsIds.length !== 0) {
-        console.log(documentsIds);
         const documentsHandle = DiamondAPI.subscribe({
           collection: 'documents',
           filter: (!!parentFolderId) ? { // if we are not in the root folder
@@ -375,36 +364,46 @@ class FileManagerPage extends React.Component {
         name,
         mimeType: fileType,
       }
-    }).then(function(resp) {
-      if (!parentFolderId) {
+    }).then((resp) => {
+      gapi.client.drive.permissions.create({
+        fileId: resp.result.id,
+        
+      }).then((resp) => {
+        if (!parentFolderId) {
+          DiamondAPI.insert({
+            collection: 'rootFiles',
+            obj: {
+              documentId: resp.result.id,
+              boardId: DiamondAPI.getCurrentBoard()._id,
+            },
+            isGlobal: true,
+            callback(err, res) {
+              if (!!err) {
+                console.error(err);
+              }
+            }
+          });
+        }
+
         DiamondAPI.insert({
-          collection: 'rootFiles',
+          collection: 'documents',
           obj: {
-            documentId: resp.result.id,
-            boardId: DiamondAPI.getCurrentBoard()._id,
+            _id: resp.result.id,
+            parentFolderId,
+            name
           },
+          isGlobal: true,
           callback(err, res) {
             if (!!err) {
               console.error(err);
             }
-          }
+          },
         });
-      }
-      DiamondAPI.insert({
-        collection: 'documents',
-        obj: {
-          _id: resp.result.id,
-          parentFolderId,
-          name
-        },
-        callback(err, res) {
-          if (!!err) {
-            console.error(err);
-          }
-        },
+        callback(null, resp);
+      }, (reason) => {
+        callback(reason, resp);
       });
-      callback(null, resp);
-    }, function(reason) {
+    }, (reason) => {
       callback(reason, resp);
     });
   }
@@ -485,7 +484,6 @@ function checkAuth(i) {
       });
     } else {
       i++;
-      console.log(i);
       setTimeout(() => {
         checkAuth(i);
       }, 100);
