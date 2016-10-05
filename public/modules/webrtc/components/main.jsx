@@ -23,38 +23,14 @@ class VideoChatPage extends React.Component {
     this.state = {
       localVideoId: 'user-video',
       readyToCall: false,
-      connected: false,
       videos: [],
       peers: [],
       webrtc: {},
     };
-    
-    this.connect = this.connect.bind(this);
   }
   render() {
     return (
-      <div>
-        <UserVideo
-          id={ this.state.localVideoId } 
-          width={ 250 }
-          height={ 250 }
-          webrtc={ this.state.webrtc }
-          connected={ this.state.connected } />
-        {
-          this.state.connected ? (
-            <RemoteVideos
-              webrtc={ this.state.webrtc }
-              videos={ this.state.videos } />
-          ) : (
-            <div className='join-background'>
-              <button 
-                className='btn btn-primary join'
-                onClick={ this.connect }>
-              </button>
-            </div>
-          )
-        }
-      </div>
+      <VideoChatLayout { ...this.state } />
     );
   }
   componentWillMount() {
@@ -67,6 +43,7 @@ class VideoChatPage extends React.Component {
       detectSpeakingEvents: true,
       nick: DiamondAPI.getCurrentUser().profile.name,
       // url: 'https://diamondcloud.tk:8888',
+      // secure: true,
     });
     
     self.setState({
@@ -97,7 +74,7 @@ class VideoChatPage extends React.Component {
     // New/Removed videos events
     webrtc.on('videoAdded', (video, peer) => {
       let { videos, peers } = self.state;
-      
+
       videos.push({
         id: peer.id,
         domId: webrtc.getDomId(peer),
@@ -173,11 +150,55 @@ class VideoChatPage extends React.Component {
       console.log('Had remote relay candidate', pc.hadRemoteRelayCandidate);
     });
   }
+}
+class VideoChatLayout extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = { connected: false };
+    
+    this.connect = this.connect.bind(this);
+  }
+  render() {
+    return (
+      <div>
+        <UserVideo
+          id={ this.props.localVideoId }
+          webrtc={ this.props.webrtc }
+          connected={ this.state.connected } />
+        {
+          this.state.connected ? (
+            <div className='minimized-video-container'>
+              { this.renderVideos() }
+            </div>
+          ) : (
+            <div className='join-background'>
+              <button 
+                className='btn btn-primary join'
+                onClick={ this.connect }>
+              </button>
+            </div>
+          )
+        }
+      </div>
+    );
+  }
+  renderVideos() {
+    return this.props.videos.map((video) => {
+      return (
+        <Video 
+          key={ video.id }
+          webrtc={ this.props.webrtc }
+          { ...video } />
+      );
+    });
+  }
+  
   connect() {
-    if (this.state.readyToCall) {
+    if (this.props.readyToCall) {
       let board = DiamondAPI.getCurrentBoard();
       
-      this.state.webrtc.joinRoom(board._id);
+      this.props.webrtc.joinRoom(board._id);
       this.setState({
         connected: true,
       });
@@ -201,8 +222,7 @@ class UserVideo extends React.Component {
       <div className='user-video-container'>
         <video
           id={ this.props.id }
-          className='user-video'
-          width={ this.props.width }>
+          className='user-video'>
         </video>
         { 
           this.props.connected ? (
@@ -266,25 +286,6 @@ class UserVideo extends React.Component {
   }
 }
 
-class RemoteVideos extends React.Component {
-  render() {
-    return ( 
-      <div className='minimized-video-container'>
-        { this.renderVideos() }
-      </div>
-    );
-  } 
-  renderVideos() {
-    return this.props.videos.map((video) => {
-      return (
-        <Video 
-          key={ video.id }
-          webrtc={ this.props.webrtc }
-          { ...video } />
-      );
-    });
-  }
-}
 class Video extends React.Component {
   constructor(props) {
     super(props);
@@ -332,7 +333,6 @@ class Video extends React.Component {
     this.video.volume = this.state.startVolume;
   }
 }
-
 class VideoStatus extends React.Component {
   constructor(props) {
     super(props);
@@ -383,15 +383,19 @@ class VideoStatus extends React.Component {
   }
 }
 
+VideoChatLayout.propTypes = {
+  localVideoId: React.PropTypes.string.isRequired,
+  readyToCall: React.PropTypes.bool.isRequired,
+  videos: React.PropTypes.array.isRequired,
+  peers: React.PropTypes.array.isRequired,
+  webrtc: React.PropTypes.object.isRequired,
+};
 UserVideo.propTypes = { 
   id: React.PropTypes.string.isRequired,
   width: React.PropTypes.number.isRequired,
   height: React.PropTypes.number.isRequired,
   webrtc: React.PropTypes.object.isRequired,
   connected: React.PropTypes.bool.isRequired,
-};
-RemoteVideos.propTypes = {
-  videos: React.PropTypes.array.isRequired,
 };
 Video.propTypes = { 
   id: React.PropTypes.string.isRequired,
