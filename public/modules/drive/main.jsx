@@ -472,15 +472,24 @@ class FileViewerPage extends React.Component {
 class FileViewerLayout extends React.Component {
   render() {
     return (
-      <iframe
-        src={this.props.url}
-        style={
-          {
-            width: '100%',
-            height: '100%'
+      <div>
+        <div className='drive-navbar'>
+          <i 
+            className="material-icons back-icon"
+            onClick={ browserHistory.goBack }>
+            arrow_back
+          </i>
+        </div>
+        <iframe
+          src={this.props.url}
+          style={
+            {
+              width: '100%',
+              height: 'calc(100% - 32px)'
+            }
           }
-        }
-      />
+        />
+      </div>
     );
   }
 }

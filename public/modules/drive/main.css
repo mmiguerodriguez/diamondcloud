@@ -108,6 +108,7 @@ body {
   width: 55.5px;
   height: 55.5px;
   border-radius: 50%;
+  cursor: pointer;
   background-color: #f44336;
   background-image: url(img/menu-button.svg);
   background-position: center;
@@ -142,8 +143,9 @@ body {
 }
 .drive {
   background-color: #4caf50;
+  cursor: pointer;
   background-image: url('img/google-drive-logo.svg');
-  transition: all 0.6s ease;
+  transition: all 0.9s ease;
 }
 .drive:hover {
   box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
@@ -151,6 +153,7 @@ body {
 .doc {
   transform: rotate(-90deg);
   background-color: #2196f3;
+  cursor: pointer;
   background-image: url('img/attachment-clip.svg');
   transition: all 0.3s ease;
 }
@@ -173,4 +176,19 @@ body {
 }
 .files-container, .folders-container, .documents-container {
   overflow: auto;
+}
+
+.drive-navbar {
+  height: 32px;
+  width: 100%;
+  background-color: #4285f4;
+}
+.back-icon {
+  padding: 4px 8px;
+  color: #fff;
+  width: 40px;
+  cursor: pointer;
+}
+.back-icon:hover {
+  background-color: #3498db;
 }
