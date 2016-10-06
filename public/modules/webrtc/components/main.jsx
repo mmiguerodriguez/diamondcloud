@@ -1,3 +1,7 @@
+/**
+ * Declare all variables as constants to prevent
+ * linting warnings.
+ */
 const {
   DiamondAPI,
   React,
@@ -14,8 +18,15 @@ const {
   browserHistory,
 } = ReactRouter;
 
+/**
+ * Start the module with the following route.
+ */
 browserHistory.push('/');
 
+/**
+ * Grabs all the data for the component to work.
+ * User profile data and board id.
+ */
 class VideoChatPage extends React.Component {
   constructor() {
     super();
@@ -23,43 +34,12 @@ class VideoChatPage extends React.Component {
     this.state = {
       localVideoId: 'user-video',
       readyToCall: false,
-      connected: false,
       videos: [],
       peers: [],
       webrtc: {},
     };
-    
-    this.connect = this.connect.bind(this);
   }
-  render() {
-    return (
-      <div>
-        <UserVideo
-          id={ this.state.localVideoId } 
-          width={ 250 }
-          height={ 250 }
-          webrtc={ this.state.webrtc }
-          connected={ this.state.connected } />
-        {
-          this.state.connected ? (
-            <div>
-              <UsersList 
-                peers={ this.state.peers } />
-              <RemoteVideos 
-                videos={ this.state.videos } />
-            </div>
-          ) : (
-            <div className='join-background'>
-              <button 
-                className='btn btn-primary join'
-                onClick={ this.connect }>
-              </button>
-            </div>
-          )
-        }
-      </div>
-    );
-  }
+
   componentWillMount() {
     let self = this;
     
@@ -69,12 +49,15 @@ class VideoChatPage extends React.Component {
       autoRequestMedia: true,
       detectSpeakingEvents: true,
       nick: DiamondAPI.getCurrentUser().profile.name,
+      // url: 'https://diamondcloud.tk:8888',
+      // secure: true,
     });
     
     self.setState({
       webrtc,
     });
   }
+
   componentDidMount() {
     let self = this;
     let webrtc = self.state.webrtc;
@@ -99,7 +82,7 @@ class VideoChatPage extends React.Component {
     // New/Removed videos events
     webrtc.on('videoAdded', (video, peer) => {
       let { videos, peers } = self.state;
-      
+
       videos.push({
         id: peer.id,
         domId: webrtc.getDomId(peer),
@@ -161,46 +144,6 @@ class VideoChatPage extends React.Component {
       // Local audio just turned off
     });
     
-    // Volume changes events
-    webrtc.on('volumeChange', (volume, threshold) => {
-      // console.log('Local volume change', volume, threshold);
-    });
-    webrtc.on('remoteVolumeChange', (peer, volume) => {
-      // console.log('Remote volume change', peer, volume);
-    });
-    
-    // Audio mute/unmute events
-    webrtc.on('mute', (data) => {
-      webrtc.getPeers(data.id).forEach((peer) => {
-        let videos = self.state.videos;
-        
-        videos.forEach((video, index) => {
-          if (video.id === peer.id) {
-            videos[index][data.name] = data.name === 'audio' ? 'muted' : 'paused';
-          }
-        });
-        
-        self.setState({
-          videos,
-        });
-      });
-    });
-    webrtc.on('unmute', (data) => {
-      webrtc.getPeers(data.id).forEach((peer) => {
-        let videos = self.state.videos;
-        
-        videos.forEach((video, index) => {
-          if (video.id === peer.id) {
-            videos[index][data.name] = data.name === 'audio' ? 'unmuted' : 'playing';
-          }
-        });
-        
-        self.setState({
-          videos,
-        });
-      });
-    });
-    
     // Failure events
     webrtc.on('iceFailed', (peer) => {
       // Local p2p/ice failure
@@ -215,40 +158,109 @@ class VideoChatPage extends React.Component {
       console.log('Had remote relay candidate', pc.hadRemoteRelayCandidate);
     });
   }
+
+  render() {
+    return (
+      <VideoChatLayout { ...this.state } />
+    );
+  }
+}
+
+/**
+ * Layout for the VideoChat
+ * @renders UserVideo
+ *          RemoteVideos
+ */
+class VideoChatLayout extends React.Component {
+  renderVideos() {
+    return this.props.videos.map((video) => {
+      return (
+        <Video 
+          key={video.id }
+          webrtc={this.props.webrtc }
+          { ...video } />
+      );
+    });
+  }
+
   connect() {
-    if (this.state.readyToCall) {
+    if (this.props.readyToCall) {
       let board = DiamondAPI.getCurrentBoard();
       
-      this.state.webrtc.joinRoom(board._id);
+      this.props.webrtc.joinRoom(board._id);
       this.setState({
         connected: true,
       });
     }
   }
-}
 
-class UsersList extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = { connected: false };
+    
+    this.connect = this.connect.bind(this);
+  }
+
   render() {
     return (
-      /* <div>
-        <h4>Lista de usuarios</h4>
-        <div>
-          <p>Vos</p>
-          { this.renderPeers() }
-        </div>
-      </div> */ null
+      <div>
+        <UserVideo
+          id={this.props.localVideoId}
+          webrtc={this.props.webrtc}
+          connected={this.state.connected} />
+        {
+          this.state.connected ? (
+            <div className='minimized-video-container'>
+              {this.renderVideos()}
+            </div>
+          ) : (
+            <div className='join-background'>
+              <button 
+                className='btn btn-primary join'
+                onClick={this.connect}>
+              </button>
+            </div>
+          )
+        }
+      </div>
     );
-  }
-  renderPeers() {
-    return this.props.peers.map((peer) => {
-      return (
-        <p>{ peer.nick }</p>
-      );
-    });
   }
 }
 
+/**
+ * UserVideo layout, renders the user video with
+ * 100% width and height.
+ */
 class UserVideo extends React.Component {
+  pause() {
+    this.props.webrtc.pauseVideo();
+    this.setState({
+      video: 'paused',
+    });
+  }
+  
+  resume() {
+    this.props.webrtc.resumeVideo();
+    this.setState({
+      video: 'playing',
+    });
+  }
+  
+  mute() {
+    this.props.webrtc.mute();
+    this.setState({
+      audio: 'muted',
+    });
+  }
+  
+  unmute() {
+    this.props.webrtc.unmute();
+    this.setState({
+      audio: 'unmuted',
+    });
+  }
+
   constructor(props) {
     super(props);
 
@@ -259,13 +271,13 @@ class UserVideo extends React.Component {
     this.mute = this.mute.bind(this);
     this.unmute = this.unmute.bind(this);
   }
+  
   render() {
     return (
       <div className='user-video-container'>
         <video
-          id={ this.props.id }
-          className='user-video'
-          width={ this.props.width }>
+          id={this.props.id}
+          className='user-video'>
         </video>
         { 
           this.props.connected ? (
@@ -274,12 +286,12 @@ class UserVideo extends React.Component {
               this.state.video === 'playing' ? (
                 <button
                   className='btn btn-danger pause'
-                  onClick={ this.pause }>
+                  onClick={this.pause}>
                 </button>
               ) : (
                 <button
                   className='btn btn-success play'
-                  onClick={ this.resume }>
+                  onClick={this.resume}>
                 </button>
               )
             }
@@ -287,12 +299,12 @@ class UserVideo extends React.Component {
               this.state.audio === 'unmuted' ? (
                 <button
                   className='btn btn-danger mute'
-                  onClick={ this.mute }>
+                  onClick={this.mute}>
                 </button>
               ) : (
                 <button
                   className='btn btn-success unmute'
-                  onClick={ this.unmute }>
+                  onClick={this.unmute}>
                 </button>
               )
             }
@@ -303,51 +315,22 @@ class UserVideo extends React.Component {
       </div>
     );
   }
-  pause() {
-    this.props.webrtc.pauseVideo();
-    this.setState({
-      video: 'paused',
-    });
-  }
-  resume() {
-    this.props.webrtc.resumeVideo();
-    this.setState({
-      video: 'playing',
-    });
-  }
-  mute() {
-    this.props.webrtc.mute();
-    this.setState({
-      audio: 'muted',
-    });
-  }
-  unmute() {
-    this.props.webrtc.unmute();
-    this.setState({
-      audio: 'unmuted',
-    });
-  }
 }
 
-class RemoteVideos extends React.Component {
-  render() {
-    return ( 
-      <div className='minimized-video-container'>
-        { this.renderVideos() }
-      </div>
-    );
-  } 
-  renderVideos() {
-    return this.props.videos.map((video) => {
-      return (
-        <Video 
-          key={ video.id }
-          { ...video } />
-      );
-    });
-  }
-}
+/**
+ * Video layout, used for the rendering of remote
+ * videos.
+ */
 class Video extends React.Component {
+  mute() {
+    this.video.volume = 0;
+    console.log('Muted...', this.video.volume, this.state.startVolume);
+  }
+
+  unmute() {
+    this.video.volume = this.state.startVolume;
+  }
+
   constructor(props) {
     super(props);
     
@@ -356,81 +339,107 @@ class Video extends React.Component {
     this.mute = this.mute.bind(this);
     this.unmute = this.unmute.bind(this);
   }
-  render() {
-    return (
-      <div className='minimized-video'>
-        <div className='minimized-user-data'>
-          <p className='nick'>{ this.props.peer.nick }</p>
-          {
-            this.props.audio === 'muted' ? (
-              <p>
-                <i className="material-icons">mic_off</i>
-              </p>
-            ) : ( null )
-          }
-          {
-            this.props.video === 'paused' ? (
-              <p>
-                <i className="material-icons">videocam_off</i>
-              </p>
-            ) : ( null )
-          }
-        </div>
-        <video
-          id={ this.props.domId }
-          src={ URL.createObjectURL(this.props.peer.stream) }
-          width={ this.props.width }
-          height={ this.props.height }
-          ref={ (e) => this.video = e }
-          onContextMenu={ () => { return false; } }
-          autoPlay>
-        </video>
-        {
-          // <button className='btn btn-primary' onClick={ this.mute }>Mute user</button>
-          // <button className='btn btn-primary' onClick={ this.unmute }>Unmute user</button>
-        }
-      </div>
-    );
-  }
+
   componentDidMount() {
     this.setState({
       startVolume: this.video.volume,
     });
   }
-  mute() {
-    this.video.volume = 0;
-    console.log('Muted...', this.video.volume, this.state.startVolume);
-  }
-  unmute() {
-    this.video.volume = this.state.startVolume;
+
+  render() {
+    return (
+      <div className='minimized-video'>
+        <div className='minimized-user-data'>
+          <p className='nick'>{this.props.peer.nick}</p>
+          <VideoStatus
+            peer={this.props.peer}
+            webrtc={this.props.webrtc} />
+        </div>
+        <video
+          id={this.props.domId}
+          src={URL.createObjectURL(this.props.peer.stream)}
+          width={this.props.width}
+          height={this.props.height}
+          ref={(e) => this.video = e}
+          onContextMenu={() => { return false; }}
+          autoPlay>
+        </video>
+        {
+        //<button className='btn btn-primary' onClick={this.mute}>Mute user</button>
+        //<button className='btn btn-primary' onClick={this.unmute}>Unmute user</button>
+        }
+      </div>
+    );
   }
 }
 
-UsersList.propTypes = { 
-  peers: React.PropTypes.object.isRequired,
-};
-UserVideo.propTypes = { 
-  id: React.PropTypes.string.isRequired,
-  width: React.PropTypes.number.isRequired,
-  height: React.PropTypes.number.isRequired,
-  webrtc: React.PropTypes.object.isRequired,
-  connected: React.PropTypes.bool.isRequired,
-};
-RemoteVideos.propTypes = {
-  videos: React.PropTypes.array.isRequired,
-};
-Video.propTypes = { 
-  id: React.PropTypes.string.isRequired,
-  audio: React.PropTypes.string.isRequired,
-  video: React.PropTypes.string.isRequired,
-  peer: React.PropTypes.object.isRequired,
-};
+/**
+ * Shows the status of a remote video.
+ * If the remote video is muted
+ * or paused, it shows icons.
+ * 
+ * This is made in a separate component to prevent image
+ * flickering.
+ */
+class VideoStatus extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = { audio: 'unmuted', video: 'playing' };
+  }
 
-// Render classes with router
+  componentDidMount() {
+    let self = this;
+    
+    self.props.webrtc.on('mute', (data) => {
+      self.props.webrtc.getPeers(data.id).forEach((peer) => {
+        if (peer.id === self.props.peer.id) {
+          self.setState({
+            [data.name]: data.name === 'audio' ? 'muted' : 'paused',
+          });
+        }
+      });
+    });
+    self.props.webrtc.on('unmute', (data) => {
+      self.props.webrtc.getPeers(data.id).forEach((peer) => {
+        if (peer.id === self.props.peer.id) {
+          self.setState({
+            [data.name]: data.name === 'audio' ? 'unmuted' : 'playing',
+          });
+        }
+      });
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        {
+          this.state.audio === 'muted' ? (
+            <p>
+              <i className="material-icons">mic_off</i>
+            </p>
+          ) : (null)
+        }
+        {
+          this.state.video === 'paused' ? (
+            <p>
+              <i className="material-icons">videocam_off</i>
+            </p>
+          ) : (null)
+        }
+      </div>
+    );
+  }
+}
+
+/**
+ * Router setup. 
+ */
 ReactDOM.render(
-  <Router history={ browserHistory }>
-    <Route path='/' component={ VideoChatPage }>
-      <IndexRoute component={ VideoChatPage } />
+  <Router history={browserHistory }>
+    <Route path='/' component={VideoChatPage }>
+      <IndexRoute component={VideoChatPage } />
     </Route>
   </Router>,
   document.getElementById('render-target')
