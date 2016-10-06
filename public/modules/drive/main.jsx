@@ -367,15 +367,20 @@ class FileManagerPage extends React.Component {
     checkAuth(); // configure google drive api
   }
 
-  createDocument({ name, parentFolderId, fileType, callback = () => {} }) {
-
-     /**
-      * callback(err, res)
-      * res: file
-      * fileType is the mimeType of the file
-      *   https://developers.google.com/drive/v3/web/mime-types
-      */
-
+  createDocument({ name, parentFolderId = null, fileType, callback = () => {} }) {
+    /**
+     * Creates a document in the user's Drive
+     * @param {String} name
+     * @param {String} parentFolderId (optional)
+     * @param {String} fileType
+     *   it is the mimeType of the fileType
+     *   https://developers.google.com/drive/v3/web/mime-types
+     * @param {Function} callback (optional)
+     *   @param {String} error
+     *   @param {Object} response
+     */
+    // TODO: create the files in a Diamond Cloud folder
+    // Create the folder if it does not exist
     $('#create-doc-modal').removeClass('active');
     gapi.client.drive.files.create({
       resource: {
@@ -428,6 +433,68 @@ class FileManagerPage extends React.Component {
     }, (reason) => {
       callback(reason, resp);
     });
+  }
+
+  createFolder({ name, parentFolderId = null, callback = () => {} }) {
+    /**
+     * Creates a folder in the user's Drive
+     * @param {String} name
+     * @param {String} parentFolderId (optional)
+     * @param {Function} callback (optional)
+     *   @param {String} error
+     *   @param {Object} response
+     */
+
+     gapi.client.drive.files.create({
+       resource: {
+         name,
+         mimeType: 'application/vnd.google-apps.folder',
+       }
+     }).then((resp) => {
+       // Make the folder accessable by everyone with the link
+       gapi.client.drive.permissions.create({
+         fileId: resp.result.id,
+         role: 'writer',
+         type: 'anyone',
+       }).then(() => {
+         if (!parentFolderId) {
+           DiamondAPI.insert({
+             collection: 'rootFiles',
+             obj: {
+               folderId: resp.result.id, // resp is the response to the create
+                                           // request, not to the permission one
+               boardId: DiamondAPI.getCurrentBoard()._id,
+             },
+             isGlobal: true,
+             callback(err, res) {
+               if (!!err) {
+                 console.error(err);
+               }
+             }
+           });
+         }
+
+         DiamondAPI.insert({
+           collection: 'folders',
+           obj: {
+             _id: resp.result.id,
+             parentFolderId,
+             name,
+           },
+           isGlobal: true,
+           callback(err, res) {
+             if (!!err) {
+               console.error(err);
+             }
+           },
+         });
+         callback(null, resp);
+       }, (reason) => {
+         callback(reason, resp);
+       });
+     }, (reason) => {
+       callback(reason, resp);
+     });
   }
 
   initPicker(openButtonId, callback) {
