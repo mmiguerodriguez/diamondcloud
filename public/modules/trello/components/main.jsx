@@ -1,18 +1,18 @@
 /**
  * Declare all variables as constants to prevent
- * linting warnings
+ * linting warnings.
  */
 const { DiamondAPI, React, ReactDOM, ReactRouter, classNames } = window;
 const { Router, Route, IndexRoute, browserHistory } = ReactRouter;
 
 /**
- * Starts the module with the following route
+ * Starts the module with the following route.
  */
 browserHistory.push('/tasks/show');
 
 /**
  * Grabs all the data needed for the component to work
- * and passes it to the layout
+ * and passes it to the layout.
  */
 class TaskManagerPage extends React.Component {
   constructor() {
@@ -155,7 +155,7 @@ class TaskManagerLayout extends React.Component {
 }
 
 /**
- * Renders the layout to create a task
+ * Renders the layout to create a task.
  */
 class CreateTask extends React.Component {
   /**
@@ -326,7 +326,7 @@ class CreateTask extends React.Component {
 }
 
 /**
- * Renders all the boards the team has
+ * Renders all the boards the team has.
  */
 class BoardsList extends React.Component {
   renderBoards() {
@@ -388,7 +388,7 @@ class BoardsList extends React.Component {
 }
 
 /**
- * Renders an unique board with its tasks
+ * Renders an unique board with its tasks.
  */
 class Board extends React.Component {
   render() {
@@ -408,7 +408,7 @@ class Board extends React.Component {
 }
 
 /**
- * Renders the task list from a board
+ * Renders the task list from a board.
  */
 class TasksList extends React.Component {
   renderTasks() {
@@ -480,7 +480,7 @@ class TasksList extends React.Component {
 }
 
 /**
- * Renders an unique task
+ * Renders an unique task.
  */
 class Task extends React.Component {
   /**
@@ -844,7 +844,7 @@ class Task extends React.Component {
       'col-xs-12': this.state.editing,
       'col-xs-10': !this.state.editing,
     });
-    const onClick = this.props.coordination ? this.openTask : () => {};
+    const clickHandle = this.props.coordination ? this.openTask : () => {};
 
     return (
       <div className='col-xs-12 task'>
@@ -862,7 +862,7 @@ class Task extends React.Component {
               <div>
                 <h5
                   role={role}
-                  onClick={onClick}
+                  onClick={clickHandle}
                   className='task-title col-xs-12'>
                   {this.state.task_title}
                 </h5>
@@ -960,7 +960,7 @@ class Task extends React.Component {
 }
 
 /**
- * Renders information from the task
+ * Renders information from the task.
  */
 class TaskInformation extends React.Component {
   constructor(props) {
@@ -1008,7 +1008,7 @@ class TaskInformation extends React.Component {
 }
 
 /**
- * Renders users information from the task
+ * Renders users information from the task.
  */
 class UserTaskInformation extends React.Component {
   prettyDate(date) {
@@ -1065,7 +1065,7 @@ class UserTaskInformation extends React.Component {
 }
 
 /**
- * Router setup 
+ * Router setup.
  */
 ReactDOM.render(
   <Router history={browserHistory}>
