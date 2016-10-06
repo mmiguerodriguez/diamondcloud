@@ -51,8 +51,25 @@ class FileManagerLayout extends React.Component {
             <div
               className="document fixed"
               onClick={() => {
-                browserHistory.push('/document/' + document._id);
-              }}>
+                let fileTypeUrl; // this string is appended to the url
+                                 // it is needed for the google drive link
+                switch (document.fileType) {
+                  case 'application/vnd.google-apps.document':
+                    fileTypeUrl = 'document';
+                    break;
+                  case 'application/vnd.google-apps.drawing':
+                    fileTypeUrl = 'drawings';
+                    break;
+                  case 'application/vnd.google-apps.presentation':
+                    fileTypeUrl = 'presentation';
+                    break;
+                  case 'application/vnd.google-apps.spreadsheet':
+                    fileTypeUrl = 'spreadsheets';
+                    break;
+                }
+                console.log('/' + fileTypeUrl + '/' + document._id);
+                browserHistory.push('/' + fileTypeUrl + '/' + document._id);
+              }} >
               <p className="truncate">{document.name}</p>
             </div>
           </div>
@@ -101,6 +118,7 @@ class FileManagerLayout extends React.Component {
                 value={ this.state.fileType }
                 onChange={ this.handleChange.bind(this, 'fileType') }>
                 <option value='application/vnd.google-apps.document'>Docs</option>
+                <option value='application/vnd.google-apps.drawing'>Drawing</option>
                 <option value='application/vnd.google-apps.spreadsheet'>Excel</option>
                 <option value='application/vnd.google-apps.presentation'>Slides</option>
               </select>
@@ -393,7 +411,8 @@ class FileManagerPage extends React.Component {
           obj: {
             _id: resp.result.id,
             parentFolderId,
-            name
+            name,
+            fileType,
           },
           isGlobal: true,
           callback(err, res) {
@@ -429,7 +448,8 @@ class FileManagerPage extends React.Component {
 class FileViewerPage extends React.Component {
 
   render() {
-    let url = 'https://docs.google.com/document/d/' + this.props.params.documentId + '/edit';
+    let url = 'https://docs.google.com/' + this.props.params.fileType + '/d/' +
+      this.props.params.documentId + '/edit';
 
     return (
       <FileViewerLayout
@@ -463,7 +483,7 @@ ReactDOM.render(
   <Router history={browserHistory}>
     <Route path='/' component={FileManagerPage} />
     <Route path='/:folderId' component={FileManagerPage} />
-    <Route path='/document/:documentId' component={FileViewerPage} />
+    <Route path='/:fileType/:documentId' component={FileViewerPage} />
   </Router>,
   document.getElementById('render-target')
 );
