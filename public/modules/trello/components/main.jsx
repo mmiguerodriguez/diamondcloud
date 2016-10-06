@@ -2,8 +2,19 @@
  * Declare all variables as constants to prevent
  * linting warnings.
  */
-const { DiamondAPI, React, ReactDOM, ReactRouter, classNames } = window;
-const { Router, Route, IndexRoute, browserHistory } = ReactRouter;
+const {
+  DiamondAPI,
+  React,
+  ReactDOM,
+  ReactRouter,
+  classNames
+} = window;
+const {
+  Router,
+  Route,
+  IndexRoute,
+  browserHistory
+} = ReactRouter;
 
 /**
  * Starts the module with the following route.
@@ -104,6 +115,7 @@ class TaskManagerPage extends React.Component {
     );
   }
 }
+
 /**
  * Clones the actual route element (this.props.children)
  * to pass props to it and renders the routes.
@@ -234,7 +246,7 @@ class CreateTask extends React.Component {
         <option
           key={board._id}
           value={board._id}>
-          {board.name }
+          {board.name}
         </option>
       );
     });
@@ -289,7 +301,7 @@ class CreateTask extends React.Component {
             <input
               id='create-task-title'
               className='form-control'
-              value={this.state.title }
+              value={this.state.title}
               onChange={this.props.handleChange.bind(null, 'taskTitle', undefined)}
               type='text'
               placeholder='Ingresá el título'
@@ -300,7 +312,7 @@ class CreateTask extends React.Component {
             <input 
               id='create-task-duedate'
               className='form-control'
-              type='date'
+              type='datetime-local'
               placeholder='Ingresá la fecha de vencimiento'
               onChange={(e) => this.handleChange('dueDate', e)}
             />
@@ -464,7 +476,7 @@ class TasksList extends React.Component {
           this.props.coordination ? (
             <div className="form-group">
               <input
-                id="usr"
+                id="task_title"
                 className="form-control"
                 onChange={this.props.handleChange.bind(null, 'taskTitle', this.props.board._id)}
                 onKeyDown={this.handleKeyDown}
@@ -667,6 +679,10 @@ class Task extends React.Component {
    * The duration in which user startTime 
    * exists and endTime is undefined.
    * 
+   * If the task was never started by the
+   * user, it returns a 'never_started'
+   * flag.
+   * 
    * @returns {Number} (new Date().getTime())
    */
   getLastTaskUpdate() {
@@ -681,7 +697,12 @@ class Task extends React.Component {
         return 0;
       }
     });
-    return Math.max(...startTimes);
+    
+    if (startTimes.length > 0) {
+      return Math.max(...startTimes);
+    } else {
+      return 'never_started';
+    }
   }
   /**
    * Gets the last endTime index of the user from the
@@ -741,24 +762,32 @@ class Task extends React.Component {
   prettyDate() {
     let start = this.getLastTaskUpdate();
     let end = new Date().getTime();
-
-    let difference_ms = end - start;
-    difference_ms = difference_ms / 1000;
-
-    let seconds = Math.floor(difference_ms % 60);
-    difference_ms = difference_ms / 60;
-
-    let minutes = Math.floor(difference_ms % 60);
-    difference_ms = difference_ms / 60;
-
-    let hours = Math.floor(difference_ms % 24);
-    let days = Math.floor(difference_ms / 24);
-
+    
+    let count = '',
+        seconds = 0,
+        minutes = 0,
+        hours = 0,
+        days = 0;
+    
+    if (start !== 'never_started' && start !== 0) {
+      let difference_ms = end - start;
+      difference_ms = difference_ms / 1000;
+  
+      seconds = Math.floor(difference_ms % 60);
+      difference_ms = difference_ms / 60;
+  
+      minutes = Math.floor(difference_ms % 60);
+      difference_ms = difference_ms / 60;
+  
+      hours = Math.floor(difference_ms % 24);
+      days = Math.floor(difference_ms / 24);
+    } 
+    
     seconds = seconds > 9 ? "" + seconds: "0" + seconds;
     minutes = minutes > 9 ? "" + minutes: "0" + minutes;
     hours = hours > 9 ? "" + hours: "0" + hours;
     
-    let count = hours + ':' + minutes + ':' + seconds;
+    count = hours + ':' + minutes + ':' + seconds;
 
     this.setState({
       count,
@@ -1017,11 +1046,21 @@ class TaskInformation extends React.Component {
       <div className='task-info col-xs-12'>
         <h4>Información de la tarea</h4>
         <div className='item'>
-          <p><b>Tarea:</b> {this.state.task.title }</p>
-          <p><b>Fecha de vencimiento:</b> {new Date(this.state.task.dueDate).toLocaleDateString()}</p>
-          <p><b>Estado:</b> {this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada' }</p>
-          <p><b>Board:</b> {this.state.board.name }</p>
-          <p><b>Usuarios:</b></p>
+          <p>
+            <b>Tarea:</b> {this.state.task.title}
+          </p>
+          <p>
+            <b>Fecha de vencimiento:</b> {new Date(this.state.task.dueDate).toLocaleDateString()}
+          </p>
+          <p>
+            <b>Estado:</b> {this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada'}
+          </p>
+          <p>
+            <b>Board:</b> {this.state.board.name}
+          </p>
+          <p>
+            <b>Usuarios:</b>
+          </p>
           <UserTaskInformation 
             durations={this.state.task.durations}
             users={this.props.users}
@@ -1058,44 +1097,47 @@ class UserTaskInformation extends React.Component {
   renderUsers() {
     return this.props.users.map((user) => {
       let time = 0;
+      let working = false;
 
       this.props.durations.forEach((duration) => {
         if (duration.userId === user._id) {
           if (duration.endTime) {
             time += duration.endTime - duration.startTime;
+          } else {
+            working = true;
           }
         }
       });
-      
-      time = time !== 0 ? this.prettyDate(time) + ' horas' : 'No trabajó';
-      
+
+      time = time !== 0 ? this.prettyDate(time) + ' hrs.' : 'No trabajó';
+
       return (
         <div className="panel panel-default">
-          <div className="panel-heading" role="tab" id={ 'heading_' + user._id }>
+          <div className="panel-heading" role="tab" id={'heading_' + user._id}>
             <h4 className="panel-title">
-              <a role="button" data-toggle="collapse" data-parent="#accordion" href={ '#collapse_' + user._id } aria-expanded="false" aria-controls={ 'collapse_' + user._id }>
+              <a role="button" data-toggle="collapse" data-parent="#accordion" href={'#collapse_' + user._id} aria-expanded="false" aria-controls={'collapse_' + user._id}>
                 {user.profile.name}
               </a>
             </h4>
           </div>
-          <div id={ 'collapse_' + user._id } className="panel-collapse collapse" role="tabpanel" aria-labelledby={ 'heading_' + user._id }>
+          <div id={'collapse_' + user._id} className="panel-collapse collapse" role="tabpanel" aria-labelledby={'heading_' + user._id}>
             <div className="panel-body">
-              Tiempo trabajado: {time}
+              Tiempo trabajado: {time} {working ? '|| Trabajando actualmente' : '' }
             </div>
           </div>
         </div>
       );
     });
   }
-  
+
   constructor(props) {
     super(props);
   }
-  
+
   componentDidMount() {
     $('.collapse').collapse();
   }
-  
+
   render() {
     return (
       <div className="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
