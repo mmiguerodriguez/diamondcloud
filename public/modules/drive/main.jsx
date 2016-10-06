@@ -17,7 +17,6 @@ class FileManagerLayout extends React.Component {
   }
 
   renderFolders() {
-    console.log(this.props);
     if(this.props.folders.length === 0) {
       return (
         <p>
@@ -31,7 +30,6 @@ class FileManagerLayout extends React.Component {
             className="folder col-xs-4 fixed"
             onClick={
               () => {
-                console.log('/' + folder._id);
                 browserHistory.push('/folder/' + folder._id);
               }
             }>
@@ -42,7 +40,6 @@ class FileManagerLayout extends React.Component {
     }
   }
   renderDocuments() {
-    console.log('DOCUMENTS: ', this.props.documents);
     if(this.props.documents.length === 0) {
       return (
         <div>
@@ -237,6 +234,7 @@ class FileManagerPage extends React.Component {
   }
 
   render() {
+    console.log('las props actuales son: ', this.props);
     return (
       <FileManagerLayout
         folderId={this.props.params.folderId}
@@ -253,14 +251,110 @@ class FileManagerPage extends React.Component {
 
 
   componentDidMount() {
+    this.getDriveData();
+    checkAuth(); // configure google drive api
+    /*setTimeout(
+      () => {
+        this.createFolder(
+          { name: 'testeo' }
+        );
+      }, 1000
+    );*/
+  }
+
+  componentWillReceiveProps() {
+    // the props have changed, so we have to remake the subscriptions
+    this.getDriveData();
+  }
+  
+  /**
+   * getDriveFolder: returns the folder in the user's Drive
+   *   in which all the Diamond Cloud files will be stored.
+   *   If there is no folder, it creates it.
+   * @return {String} id
+   */
+  getDriveFolder() {
+    // Search for the folder
+    gapi.client.drive.files.list({
+      q: 'name = "' + DiamondAPI.getTeam().name +'"' //todo: finish this
+    })
+  }
+  
+  getDriveData() {
+    
     // TODO show only the documents and folders of the current folder
     let self = this;
+    
+    /////////////////////////////////////////
+    // Get the files of the current folder //
+    /////////////////////////////////////////
+
+    const getFiles = ({ parentFolderId = null, foldersIds = [], documentsIds = [] }) => {
+      if (foldersIds.length !== 0) {
+        const foldersHandle = DiamondAPI.subscribe({
+          collection: 'folders',
+          filter: (!!parentFolderId) ? { // if we are not in the root folder
+            parentFolderId,
+          } : { //if we are in the root folder
+            _id: {
+              $in: foldersIds,
+            },
+          },
+          callback(err, res) {
+            if (!!err) {
+              console.error(err);
+            } else {
+              self.setState({
+                loadingFolders: false,
+                folders: res
+              }, () => {
+                console.log('the state i just set is ', self.state);
+              });
+            }
+          },
+        });
+      } else {
+        self.setState({
+          loadingFolders: false,
+          folders: []
+        });
+      }
+
+      if (documentsIds.length !== 0) {
+        const documentsHandle = DiamondAPI.subscribe({
+          collection: 'documents',
+          filter: (!!parentFolderId) ? { // if we are not in the root folder
+            parentFolderId,
+          } : { //if we are in the root folder
+            _id: {
+              $in: documentsIds,
+            },
+          },
+          callback(err, res) {
+            if (!!err) {
+              console.error(err);
+            } else {
+              self.setState({
+                loadingDocuments: false,
+                documents: res
+              });
+            }
+          },
+        });
+      } else {
+        self.setState({
+          loadingDocuments: false,
+          documents: [],
+        });
+      }
+    }
 
     ////////////////////////////////////////
     // Check if we are in the root folder //
     ////////////////////////////////////////
 
     if (!this.props.params.folderId) {
+      console.log('estamos en el root');
       //////////////////////////////////////////////////////////
       // Get the list of folders and documents in root folder //
       //////////////////////////////////////////////////////////
@@ -311,90 +405,20 @@ class FileManagerPage extends React.Component {
         parentFolderId: this.props.params.folderId,
       });
     }
-
-    /////////////////////////////////////////
-    // Get the files of the current folder //
-    /////////////////////////////////////////
-
-    const getFiles = ({ parentFolderId = null, foldersIds = [], documentsIds = [] }) => {
-      if (foldersIds.length !== 0) {
-        const foldersHandle = DiamondAPI.subscribe({
-          collection: 'folders',
-          filter: (!!parentFolderId) ? { // if we are not in the root folder
-            parentFolderId,
-          } : { //if we are in the root folder
-            _id: {
-              $in: foldersIds,
-            },
-          },
-          callback(err, res) {
-            if (!!err) {
-              console.error(err);
-            } else {
-              self.setState({
-                loadingFolders: false,
-                folders: res
-              });
-            }
-          },
-        });
-      } else {
-        self.setState({
-          loadingFolders: false,
-          folders: []
-        });
-      }
-
-      if (documentsIds.length !== 0) {
-        const documentsHandle = DiamondAPI.subscribe({
-          collection: 'documents',
-          filter: (!!parentFolderId) ? { // if we are not in the root folder
-            parentFolderId,
-          } : { //if we are in the root folder
-            _id: {
-              $in: documentsIds,
-            },
-          },
-          callback(err, res) {
-            if (!!err) {
-              console.error(err);
-            } else {
-              self.setState({
-                loadingDocuments: false,
-                documents: res
-              });
-            }
-          },
-        });
-      } else {
-        self.setState({
-          loadingDocuments: false,
-          documents: [],
-        });
-      }
-    }
-
-    checkAuth(); // configure google drive api
   }
 
-  componentWillReceiveProps() {
-    // the props have changed, so we have to remake the subscriptions
-    // for this, we call componentDidMount
-    this.componentDidMount();
-  }
-
+  /**
+   * Creates a document in the user's Drive
+   * @param {String} name
+   * @param {String} parentFolderId (optional)
+   * @param {String} fileType
+   *   it is the mimeType of the fileType
+   *   https://developers.google.com/drive/v3/web/mime-types
+   * @param {Function} callback (optional)
+   *   @param {String} error
+   *   @param {Object} response
+   */
   createDocument({ name, parentFolderId = null, fileType, callback = () => {} }) {
-    /**
-     * Creates a document in the user's Drive
-     * @param {String} name
-     * @param {String} parentFolderId (optional)
-     * @param {String} fileType
-     *   it is the mimeType of the fileType
-     *   https://developers.google.com/drive/v3/web/mime-types
-     * @param {Function} callback (optional)
-     *   @param {String} error
-     *   @param {Object} response
-     */
     // TODO: create the files in a Diamond Cloud folder
     // Create the folder if it does not exist
     $('#create-doc-modal').removeClass('active');

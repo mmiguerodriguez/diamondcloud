@@ -101,6 +101,11 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
         callback(console.error('The provided data is wrong.'), undefined);
       }
     },
+    getTeam() {
+      return {
+        name: 'Carlos y Darío (Diamond Cloud)', // TODO: unhardcode this
+      };
+    },
     getTeamData() {
       return {
         boards, // TODO: do not pass every property
