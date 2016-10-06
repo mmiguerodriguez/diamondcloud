@@ -70,6 +70,8 @@ export const APIUpdate = new ValidatedMethod({
       'Must be part of a board to access its modules.');
     }
 
+    let future = new Future();
+
     APICollection.update({
       $and: [
         filter,
@@ -89,7 +91,17 @@ export const APIUpdate = new ValidatedMethod({
         }
       ],
     },
-    updateQuery);
+    updateQuery,
+    (err, res) => {
+      if (!!err) {
+        throw new Meteor.Error('API.methods.APIUpdate.failedUpdating',
+        'Could not update the APICollection.');
+      } else {
+        future.return(res);
+      }
+    });
+
+    return future.wait();
   }
 });
 
@@ -107,40 +119,33 @@ export const APIGet = new ValidatedMethod({
     }
 
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-    let moduleData = ModuleData.findOne({
-      teamId: moduleInstance.board().team()._id,
-      moduleId: moduleInstance.moduleId
-    });
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('API.methods.APIGet.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
 
-    let result  = moduleData.data[collection];
-    let boards = Meteor.user()
-                 .boards(moduleData.teamId, { _id: 1 })
-                 .fetch()
-                 .map((board) => board._id);
-    let selected = sift({
+    let res = APICollection.find({
       $and: [
+        filter,
         {
-          $or: [
-            { 'visibleBy': { $exists: false } },
-            { 'visibleBy.userId': Meteor.userId() },
-            { 'visibleBy.boardId': { $in: boards } },
-          ]
+          collection,
         },
         {
           $or: [
-            { 'isGlobal': true },
-            { moduleInstanceId }
+            {
+              moduleInstanceId,
+            },
+            {
+              moduleId: moduleInstance.moduleId,
+              teamId,
+            }
           ]
-        },
-        filter
-      ]
-    }, result);
-    return selected;
+        }
+      ],
+    });
+
+    return res;
   }
 });
 
@@ -156,55 +161,38 @@ export const APIRemove = new ValidatedMethod({
       throw new Meteor.Error('API.methods.APIRemove.notLoggedIn',
       'Must be logged in to use a module.');
     }
+
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-    let moduleData = ModuleData.findOne({
-      teamId: moduleInstance.board().team()._id,
-      moduleId: moduleInstance.moduleId
-    });
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('API.methods.APIRemove.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
 
-    let boards = Meteor.user()
-                 .boards(moduleData.teamId, { _id: 1 })
-                 .fetch()
-                 .map((board) => board._id);
-
-    filter = {
+    let completeFilter = {
       $and: [
-        {
-          $or: [
-            { 'visibleBy': { $exists: false } },
-            { 'visibleBy.userId': Meteor.userId() },
-            { 'visibleBy.boardId': { $in: boards } },
-          ]
-        },
-        {
-          $or: [
-            { 'isGlobal': true },
-            { moduleInstanceId }
-          ]
-        },
         filter,
+        {
+          collection,
+        },
+        {
+          $or: [
+            {
+              moduleInstanceId,
+            },
+            {
+              moduleId: moduleInstance.moduleId,
+              teamId,
+            }
+          ]
+        }
       ],
     };
 
-    let future = new Future();
-    ModuleData.update(moduleData._id, {
-      $pull: {
-        [`data.${collection}`]: filter,
-      }
-    }, { multi: true }, (err, res) => {
-      if (err) {
-        throw new Meteor.Error('API.methods.APIRemove.queryError',
-      'There was an error removing the entry.');
-      } else {
-        future.return(res);
-      }
-    });
+    let res = APICollection.find(completeFilter);
 
-    return future.wait();
+    APICollection.remove(completeFilter);
+
+    return res;
   }
 });

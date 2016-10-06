@@ -48,13 +48,20 @@ if (Meteor.isServer) {
           Factory.create('moduleInstance'),
         ];
 
-        documents = [
-          Factory.create('spamAPIDocument'),
-          Factory.create('spamAPIDocument'),
-          Factory.create('spamAPIDocument'),
-          Factory.create('spamAPIDocument'),
-          Factory.create('spamAPIDocument'),
-        ];
+        // Make documents
+        documents = [];
+        for (let i = 0; i < 5; i++) {
+          documents.push(Factory.create('spamAPIDocument'));
+        }
+
+        // Convert documents into API documents
+        documents.map((doc) => {
+          let res = APICollection.generateMongoQuery(doc);
+          res._id = doc._id;
+          /* jshint ignore:start */
+          delete res['API__id'];
+          /* jshint ignore:end */
+        });
 
         collections = [
           faker.lorem.word(),

@@ -1,25 +1,21 @@
-import { Meteor }        from 'meteor/meteor';
-import { resetDatabase } from 'meteor/xolvio:cleaner';
-import { sinon }         from 'meteor/practicalmeteor:sinon';
-import { chai }          from 'meteor/practicalmeteor:chai';
-import { Random }        from 'meteor/random';
-import   faker           from 'faker';
+import { Meteor }             from 'meteor/meteor';
+import { resetDatabase }      from 'meteor/xolvio:cleaner';
+import { sinon }              from 'meteor/practicalmeteor:sinon';
+import { chai }               from 'meteor/practicalmeteor:chai';
+import { Random }             from 'meteor/random';
+import   faker                from 'faker';
 
-import { Boards }        from '../boards/boards.js';
-import { ModuleInstances }         from './module-instances.js';
-import { Teams }         from '../teams/teams.js';
+import { Boards }             from '../boards/boards.js';
+import { ModuleInstances }    from './module-instances.js';
+import { Teams }              from '../teams/teams.js';
 import {
   createModuleInstance,
   editModuleInstance,
   archiveModuleInstance,
   dearchiveModuleInstance,
-  apiInsert,
-  apiUpdate,
-  apiGet,
-  apiRemove,
-}                        from './methods.js';
+}                             from './methods.js';
 
-import '../factories/factories.js';
+import                             '../factories/factories.js';
 
 if (Meteor.isServer){
   describe('Module Instances', function() {

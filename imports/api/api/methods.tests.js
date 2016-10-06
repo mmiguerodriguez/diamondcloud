@@ -12,10 +12,6 @@ import { ModuleInstances }         from '../module-instances/module-instances.js
 import { APICollection }           from '../api-collection/api-collection.js';
 import { Teams }                   from '../teams/teams.js';
 import {
-  createModuleInstance,
-  editModuleInstance,
-  archiveModuleInstance,
-  dearchiveModuleInstance,
   APIInsert,
   APIUpdate,
   APIGet,
@@ -25,8 +21,45 @@ import {
 if (Meteor.isServer) {
   describe('API', function() {
     describe('Methods', function() {
+      let user, moduleInstances, collections, documents;
+      let insertRequest, globalInsertRequest, updateRequest, getRequest, removeRequest;
+
       beforeEach(function() {
         resetDatabase();
+
+        user = Factory.create('user');
+
+        moduleInstances = [
+          Factory.create('moduleInstance'),
+          Factory.create('moduleInstance'),
+        ];
+
+        collections = [
+          faker.lorem.word(),
+          faker.lorem.word(),
+          faker.lorem.word(),
+        ];
+
+        // Make documents
+        documents = [];
+        for (let i = 0; i < 8; i++) {
+          documents.push(Factory.create('spamAPIDocument'));
+        }
+
+        insertRequest = {
+          moduleInstanceId: moduleInstances[0]._id,
+          collection: collections[0],
+          object: documents[0],
+          isGlobal: false,
+        };
+
+        resetDatabase();
+
+        Meteor.users.insert(user);
+
+        moduleInstances.forEach((moduleInstance) => {
+          ModuleInstances.insert(moduleInstance);
+        });
 
         sinon.stub(Meteor, 'user', () => user);
         sinon.stub(Meteor, 'userId', () => user._id);
@@ -39,22 +72,28 @@ if (Meteor.isServer) {
         Boards.isValid.restore();
       });
 
-      it('should create a collection and an entry in module data', function(done) {
+      it('should insert correctly the API data', function(done) {
+        APIInsert.call(insertRequest);
+        let insertedDoc = APICollection.findOne({ _id: documents[0]._id });
+        insertedDoc = APICollection.clearAPIData(insertedDoc);
+        printObject('input doc:', documents[0], 'output doc', insertedDoc);
+        chai.assert.deepEqual(insertedDoc, documents[0]);
         done();
       });
 
-      it('should update an entry in module data', function(done) {
+      it('should update an API entry correctly', function(done) {
         done();
       });
 
-      it('should get an entry from module data', function(done) {
+      it('should get an entry from API Collection correctly', function(done) {
         done();
       });
 
-      it('should remove an entry from module data', function(done) {
+      it('should remove an entry from API Collection correctly', function(done) {
         done();
       });
 
+      /*
       it('should update using persistent data when indicated', function(done) {
         done();
       });
@@ -66,6 +105,7 @@ if (Meteor.isServer) {
       it('should remove using persistent data when indicated', function(done) {
         done();
       });
+      */
     });
   });
 }
