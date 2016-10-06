@@ -25,34 +25,28 @@ export const APIInsert = new ValidatedMethod({
     }
 
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-    let moduleData = ModuleData.findOne({
-      teamId: moduleInstance.board().team()._id,
-      moduleId: moduleInstance.moduleId
-    });
+    let teamId = moduleInstance.board().team()._id;
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('API.methods.APIInsert.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
-
-    let entry = object;
-    entry.isGlobal = isGlobal;
-    if (!isGlobal)
+    
+    let entry = {
+      ...APICollection.generateMongoQuery(object),
+      collection,
+    };
+    
+    if (!isGlobal) {
       entry.moduleInstanceId = moduleInstanceId;
-    if (!_.isEmpty(visibleBy))
-      entry.visibleBy = visibleBy;
-    entry._id = (entry._id !== undefined) ? entry._id : Random.id();
-
-    if (!moduleData.data[collection])
-      moduleData.data[collection] = [entry];
-    else
-      moduleData.data[collection].push(entry);
-
-    ModuleData.update(moduleData._id, {
-      $set: {
-        data: moduleData.data,
-      }
-    });
+    } else {
+      entry.moduleId = moduleInstance.moduleId;
+      entry.teamId = teamId;
+    }
+    
+    APICollection.insert(entry);
+    
+    return entry;
   }
 });
 
@@ -71,47 +65,33 @@ export const APIUpdate = new ValidatedMethod({
     }
 
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-    let moduleData = ModuleData.findOne({
-      teamId: moduleInstance.board().team()._id,
-      moduleId: moduleInstance.moduleId
-    });
+    let teamId = moduleInstance.board().team()._id;
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('API.methods.APIUpdate.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
 
-    let newCollection = moduleData.data[collection];
-    let boards = Meteor.user()
-                 .boards(moduleData.teamId, { _id: 1 })
-                 .fetch()
-                 .map((board) => board._id);
-
-    let selected = sift({
+    APICollection.update({
       $and: [
+        filter,
         {
-          $or: [
-            { visibleBy: { $exists: false } },
-            { 'visibleBy.userId': Meteor.userId() },
-            { 'visibleBy.boardId': { $in: boards } },
-          ]
+          collection,
         },
         {
           $or: [
-            { isGlobal: true },
-            { moduleInstanceId }
+            {
+              moduleInstanceId,
+            },
+            {
+              moduleId: moduleInstance.moduleId,
+              teamId,
+            }
           ]
-        },
-        filter
-      ]
-    }, newCollection);
-
-    selected.forEach((element) => {
-      ModuleData.update({
-        _id: moduleData._id,
-        [`data.${collection}._id`]: element._id,
-      }, generateMongoQuery(updateQuery, collection));
-    });
+        }
+      ],
+    },
+    updateQuery);
   }
 });
 

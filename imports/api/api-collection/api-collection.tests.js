@@ -11,19 +11,34 @@ import { APICollection }    from './api-collection.js';
 if (Meteor.isServer) {
   describe('API', function() {
     describe('Helpers', function() {
-      let input, output;
+      let generateInput, generateOutput, cleanInput, cleanOutput;
 
       beforeEach(function(done) {
-        input = {
+        generateInput = {
           _id: Random.id(),
           name: faker.lorem.word(),
           collection: faker.lorem.word(),
         };
 
-        output = {
-          'API__id': input._id,
-          'API_name': input.name,
-          'API_collection': input.collection,
+        generateOutput = {
+          'API__id': generateInput._id,
+          'API_name': generateInput.name,
+          'API_collection': generateInput.collection,
+        };
+        
+        cleanInput = {
+          _id: Random.id(),
+          collection: faker.lorem.word(),
+          moduleInstanceId: Random.id(),
+          ['API__id']: Random.id(),
+          ['API_name']: faker.lorem.word(),
+          ['API_collection']: faker.lorem.word(),
+        };
+        
+        cleanOutput = {
+          _id: cleanInput['API__id'],
+          name: cleanInput.name,
+          collection: cleanInput['API_collection'],
         };
 
         done();
@@ -34,7 +49,16 @@ if (Meteor.isServer) {
       });
 
       it('should generate a correct Mongo query', function(done) {
-        chai.assert.deepEqual(APICollection.generateMongoQuery(input), output);
+        let result = APICollection.generateMongoQuery(generateInput);
+        chai.assert.deepEqual(result, generateOutput);
+        done();
+      });
+      
+      it('should clean the Mongo API Data', function(done) {
+        let result = APICollection.cleanAPIData(cleanInput);
+        printObject('Result:', result);
+        printObject('Output:', cleanOutput);
+        chai.assert.deepEqual(result, cleanOutput);
         done();
       });
     });

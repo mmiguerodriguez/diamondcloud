@@ -11,3 +11,19 @@ APICollection.generateMongoQuery = (input) => {
 
   return result;
 };
+
+APICollection.cleanAPIData = (input) => {
+  let result = {};
+  
+  for (let prop in input) {
+    if (prop.substring(0, 4) == "API_") {
+      result[prop.substring(5, prop.length)] = input[prop];
+    }
+  }
+  
+  if (!result._id) {
+    result._id = input._id;
+  }
+  
+  return result;
+}
