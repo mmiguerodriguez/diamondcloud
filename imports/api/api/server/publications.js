@@ -8,15 +8,15 @@ import { Boards }           from '../../boards/boards.js';
 
 Meteor.publish('APICollection.data', function(moduleInstanceId, collection, filter) {
   let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-  
+
   if (moduleInstance === undefined || moduleInstance === null) {
     throw new Meteor.Error('ModuleData.data.notAValidModuleInstance',
     'Must call from existing module instance.');
   }
-  
+
   let board = moduleInstance.board();
   let teamId = board.team()._id;
-  
+
   let boards = Meteor.users.findOne(this.userId)
                .boards(teamId, { _id: 1 })
                .map((board) => board._id);
@@ -25,7 +25,7 @@ Meteor.publish('APICollection.data', function(moduleInstanceId, collection, filt
     throw new Meteor.Error('ModuleData.data.notAValidMember',
     'Must be a valid member.');
   }
-  
+
   return APICollection.find({
     $and: [
       {
@@ -45,5 +45,5 @@ Meteor.publish('APICollection.data', function(moduleInstanceId, collection, filt
       }
     ],
   });
-  
+
 });

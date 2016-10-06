@@ -3,11 +3,11 @@ import { Mongo }                   from 'meteor/mongo';
 export let APICollection = new Mongo.Collection('APICollection');
 
 APICollection.generateMongoQuery = (input) => {
-  let result;
-  
+  let result = {};
+
   for (let prop in input) {
-    result[`API.${prop}`] = input[prop];
+    result[`API_${prop}`] = input[prop];
   }
-  
+
   return result;
 };

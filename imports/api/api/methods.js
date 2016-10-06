@@ -17,9 +17,8 @@ export const APIInsert = new ValidatedMethod({
     collection: { type: String },
     object: { type: Object, blackbox: true },
     isGlobal: { type: Boolean, optional: true },
-    visibleBy: { type: [Object], blackbox: true, optional: true }
   }).validator(),
-  run({ moduleInstanceId, collection, object, isGlobal, visibleBy }) {
+  run({ moduleInstanceId, collection, object, isGlobal }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('API.methods.APIInsert.notLoggedIn',
       'Must be logged in to use a module.');

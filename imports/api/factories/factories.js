@@ -94,3 +94,10 @@ Factory.define('notGlobalAPIDocument', APICollection, {
 	moduleInstanceId: Random.id(),
 	collection: faker.lorem.word(),
 });
+
+let obj = {};
+for (let i = 0; i < 4; i++) {
+	obj[`API_${faker.lorem.word()}`] = faker.lorem.word();
+}
+
+Factory.define('spamAPIDocument', APICollection, obj);

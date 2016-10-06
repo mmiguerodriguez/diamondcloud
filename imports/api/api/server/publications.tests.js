@@ -18,90 +18,123 @@ import { APICollection }        from '../../api-collection/api-collection.js';
 if (Meteor.isServer) {
   describe('API', function() {
     describe('Subscriptions', function() {
-      let user, teams, board, moduleInstances, moduleData, requests;
+      let user, teams, boards, modules, moduleInstances, documents, collections, filters;
 
       beforeEach(function() {
         resetDatabase();
+
         user = Factory.create('user');
+
         teams = [
           Factory.create('team'),
           Factory.create('team'),
         ];
-        board = Factory.create('publicBoard', { name: 'General' });
-        teams[0].users[0].email = user.emails[0].address;
-        teams[0].users[0].permission = 'member';
-        teams[0].boards.push({ _id: board._id });
+
+        boards = [
+          Factory.create('publicBoard', { name: 'General' }),
+          Factory.create('publicBoard', { name: faker.lorem.word() }),
+          Factory.create('publicBoard', { name: faker.lorem.word() }),
+        ];
+
+        modules = [
+          { _id: Random.id() },
+          { _id: Random.id() },
+        ];
+
         moduleInstances = [
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
         ];
-        board.moduleInstances.push({ _id: moduleInstances[0]._id });
-        board.moduleInstances.push({ _id: moduleInstances[1]._id });
-        moduleData = Factory.create('moduleData');
-        moduleData.teamId = teams[0]._id;
-        moduleData.moduleId = moduleInstances[0].moduleId;
-        moduleInstances[1].moduleId = moduleData.moduleId;
 
-        request = {
-          collection: 'todos',
-          condition: {
-            $eq: ['$$element.color', 'Red']
-          },
-        };
+        documents = [
+          Factory.create('spamAPIDocument'),
+          Factory.create('spamAPIDocument'),
+          Factory.create('spamAPIDocument'),
+          Factory.create('spamAPIDocument'),
+          Factory.create('spamAPIDocument'),
+        ];
 
-        otherRequest = {
-          collection: 'todos'
-        };
+        collections = [
+          faker.lorem.word(),
+          faker.lorem.word(),
+        ];
 
-        moduleData.data = {
-          todos: [
-            {
-              _id: 1,
-              text: 'Todo 1',
-              color: 'Red',
-              isGlobal: true,
-              visibleBy: [
-                { userId: user._id },
-              ]
-            },
-            {
-              _id: 2,
-              text: 'Todo 2',
-              color: 'Red',
-              isGlobal: false,
-              moduleInstanceId: moduleInstances[0]._id,
-              visibleBy: [
-                { boardId: board._id },
-              ],
-            },
-            {
-              _id: 3,
-              text: 'Todo 3',
-              color: 'Green',
-              isGlobal: true,
-            },
-            {
-              _id: 4,
-              text: 'Todo 4',
-              color: 'Red',
-              isGlobal: false,
-              moduleInstanceId: moduleInstances[0]._id,
-              visibleBy: [
-                { userId: Random.id() },
-              ],
-            },
-          ],
-        };
+        // Add user to teams
+        teams[0].users[0].email = user.emails[0].address;
+        teams[0].users[0].permission = 'member';
+        teams[1].users[0].email = user.emails[0].address;
+        teams[1].users[0].permission = 'member';
+
+        // Assign boards to teams
+        teams[0].boards.push({ _id: boards[0]._id });
+        teams[0].boards.push({ _id: boards[1]._id });
+        teams[1].boards.push({ _id: boards[2]._id });
+
+        // Assign module instances to boards
+        boards[0].moduleInstances.push({ _id: moduleInstances[0]._id });
+        boards[0].moduleInstances.push({ _id: moduleInstances[1]._id });
+        boards[1].moduleInstances.push({ _id: moduleInstances[2]._id });
+        boards[2].moduleInstances.push({ _id: moduleInstances[3]._id });
+
+        // Assign modules to module instances
+        moduleInstances[0].moduleId = modules[0]._id;
+        moduleInstances[1].moduleId = modules[1]._id;
+        moduleInstances[2].moduleId = modules[0]._id;
+        moduleInstances[3].moduleId = modules[1]._id;
+
+        // Assign (module && team) || module instance to documents
+        documents[0].moduleId = modules[0]._id;
+        documents[0].teamId = teams[0]._id;
+        documents[1].moduleId = modules[0]._id;
+        documents[1].teamId = teams[0]._id;
+        documents[2].moduleInstanceId = moduleInstances[1]._id;
+        documents[3].moduleInstanceId = moduleInstances[0]._id;
+        documents[4].moduleInstanceId = moduleInstances[3]._id;
+
+        // Assign collections to documents
+        documents[0].collection = collections[0];
+        documents[1].collection = collections[0];
+        documents[2].collection = collections[0];
+        documents[3].collection = collections[1];
+        documents[4].collection = collections[1];
+
+        /* jshint ignore:start */
+
+        // Assign another props
+        documents[0]['API_something'] = faker.lorem.word();
+        documents[1]['API_something'] = faker.lorem.word();
+
+
+        filters = [
+          {
+            something: documents[0]['API_something']
+          }
+        ];
+
+        /* jshint ignore:end */
 
         resetDatabase();
 
         Meteor.users.insert(user);
-        Boards.insert(board);
-        teams.forEach((team) => Teams.insert(team));
-        moduleInstances.forEach((moduleInstance) => ModuleInstances.insert(moduleInstance));
-        ModuleData.insert(moduleData);
+
+        teams.forEach((team) => {
+          Teams.insert(team);
+        });
+
+        boards.forEach((board) => {
+          Boards.insert(board);
+        });
+
+        moduleInstances.forEach((moduleInstance) => {
+          ModuleInstances.insert(moduleInstance);
+        });
+
+        documents.forEach((doc) => {
+          APICollection.insert(doc);
+        });
+
         sinon.stub(Meteor, 'user', () => user);
       });
 
@@ -110,41 +143,17 @@ if (Meteor.isServer) {
       });
 
       it('should publish the requested data', function(done) {
-        let expect = [
-          moduleData.data.todos[0],
-          moduleData.data.todos[1],
-        ];
-
-        delete expect[0].isGlobal;
-        delete expect[0].moduleInstanceId;
-        delete expect[1].isGlobal;
-        delete expect[1].moduleInstanceId;
-
         const collector = new PublicationCollector({ userId: user._id });
-
-        collector.collect('moduleData.data', moduleInstances[0]._id, request, (collections) => {
-          chai.assert.equal(collections.ModuleData.length, 1);
-          chai.assert.deepEqual(collections.ModuleData[0].data.todos, expect);
+        collector.collect('APICollection.data', moduleInstances[0]._id, collections[0], filters[0], (collections) => {
+          chai.assert.deepEqual(collections.APICollection[0], documents[0]);
           done();
         });
       });
 
       it('should publish using persistent data', function(done) {
-        let expect = [
-          moduleData.data.todos[0],
-          moduleData.data.todos[2]
-        ];
-
-        delete expect[0].isGlobal;
-        delete expect[0].moduleInstanceId;
-        delete expect[1].isGlobal;
-        delete expect[1].moduleInstanceId;
-
         const collector = new PublicationCollector({ userId: user._id });
-
-        collector.collect('moduleData.data', moduleInstances[1]._id, otherRequest, (collections) => {
-          chai.assert.equal(collections.ModuleData.length, 1);
-          chai.assert.deepEqual(collections.ModuleData[0].data.todos, expect);
+        collector.collect('APICollection.data', moduleInstances[0]._id, collections[1], {}, (collections) => {
+          chai.assert.deepEqual(collections.APICollection[0], documents[3]);
           done();
         });
       });
