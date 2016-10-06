@@ -472,7 +472,7 @@ class TasksList extends React.Component {
                 type="text"
               />
             </div>
-          ) : ( null )
+          ) : (null)
         }
       </div>
     );
@@ -708,8 +708,10 @@ class Task extends React.Component {
 
   startTimer(callback) {
     let intervalId = setInterval(this.prettyDate.bind(this), 1000);
+
     this.setState({
       intervalId,
+      doing: true,
     }, () => {
       if (typeof callback === 'function') {
         callback();
@@ -719,9 +721,11 @@ class Task extends React.Component {
 
   stopTimer(callback) {
     clearInterval(this.state.intervalId);
+
     this.setState({
       intervalId: false,
       count: '00:00:00',
+      doing: false,
     }, () => {
       if (typeof callback === 'function') {
         callback();
@@ -753,7 +757,7 @@ class Task extends React.Component {
     seconds = seconds > 9 ? "" + seconds: "0" + seconds;
     minutes = minutes > 9 ? "" + minutes: "0" + minutes;
     hours = hours > 9 ? "" + hours: "0" + hours;
-
+    
     let count = hours + ':' + minutes + ':' + seconds;
 
     this.setState({
@@ -772,10 +776,9 @@ class Task extends React.Component {
   /**
    * Changes state so the coordination stops editing
    * the task title.
-   * @params {Function} callback Sets the title of the
-   *                             task in the db as
-   *                             the way the
-   *                             coordinator wanted.
+   * @params {Function} callback 
+   *   Sets the title of the task in the db as
+   *   the way the coordinator wanted.
    */
   stopEditing(callback) {
     this.setState({
@@ -804,9 +807,27 @@ class Task extends React.Component {
   constructor(props) {
     super(props);
 
+    /**
+     * States 
+     *
+     * count {String}
+     *  The time in hh:mm:ss the user has been doing the task,
+     *  defaults '00:00:00'.
+     * intervalId {Any}
+     *  The intervalId the setInterval uses. Used for
+     *  internal work with the user timer.
+     * doing {Boolean}
+     *  Double-check if user is actually doing task for
+     *  faster rendering.
+     * task_title {String}
+     *  Used for editing a task title.
+     * editing {Boolean}
+     *  Used to check if user is editing the task title.
+     */
     this.state = {
       count: '00:00:00',
       intervalId: false,
+      doing: this.props.doing,
       task_title: this.props.task.title,
       editing: false,
     };
@@ -867,15 +888,16 @@ class Task extends React.Component {
                   {this.state.task_title}
                 </h5>
                 {
-                  !this.props.coordination && this.props.doing ? (
+                  !this.props.coordination && (this.props.doing && this.state.doing) ? (
                     <p className='col-xs-10 time-active'>Tiempo activo: {this.state.count}</p>
-                  ) : ( null )
+                  ) : (null)
                 }
                 <p className='col-xs-10 expiration'>Vencimiento: {new Date(this.props.task.dueDate).toLocaleDateString()}</p>
               </div>
             )
           }
         </div>
+
         {
           this.props.coordination && this.props.task.status === 'finished' ? (
             <div
@@ -884,8 +906,9 @@ class Task extends React.Component {
               role='button'
               onClick={this.archiveTask}
             />
-          ) : ( null )
+          ) : (null)
         }
+
         {
           this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
             <div
@@ -894,10 +917,11 @@ class Task extends React.Component {
               role='button'
               onClick={this.startEditing}
             />
-          ) : ( null )
+          ) : (null)
         }
+
         {
-          !this.props.coordination && this.props.doing ? (
+          !this.props.coordination && (this.props.doing || this.state.doing) ? (
             <div>
               <div className='record'>
                 <img
@@ -926,10 +950,11 @@ class Task extends React.Component {
                   />
               </div>
             </div>
-          ) : ( null )
+          ) : (null)
         }
+
         {
-          !this.props.coordination && !this.props.doing && this.props.task.status === 'not_finished' ? (
+          !this.props.coordination && (!this.props.doing || !this.state.doing) && this.props.task.status === 'not_finished' ? (
             <div>
               <div
                 className='done'
@@ -952,7 +977,7 @@ class Task extends React.Component {
                   />
               </div>
             </div>
-          ) : ( null )
+          ) : (null)
         }
       </div>
     );
