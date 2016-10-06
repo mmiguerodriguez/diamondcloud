@@ -27,7 +27,14 @@ class FileManagerLayout extends React.Component {
     } else {
       return this.props.folders.map((folder) => {
         return (
-          <div className="folder col-xs-4 fixed">
+          <div
+            className="folder col-xs-4 fixed"
+            onClick={
+              () => {
+                console.log('/' + folder._id);
+                browserHistory.push('/folder/' + folder._id);
+              }
+            }>
             <p className="truncate">{folder.name}</p>
           </div>
         );
@@ -50,26 +57,27 @@ class FileManagerLayout extends React.Component {
           <div className='document-container col-xs-4'>
             <div
               className="document fixed"
-              onClick={() => {
-                let fileTypeUrl; // this string is appended to the url
-                                 // it is needed for the google drive link
-                switch (document.fileType) {
-                  case 'application/vnd.google-apps.document':
-                    fileTypeUrl = 'document';
-                    break;
-                  case 'application/vnd.google-apps.drawing':
-                    fileTypeUrl = 'drawings';
-                    break;
-                  case 'application/vnd.google-apps.presentation':
-                    fileTypeUrl = 'presentation';
-                    break;
-                  case 'application/vnd.google-apps.spreadsheet':
-                    fileTypeUrl = 'spreadsheets';
-                    break;
+              onClick={
+                () => {
+                  let fileTypeUrl; // this string is appended to the url
+                                   // it is needed for the google drive link
+                  switch (document.fileType) {
+                    case 'application/vnd.google-apps.document':
+                      fileTypeUrl = 'document';
+                      break;
+                    case 'application/vnd.google-apps.drawing':
+                      fileTypeUrl = 'drawings';
+                      break;
+                    case 'application/vnd.google-apps.presentation':
+                      fileTypeUrl = 'presentation';
+                      break;
+                    case 'application/vnd.google-apps.spreadsheet':
+                      fileTypeUrl = 'spreadsheets';
+                      break;
+                  }
+                  browserHistory.push('/' + fileTypeUrl + '/' + document._id);
                 }
-                console.log('/' + fileTypeUrl + '/' + document._id);
-                browserHistory.push('/' + fileTypeUrl + '/' + document._id);
-              }} >
+              } >
               <p className="truncate">{document.name}</p>
             </div>
           </div>
@@ -207,6 +215,7 @@ FileManagerLayout.propTypes = {
   loadingDocuments: React.PropTypes.bool.isRequired,
   documents: React.PropTypes.array.isRequired,
   createDocument: React.PropTypes.func.isRequired,
+  createFolder: React.PropTypes.func.isRequired,
   initPicker: React.PropTypes.func.isRequired,
 };
 
@@ -236,6 +245,7 @@ class FileManagerPage extends React.Component {
         loadingDocuments={this.state.loadingDocuments}
         documents={this.state.documents}
         createDocument={this.createDocument}
+        createFolder={this.createFolder}
         initPicker={this.initPicker}
       />
     );
@@ -243,7 +253,7 @@ class FileManagerPage extends React.Component {
 
 
   componentDidMount() {
-
+    // TODO show only the documents and folders of the current folder
     let self = this;
 
     ////////////////////////////////////////
@@ -367,6 +377,12 @@ class FileManagerPage extends React.Component {
     checkAuth(); // configure google drive api
   }
 
+  componentWillReceiveProps() {
+    // the props have changed, so we have to remake the subscriptions
+    // for this, we call componentDidMount
+    this.componentDidMount();
+  }
+
   createDocument({ name, parentFolderId = null, fileType, callback = () => {} }) {
     /**
      * Creates a document in the user's Drive
@@ -437,7 +453,7 @@ class FileManagerPage extends React.Component {
 
   createFolder({ name, parentFolderId = null, callback = () => {} }) {
     /**
-     * Creates a folder in the user's Drive
+     * Creates a folder (not in Google Drive, but in our data)
      * @param {String} name
      * @param {String} parentFolderId (optional)
      * @param {Function} callback (optional)
@@ -445,55 +461,45 @@ class FileManagerPage extends React.Component {
      *   @param {Object} response
      */
 
-     gapi.client.drive.files.create({
-       resource: {
-         name,
-         mimeType: 'application/vnd.google-apps.folder',
-       }
-     }).then((resp) => {
-       // Make the folder accessable by everyone with the link
-       gapi.client.drive.permissions.create({
-         fileId: resp.result.id,
-         role: 'writer',
-         type: 'anyone',
-       }).then(() => {
-         if (!parentFolderId) {
-           DiamondAPI.insert({
-             collection: 'rootFiles',
-             obj: {
-               folderId: resp.result.id, // resp is the response to the create
-                                           // request, not to the permission one
-               boardId: DiamondAPI.getCurrentBoard()._id,
-             },
-             isGlobal: true,
-             callback(err, res) {
-               if (!!err) {
-                 console.error(err);
-               }
-             }
-           });
-         }
+    let folderId = ''; // generates a random string
+    const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-         DiamondAPI.insert({
-           collection: 'folders',
-           obj: {
-             _id: resp.result.id,
-             parentFolderId,
-             name,
-           },
-           isGlobal: true,
-           callback(err, res) {
-             if (!!err) {
-               console.error(err);
-             }
-           },
-         });
-         callback(null, resp);
-       }, (reason) => {
-         callback(reason, resp);
-       });
-     }, (reason) => {
-       callback(reason, resp);
+    const ID_LENGTH = 16;
+    for (let i = 0; i < ID_LENGTH; i++) {
+      folderId += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+    }
+
+    if (!parentFolderId) {
+      DiamondAPI.insert({
+        collection: 'rootFiles',
+          obj: {
+            folderId: folderId,
+            boardId: DiamondAPI.getCurrentBoard()._id,
+          },
+          isGlobal: true,
+          callback(err, res) {
+            if (!!err) {
+              console.error(err);
+              callback(err, null);
+            }
+          }
+      });
+    }
+
+    DiamondAPI.insert({
+       collection: 'folders',
+       obj: {
+         _id: folderId,
+         parentFolderId,
+         name,
+       },
+       isGlobal: true,
+       callback(err, res) {
+         if (!!err) {
+           console.error(err);
+           callback(err, null);
+         }
+       },
      });
   }
 
@@ -549,7 +555,7 @@ FileViewerLayout.propTypes = {
 ReactDOM.render(
   <Router history={browserHistory}>
     <Route path='/' component={FileManagerPage} />
-    <Route path='/:folderId' component={FileManagerPage} />
+    <Route path='/folder/:folderId' component={FileManagerPage} />
     <Route path='/:fileType/:documentId' component={FileViewerPage} />
   </Router>,
   document.getElementById('render-target')
