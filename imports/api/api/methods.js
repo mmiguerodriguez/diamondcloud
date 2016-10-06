@@ -31,21 +31,19 @@ export const APIInsert = new ValidatedMethod({
       throw new Meteor.Error('API.methods.APIInsert.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
-    
-    let entry = {
-      ...APICollection.generateMongoQuery(object),
-      collection,
-    };
-    
+
+    let entry = APICollection.generateMongoQuery(object);
+    entry.collection = collection;
+
     if (!isGlobal) {
       entry.moduleInstanceId = moduleInstanceId;
     } else {
       entry.moduleId = moduleInstance.moduleId;
       entry.teamId = teamId;
     }
-    
+
     APICollection.insert(entry);
-    
+
     return entry;
   }
 });
