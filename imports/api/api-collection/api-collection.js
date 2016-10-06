@@ -6,7 +6,7 @@ APICollection.generateMongoQuery = (input) => {
   let result = {};
 
   for (let prop in input) {
-    result[`API.${prop}`] = input[prop];
+    result[`API_${prop}`] = input[prop];
   }
 
   return result;

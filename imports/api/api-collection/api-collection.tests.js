@@ -12,29 +12,28 @@ if (Meteor.isServer) {
   describe('API', function() {
     describe('Helpers', function() {
       let input, output;
-      
+
       beforeEach(function(done) {
         input = {
           _id: Random.id(),
           name: faker.lorem.word(),
           collection: faker.lorem.word(),
         };
-        
+
         output = {
-          'API._id': input._id,
-          'API.name': input.name,
-          'API.collection': input.collection,
+          'API__id': input._id,
+          'API_name': input.name,
+          'API_collection': input.collection,
         };
-        
+
         done();
       });
-      
+
       afterEach(function(done) {
         done();
       });
-      
+
       it('should generate a correct Mongo query', function(done) {
-        console.log('Corrí', APICollection.generateMongoQuery(input));
         chai.assert.deepEqual(APICollection.generateMongoQuery(input), output);
         done();
       });

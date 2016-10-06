@@ -7,7 +7,7 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
   let subscriptions = [];
   let DiamondAPI = {
     subscribe({ collection, filter, callback }) {
-      
+
     },
     unsubscribe(subscriptionId) {
       if (subscriptionId) {
@@ -24,13 +24,12 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
         });
       }
     },
-    insert({ collection, object, isGlobal, visibleBy, callback }) {
+    insert({ collection, object, isGlobal, callback }) {
       Meteor.call('API.methods.APIInsert', {
         moduleInstanceId,
         collection,
         object,
         isGlobal,
-        visibleBy,
       }, callback);
     },
     update({ collection, filter, updateQuery, callback }) {
