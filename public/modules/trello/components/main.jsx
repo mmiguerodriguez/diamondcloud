@@ -962,7 +962,7 @@ class Task extends React.Component {
 /**
  * Renders information from the task
  */
-class TaskInfo extends React.Component {
+class TaskInformation extends React.Component {
   constructor(props) {
     super(props);
 
@@ -978,16 +978,7 @@ class TaskInfo extends React.Component {
             board = _board;
           }
         });
-        // todo: Add duration information for each user ?
-        /*
-          task.durations.forEach((_duration) => {
-            if (_duration.startTime && _duration.endTime) {
-              let duration = _duration.endTime - _duration.startTime;
 
-
-            }
-          });
-        */
         this.setState({
           task,
           board,
@@ -1002,11 +993,73 @@ class TaskInfo extends React.Component {
         <div>
           <h4>Información de la tarea</h4>
         </div>
-        <div>Tarea: {this.state.task.title }</div>
+        <div>Tarea: {this.state.task.title}</div>
         <div>Fecha de vencimiento: {new Date(this.state.task.dueDate).toLocaleDateString()}</div>
-        <div>Estado: {this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada' }</div>
-        <div>Board: {this.state.board.name }</div>
+        <div>Estado: {this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada'}</div>
+        <div>Board: {this.state.board.name}</div>
+        
+        <UserTaskInformation 
+          durations={this.state.task.durations}
+          users={this.props.users}
+        />
       </div>
+    );
+  }
+}
+
+/**
+ * Renders users information from the task
+ */
+class UserTaskInformation extends React.Component {
+  prettyDate(date) {
+    let difference_ms = date;
+    difference_ms = difference_ms / 1000;
+
+    let seconds = Math.floor(difference_ms % 60);
+    difference_ms = difference_ms / 60;
+
+    let minutes = Math.floor(difference_ms % 60);
+    difference_ms = difference_ms / 60;
+
+    let hours = Math.floor(difference_ms % 24);
+
+    seconds = seconds > 9 ? "" + seconds: "0" + seconds;
+    minutes = minutes > 9 ? "" + minutes: "0" + minutes;
+    hours = hours > 9 ? "" + hours: "0" + hours;
+
+    return hours + ':' + minutes + ':' + seconds;
+  }
+
+  renderUsers() {
+    return this.props.users.map((user) => {
+      let time = 0;
+
+      this.props.durations.forEach((duration) => {
+        if (duration.userId === user._id) {
+          if (duration.endTime) {
+            time += duration.endTime - duration.startTime;
+          }
+        }
+      });
+      
+      time = time !== 0 ? this.prettyDate(time) + ' horas' : 'No trabajó';
+      
+      return (
+        <div>
+          <p>{user.profile.name}</p>
+          <p>{time}</p>
+        </div>
+      );
+    });
+  }
+  
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div>{this.renderUsers()}</div>
     );
   }
 }
@@ -1019,7 +1072,7 @@ ReactDOM.render(
     <Route path='/' component={TaskManagerPage}>
       <Route path='/tasks/show' component={BoardsList} />
       <Route path='/tasks/create' component={CreateTask} />
-      <Route path='/tasks/:taskId' component={TaskInfo} />
+      <Route path='/tasks/:taskId' component={TaskInformation} />
     </Route>
   </Router>,
   document.getElementById('render-target')
