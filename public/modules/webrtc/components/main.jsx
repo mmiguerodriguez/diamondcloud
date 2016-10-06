@@ -86,7 +86,6 @@ class VideoChatPage extends React.Component {
       videos.push({
         id: peer.id,
         domId: webrtc.getDomId(peer),
-        videoEl: video,
         width: VIDEO_WIDTH,
         height: VIDEO_HEIGHT,
         video: VIDEO_START,
@@ -365,8 +364,10 @@ class Video extends React.Component {
           onContextMenu={() => { return false; }}
           autoPlay>
         </video>
-        <button className='btn btn-primary' onClick={this.mute}>Mute user</button>
-        <button className='btn btn-primary' onClick={this.unmute}>Unmute user</button>
+        {
+        //<button className='btn btn-primary' onClick={this.mute}>Mute user</button>
+        //<button className='btn btn-primary' onClick={this.unmute}>Unmute user</button>
+        }
       </div>
     );
   }
@@ -431,7 +432,6 @@ class VideoStatus extends React.Component {
     );
   }
 }
-
 
 /**
  * Router setup. 
