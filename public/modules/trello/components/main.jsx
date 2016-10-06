@@ -989,19 +989,19 @@ class TaskInformation extends React.Component {
 
   render() {
     return (
-      <div>
-        <div>
-          <h4>Información de la tarea</h4>
+      <div className='task-info col-xs-12'>
+        <h4>Información de la tarea</h4>
+        <div className='item'>
+          <p><b>Tarea:</b> {this.state.task.title }</p>
+          <p><b>Fecha de vencimiento:</b> {new Date(this.state.task.dueDate).toLocaleDateString()}</p>
+          <p><b>Estado:</b> {this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada' }</p>
+          <p><b>Board:</b> {this.state.board.name }</p>
+          <p><b>Usuarios:</b></p>
+          <UserTaskInformation 
+            durations={this.state.task.durations}
+            users={this.props.users}
+          />
         </div>
-        <div>Tarea: {this.state.task.title}</div>
-        <div>Fecha de vencimiento: {new Date(this.state.task.dueDate).toLocaleDateString()}</div>
-        <div>Estado: {this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada'}</div>
-        <div>Board: {this.state.board.name}</div>
-        
-        <UserTaskInformation 
-          durations={this.state.task.durations}
-          users={this.props.users}
-        />
       </div>
     );
   }
@@ -1045,9 +1045,19 @@ class UserTaskInformation extends React.Component {
       time = time !== 0 ? this.prettyDate(time) + ' horas' : 'No trabajó';
       
       return (
-        <div>
-          <p>{user.profile.name}</p>
-          <p>{time}</p>
+        <div className="panel panel-default">
+          <div className="panel-heading" role="tab" id={ 'heading_' + user._id }>
+            <h4 className="panel-title">
+              <a role="button" data-toggle="collapse" data-parent="#accordion" href={ '#collapse_' + user._id } aria-expanded="false" aria-controls={ 'collapse_' + user._id }>
+                {user.profile.name}
+              </a>
+            </h4>
+          </div>
+          <div id={ 'collapse_' + user._id } className="panel-collapse collapse" role="tabpanel" aria-labelledby={ 'heading_' + user._id }>
+            <div className="panel-body">
+              Tiempo trabajado: {time}
+            </div>
+          </div>
         </div>
       );
     });
@@ -1056,10 +1066,16 @@ class UserTaskInformation extends React.Component {
   constructor(props) {
     super(props);
   }
-
+  
+  componentDidMount() {
+    $('.collapse').collapse();
+  }
+  
   render() {
     return (
-      <div>{this.renderUsers()}</div>
+      <div className="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        {this.renderUsers()}
+      </div>
     );
   }
 }
