@@ -4,7 +4,7 @@ import { Messages }    from '../messages.js';
 import { DirectChats } from '../../direct-chats/direct-chats.js';
 import { Boards }      from '../../boards/boards.js';
 
-Meteor.publish('messages.chat', function({ directChatId, boardId }) {
+Meteor.publish('messages.chat', function({ directChatId, boardId, limit }) {
   if (!this.userId) {
     throw new Meteor.Error('Messages.chat.notLoggedIn',
     'Must be logged in to view chats.');
@@ -36,6 +36,8 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
       { directChatId },
       { boardId }
     ],
+  }, {
+    limit,
   });
 });
 

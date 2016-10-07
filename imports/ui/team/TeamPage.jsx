@@ -42,6 +42,8 @@ export default class Team extends React.Component {
     if (!board) {
       return ( null );
     }
+    
+    console.log('messages', this.props.messages);
 
     return (
       <div>
@@ -118,6 +120,8 @@ export default class Team extends React.Component {
           boardId: obj.boardId,
           messages
         });
+
+        // Meteor.subscribe('messages.chat', { boardId: obj.boardId, limit: 10 });
       }
     } else {
       let found = false;
@@ -133,6 +137,8 @@ export default class Team extends React.Component {
           directChatId: obj.directChatId,
           messages
         });
+
+        // Meteor.subscribe('messages.chat', { directChatId: obj.directChatId, limit: 10 });
       }
     }
 
@@ -228,8 +234,8 @@ export default TeamPageContainer = createContainer(({ params }) => {
     users: Meteor.users.find({}).fetch(),
     boards: Boards.find({}, { sort: { name: -1 } }).fetch(),
     directChats: DirectChats.find().fetch(),
-    messages: Messages.find().fetch(),
-    moduleInstances: ModuleInstances.find().fetch(),
+    messages: Messages.find({}).fetch(),
+    moduleInstances: ModuleInstances.find({}).fetch(),
     modules: Modules.find({}, { sort: { name: -1 } }).fetch(),
   };
 }, Team);
