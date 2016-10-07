@@ -132,10 +132,9 @@ class TaskManagerLayout extends React.Component {
    *   @param {String} title
    *   @param {String} body
    */
-  showError({ title, body }) {
+  showError({ body }) {
     this.setState({
       error: {
-        title,
         body,
         showing: true,
       },
@@ -147,7 +146,6 @@ class TaskManagerLayout extends React.Component {
   hideError() {
     this.setState({
       error: {
-        title: '',
         body: '',
         showing: false,
       },
@@ -172,7 +170,6 @@ class TaskManagerLayout extends React.Component {
       taskTitle: '',
       selectedBoardId: undefined,
       error: {
-        title: '',
         body: '',
         showing: false,
       }
@@ -262,28 +259,24 @@ class CreateTask extends React.Component {
           } else {
             console.error('There was error inserting task position', position);
             self.props.showError({
-              title: 'Error al crear una tarea',
               body: 'La posición de la tarea es inválida',
             });
           }
         } else {
           console.error('There was an error inserting task dueDate', self.state.dueDate);
           self.props.showError({
-            title: 'Error al crear una tarea',
             body: 'La fecha de la tarea es inválida',
           });
         }
       } else {
         console.error('There was an error inserting task boardId', self.state.boardId);
         self.props.showError({
-          title: 'Error al crear una tarea',
           body: 'El board asociado a la tarea es inválido',
         });
       }
     } else {
       console.error('There was an error inserting task title', self.state.title);
       self.props.showError({
-        title: 'Error al crear una tarea',
         body: 'El título de la tarea es inválido',
       });
     }
@@ -619,7 +612,6 @@ class Task extends React.Component {
             console.error(error);
 
             this.props.showError({
-              title: 'Error al iniciar una tarea',
               body: 'Ocurrió un error interno al iniciar la tarea',
             });
 
@@ -663,8 +655,7 @@ class Task extends React.Component {
             console.error(error);
 
             this.props.showError({
-              title: 'Error al pausar una tarea',
-              body: 'Ocurrió un error interno al pausar la tarea',
+              body: 'Error al pausar una tarea',
             });
 
             self.startTimer();
@@ -699,8 +690,7 @@ class Task extends React.Component {
             console.error(error);
 
             this.props.showError({
-              title: 'Error al archivar una tarea',
-              body: 'Ocurrió un error interno al archivar la tarea',
+              body: 'Error al archivar una tarea',
             });
           } else {
             console.log('Archived task correctly');
@@ -735,8 +725,7 @@ class Task extends React.Component {
           console.error(error);
 
           this.props.showError({
-            title: 'Error al actualizar el estado de la tarea',
-            body: 'Ocurrió un error interno al actualizar el estado la tarea',
+            body: 'Error al actualizar el estado de la tarea',
           });
         } else {
           console.log('Updated task status correctly');
@@ -769,8 +758,7 @@ class Task extends React.Component {
                 console.error(error);
 
                 this.props.showError({
-                  title: 'Error al actualizar el título de la tarea',
-                  body: 'Ocurrió un error interno al actualizar el título de la tarea',
+                  body: 'Error al actualizar el título de la tarea',
                 });
 
                 self.setState({
@@ -784,7 +772,6 @@ class Task extends React.Component {
         });
       } else {
         this.props.showError({
-          title: 'Error al actualizar el título de la tarea',
           body: 'El título de la tarea es inválido',
         });
       }
@@ -1272,10 +1259,21 @@ class UserTaskInformation extends React.Component {
  * is wrong with their inputs, etc.
  */
 class ErrorMessage extends React.Component {
+  close() {
+    let self = this;
+    
+    $('.error-message').removeClass('show-error')
+    $('.error-message').addClass('hide-error', () => {
+      setTimeout(self.props.hideError.bind(null), 700);
+    });
+  }
+  
   constructor(props) {
     super(props);
 
     this.state = {};
+    
+    this.close = this.close.bind(this);
   }
 
   componentDidMount() {
@@ -1290,10 +1288,9 @@ class ErrorMessage extends React.Component {
 
   render() {
     return (
-      <div>
-        <div>{this.props.title}</div>
-        <div>{this.props.body}</div>
-        <div onClick={this.props.hideError}>Cerrar</div>
+      <div className='error-message show-error'>
+        <div className='error-body'>{this.props.body}</div>
+        <div className='error-close' onClick={this.close}>Cerrar</div>
       </div>
     );
   }

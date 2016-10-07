@@ -67,6 +67,7 @@
   min-height: 100vh;
   background-color: #3fa4e7;
   border: 1px #ccc solid;
+  overflow: hidden;
 }
 .task-manager-title {
   margin-top: 10px;
@@ -260,4 +261,39 @@
 .panel-heading.fixed {
   padding: 10px;
   background-color: #efefef;
+}
+.error-message {
+  position: absolute;
+  right: 10px;
+  bottom: 15px;
+  padding: 10px;
+  color: #fff;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.3);
+}
+.show-error {
+  animation-name: appear;
+  animation-duration: 0.7s;
+}
+.hide-error {
+  animation-name: disappear;
+  animation-duration: 0.7s;
+}
+@keyframes appear {
+  0% {right: -100px; opacity: 0;}
+  100% {right: 10px; opacity: 1;}
+}
+@keyframes disappear {
+  0% {right: 10px; opacity: 1;}
+  100% {right: -100px; opacity: 0;}
+}
+.error-body {
+  display: inline-block;
+}
+.error-close {
+  display: inline-block;
+  margin-left: 10px;
+  color: #f1c40f;
+  cursor: pointer;
 }
