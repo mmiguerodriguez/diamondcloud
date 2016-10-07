@@ -44,21 +44,26 @@ Meteor.publish('messages.all', function(teamId) {
     throw new Meteor.Error('Messages.all.notLoggedIn',
     'Must be logged in to view chats.');
   }
+  
+  const MESSAGES_LIMIT = 1;
   let user = Meteor.users.findOne(this.userId);
+
   let directChats = DirectChats.getUserDirectChats(this.userId, teamId).fetch();
   directChats = directChats.map((directChat) => {
     return directChat._id;
   });
+  
   let boards = user.boards(teamId).fetch();
   boards = boards.map((board) => {
     return board._id;
   });
+
   return Messages.find({
     $or: [
       {
         directChatId: {
           $in: directChats
-        }
+        },
       },
       {
         boardId: {
@@ -66,5 +71,9 @@ Meteor.publish('messages.all', function(teamId) {
         }
       }
     ]
+  }, {
+    sort: {
+      limit: MESSAGES_LIMIT,
+    }
   });
 });

@@ -111,6 +111,7 @@ export default class Team extends React.Component {
           found = true;
         }
       });
+
       if (!found) {
         let messages = Boards.findOne(obj.boardId).getMessages().fetch();
         chats.push({
@@ -125,6 +126,7 @@ export default class Team extends React.Component {
           found = true;
         }
       });
+
       if (!found) {
         let messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
         chats.push({
@@ -133,6 +135,7 @@ export default class Team extends React.Component {
         });
       }
     }
+
     this.setState({
       chats
     });
