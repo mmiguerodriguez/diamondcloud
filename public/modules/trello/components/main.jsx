@@ -40,7 +40,7 @@ class TaskManagerPage extends React.Component {
       boards: [],
     };
   }
-  
+
   componentDidMount() {
     let self = this;
     let coordinationBoard, currentBoard, currentUser, coordination;
@@ -57,18 +57,22 @@ class TaskManagerPage extends React.Component {
           currentUser = DiamondAPI.getCurrentUser();
           coordination = coordinationBoard._id === currentBoard._id;
 
-          // Set coordinationBoard, currentBoard, user and if it's a
-          // coordinationBoard boolean
+          /**
+           *  Set coordinationBoard, currentBoard, user and if
+           *  it's a coordinationBoard, a boolean.
+           */
           self.setState({
             coordinationBoard,
             currentBoard,
             currentUser,
             coordination,
           }, () => {
-            // If it's a coordinationBoard then fetch all tasks, even finished
-            // ones, except archived
-            // If not, fetch the ones that are from the currentBoard and
-            // that are not finished
+            /**
+             * If it's a coordinationBoard then fetch all tasks,
+             * even finished ones, except archived.
+             * If not, fetch the ones that are from the
+             * currentBoard and that are not finished.
+             */
             let filter = coordination ? {
               archived: false,
             } : {
@@ -100,7 +104,7 @@ class TaskManagerPage extends React.Component {
       }
     });
   }
-  
+
   render() {
     if (this.state.loading || this.state.loading === undefined) {
       return (
@@ -121,26 +125,65 @@ class TaskManagerPage extends React.Component {
  * to pass props to it and renders the routes.
  */
 class TaskManagerLayout extends React.Component {
+  /**
+   * Sets the error state so we can show an error
+   * correctly.
+   * @param {Object} object
+   *   @param {String} title
+   *   @param {String} body
+   */
+  showError({ title, body }) {
+    this.setState({
+      error: {
+        title,
+        body,
+        showing: true,
+      },
+    });
+  }
+  /**
+   * Resets the error state to the default.
+   */
+  hideError() {
+    this.setState({
+      error: {
+        title: '',
+        body: '',
+        showing: false,
+      },
+    });
+  }
+
   setLocation(location) {
     browserHistory.push(location);
   }
-  
+
   handleChange(index, boardId, event) {
     this.setState({
       [index]: event.target.value,
       selectedBoardId: boardId,
     });
   }
-  
+
   constructor(props) {
     super(props);
 
-    this.state = { taskTitle: '', selectedBoardId: undefined };
-    
+    this.state = {
+      taskTitle: '',
+      selectedBoardId: undefined,
+      error: {
+        title: '',
+        body: '',
+        showing: false,
+      }
+    };
+
+    this.showError = this.showError.bind(this);
+    this.hideError = this.hideError.bind(this);
     this.setLocation = this.setLocation.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
-  
+
   render() {
     return (
       <div className='col-xs-12 task-manager'>
@@ -157,8 +200,19 @@ class TaskManagerLayout extends React.Component {
             ...this.props,
             ...this.state,
             setLocation: this.setLocation,
-            handleChange: this.handleChange
+            handleChange: this.handleChange,
+            showError: this.showError,
+            hideError: this.hideError,
           })
+        }
+
+        {
+          this.state.error.showing ? (
+            <ErrorMessage
+              hideError={this.hideError}
+              {...this.state.error}
+            />
+          ) : (null)
         }
 
       </div>
@@ -182,7 +236,7 @@ class CreateTask extends React.Component {
 
     if (self.state.title.length > 0 && self.state.title !== '') {
       if (self.state.boardId !== '') {
-        if (Number.isInteger(dueDate)) {
+        if (Number.isInteger(dueDate) && dueDate !== 0) {
           if (position >= 0) {
             DiamondAPI.insert({
               collection: 'tasks',
@@ -207,22 +261,38 @@ class CreateTask extends React.Component {
             });
           } else {
             console.error('There was error inserting task position', position);
+            self.props.showError({
+              title: 'Error al crear una tarea',
+              body: 'La posición de la tarea es inválida',
+            });
           }
         } else {
           console.error('There was an error inserting task dueDate', self.state.dueDate);
+          self.props.showError({
+            title: 'Error al crear una tarea',
+            body: 'La fecha de la tarea es inválida',
+          });
         }
       } else {
         console.error('There was an error inserting task boardId', self.state.boardId);
+        self.props.showError({
+          title: 'Error al crear una tarea',
+          body: 'El board asociado a la tarea es inválido',
+        });
       }
     } else {
       console.error('There was an error inserting task title', self.state.title);
+      self.props.showError({
+        title: 'Error al crear una tarea',
+        body: 'El título de la tarea es inválido',
+      });
     }
   }
   /**
    * Gets the biggest task position so it inserts the task
    * position as the biggest + 1.
-   * 
-   * @returns {Number} (biggestTaskPosition + 1)
+   *
+   * @returns {Number} biggestTaskPosition
    */
   getBiggestTaskPosition() {
     let positions = [];
@@ -239,7 +309,7 @@ class CreateTask extends React.Component {
       return 0;
     }
   }
-  
+
   renderOptions() {
     return this.props.boards.map((board) => {
       return (
@@ -251,7 +321,7 @@ class CreateTask extends React.Component {
       );
     });
   }
-  
+
   handleChange(index, event) {
     let value = event.target.value;
 
@@ -263,24 +333,24 @@ class CreateTask extends React.Component {
       [index]: value,
     });
   }
-  
+
   constructor(props){
     super(props);
 
     this.state = {
       title: this.props.taskTitle,
-      dueDate: '',
       boardId: this.props.selectedBoardId || this.props.boards[0]._id,
+      dueDate: '',
     };
 
     this.createTask = this.createTask.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
-  
+
   componentDidMount() {
     $('#create-task-title').focus();
   }
-  
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.taskTitle !== this.props.taskTitle) {
       this.setState({
@@ -288,7 +358,7 @@ class CreateTask extends React.Component {
       });
     }
   }
-  
+
   render() {
     return (
       <div className='row create-task-form'>
@@ -309,7 +379,7 @@ class CreateTask extends React.Component {
           </div>
           <div className='form-group'>
             <label className='control-label' htmlFor='create-task-duedate'>Fecha de vencimiento</label>
-            <input 
+            <input
               id='create-task-duedate'
               className='form-control'
               type='datetime-local'
@@ -345,8 +415,10 @@ class BoardsList extends React.Component {
     return this.props.boards.map((board) => {
       let tasks = [];
 
-      // If there are tasks then push task to array if it is from
-      // the actual board
+      /**
+       * If there are tasks then push task to array
+       * if it is from the actual board
+       */
       if (this.props.tasks !== undefined) {
         this.props.tasks.forEach((task) => {
           if (task.boardId === board._id) {
@@ -355,8 +427,10 @@ class BoardsList extends React.Component {
         });
       }
 
-      // If it isn't a coordination board then render only
-      // one board tasks
+      /**
+       * If it isn't a coordination board then render
+       * only one board tasks
+       */
       if (!this.props.coordination) {
         if (board._id === this.props.currentBoard._id) {
           return (
@@ -367,6 +441,8 @@ class BoardsList extends React.Component {
               coordination={this.props.coordination}
               setLocation={this.props.setLocation}
               currentUser={this.props.currentUser}
+              showError={this.props.showError}
+              hideError={this.props.hideError}
             />
           );
         } else {
@@ -374,8 +450,10 @@ class BoardsList extends React.Component {
         }
       }
 
-      // If it is a coordination board then it will return the
-      // information we want
+      /**
+       * If it is a coordination board then it will
+       * return the nformation we want
+       */
       return (
         <Board
           key={board._id}
@@ -385,6 +463,8 @@ class BoardsList extends React.Component {
           setLocation={this.props.setLocation}
           currentUser={this.props.currentUser}
           handleChange={this.props.handleChange}
+          showError={this.props.showError}
+          hideError={this.props.hideError}
         />
       );
     });
@@ -413,6 +493,8 @@ class Board extends React.Component {
           setLocation={this.props.setLocation}
           currentUser={this.props.currentUser}
           handleChange={this.props.handleChange}
+          showError={this.props.showError}
+          hideError={this.props.hideError}
         />
       </div>
     );
@@ -448,23 +530,25 @@ class TasksList extends React.Component {
           doing={doing}
           coordination={this.props.coordination}
           currentUser={this.props.currentUser}
+          showError={this.props.showError}
+          hideError={this.props.hideError}
         />
       );
     });
   }
-  
+
   handleKeyDown(event) {
     if (event.which === 13) {
       this.props.setLocation('tasks/create');
     }
   }
-  
+
   constructor(props) {
     super(props);
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
   }
-  
+
   render() {
     return (
       <div className='col-xs-12 tasks-list'>
@@ -498,7 +582,7 @@ class Task extends React.Component {
   /**
    * Opens a task information.
    * Routes to -> /task/taskId.
-   */ 
+   */
   openTask() {
     if (this.props.coordination) {
       browserHistory.push('/tasks/' + this.props.task._id);
@@ -508,7 +592,7 @@ class Task extends React.Component {
    * Starts a task, inserts the userId and startTime
    * to the durations array and starts the timer
    * interval.
-   */ 
+   */
   startTask() {
     let self = this;
 
@@ -533,7 +617,12 @@ class Task extends React.Component {
         callback(error, result) {
           if (error) {
             console.error(error);
-            
+
+            this.props.showError({
+              title: 'Error al iniciar una tarea',
+              body: 'Ocurrió un error interno al iniciar la tarea',
+            });
+
             self.stopTimer();
           } else {
             console.log('Started task correctly', result);
@@ -553,7 +642,7 @@ class Task extends React.Component {
 
     self.stopTimer(() => {
       let index = self.getLastTaskEndTimeIndex();
-  
+
       DiamondAPI.update({
         collection: 'tasks',
         filter: {
@@ -572,7 +661,12 @@ class Task extends React.Component {
         callback(error, result) {
           if (error) {
             console.error(error);
-            
+
+            this.props.showError({
+              title: 'Error al pausar una tarea',
+              body: 'Ocurrió un error interno al pausar la tarea',
+            });
+
             self.startTimer();
           } else {
             console.log('Paused task correctly', result);
@@ -603,6 +697,11 @@ class Task extends React.Component {
         callback(error, result) {
           if (error) {
             console.error(error);
+
+            this.props.showError({
+              title: 'Error al archivar una tarea',
+              body: 'Ocurrió un error interno al archivar la tarea',
+            });
           } else {
             console.log('Archived task correctly');
           }
@@ -612,7 +711,7 @@ class Task extends React.Component {
   }
   /**
    * Sets the task status as the passed parameter.
-   * @params {String} status
+   * @param {String} status
    */
   setTaskStatus(status) {
     let self = this;
@@ -634,6 +733,11 @@ class Task extends React.Component {
       callback(error, result) {
         if (error) {
           console.error(error);
+
+          this.props.showError({
+            title: 'Error al actualizar el estado de la tarea',
+            body: 'Ocurrió un error interno al actualizar el estado la tarea',
+          });
         } else {
           console.log('Updated task status correctly');
         }
@@ -648,42 +752,54 @@ class Task extends React.Component {
     let self = this;
 
     if (self.props.coordination) {
-      self.stopEditing(() => {
-        DiamondAPI.update({
-          collection: 'tasks',
-          filter: {
-            _id: self.props.task._id,
-          },
-          updateQuery: {
-            $set: {
-              title: self.state.task_title,
+      if (self.state.task_title !== '') {
+        self.stopEditing(() => {
+          DiamondAPI.update({
+            collection: 'tasks',
+            filter: {
+              _id: self.props.task._id,
             },
-          },
-          callback(error, result) {
-            if (error) {
-              console.error(error);
+            updateQuery: {
+              $set: {
+                title: self.state.task_title,
+              },
+            },
+            callback(error, result) {
+              if (error) {
+                console.error(error);
 
-              self.setState({
-                task_title: self.props.task.title,
-              });
-            } else {
-              console.log('Updated task status correctly');
+                this.props.showError({
+                  title: 'Error al actualizar el título de la tarea',
+                  body: 'Ocurrió un error interno al actualizar el título de la tarea',
+                });
+
+                self.setState({
+                  task_title: self.props.task.title,
+                });
+              } else {
+                console.log('Updated task status correctly');
+              }
             }
-          }
+          });
         });
-      });
+      } else {
+        this.props.showError({
+          title: 'Error al actualizar el título de la tarea',
+          body: 'El título de la tarea es inválido',
+        });
+      }
     }
   }
   /**
    * Gets the last task update for the user.
-   * The duration in which user startTime 
+   * The duration in which user startTime
    * exists and endTime is undefined.
-   * 
+   *
    * If the task was never started by the
    * user, it returns a 'never_started'
    * flag.
-   * 
-   * @returns {Number} (new Date().getTime())
+   *
+   * @returns {Number} Date
    */
   getLastTaskUpdate() {
     let startTimes = this.props.task.durations.map((duration) => {
@@ -697,7 +813,7 @@ class Task extends React.Component {
         return 0;
       }
     });
-    
+
     if (startTimes.length > 0) {
       return Math.max(...startTimes);
     } else {
@@ -707,13 +823,13 @@ class Task extends React.Component {
   /**
    * Gets the last endTime index of the user from the
    * durations array.
-   * 
+   *
    * It searches through all the durations from the
    * taks and gives the index of the duration of
    * the user that has endTime: undefined.
-   * 
-   * @returns {Number} (new Date().getTime())
-   * todo: Deprecate this.
+   *
+   * @returns {Number} Date
+   * TODO: Deprecate this.
    */
   getLastTaskEndTimeIndex() {
     let i;
@@ -756,37 +872,37 @@ class Task extends React.Component {
   /**
    * Creates a nice format for the time the user has
    * been doing a task.
-   * 
-   * @returns {String} (01:17:52)
+   *
+   * @returns {String} count
    */
   prettyDate() {
     let start = this.getLastTaskUpdate();
     let end = new Date().getTime();
-    
+
     let count = '',
         seconds = 0,
         minutes = 0,
         hours = 0,
         days = 0;
-    
+
     if (start !== 'never_started' && start !== 0) {
       let difference_ms = end - start;
       difference_ms = difference_ms / 1000;
-  
+
       seconds = Math.floor(difference_ms % 60);
       difference_ms = difference_ms / 60;
-  
+
       minutes = Math.floor(difference_ms % 60);
       difference_ms = difference_ms / 60;
-  
+
       hours = Math.floor(difference_ms % 24);
       days = Math.floor(difference_ms / 24);
-    } 
-    
+    }
+
     seconds = seconds > 9 ? "" + seconds: "0" + seconds;
     minutes = minutes > 9 ? "" + minutes: "0" + minutes;
     hours = hours > 9 ? "" + hours: "0" + hours;
-    
+
     count = hours + ':' + minutes + ':' + seconds;
 
     this.setState({
@@ -805,7 +921,7 @@ class Task extends React.Component {
   /**
    * Changes state so the coordination stops editing
    * the task title.
-   * @params {Function} callback 
+   * @param {Function} callback
    *   Sets the title of the task in the db as
    *   the way the coordinator wanted.
    */
@@ -832,25 +948,25 @@ class Task extends React.Component {
       }
     }
   }
-  
+
   constructor(props) {
     super(props);
 
     /**
-     * States 
+     * States
      *
-     * count {String}
+     * @param {String} count
      *  The time in hh:mm:ss the user has been doing the task,
      *  defaults '00:00:00'.
-     * intervalId {Any}
+     * @param {Any} intervalId
      *  The intervalId the setInterval uses. Used for
      *  internal work with the user timer.
-     * doing {Boolean}
+     * @param {Boolean} doing
      *  Double-check if user is actually doing task for
      *  faster rendering.
-     * task_title {String}
+     * @param {String} task_title
      *  Used for editing a task title.
-     * editing {Boolean}
+     * @param {Boolean} editing
      *  Used to check if user is editing the task title.
      */
     this.state = {
@@ -885,7 +1001,7 @@ class Task extends React.Component {
       this.stopTimer();
     }
   }
-  
+
   render() {
     const role = classNames({
       'button': this.props.coordination,
@@ -1061,7 +1177,7 @@ class TaskInformation extends React.Component {
           <p>
             <b>Usuarios:</b>
           </p>
-          <UserTaskInformation 
+          <UserTaskInformation
             durations={this.state.task.durations}
             users={this.props.users}
           />
@@ -1142,6 +1258,38 @@ class UserTaskInformation extends React.Component {
     return (
       <div className="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
         {this.renderUsers()}
+      </div>
+    );
+  }
+}
+
+/**
+ * Renders error messages to tell user something
+ * is wrong with their inputs, etc.
+ */
+class ErrorMessage extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {};
+  }
+
+  componentDidMount() {
+    // Some nice transition.
+    console.log('mounted correctly');
+  }
+
+  componentWillUnmount() {
+    // Another nice transition
+    console.log('will unmount, byeeee');
+  }
+
+  render() {
+    return (
+      <div>
+        <div>{this.props.title}</div>
+        <div>{this.props.body}</div>
+        <div onClick={this.props.hideError}>Cerrar</div>
       </div>
     );
   }
