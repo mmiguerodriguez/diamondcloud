@@ -216,11 +216,34 @@
 	}
 }
 
+.go-back {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  vertical-align: middle;
+  background-image: url(img/go-back.svg);
+  background-position: center;
+  background-size: 18px;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+  background-color: white;
+  border-radius: 50%;
+  margin: 5px;
+  transition: 0.3s all ease;
+}
+.go-back:hover {
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  opacity: 0.9;
+}
 .task-info {
   background-color: #e2e4e6;
   margin-top: 15px;
   border-radius: 5px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+.task-info-title {
+  display: inline-block;
 }
 .item {
   background-color: #fff;
@@ -230,5 +253,11 @@
   margin-bottom: 10px;
 }
 .text-fixed {
+  /* padding: 10px; */
   font-size: 14px;
+  text-align: left;
+}
+.panel-heading.fixed {
+  padding: 10px;
+  background-color: #efefef;
 }

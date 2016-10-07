@@ -1160,7 +1160,11 @@ class TaskInformation extends React.Component {
   render() {
     return (
       <div className='task-info col-xs-12'>
-        <h4>Información de la tarea</h4>
+        <div 
+          className='go-back'
+          onClick={() => this.props.setLocation('tasks/show')}>
+        </div>
+        <h4 className='task-info-title'>Información de la tarea</h4>
         <div className='item'>
           <p>
             <b>Tarea:</b> {this.state.task.title}
@@ -1229,7 +1233,7 @@ class UserTaskInformation extends React.Component {
 
       return (
         <div className="panel panel-default">
-          <div className="panel-heading" role="tab" id={'heading_' + user._id}>
+          <div className="panel-heading fixed" role="tab" id={'heading_' + user._id}>
             <h4 className="panel-title">
               <a className='text-fixed' role="button" data-toggle="collapse" data-parent="#accordion" href={'#collapse_' + user._id} aria-expanded="false" aria-controls={'collapse_' + user._id}>
                 {user.profile.name}
