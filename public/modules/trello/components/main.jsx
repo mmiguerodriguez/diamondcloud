@@ -7,7 +7,8 @@ const {
   React,
   ReactDOM,
   ReactRouter,
-  classNames
+  classNames,
+  $,
 } = window;
 const {
   Router,
@@ -15,6 +16,12 @@ const {
   IndexRoute,
   browserHistory
 } = ReactRouter;
+
+/**
+ * Error component delay
+ * (in miliseconds)
+ */
+const ERROR_DELAY = 5000; 
 
 /**
  * Starts the module with the following route.
@@ -132,10 +139,11 @@ class TaskManagerLayout extends React.Component {
    *   @param {String} title
    *   @param {String} body
    */
-  showError({ body }) {
+  showError({ body, delay }) {
     this.setState({
       error: {
         body,
+        delay: delay ? delay : ERROR_DELAY,
         showing: true,
       },
     });
@@ -147,6 +155,7 @@ class TaskManagerLayout extends React.Component {
     this.setState({
       error: {
         body: '',
+        delay: ERROR_DELAY,
         showing: false,
       },
     });
@@ -171,6 +180,7 @@ class TaskManagerLayout extends React.Component {
       selectedBoardId: undefined,
       error: {
         body: '',
+        delay: ERROR_DELAY,
         showing: false,
       }
     };
@@ -1262,7 +1272,7 @@ class ErrorMessage extends React.Component {
   close() {
     let self = this;
     
-    $('.error-message').removeClass('show-error')
+    $('.error-message').removeClass('show-error');
     $('.error-message').addClass('hide-error', () => {
       setTimeout(self.props.hideError.bind(null), 700);
     });
@@ -1279,6 +1289,8 @@ class ErrorMessage extends React.Component {
   componentDidMount() {
     // Some nice transition.
     console.log('mounted correctly');
+    
+    setTimeout(this.close.bind(null), this.props.delay);
   }
 
   componentWillUnmount() {
