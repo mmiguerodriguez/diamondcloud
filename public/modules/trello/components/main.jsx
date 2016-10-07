@@ -1034,10 +1034,10 @@ class Task extends React.Component {
                 </h5>
                 {
                   !this.props.coordination && (this.props.doing && this.state.doing) ? (
-                    <p className='col-xs-10 time-active'>Tiempo activo: {this.state.count}</p>
+                    <p className='col-xs-12 time-active'>Tiempo activo: {this.state.count}</p>
                   ) : (null)
                 }
-                <p className='col-xs-10 expiration'>Vencimiento: {new Date(this.props.task.dueDate).toLocaleDateString()}</p>
+                <p className='col-xs-12 expiration'>Vencimiento: {new Date(this.props.task.dueDate).toLocaleDateString()}</p>
               </div>
             )
           }
@@ -1231,13 +1231,13 @@ class UserTaskInformation extends React.Component {
         <div className="panel panel-default">
           <div className="panel-heading" role="tab" id={'heading_' + user._id}>
             <h4 className="panel-title">
-              <a role="button" data-toggle="collapse" data-parent="#accordion" href={'#collapse_' + user._id} aria-expanded="false" aria-controls={'collapse_' + user._id}>
+              <a className='text-fixed' role="button" data-toggle="collapse" data-parent="#accordion" href={'#collapse_' + user._id} aria-expanded="false" aria-controls={'collapse_' + user._id}>
                 {user.profile.name}
               </a>
             </h4>
           </div>
           <div id={'collapse_' + user._id} className="panel-collapse collapse" role="tabpanel" aria-labelledby={'heading_' + user._id}>
-            <div className="panel-body">
+            <div className="panel-body text-fixed">
               Tiempo trabajado: {time} {working ? '|| Trabajando actualmente' : '' }
             </div>
           </div>
