@@ -103,7 +103,7 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
     },
     getTeam() {
       return {
-        name: 'Carlos y Darío (Diamond Cloud)', // TODO: unhardcode this
+        name: 'Carlos y Darío', // TODO: unhardcode this
       };
     },
     getTeamData() {

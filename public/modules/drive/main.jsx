@@ -4,7 +4,8 @@ const { Router, Route, IndexRoute, browserHistory } = ReactRouter;
 browserHistory.push('/'); // initialize the router
 
 // Google Drive API
-let CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
+const CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com',
+      folderMimeType = 'application/vnd.google-apps.folder';
 
 class FileManagerLayout extends React.Component {
   constructor(props) {
@@ -56,23 +57,7 @@ class FileManagerLayout extends React.Component {
               className="document fixed"
               onClick={
                 () => {
-                  let fileTypeUrl; // this string is appended to the url
-                                   // it is needed for the google drive link
-                  switch (document.fileType) {
-                    case 'application/vnd.google-apps.document':
-                      fileTypeUrl = 'document';
-                      break;
-                    case 'application/vnd.google-apps.drawing':
-                      fileTypeUrl = 'drawings';
-                      break;
-                    case 'application/vnd.google-apps.presentation':
-                      fileTypeUrl = 'presentation';
-                      break;
-                    case 'application/vnd.google-apps.spreadsheet':
-                      fileTypeUrl = 'spreadsheets';
-                      break;
-                  }
-                  browserHistory.push('/' + fileTypeUrl + '/' + document._id);
+                  browserHistory.push('/document/' + document._id);
                 }
               } >
               <p className="truncate">{document.name}</p>
@@ -141,6 +126,7 @@ class FileManagerLayout extends React.Component {
                     name: this.state.name,
                     fileType: this.state.fileType,
                     parentFolderId: this.props.folderId,
+                    diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
                   }) }>Crear</button>
               </div>
             </div>
@@ -214,6 +200,7 @@ FileManagerLayout.propTypes = {
   createDocument: React.PropTypes.func.isRequired,
   createFolder: React.PropTypes.func.isRequired,
   initPicker: React.PropTypes.func.isRequired,
+  diamondCloudDriveFolderId: React.PropTypes.string.isRequired,
 };
 
 class FileManagerPage extends React.Component {
@@ -230,11 +217,13 @@ class FileManagerPage extends React.Component {
                                *  has already returned data
                                */
       documents: [],
+      diamondCloudDriveFolderId: null, /** The drive folder in which
+                                        *  all files are stored
+                                        */
     };
   }
 
   render() {
-    console.log('las props actuales son: ', this.props);
     return (
       <FileManagerLayout
         folderId={this.props.params.folderId}
@@ -245,6 +234,7 @@ class FileManagerPage extends React.Component {
         createDocument={this.createDocument}
         createFolder={this.createFolder}
         initPicker={this.initPicker}
+        diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
       />
     );
   }
@@ -252,14 +242,9 @@ class FileManagerPage extends React.Component {
 
   componentDidMount() {
     this.getDriveData();
-    checkAuth(); // configure google drive api
-    /*setTimeout(
-      () => {
-        this.createFolder(
-          { name: 'testeo' }
-        );
-      }, 1000
-    );*/
+    checkAuth(this.getDriveFolder.bind(this)); /** configure google drive api and
+                                     *  call the getDriveFolder in the callback
+                                     */
   }
 
   componentWillReceiveProps() {
@@ -268,21 +253,51 @@ class FileManagerPage extends React.Component {
   }
   
   /**
-   * getDriveFolder: returns the folder in the user's Drive
-   *   in which all the Diamond Cloud files will be stored.
+   * getDriveFolder: sets the diamondCloudDriveFolderId state.
+   *   It is the folder in the user's Drive in which all
+   *   the Diamond Cloud files will be stored.
    *   If there is no folder, it creates it.
-   * @return {String} id
    */
   getDriveFolder() {
     // Search for the folder
+    const folderName = DiamondAPI.getTeam().name + ' (Diamond Cloud)';
+    let self = this;
     gapi.client.drive.files.list({
-      q: 'name = "' + DiamondAPI.getTeam().name +'"' //todo: finish this
-    })
+      q: `name = "${folderName}" and mimeType = "${folderMimeType}"`,// TODO: fix this
+      pageSize: 1,
+    }).then(handleFolderList, (error) => {
+      console.log(error); // TODO: handle error
+    });
+    
+    function handleFolderList(response) {
+      // There isn't any folder created
+      if (response.result.files.length === 0) {
+        gapi.client.drive.files.create({
+          resource: {
+            name: folderName,
+            mimeType: folderMimeType,
+          }
+        }).then(handleCreatedFolder, (error) => {
+          console.log(error); // TODO: handle error
+        });
+      } else {
+        self.setState({
+          diamondCloudDriveFolderId: response.result.files[0].id,
+        });
+      }
+    }
+    
+    function handleCreatedFolder(response) {
+      self.setState({
+        diamondCloudDriveFolderId: response.result.id,
+      });
+    }
   }
   
   getDriveData() {
     
     // TODO show only the documents and folders of the current folder
+    // TODO dessuscribe from the old folders
     let self = this;
     
     /////////////////////////////////////////
@@ -307,8 +322,6 @@ class FileManagerPage extends React.Component {
               self.setState({
                 loadingFolders: false,
                 folders: res
-              }, () => {
-                console.log('the state i just set is ', self.state);
               });
             }
           },
@@ -354,7 +367,6 @@ class FileManagerPage extends React.Component {
     ////////////////////////////////////////
 
     if (!this.props.params.folderId) {
-      console.log('estamos en el root');
       //////////////////////////////////////////////////////////
       // Get the list of folders and documents in root folder //
       //////////////////////////////////////////////////////////
@@ -418,61 +430,66 @@ class FileManagerPage extends React.Component {
    *   @param {String} error
    *   @param {Object} response
    */
-  createDocument({ name, parentFolderId = null, fileType, callback = () => {} }) {
-    // TODO: create the files in a Diamond Cloud folder
-    // Create the folder if it does not exist
-    $('#create-doc-modal').removeClass('active');
-    gapi.client.drive.files.create({
-      resource: {
-        name,
-        mimeType: fileType,
-      }
-    }).then((resp) => {
-      // Make the document editable to everyone with the link
-      gapi.client.drive.permissions.create({
-        fileId: resp.result.id,
-        role: 'writer',
-        type: 'anyone',
-      }).then(() => {
-        if (!parentFolderId) {
+  createDocument({ name, parentFolderId = null, fileType, diamondCloudDriveFolderId, callback = () => {} }) {
+    // Check if there is a Diamond Cloud drive folder
+    if (!diamondCloudDriveFolderId) {
+      console.error('There was an error while creating the document. Please try again');
+      // TODO: handle this error
+    } else {
+      $('#create-doc-modal').removeClass('active');
+      gapi.client.drive.files.create({
+        resource: {
+          name,
+          mimeType: fileType,
+          parents: [diamondCloudDriveFolderId],
+        }
+      }).then((resp) => {
+        // Make the document editable to everyone with the link
+        gapi.client.drive.permissions.create({
+          fileId: resp.result.id,
+          role: 'writer',
+          type: 'anyone',
+        }).then(() => {
+          if (!parentFolderId) {
+            DiamondAPI.insert({
+              collection: 'rootFiles',
+              obj: {
+                documentId: resp.result.id, // resp is the response to the create
+                                            // request, not to the permission one
+                boardId: DiamondAPI.getCurrentBoard()._id,
+              },
+              isGlobal: true,
+              callback(err, res) {
+                if (!!err) {
+                  console.error(err);
+                }
+              }
+            });
+          }
+  
           DiamondAPI.insert({
-            collection: 'rootFiles',
+            collection: 'documents',
             obj: {
-              documentId: resp.result.id, // resp is the response to the create
-                                          // request, not to the permission one
-              boardId: DiamondAPI.getCurrentBoard()._id,
+              _id: resp.result.id,
+              parentFolderId,
+              name,
+              fileType,
             },
             isGlobal: true,
             callback(err, res) {
               if (!!err) {
                 console.error(err);
               }
-            }
+            },
           });
-        }
-
-        DiamondAPI.insert({
-          collection: 'documents',
-          obj: {
-            _id: resp.result.id,
-            parentFolderId,
-            name,
-            fileType,
-          },
-          isGlobal: true,
-          callback(err, res) {
-            if (!!err) {
-              console.error(err);
-            }
-          },
+          callback(null, resp);
+        }, (reason) => {
+          callback(reason, resp);
         });
-        callback(null, resp);
       }, (reason) => {
         callback(reason, resp);
       });
-    }, (reason) => {
-      callback(reason, resp);
-    });
+    }
   }
 
   createFolder({ name, parentFolderId = null, callback = () => {} }) {
@@ -545,8 +562,7 @@ class FileManagerPage extends React.Component {
 class FileViewerPage extends React.Component {
 
   render() {
-    let url = 'https://docs.google.com/' + this.props.params.fileType + '/d/' +
-      this.props.params.documentId + '/edit';
+    let url = 'https://drive.google.com/open?id=' + this.props.params.documentId;
 
     return (
       <FileViewerLayout
@@ -580,7 +596,7 @@ ReactDOM.render(
   <Router history={browserHistory}>
     <Route path='/' component={FileManagerPage} />
     <Route path='/folder/:folderId' component={FileManagerPage} />
-    <Route path='/:fileType/:documentId' component={FileViewerPage} />
+    <Route path='/document/:documentId' component={FileViewerPage} />
   </Router>,
   document.getElementById('render-target')
 );
@@ -588,8 +604,7 @@ ReactDOM.render(
 /**
  * Check if current user has authorized this application.
  */
-function checkAuth(i) {
-  i = i || 0;
+function checkAuth(callback = () => {}, i = 0) {
   if (i < 5) {
     if (!!gapi.auth) {
       let SCOPES = [
@@ -600,12 +615,12 @@ function checkAuth(i) {
         'scope': SCOPES.join(' '),
         'immediate': true
       }, () => {
-        gapi.client.load('drive', 'v3');
+        gapi.client.load('drive', 'v3', callback);
       });
     } else {
       i++;
       setTimeout(() => {
-        checkAuth(i);
+        checkAuth(callback, i);
       }, 100);
     }
   } else {
