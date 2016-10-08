@@ -118,13 +118,14 @@ export const APIGet = new ValidatedMethod({
     }
 
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+    let teamId = moduleInstance.board().team()._id;
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('API.methods.APIGet.boardAccessDenied',
       'Must be part of a board to access its modules.');
     }
 
-    return APICollection.find({
+    let res = APICollection.find({
       $and: [
         filter,
         {
@@ -142,7 +143,9 @@ export const APIGet = new ValidatedMethod({
           ]
         }
       ],
-    });
+    }).fetch();
+
+    return res;
   }
 });
 

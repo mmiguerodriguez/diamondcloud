@@ -87,6 +87,14 @@ if (Meteor.isServer) {
           },
         };
 
+        getRequest = {
+          moduleInstanceId: moduleInstances[0]._id,
+          collection: collections[0],
+          filter: {
+            something: documents[0].something,
+          },
+        };
+
         // Assign module instances to boards
         boards[0].moduleInstances.push({ _id: moduleInstances[0]._id });
         boards[0].moduleInstances.push({ _id: moduleInstances[1]._id });
@@ -147,7 +155,15 @@ if (Meteor.isServer) {
       });
 
       it('should get an entry from API Collection correctly', function(done) {
-        done();
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleInstanceId'] = moduleInstances[0]._id;
+        APICollection.insert(doc);
+        APIGet.call(getRequest, (err, res) => {
+          chai.assert.deepEqual(res[0], doc);
+          APICollection.remove({});
+          done();
+        });
       });
 
       it('should remove an entry from API Collection correctly', function(done) {
