@@ -263,7 +263,7 @@ class FileManagerPage extends React.Component {
     const folderName = DiamondAPI.getTeam().name + ' (Diamond Cloud)';
     let self = this;
     gapi.client.drive.files.list({
-      q: `name = "${folderName}" and mimeType = "${folderMimeType}"`,// TODO: fix this
+      q: `name = "${folderName}" and mimeType = "${folderMimeType}"`,
       pageSize: 1,
     }).then(handleFolderList, (error) => {
       console.log(error); // TODO: handle error
