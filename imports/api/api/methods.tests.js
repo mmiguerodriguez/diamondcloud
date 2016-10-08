@@ -125,20 +125,20 @@ if (Meteor.isServer) {
       it('should insert correctly the API data', function(done) {
         APIInsert.call(insertRequest);
         let res = APICollection.findOne({ _id: documents[0]._id });
-        res = APICollection.cleanAPIData(res);
-        chai.assert.deepEqual(res, documents[0]);
+        let expected = documents[0];
+        expected['#collection'] = collections[0];
+        expected['#moduleInstanceId'] = moduleInstances[0]._id;
+        chai.assert.deepEqual(res, expected);
         APICollection.remove({});
         done();
       });
 
       it('should update an API entry correctly', function(done) {
-        let doc = APICollection.generateMongoQuery(documents[0]);
-        doc.collection = collections[0];
-        doc.moduleInstanceId = moduleInstances[0]._id;
-        /* jshint ignore:start */
-        doc['API_somethingElse'] = updateRequest.updateQuery.$set.somethingElse;
-        /* jshint ignore:end */
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleInstanceId'] = moduleInstances[0]._id;
         APICollection.insert(doc);
+        doc.somethingElse = updateRequest.updateQuery.$set.somethingElse;
         APIUpdate.call(updateRequest);
         let updatedDoc = APICollection.findOne({ _id: documents[0]._id });
         chai.assert.deepEqual(updatedDoc, doc);

@@ -29,17 +29,17 @@ Meteor.publish('APICollection.data', function(moduleInstanceId, collection, filt
   return APICollection.find({
     $and: [
       {
-        collection,
+        '#collection': collection,
       },
-      APICollection.generateMongoQuery(filter),
+      filter,
       {
         $or: [
           {
-            moduleInstanceId,
+            '#moduleInstanceId': moduleInstanceId,
           },
           {
-            moduleId: moduleInstance.moduleId,
-            teamId,
+            '#moduleId': moduleInstance.moduleId,
+            '#teamId': teamId,
           }
         ]
       }

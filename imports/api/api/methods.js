@@ -32,18 +32,17 @@ export const APIInsert = new ValidatedMethod({
       'Must be part of a board to access its modules.');
     }
 
-    let entry = APICollection.generateMongoQuery(object);
-    entry.collection = collection;
+    let entry = object;
+    entry['#collection'] = collection;
 
     if (!isGlobal) {
-      entry.moduleInstanceId = moduleInstanceId;
+      entry['#moduleInstanceId'] = moduleInstanceId;
     } else {
-      entry.moduleId = moduleInstance.moduleId;
-      entry.teamId = teamId;
+      entry['#moduleId'] = moduleInstance.moduleId;
+      entry['#teamId'] = teamId;
     }
 
     APICollection.insert(entry);
-
     return entry;
   }
 });
@@ -64,8 +63,6 @@ export const APIUpdate = new ValidatedMethod({
 
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
     let teamId = moduleInstance.board().team()._id;
-    filter = APICollection.generateMongoQueryRecursively(filter);
-    updateQuery = APICollection.generateMongoQueryRecursively(updateQuery);
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('API.methods.APIUpdate.boardAccessDenied',
@@ -78,16 +75,16 @@ export const APIUpdate = new ValidatedMethod({
       $and: [
         filter,
         {
-          collection,
+          '#collection': collection,
         },
         {
           $or: [
             {
-              moduleInstanceId,
+              '#moduleInstanceId': moduleInstanceId,
             },
             {
-              moduleId: moduleInstance.moduleId,
-              teamId,
+              '#moduleId': moduleInstance.moduleId,
+              '#teamId': teamId,
             }
           ]
         }
@@ -131,16 +128,16 @@ export const APIGet = new ValidatedMethod({
       $and: [
         filter,
         {
-          collection,
+          '#collection': collection,
         },
         {
           $or: [
             {
-              moduleInstanceId,
+              '#moduleInstanceId': moduleInstanceId,
             },
             {
-              moduleId: moduleInstance.moduleId,
-              teamId,
+              '#moduleId': moduleInstance.moduleId,
+              '#teamId': teamId,
             }
           ]
         }
@@ -175,16 +172,16 @@ export const APIRemove = new ValidatedMethod({
       $and: [
         filter,
         {
-          collection,
+          '#collection': collection,
         },
         {
           $or: [
             {
-              moduleInstanceId,
+              '#moduleInstanceId': moduleInstanceId,
             },
             {
-              moduleId: moduleInstance.moduleId,
-              teamId,
+              '#moduleId': moduleInstance.moduleId,
+              '#teamId': teamId,
             }
           ]
         }
@@ -192,9 +189,7 @@ export const APIRemove = new ValidatedMethod({
     };
 
     let res = APICollection.find(completeFilter);
-
     APICollection.remove(completeFilter);
-
     return res;
   }
 });

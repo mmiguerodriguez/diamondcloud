@@ -18,7 +18,14 @@ import { APICollection }        from '../../api-collection/api-collection.js';
 if (Meteor.isServer) {
   describe('API', function() {
     describe('Subscriptions', function() {
-      let user, teams, boards, modules, moduleInstances, documents, collections, filters;
+      let user,
+          teams,
+          boards,
+          modules,
+          moduleInstances,
+          documents,
+          collections,
+          filters;
 
       beforeEach(function() {
         resetDatabase();
@@ -54,15 +61,6 @@ if (Meteor.isServer) {
           documents.push(Factory.create('spamAPIDocument'));
         }
 
-        // Convert documents into API documents
-        documents.map((doc) => {
-          let res = APICollection.generateMongoQuery(doc);
-          res._id = doc._id;
-          /* jshint ignore:start */
-          delete res['API__id'];
-          /* jshint ignore:end */
-        });
-
         collections = [
           faker.lorem.word(),
           faker.lorem.word(),
@@ -92,35 +90,31 @@ if (Meteor.isServer) {
         moduleInstances[3].moduleId = modules[1]._id;
 
         // Assign (module && team) || module instance to documents
-        documents[0].moduleId = modules[0]._id;
-        documents[0].teamId = teams[0]._id;
-        documents[1].moduleId = modules[0]._id;
-        documents[1].teamId = teams[0]._id;
-        documents[2].moduleInstanceId = moduleInstances[1]._id;
-        documents[3].moduleInstanceId = moduleInstances[0]._id;
-        documents[4].moduleInstanceId = moduleInstances[3]._id;
+        documents[0]['#moduleId'] = modules[0]._id;
+        documents[0]['#teamId'] = teams[0]._id;
+        documents[1]['#moduleId'] = modules[0]._id;
+        documents[1]['#teamId'] = teams[0]._id;
+        documents[2]['#moduleInstanceId'] = moduleInstances[1]._id;
+        documents[3]['#moduleInstanceId'] = moduleInstances[0]._id;
+        documents[4]['#moduleInstanceId'] = moduleInstances[3]._id;
 
         // Assign collections to documents
-        documents[0].collection = collections[0];
-        documents[1].collection = collections[0];
-        documents[2].collection = collections[0];
-        documents[3].collection = collections[1];
-        documents[4].collection = collections[1];
-
-        /* jshint ignore:start */
+        documents[0]['#collection'] = collections[0];
+        documents[1]['#collection'] = collections[0];
+        documents[2]['#collection'] = collections[0];
+        documents[3]['#collection'] = collections[1];
+        documents[4]['#collection'] = collections[1];
 
         // Assign another props
-        documents[0]['API_something'] = faker.lorem.word();
-        documents[1]['API_something'] = faker.lorem.word();
+        documents[0].something = faker.lorem.word();
+        documents[1].something = faker.lorem.word();
 
 
         filters = [
           {
-            something: documents[0]['API_something']
+            something: documents[0].something
           }
         ];
-
-        /* jshint ignore:end */
 
         resetDatabase();
 
