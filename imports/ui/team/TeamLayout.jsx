@@ -216,7 +216,7 @@ export default class TeamLayout extends React.Component {
           position={ isMobile.any ? 'mobile' : 'medium' }
           togglePosition={ this.togglePosition }
           removeChat={ this.props.removeChat }
-          hasMaximizedChats={ this.state['has-maximized-chats']}/>
+          hasMaximizedChats={ this.state['has-maximized-chats']} />
       );
     });
   }
