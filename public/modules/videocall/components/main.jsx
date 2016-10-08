@@ -170,11 +170,30 @@ class VideoChatPage extends React.Component {
  *          RemoteVideos
  */
 class VideoChatLayout extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      connected: false,
+      maximizedVideo: this.props.localVideoId,
+    };
+    
+    this.connect = this.connect.bind(this);
+    
+    this.changeMaximizedVideo = this.changeMaximizedVideo.bind(this);
+  }
+  
   renderVideos() {
     return this.props.videos.map((video) => {
       return (
         <Video 
           key={video.id }
+          class={
+            (this.state.maximizedVideo === video.id) ?
+              ('maximized-video') :
+              ('minimized-video')
+          }
+          onClick={this.changeMaximizedVideo}
           webrtc={this.props.webrtc}
           { ...video } />
       );
@@ -192,24 +211,22 @@ class VideoChatLayout extends React.Component {
     }
   }
 
-  constructor(props) {
-    super(props);
-    
-    this.state = { connected: false };
-    
-    this.connect = this.connect.bind(this);
-  }
-
   render() {
     return (
       <div>
         <UserVideo
           id={this.props.localVideoId}
+          class={
+            (this.state.maximizedVideo === this.props.localVideoId) ?
+              ('maximized-video') :
+              ('minimized-video')
+          }
+          onClick={this.changeMaximizedVideo}
           webrtc={this.props.webrtc}
           connected={this.state.connected} />
         {
           this.state.connected ? (
-            <div className='minimized-video-container'>
+            <div>
               {this.renderVideos()}
             </div>
           ) : (
@@ -223,6 +240,12 @@ class VideoChatLayout extends React.Component {
         }
       </div>
     );
+  }
+  
+  changeMaximizedVideo(id) {
+    this.setState({
+      maximizedVideo: id,
+    });
   }
 }
 
@@ -272,10 +295,14 @@ class UserVideo extends React.Component {
   
   render() {
     return (
-      <div className='user-video-container'>
+      <div className={
+        (this.props.class === 'maximized-video') ?
+          'user-video-container' : 'minimized-video-container'
+      } >
         <video
           id={this.props.id}
-          className='user-video'>
+          className={this.props.class}
+          onClick={this.props.onClick.bind(null, this.props.id)}>
         </video>
         { 
           this.props.connected ? (
@@ -346,7 +373,9 @@ class Video extends React.Component {
 
   render() {
     return (
-      <div className='minimized-video'>
+      <div className={(this.props.class === 'minimized-video') ?
+        'minimized-video-container' : null
+      }>
         <div className='minimized-user-data'>
           <p className='nick'>{this.props.peer.nick}</p>
           <VideoStatus
@@ -355,6 +384,8 @@ class Video extends React.Component {
         </div>
         <video
           id={this.props.domId}
+          className={this.props.class}
+          onClick={this.props.onClick.bind(null, this.props.id)}
           src={URL.createObjectURL(this.props.peer.stream)}
           ref={(e) => this.video = e}
           onContextMenu={() => { return false; }}

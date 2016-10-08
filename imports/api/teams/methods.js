@@ -82,7 +82,7 @@ export const createTeam = new ValidatedMethod({
           //create trello module instance
           createModuleInstance.call({
             boardId: coordinationBoard._id,
-            moduleId: 'trello',
+            moduleId: 'task-manager',
             x: 100,
             y: 100,
             width: 500,
