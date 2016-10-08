@@ -366,6 +366,10 @@ class CreateTask extends React.Component {
     return (
       <div className='row create-task-form'>
         <div className='col-xs-12'>
+          <div 
+            className='go-back'
+            onClick={() => this.props.setLocation('tasks/show')}>
+          </div>
           <h4>Crear una tarea</h4>
         </div>
         <div className='col-xs-12 create-task-inputs'>

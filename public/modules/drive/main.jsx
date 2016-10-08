@@ -28,7 +28,7 @@ class FileManagerLayout extends React.Component {
       return this.props.folders.map((folder) => {
         return (
           <div
-            className="folder col-xs-4 fixed"
+            className="folder-item col-xs-4 fixed"
             onClick={
               () => {
                 browserHistory.push('/folder/' + folder._id);
@@ -76,61 +76,105 @@ class FileManagerLayout extends React.Component {
     return (
       <div>
         <div id='resizable' className='file-manager ui-widget-content'>
-          <div
-            className="modal-container"
-            id='create-doc-modal'>
-            <div className="create-doc-modal">
-              <div className="modal-head">
-              <div className="header-data">
-              <h4 className="modal-title">Cree un documento</h4>
-              <i
-                className="material-icons close"
-                onClick={ this.closeModal.bind(this) }>close</i>
-            </div>
-
-            </div>
-              <div className="modal-body">
-              <div className="form-group name">
-                <label for="file-name">Nombre del archivo</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="file-name"
-                  placeholder="Nombre del archivo"
-                  value={ this.state.name }
-                  onChange={ this.handleChange.bind(this, 'name') } />
-              </div>
-
-              <label for="file-type">Tipo de archivo</label>
-              <select
-                id="file-type"
-                className="form-control"
-                value={ this.state.fileType }
-                onChange={ this.handleChange.bind(this, 'fileType') }>
-                <option value='application/vnd.google-apps.document'>Docs</option>
-                <option value='application/vnd.google-apps.drawing'>Drawing</option>
-                <option value='application/vnd.google-apps.spreadsheet'>Excel</option>
-                <option value='application/vnd.google-apps.presentation'>Slides</option>
-              </select>
-            </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-default"
-                  data-dismiss="modal"
-                  onClick={ this.closeModal.bind(this) }>Cancelar</button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={ this.props.createDocument.bind(this, {
+          {
+            // Create document modal
+          }
+          <div className="modal fade" id="create-document" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 className="modal-title" id="myModalLabel">Crear archivo</h4>
+                </div>
+                <div className="modal-body">
+                  <div className="form-group name">
+                    <label for="file-name">Nombre del archivo</label>
+                    <input 
+                      type="text" 
+                      className="form-control" 
+                      id="file-name" 
+                      placeholder="Nombre del archivo"
+                      value={ this.state.name }
+                      onChange={ this.handleChange.bind(this, 'name') } />
+                  </div>
+                  
+                  <label for="file-type">Tipo de archivo</label>
+                  <select
+                    id="file-type"
+                    className="form-control"
+                    value={ this.state.fileType }
+                    onChange={ this.handleChange.bind(this, 'fileType') }>
+                    <option value='application/vnd.google-apps.document'>Docs</option>
+                    <option value='application/vnd.google-apps.drawing'>Drawing</option>
+                    <option value='application/vnd.google-apps.spreadsheet'>Excel</option>
+                    <option value='application/vnd.google-apps.presentation'>Slides</option>
+                  </select>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  <button 
+                    type="button" 
+                    className="btn btn-primary" 
+                    onClick={ this.props.createDocument.bind(this, {
                     name: this.state.name,
                     fileType: this.state.fileType,
                     parentFolderId: this.props.folderId,
                     diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
                   }) }>Crear</button>
+                </div>
               </div>
             </div>
           </div>
+          {
+            // Create folder modal
+          }
+          <div className="modal fade" id="create-folder" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 className="modal-title" id="myModalLabel">Crear capeta</h4>
+                </div>
+                <div className="modal-body">
+                  <div className="form-group name">
+                    <label for="file-name">Nombre de la carpeta</label>
+                    <input 
+                      type="text" 
+                      className="form-control" 
+                      id="file-name" 
+                      placeholder="Nombre de la carpeta"
+                      value={ this.state.name }
+                      onChange={ this.handleChange.bind(this, 'name') } />
+                  </div>
+                  
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  <button 
+                    type="button" 
+                    className="btn btn-primary" 
+                    onClick={ 
+                      this.props.createFolder.bind(this, {
+                        name: this.state.name,
+                        parentFolderId: this.props.folderId,
+                      })
+                    }>Crear</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {
+            !!this.props.folderId ? 
+            (
+              <div className='folder-navbar'>
+                <div 
+                  className='go-back'
+                  onClick={ browserHistory.goBack }>
+                </div>
+              </div>
+            ) : ( null )
+          }
           <div className="container-fluid files-container">
             <p className="folders-title-container">
               Carpetas
@@ -168,8 +212,16 @@ class FileManagerLayout extends React.Component {
                 id="import-file"
               ></div>
               <div
-                className="option new"
-                onClick={this.openModal.bind(this)}></div>
+                className="option folder"
+                data-toggle="modal" 
+                data-target="#create-folder">
+                  <i className="material-icons icon">create_new_folder</i>
+              </div>
+              <div
+                className="option doc"
+                data-toggle="modal" 
+                data-target="#create-document">
+              </div>
             </div>
           </div>
         </div>
@@ -183,12 +235,6 @@ class FileManagerLayout extends React.Component {
     });
   }
 
-  closeModal() {
-    $('#create-doc-modal').removeClass('active');
-  }
-  openModal() {
-    $('#create-doc-modal').addClass('active');
-  }
 }
 
 FileManagerLayout.propTypes = {
@@ -575,15 +621,24 @@ class FileViewerPage extends React.Component {
 class FileViewerLayout extends React.Component {
   render() {
     return (
-      <iframe
-        src={this.props.url}
-        style={
-          {
-            width: '100%',
-            height: '100%'
+      <div>
+        <div className='drive-navbar'>
+          <i 
+            className="material-icons back-icon"
+            onClick={ browserHistory.goBack }>
+            arrow_back
+          </i>
+        </div>
+        <iframe
+          src={this.props.url}
+          style={
+            {
+              width: '100%',
+              height: 'calc(100% - 32px)'
+            }
           }
-        }
-      />
+        />
+      </div>
     );
   }
 }

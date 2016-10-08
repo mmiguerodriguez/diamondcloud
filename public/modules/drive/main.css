@@ -68,7 +68,7 @@ body {
   margin: 5px 0 !important;
   border-top-color: #ccc !important;
 }
-.folder {
+.folder-item {
   cursor: pointer;
   text-align: center;
   height: 40px;
@@ -108,6 +108,7 @@ body {
   width: 55.5px;
   height: 55.5px;
   border-radius: 50%;
+  cursor: pointer;
   background-color: #f44336;
   background-image: url(img/menu-button.svg);
   background-position: center;
@@ -118,14 +119,14 @@ body {
 .create:hover {
   box-shadow: 0px 0px 10px 1px rgba(0,0,0, 0.3);
 }
-.create:hover .options .new, .create:hover .options .drive {
+.create:hover .options .doc, .create:hover .options .drive , .create:hover .options .folder {
   opacity: 1;
 }
 .options {
-  height: 113px;
+  height: 163px;
   width: 55.5px;
   position: absolute;
-  top: -113px;
+  top: -163px;
 }
 .option {
   width: 37px;
@@ -137,65 +138,82 @@ body {
   background-repeat: no-repeat;
   background-size: 24px;
 }
-.new, .drive {
+.doc, .folder, .drive {
   opacity: 0;
 }
 .drive {
   background-color: #4caf50;
+  cursor: pointer;
   background-image: url('img/google-drive-logo.svg');
-  transition: all 0.6s ease;
+  transition: all 0.9s ease;
 }
 .drive:hover {
   box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
 }
-.new {
+.doc {
   transform: rotate(-90deg);
   background-color: #2196f3;
+  cursor: pointer;
   background-image: url('img/attachment-clip.svg');
   transition: all 0.3s ease;
 }
-.new:hover {
+.doc:hover {
   box-shadow: -5px 0 11px 0 rgba(0,0,0,0.18), -5px 0 15px 0 rgba(0,0,0,0.15);
+}
+.folder {
+  background-color: #f1c40f;
+  /* background-image: url('img/google-drive-logo.svg'); */
+  transition: all 0.6s ease;
+}
+.folder:hover {
+  box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
+}
+.folder .icon {
+  position: absolute;
+  left: calc(50% - 10px);
+  top: calc(50% - 17px);
+  color: #fff;
 }
 .files-container, .folders-container, .documents-container {
   overflow: auto;
 }
 
-.modal-container {
-  position: fixed;
-  top: 0;
-  left: 0;
+.drive-navbar {
+  height: 32px;
   width: 100%;
-  height: 100%;
-  /* opacity: 0; */
-  display: none;
-  z-index: 1;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: #4285f4;
+}
+.back-icon {
+  padding: 4px 8px;
+  color: #fff;
+  width: 40px;
+  cursor: pointer;
+}
+.back-icon:hover {
+  background-color: #3498db;
+}
+.folder-navbar {
+  width: 100%;
+  background-color: #3498db;
+}
+.go-back {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  vertical-align: middle;
+  background-image: url(img/go-back.svg);
+  background-position: center;
+  background-size: 18px;
+  background-repeat: no-repeat;
+  background-color: white;
+  opacity: 0.5;
+  cursor: pointer;
+  border-radius: 50%;
+  margin: 5px;
   transition: 0.3s all ease;
 }
-.active {
-  /* z-index: 1;
-  opacity: 1; */
-  display: block;
-}
-.create-doc-modal {
-  width: 70%;
-  height: auto;
-  background-color: #eee;
-  margin: 50px 15%;
-}
-.modal-head {
-  border-bottom: 1px solid #e5e5e5;
-}
-.header-data {
-  padding: 10px 15px;
-}
-.modal-title {
-  display: inline;
-}
-.modal-body {
-  padding: 15px;
-}
-.folder-picker {
-  padding-top: 15px;
+.go-back:hover {
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  opacity: 0.9;
 }
