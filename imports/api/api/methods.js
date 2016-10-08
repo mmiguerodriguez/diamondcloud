@@ -124,7 +124,7 @@ export const APIGet = new ValidatedMethod({
       'Must be part of a board to access its modules.');
     }
 
-    let res = APICollection.find({
+    return APICollection.find({
       $and: [
         filter,
         {
@@ -143,8 +143,6 @@ export const APIGet = new ValidatedMethod({
         }
       ],
     });
-
-    return res;
   }
 });
 
