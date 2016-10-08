@@ -31,12 +31,21 @@ Meteor.publish('messages.chat', function({ directChatId, boardId, limit }) {
     }
   }
 
+  let count = Messages.find({
+    $or: [
+      { directChatId },
+      { boardId }
+    ],
+  }).count();
+
   return Messages.find({
     $or: [
       { directChatId },
       { boardId }
     ],
   }, {
+    sort: { createdAt: 1 },
+    skip: count > limit ? count - limit : 0,
     limit,
   });
 });
@@ -46,7 +55,7 @@ Meteor.publish('messages.all', function(teamId) {
     throw new Meteor.Error('Messages.all.notLoggedIn',
     'Must be logged in to view chats.');
   }
-  
+
   const MESSAGES_LIMIT = 1;
   let user = Meteor.users.findOne(this.userId);
 
@@ -54,7 +63,7 @@ Meteor.publish('messages.all', function(teamId) {
   directChats = directChats.map((directChat) => {
     return directChat._id;
   });
-  
+
   let boards = user.boards(teamId).fetch();
   boards = boards.map((board) => {
     return board._id;
@@ -74,8 +83,7 @@ Meteor.publish('messages.all', function(teamId) {
       }
     ]
   }, {
-    sort: {
-      limit: MESSAGES_LIMIT,
-    }
+    sort: { createdAt: -1 },
+    limit: MESSAGES_LIMIT,
   });
 });

@@ -42,8 +42,6 @@ export default class Team extends React.Component {
     if (!board) {
       return ( null );
     }
-    
-    console.log('messages', this.props.messages);
 
     return (
       <div>
@@ -104,8 +102,9 @@ export default class Team extends React.Component {
     return chats;
   }
   addChat(obj) {
-    //obj: { boardId || directChatId }
-    let chats = this.state.chats;
+    let self = this;
+    let { chats } = this.state;
+
     if (!!obj.boardId) {
       let found = false;
       chats.forEach((chat) => {
@@ -115,13 +114,25 @@ export default class Team extends React.Component {
       });
 
       if (!found) {
-        let messages = Boards.findOne(obj.boardId).getMessages().fetch();
-        chats.push({
+        const chatHandle = Meteor.subscribe('messages.chat', {
           boardId: obj.boardId,
-          messages
-        });
+          limit: 10
+        }, {
+          onReady() {
+            let messages = Boards.findOne(obj.boardId).getMessages().fetch();
 
-        // Meteor.subscribe('messages.chat', { boardId: obj.boardId, limit: 10 });
+            chats.push({
+              boardId: obj.boardId,
+              messages,
+              subscription: chatHandle,
+              limit: 10,
+            });
+
+            self.setState({
+              chats,
+            });
+          }
+        });
       }
     } else {
       let found = false;
@@ -132,38 +143,59 @@ export default class Team extends React.Component {
       });
 
       if (!found) {
-        let messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
-        chats.push({
+        const chatHandle = Meteor.subscribe('messages.chat', {
           directChatId: obj.directChatId,
-          messages
-        });
+          limit: 10
+        }, {
+          onReady() {
+            let messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
 
-        // Meteor.subscribe('messages.chat', { directChatId: obj.directChatId, limit: 10 });
+            chats.push({
+              directChatId: obj.directChatId,
+              messages,
+              subscription: chatHandle,
+              limit: 10,
+            });
+
+            self.setState({
+              chats,
+            });
+          }
+        });
       }
     }
-
-    this.setState({
-      chats
-    });
   }
+  /**
+   * removeChat(obj)
+   * @param {Object} obj
+   *  @param {String} boardId
+   *  @param {String} directChatId
+   *
+   * Removes the chat with boardId || directChatId from
+   * the chats array that is in the state and stops
+   * its subscription.
+   */
   removeChat(obj) {
-    //obj: { boardId || directChatId }
-    let chats = this.state.chats;
+    let { chats } = this.state;
+
     if (!!obj.boardId) {
       chats.forEach((chat, index) => {
         if (chat.boardId === obj.boardId) {
+          chat.subscription.stop();
           chats.splice(index, 1);
         }
       });
     } else {
       chats.forEach((chat, index) => {
         if (chat.directChatId === obj.directChatId) {
+          chat.subscription.stop();
           chats.splice(index, 1);
         }
       });
     }
+
     this.setState({
-      chats
+      chats,
     });
   }
 
