@@ -18,7 +18,7 @@ const {
 } = ReactRouter;
 
 /**
- * Error component delay
+ * ErrorComponent delay
  * (in miliseconds)
  */
 const ERROR_DELAY = 5000; 
@@ -36,6 +36,32 @@ class TaskManagerPage extends React.Component {
   constructor() {
     super();
 
+    /**
+     * States
+     * 
+     * @param {Array} tasks
+     *  All the tasks we need to show
+     *  to the user.
+     * @param {Object} coordinationBoard
+     *  An object containing the _id
+     *  of the coordination board.
+     * @param {Object} currentBoard
+     *  Current board object.
+     * @param {Object} currentUser
+     *  Current user object.
+     * @param {Boolean} coordination
+     *  A bool that says if the actual
+     *  board is or not a
+     *  coordination
+     *  board.
+     * @param {Boolean} loading
+     *  A bool to check if the subscription
+     *  is loading.
+     * @param {Array} users
+     *  An array of the team users.
+     * @param {Array} boards
+     *  An array of the team boards.
+     */
     this.state = {
       tasks: [],
       coordinationBoard: {},
@@ -86,8 +112,13 @@ class TaskManagerPage extends React.Component {
               boardId: currentBoard._id,
               status: 'not_finished',
             };
-
-            const trelloHandle = DiamondAPI.subscribe({
+            
+            /**
+             * After grabbing all the data we needed, subscribe
+             * to the tasks collection with the filter, and
+             * setting the state on the callback.
+             */
+            const taskManagerHandle = DiamondAPI.subscribe({
               collection: 'tasks',
               filter,
               callback(error, result) {
@@ -136,8 +167,13 @@ class TaskManagerLayout extends React.Component {
    * Sets the error state so we can show an error
    * correctly.
    * @param {Object} object
-   *   @param {String} title
-   *   @param {String} body
+   *  @param {String} body
+   *   Error message.
+   *  @param {Number} delay
+   *   The delay until the message is closed
+   *  @param {Boolean} showing.
+   *   State to check if the message is being
+   *   shown or not.
    */
   showError({ body, delay }) {
     this.setState({
@@ -244,32 +280,39 @@ class CreateTask extends React.Component {
     if (self.state.title.length > 0 && self.state.title !== '') {
       if (self.state.boardId !== '') {
         if (Number.isInteger(dueDate) && dueDate !== 0) {
-          if (position >= 0) {
-            DiamondAPI.insert({
-              collection: 'tasks',
-              obj: {
-                title: self.state.title,
-                boardId: self.state.boardId,
-                durations: [],
-                dueDate,
-                position,
-                status: 'not_finished',
-                archived: false,
-              },
-              isGlobal: true,
-              callback(error, result) {
-                if (error) {
-                  console.error(error);
-                } else {
-                  console.log('Inserted task correctly');
-                  browserHistory.push('/tasks/show');
+          if (Number(dueDate) > new Date().getTime()) {
+            if (position >= 0) {
+              DiamondAPI.insert({
+                collection: 'tasks',
+                obj: {
+                  title: self.state.title,
+                  boardId: self.state.boardId,
+                  durations: [],
+                  dueDate,
+                  position,
+                  status: 'not_finished',
+                  archived: false,
+                },
+                isGlobal: true,
+                callback(error, result) {
+                  if (error) {
+                    console.error(error);
+                  } else {
+                    console.log('Inserted task correctly');
+                    browserHistory.push('/tasks/show');
+                  }
                 }
-              }
-            });
+              });
+            } else {
+              console.error('There was an error inserting task position', position);
+              self.props.showError({
+                body: 'La posición de la tarea es inválida',
+              });
+            }
           } else {
-            console.error('There was error inserting task position', position);
+            console.error('There was an error instering task dueDate', self.state.dueDate);
             self.props.showError({
-              body: 'La posición de la tarea es inválida',
+              body: 'La fecha de la tarea es inválida',
             });
           }
         } else {
@@ -312,16 +355,21 @@ class CreateTask extends React.Component {
       return 0;
     }
   }
-
+  /**
+   * Renders the <option> elements of the boards, except
+   * for the coordination board.
+   */
   renderOptions() {
     return this.props.boards.map((board) => {
-      return (
-        <option
-          key={board._id}
-          value={board._id}>
-          {board.name}
-        </option>
-      );
+      if (board._id !== this.props.coordinationBoard._id) {
+        return (
+          <option
+            key={board._id}
+            value={board._id}>
+            {board.name}
+          </option>
+        );
+      }
     });
   }
 
@@ -337,7 +385,7 @@ class CreateTask extends React.Component {
     });
   }
 
-  constructor(props){
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -424,7 +472,7 @@ class BoardsList extends React.Component {
 
       /**
        * If there are tasks then push task to array
-       * if it is from the actual board
+       * if it is from the actual board.
        */
       if (this.props.tasks !== undefined) {
         this.props.tasks.forEach((task) => {
@@ -435,8 +483,8 @@ class BoardsList extends React.Component {
       }
 
       /**
-       * If it isn't a coordination board then render
-       * only one board tasks
+       * If it isn't a coordination board then we
+       * render only one board tasks.
        */
       if (!this.props.coordination) {
         if (board._id === this.props.currentBoard._id) {
@@ -459,21 +507,26 @@ class BoardsList extends React.Component {
 
       /**
        * If it is a coordination board then it will
-       * return the nformation we want
+       * return all the boards except for the
+       * coordination one.
        */
-      return (
-        <Board
-          key={board._id}
-          board={board}
-          tasks={tasks}
-          coordination={this.props.coordination}
-          setLocation={this.props.setLocation}
-          currentUser={this.props.currentUser}
-          handleChange={this.props.handleChange}
-          showError={this.props.showError}
-          hideError={this.props.hideError}
-        />
-      );
+      if (board._id !== this.props.coordinationBoard._id) {
+        return (
+          <Board
+            key={board._id}
+            board={board}
+            tasks={tasks}
+            coordination={this.props.coordination}
+            setLocation={this.props.setLocation}
+            currentUser={this.props.currentUser}
+            handleChange={this.props.handleChange}
+            showError={this.props.showError}
+            hideError={this.props.hideError}
+          />
+        );
+      } else {
+        return;
+      }
     });
   }
 
@@ -1061,7 +1114,7 @@ class Task extends React.Component {
           </div>
 
           {
-            this.props.coordination ? (
+            this.props.coordination && !this.state.editing ? (
               <div
                 className='col-xs-2 archive-task'
                 title='Archivar tarea'
@@ -1165,6 +1218,10 @@ class TaskInformation extends React.Component {
     this.state = { task: {}, board: {} };
   }
 
+  /**
+   * Sets the state for the task we are showing
+   * information and the board of the task.
+   */
   componentWillMount() {
     this.props.tasks.forEach((task) => {
       if (task._id === this.props.params.taskId) {
@@ -1316,15 +1373,7 @@ class ErrorMessage extends React.Component {
   }
 
   componentDidMount() {
-    // Some nice transition.
-    console.log('mounted correctly');
-    
     setTimeout(this.close.bind(null), this.props.delay);
-  }
-
-  componentWillUnmount() {
-    // Another nice transition
-    console.log('will unmount, byeeee');
   }
 
   render() {
