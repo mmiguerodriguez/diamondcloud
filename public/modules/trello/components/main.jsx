@@ -843,7 +843,14 @@ class Task extends React.Component {
 
     return i;
   }
-
+  /**
+   * Starts the timer and sets the interval and
+   * doing state.
+   * 
+   * @param {Function} callback
+   *  Function to be called after the state
+   *  is set, usually to start the task.
+   */
   startTimer(callback) {
     let intervalId = setInterval(this.prettyDate.bind(this), 1000);
 
@@ -856,7 +863,15 @@ class Task extends React.Component {
       }
     });
   }
-
+  /**
+   * Stops the timer, clears the interval
+   * and sets the state as not doing,
+   * no interval and count.
+   * 
+   * @param {Function} callback
+   *  Function to be called after the state
+   *  is set, usually to stop the task.
+   */
   stopTimer(callback) {
     clearInterval(this.state.intervalId);
 
@@ -1009,122 +1024,132 @@ class Task extends React.Component {
     });
     const containerClass = classNames({
       'col-xs-12': this.state.editing,
-      'col-xs-10': !this.state.editing,
+      'col-xs-10': !this.state.editing && this.props.task.status === 'finished',
+      'col-xs-8': !this.state.editing && this.props.task.status === 'not_finished',
     });
     const clickHandle = this.props.coordination ? this.openTask : () => {};
 
     return (
       <div className='col-xs-12 task'>
-        <div className={containerClass}>
+        <div>
+          <div className={containerClass}>
+            {
+              this.state.editing ? (
+                <input
+                  className='form-control edit-task-input'
+                  type='text'
+                  value={this.state.task_title}
+                  onChange={(e) => this.handleChange('task_title', e)}
+                  onKeyDown={this.handleKeyDown}
+                />
+              ) : (
+                <div>
+                  <h5
+                    role={role}
+                    onClick={clickHandle}
+                    className='task-title col-xs-12'>
+                    {this.state.task_title}
+                  </h5>
+                  {
+                    !this.props.coordination && (this.props.doing && this.state.doing) ? (
+                      <p className='col-xs-12 time-active'>Tiempo activo: {this.state.count}</p>
+                    ) : (null)
+                  }
+                </div>
+              )
+            }
+          </div>
+
           {
-            this.state.editing ? (
-              <input
-                className='form-control edit-task-input'
-                type='text'
-                value={this.state.task_title}
-                onChange={(e) => this.handleChange('task_title', e)}
-                onKeyDown={this.handleKeyDown}
+            this.props.coordination ? (
+              <div
+                className='col-xs-2 archive-task'
+                title='Archivar tarea'
+                role='button'
+                onClick={this.archiveTask}
               />
-            ) : (
+            ) : (null)
+          }
+  
+          {
+            this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
+              <div
+                className='col-xs-2 edit-task'
+                title='Editar tarea'
+                role='button'
+                onClick={this.startEditing}
+              />
+            ) : (null)
+          }
+  
+          {
+            !this.props.coordination && (this.props.doing || this.state.doing) ? (
               <div>
-                <h5
-                  role={role}
-                  onClick={clickHandle}
-                  className='task-title col-xs-12'>
-                  {this.state.task_title}
-                </h5>
-                {
-                  !this.props.coordination && (this.props.doing && this.state.doing) ? (
-                    <p className='col-xs-12 time-active'>Tiempo activo: {this.state.count}</p>
-                  ) : (null)
-                }
+                <div className='record'>
+                  <img
+                    src='/modules/trello/img/record.svg'
+                    width='25px'
+                  />
+                </div>
+                <div
+                  className='done'
+                  title='Marcar como finalizado'
+                  role='button'
+                  onClick={() => this.setTaskStatus('finished')}>
+                    <img
+                      src='/modules/trello/img/finished-task.svg'
+                      width='25px'
+                    />
+                </div>
+                <div
+                  className='pause'
+                  title='Marcar como pausado'
+                  role='button'
+                  onClick={this.finishTask}>
+                    <img
+                      src='/modules/trello/img/pause-button.svg'
+                      width='15px'
+                    />
+                </div>
+              </div>
+            ) : (null)
+          }
+  
+          {
+            !this.props.coordination && (!this.props.doing || !this.state.doing) && this.props.task.status === 'not_finished' ? (
+              <div>
+                <div
+                  className='done'
+                  title='Marcar como finalizado'
+                  role='button'
+                  onClick={() => this.setTaskStatus('finished')}>
+                    <img
+                      src='/modules/trello/img/finished-task.svg'
+                      width='25px'
+                    />
+                </div>
+                <div
+                  className='play'
+                  title='Marcar como haciendo'
+                  role='button'
+                  onClick={this.startTask}>
+                    <img
+                      src='/modules/trello/img/play-arrow.svg'
+                      width='15px'
+                    />
+                </div>
+              </div>
+            ) : (null)
+          }
+        
+          {
+            !this.state.editing ? (
+              <div className='col-xs-12'>
                 <p className='col-xs-12 expiration'>Vencimiento: {new Date(this.props.task.dueDate).toLocaleDateString()}</p>
               </div>
-            )
+            ) : (null)
           }
         </div>
-
-        {
-          this.props.coordination && this.props.task.status === 'finished' ? (
-            <div
-              className='col-xs-2 archive-task'
-              title='Archivar tarea'
-              role='button'
-              onClick={this.archiveTask}
-            />
-          ) : (null)
-        }
-
-        {
-          this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
-            <div
-              className='col-xs-2 edit-task'
-              title='Editar tarea'
-              role='button'
-              onClick={this.startEditing}
-            />
-          ) : (null)
-        }
-
-        {
-          !this.props.coordination && (this.props.doing || this.state.doing) ? (
-            <div>
-              <div className='record'>
-                <img
-                  src='/modules/trello/img/record.svg'
-                  width='25px'
-                />
-              </div>
-              <div
-                className='done'
-                title='Marcar como finalizado'
-                role='button'
-                onClick={() => this.setTaskStatus('finished')}>
-                  <img
-                    src='/modules/trello/img/finished-task.svg'
-                    width='25px'
-                  />
-              </div>
-              <div
-                className='pause'
-                title='Marcar como pausado'
-                role='button'
-                onClick={this.finishTask}>
-                  <img
-                    src='/modules/trello/img/pause-button.svg'
-                    width='15px'
-                  />
-              </div>
-            </div>
-          ) : (null)
-        }
-
-        {
-          !this.props.coordination && (!this.props.doing || !this.state.doing) && this.props.task.status === 'not_finished' ? (
-            <div>
-              <div
-                className='done'
-                title='Marcar como finalizado'
-                role='button'
-                onClick={() => this.setTaskStatus('finished')}>
-                  <img
-                    src='/modules/trello/img/finished-task.svg'
-                    width='25px'
-                  />
-              </div>
-              <div
-                className='play'
-                title='Marcar como haciendo'
-                role='button'
-                onClick={this.startTask}>
-                  <img
-                    src='/modules/trello/img/play-arrow.svg'
-                    width='15px'
-                  />
-              </div>
-            </div>
-          ) : (null)
-        }
       </div>
     );
   }
