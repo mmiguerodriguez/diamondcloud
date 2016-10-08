@@ -21,8 +21,18 @@ import {
 if (Meteor.isServer) {
   describe('API', function() {
     describe('Methods', function() {
-      let user, moduleInstances, collections, documents;
-      let insertRequest, globalInsertRequest, updateRequest, getRequest, removeRequest;
+      let user,
+          moduleInstances,
+          boards,
+          teams,
+          collections,
+          documents;
+
+      let insertRequest,
+          globalInsertRequest,
+          updateRequest,
+          getRequest,
+          removeRequest;
 
       beforeEach(function() {
         resetDatabase();
@@ -32,6 +42,16 @@ if (Meteor.isServer) {
         moduleInstances = [
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
+        ];
+
+        boards = [
+          Factory.create('publicBoard', { name: 'General' }),
+          Factory.create('publicBoard'),
+        ];
+
+        teams = [
+          Factory.create('team'),
+          Factory.create('team'),
         ];
 
         collections = [
@@ -45,6 +65,7 @@ if (Meteor.isServer) {
         for (let i = 0; i < 8; i++) {
           documents.push(Factory.create('spamAPIDocument'));
         }
+        documents[0].something = faker.lorem.word();
 
         insertRequest = {
           moduleInstanceId: moduleInstances[0]._id,
@@ -53,12 +74,41 @@ if (Meteor.isServer) {
           isGlobal: false,
         };
 
+        updateRequest = {
+          moduleInstanceId: moduleInstances[0]._id,
+          collection: collections[0],
+          filter: {
+            something: documents[0].something,
+          },
+          updateQuery: {
+            $set: {
+              somethingElse: faker.lorem.word(),
+            }
+          },
+        };
+
+        // Assign module instances to boards
+        boards[0].moduleInstances.push({ _id: moduleInstances[0]._id });
+        boards[0].moduleInstances.push({ _id: moduleInstances[1]._id });
+
+        // Assign boards to module instances
+        teams[0].boards.push({ _id: boards[0]._id });
+        teams[0].boards.push({ _id: boards[1]._id });
+
         resetDatabase();
 
         Meteor.users.insert(user);
 
         moduleInstances.forEach((moduleInstance) => {
           ModuleInstances.insert(moduleInstance);
+        });
+
+        boards.forEach((board) => {
+          Boards.insert(board);
+        });
+
+        teams.forEach((team) => {
+          Teams.insert(team);
         });
 
         sinon.stub(Meteor, 'user', () => user);
@@ -74,14 +124,23 @@ if (Meteor.isServer) {
 
       it('should insert correctly the API data', function(done) {
         APIInsert.call(insertRequest);
-        let insertedDoc = APICollection.findOne({ _id: documents[0]._id });
-        insertedDoc = APICollection.clearAPIData(insertedDoc);
-        printObject('input doc:', documents[0], 'output doc', insertedDoc);
-        chai.assert.deepEqual(insertedDoc, documents[0]);
+        let res = APICollection.findOne({ _id: documents[0]._id });
+        res = APICollection.cleanAPIData(res);
+        chai.assert.deepEqual(res, documents[0]);
+        APICollection.remove({});
         done();
       });
 
       it('should update an API entry correctly', function(done) {
+        let doc = APICollection.generateMongoQuery(documents[0]);
+        doc.collection = collections[0];
+        doc.moduleInstanceId = moduleInstances[0]._id;
+        doc.somethingElse = updateRequest.updateQuery.$set.somethingElse;
+        APICollection.insert(doc);
+        APIUpdate.call(updateRequest);
+        let updatedDoc = APICollection.findOne({ _id: documents[0]._id });
+        chai.assert.deepEqual(updatedDoc, doc);
+        APICollection.remove({});
         done();
       });
 

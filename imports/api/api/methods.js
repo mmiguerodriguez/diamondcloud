@@ -64,6 +64,7 @@ export const APIUpdate = new ValidatedMethod({
 
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
     let teamId = moduleInstance.board().team()._id;
+    filter = APICollection.generateMongoQueryRecursively(filter);
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('API.methods.APIUpdate.boardAccessDenied',

@@ -9,7 +9,44 @@ APICollection.generateMongoQuery = (input) => {
     result[`API_${prop}`] = input[prop];
   }
 
+  /* jshint ignore:start */
+  if (!!result['API__id']) {
+    result._id = result['API__id'];
+    delete result['API__id'];
+  }
+  /* jshint ignore:end */
+
   return result;
+};
+
+APICollection.generateMongoQueryRecursively = (input) => {
+  if (input.constructor === Array) {
+    return input.map((e) => {
+      return APICollection.generateMongoQueryRecursively(e);
+    });
+  }
+  else if (typeof input == 'object') {
+    let result = {};
+
+    for (let i in input) {
+      if (i[0] != '$') {
+        result[`API_${i}`] = APICollection.generateMongoQueryRecursively(input[i]);
+      } else {
+        result[i] = APICollection.generateMongoQueryRecursively(input[i]);
+      }
+    }
+
+    /* jshint ignore:start */
+    if (!!result['API__id']) {
+      result._id = result['API__id'];
+      delete result['API__id'];
+    }
+    /* jshint ignore:end */
+
+    return result;
+  } else {
+    return input;
+  }
 };
 
 APICollection.cleanAPIData = (input) => {

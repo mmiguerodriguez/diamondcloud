@@ -11,7 +11,13 @@ import { APICollection }    from './api-collection.js';
 if (Meteor.isServer) {
   describe('API', function() {
     describe('Helpers', function() {
-      let generateInput, generateOutput, cleanInput, cleanOutput;
+      let generateInput,
+          generateOutput,
+          cleanInput,
+          cleanOutput,
+          recursiveInput,
+          recursiveOutput,
+          props;
 
       beforeEach(function(done) {
         generateInput = {
@@ -21,9 +27,51 @@ if (Meteor.isServer) {
         };
 
         generateOutput = {
-          'API__id': generateInput._id,
+          _id: generateInput._id,
           'API_name': generateInput.name,
           'API_collection': generateInput.collection,
+        };
+
+        props = [
+          faker.lorem.word(),
+          faker.lorem.word(),
+          faker.lorem.word(),
+        ];
+
+        recursiveInput = {
+          _id: faker.lorem.word(),
+          $and: [
+            {
+              $or: [
+                {
+                  [props[0]]: faker.lorem.word(),
+                },
+                faker.lorem.word(),
+              ],
+              [props[1]]: faker.lorem.word(),
+            },
+            {
+              [props[2]]: faker.lorem.word(),
+            }
+          ],
+        };
+
+        recursiveOutput = {
+          _id: recursiveInput._id,
+          $and: [
+            {
+              $or: [
+                {
+                  [`API_${props[0]}`]: recursiveInput.$and[0].$or[0][props[0]],
+                },
+                recursiveInput.$and[0].$or[1]
+              ],
+              [`API_${props[1]}`]: recursiveInput.$and[0][props[1]],
+            },
+            {
+              [`API_${props[2]}`]: recursiveInput.$and[1][props[2]],
+            }
+          ],
         };
 
         cleanInput = {
@@ -55,6 +103,12 @@ if (Meteor.isServer) {
       it('should generate a correct Mongo query', function(done) {
         let result = APICollection.generateMongoQuery(generateInput);
         chai.assert.deepEqual(result, generateOutput);
+        done();
+      });
+
+      it('should generate a Mongo correct recursive query', function(done) {
+        let result = APICollection.generateMongoQueryRecursively(recursiveInput);
+        chai.assert.deepEqual(result, recursiveOutput);
         done();
       });
 
