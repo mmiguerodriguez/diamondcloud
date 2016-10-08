@@ -20,21 +20,28 @@ class FileManagerLayout extends React.Component {
   renderFolders() {
     if(this.props.folders.length === 0) {
       return (
-        <p>
-          No hay carpetas
-        </p>
+        <div
+            className="folder-item-container col-xs-4"
+            data-toggle="modal" 
+            data-target="#create-folder">
+            <div className='folder-item fixed'>
+              <p className="truncate">Cree una carpeta</p>
+            </div>
+          </div>
       );
     } else {
       return this.props.folders.map((folder) => {
         return (
           <div
-            className="folder-item col-xs-4 fixed"
+            className="folder-item-container col-xs-4"
             onClick={
               () => {
                 browserHistory.push('/folder/' + folder._id);
               }
             }>
-            <p className="truncate">{folder.name}</p>
+            <div className='folder-item fixed'>
+              <p className="truncate">{folder.name}</p>
+            </div>
           </div>
         );
       });
@@ -44,9 +51,21 @@ class FileManagerLayout extends React.Component {
     if(this.props.documents.length === 0) {
       return (
         <div>
-          <p>
-            No hay documentos para mostrar
-          </p>
+          <div className='document-container col-xs-4'>
+            <div
+              className="document fixed"
+              data-toggle="modal" 
+              data-target="#create-document">
+              <p className="truncate">Cree un documento</p>
+            </div>
+          </div>
+          <div className='document-container col-xs-4'>
+            <div
+              className="document fixed"
+              id="import-file">
+              <p className="truncate">Importe desde drive</p>
+            </div>
+          </div>
         </div>
       );
     } else {
@@ -120,6 +139,9 @@ class FileManagerLayout extends React.Component {
                     fileType: this.state.fileType,
                     parentFolderId: this.props.folderId,
                     diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
+                    callback: () => {
+                      $('#create-document').modal('hide');
+                    },
                   }) }>Crear</button>
                 </div>
               </div>
@@ -157,6 +179,9 @@ class FileManagerLayout extends React.Component {
                       this.props.createFolder.bind(this, {
                         name: this.state.name,
                         parentFolderId: this.props.folderId,
+                        callback: () => {
+                          $('#create-folder').modal('hide');
+                        },
                       })
                     }>Crear</button>
                 </div>
@@ -482,7 +507,6 @@ class FileManagerPage extends React.Component {
       console.error('There was an error while creating the document. Please try again');
       // TODO: handle this error
     } else {
-      $('#create-doc-modal').removeClass('active');
       gapi.client.drive.files.create({
         resource: {
           name,
@@ -568,6 +592,8 @@ class FileManagerPage extends React.Component {
             if (!!err) {
               console.error(err);
               callback(err, null);
+            } else {
+              callback(null, res);
             }
           }
       });
