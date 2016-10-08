@@ -41,6 +41,7 @@ class FileManagerLayout extends React.Component {
             }>
             <div className='folder-item fixed'>
               <p className="truncate">{folder.name}</p>
+              <i className="material-icons delete">delete</i>
             </div>
           </div>
         );
@@ -80,6 +81,7 @@ class FileManagerLayout extends React.Component {
                 }
               } >
               <p className="truncate">{document.name}</p>
+              <i className="material-icons delete">delete</i>
             </div>
           </div>
         );
@@ -650,7 +652,7 @@ class FileViewerLayout extends React.Component {
       <div>
         <div className='drive-navbar'>
           <i 
-            className="material-icons back-icon"
+            className="material-icons go-back"
             onClick={ browserHistory.goBack }>
             arrow_back
           </i>
