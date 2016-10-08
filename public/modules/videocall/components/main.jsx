@@ -86,8 +86,6 @@ class VideoChatPage extends React.Component {
       videos.push({
         id: peer.id,
         domId: webrtc.getDomId(peer),
-        width: VIDEO_WIDTH,
-        height: VIDEO_HEIGHT,
         video: VIDEO_START,
         audio: AUDIO_START,
         peer,
@@ -177,7 +175,7 @@ class VideoChatLayout extends React.Component {
       return (
         <Video 
           key={video.id }
-          webrtc={this.props.webrtc }
+          webrtc={this.props.webrtc}
           { ...video } />
       );
     });
@@ -358,8 +356,6 @@ class Video extends React.Component {
         <video
           id={this.props.domId}
           src={URL.createObjectURL(this.props.peer.stream)}
-          width={this.props.width}
-          height={this.props.height}
           ref={(e) => this.video = e}
           onContextMenu={() => { return false; }}
           autoPlay>
