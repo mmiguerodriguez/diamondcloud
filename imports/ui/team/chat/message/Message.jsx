@@ -92,7 +92,7 @@ export default class Message extends React.Component {
   }
   componentDidMount() {
     this.props.scrollDown();
-
+    
     if (!this.props.isSender) {
       if (this.props.position !== 'minimized') {
         if (this.props.message.directChatId) {

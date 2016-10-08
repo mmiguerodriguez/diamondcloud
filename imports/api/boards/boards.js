@@ -32,9 +32,13 @@ Boards.helpers({
       fields
     });
   },
-  getMessages() {
+  getMessages(options) {
     return Messages.find({
       boardId: this._id,
+    }, {
+      sort: {
+        createdAt: 1,
+      }
     });
   },
   getLastMessage() {

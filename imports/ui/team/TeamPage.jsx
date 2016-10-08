@@ -70,7 +70,6 @@ export default class Team extends React.Component {
               messages={ this.props.messages } />
           ) : ( null )
         }
-
       </div>
     );
   }
@@ -91,6 +90,7 @@ export default class Team extends React.Component {
 
   getChats() {
     let chats = this.state.chats;
+
     chats = chats.map((chat) => {
       if (!!chat.boardId) {
         chat.messages = Boards.findOne(chat.boardId).getMessages().fetch();
@@ -99,6 +99,7 @@ export default class Team extends React.Component {
       }
       return chat;
     });
+
     return chats;
   }
   addChat(obj) {
@@ -116,7 +117,6 @@ export default class Team extends React.Component {
       if (!found) {
         const chatHandle = Meteor.subscribe('messages.chat', {
           boardId: obj.boardId,
-          limit: 10
         }, {
           onReady() {
             let messages = Boards.findOne(obj.boardId).getMessages().fetch();
@@ -125,7 +125,6 @@ export default class Team extends React.Component {
               boardId: obj.boardId,
               messages,
               subscription: chatHandle,
-              limit: 10,
             });
 
             self.setState({
@@ -145,7 +144,6 @@ export default class Team extends React.Component {
       if (!found) {
         const chatHandle = Meteor.subscribe('messages.chat', {
           directChatId: obj.directChatId,
-          limit: 10
         }, {
           onReady() {
             let messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
@@ -154,7 +152,6 @@ export default class Team extends React.Component {
               directChatId: obj.directChatId,
               messages,
               subscription: chatHandle,
-              limit: 10,
             });
 
             self.setState({
@@ -198,7 +195,7 @@ export default class Team extends React.Component {
       chats,
     });
   }
-
+  
   boardSubscribe(boardId) {
     if (Team.board.get()._id === boardId) {
       return;
@@ -235,7 +232,11 @@ export default TeamPageContainer = createContainer(({ params }) => {
   const { teamId } = params;
   let messagesHandle;
   let changesCallback = () => {
-    messagesHandle = Meteor.subscribe('messages.all', teamId);
+    if (messagesHandle) {
+      messagesHandle.stop();
+    }
+
+    messagesHandle = Meteor.subscribe('messages.last', teamId);
   };
 
   const teamsHandle = Meteor.subscribe('teams.dashboard');
@@ -245,7 +246,7 @@ export default TeamPageContainer = createContainer(({ params }) => {
       Team.board.set(Boards.findOne());
     });
     Team.boardSubscription.set(boardHandle);
-    messagesHandle = Meteor.subscribe('messages.all', teamId);
+    messagesHandle = Meteor.subscribe('messages.last', teamId);
   });
   const loading = !teamsHandle.ready() || !teamHandle.ready();
 

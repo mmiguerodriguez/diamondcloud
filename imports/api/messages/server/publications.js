@@ -4,7 +4,11 @@ import { Messages }    from '../messages.js';
 import { DirectChats } from '../../direct-chats/direct-chats.js';
 import { Boards }      from '../../boards/boards.js';
 
-Meteor.publish('messages.chat', function({ directChatId, boardId, limit }) {
+/**
+ * TODO: Pass MESSAGES_LIMIT from client side,
+ *       and make pagination work.
+ */
+Meteor.publish('messages.chat', function({ directChatId, boardId }) {
   if (!this.userId) {
     throw new Meteor.Error('Messages.chat.notLoggedIn',
     'Must be logged in to view chats.');
@@ -30,13 +34,8 @@ Meteor.publish('messages.chat', function({ directChatId, boardId, limit }) {
       directChatId = '';
     }
   }
-
-  let count = Messages.find({
-    $or: [
-      { directChatId },
-      { boardId }
-    ],
-  }).count();
+  
+  const MESSAGES_LIMIT = 100;
 
   return Messages.find({
     $or: [
@@ -44,15 +43,16 @@ Meteor.publish('messages.chat', function({ directChatId, boardId, limit }) {
       { boardId }
     ],
   }, {
-    sort: { createdAt: 1 },
-    skip: count > limit ? count - limit : 0,
-    limit,
+    sort: {
+      createdAt: -1,
+    },
+    limit: MESSAGES_LIMIT,
   });
 });
 
-Meteor.publish('messages.all', function(teamId) {
+Meteor.publish('messages.last', function(teamId) {
   if (!this.userId) {
-    throw new Meteor.Error('Messages.all.notLoggedIn',
+    throw new Meteor.Error('Messages.last.notLoggedIn',
     'Must be logged in to view chats.');
   }
 
@@ -83,7 +83,9 @@ Meteor.publish('messages.all', function(teamId) {
       }
     ]
   }, {
-    sort: { createdAt: -1 },
+    sort: {
+      createdAt: -1,
+    },
     limit: MESSAGES_LIMIT,
   });
 });
