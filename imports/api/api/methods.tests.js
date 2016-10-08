@@ -135,7 +135,9 @@ if (Meteor.isServer) {
         let doc = APICollection.generateMongoQuery(documents[0]);
         doc.collection = collections[0];
         doc.moduleInstanceId = moduleInstances[0]._id;
-        doc.somethingElse = updateRequest.updateQuery.$set.somethingElse;
+        /* jshint ignore:start */
+        doc['API_somethingElse'] = updateRequest.updateQuery.$set.somethingElse;
+        /* jshint ignore:end */
         APICollection.insert(doc);
         APIUpdate.call(updateRequest);
         let updatedDoc = APICollection.findOne({ _id: documents[0]._id });
