@@ -22,7 +22,7 @@ class FileManagerLayout extends React.Component {
       return (
         <div
             className="folder-item-container col-xs-4"
-            data-toggle="modal" 
+            data-toggle="modal"
             data-target="#create-folder">
             <div className='folder-item fixed'>
               <p className="truncate">Cree una carpeta</p>
@@ -55,7 +55,7 @@ class FileManagerLayout extends React.Component {
           <div className='document-container col-xs-4'>
             <div
               className="document fixed"
-              data-toggle="modal" 
+              data-toggle="modal"
               data-target="#create-document">
               <p className="truncate">Cree un documento</p>
             </div>
@@ -110,15 +110,15 @@ class FileManagerLayout extends React.Component {
                 <div className="modal-body">
                   <div className="form-group name">
                     <label for="file-name">Nombre del archivo</label>
-                    <input 
-                      type="text" 
-                      className="form-control" 
-                      id="file-name" 
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="file-name"
                       placeholder="Nombre del archivo"
                       value={ this.state.name }
                       onChange={ this.handleChange.bind(this, 'name') } />
                   </div>
-                  
+
                   <label for="file-type">Tipo de archivo</label>
                   <select
                     id="file-type"
@@ -133,9 +133,9 @@ class FileManagerLayout extends React.Component {
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-default" data-dismiss="modal">Cancelar</button>
-                  <button 
-                    type="button" 
-                    className="btn btn-primary" 
+                  <button
+                    type="button"
+                    className="btn btn-primary"
                     onClick={ this.props.createDocument.bind(this, {
                     name: this.state.name,
                     fileType: this.state.fileType,
@@ -162,22 +162,22 @@ class FileManagerLayout extends React.Component {
                 <div className="modal-body">
                   <div className="form-group name">
                     <label for="file-name">Nombre de la carpeta</label>
-                    <input 
-                      type="text" 
-                      className="form-control" 
-                      id="file-name" 
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="file-name"
                       placeholder="Nombre de la carpeta"
                       value={ this.state.name }
                       onChange={ this.handleChange.bind(this, 'name') } />
                   </div>
-                  
+
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-default" data-dismiss="modal">Cancelar</button>
-                  <button 
-                    type="button" 
-                    className="btn btn-primary" 
-                    onClick={ 
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={
                       this.props.createFolder.bind(this, {
                         name: this.state.name,
                         parentFolderId: this.props.folderId,
@@ -190,12 +190,12 @@ class FileManagerLayout extends React.Component {
               </div>
             </div>
           </div>
-          
+
           {
-            !!this.props.folderId ? 
+            !!this.props.folderId ?
             (
               <div className='folder-navbar'>
-                <div 
+                <div
                   className='go-back'
                   onClick={ browserHistory.goBack }>
                 </div>
@@ -240,13 +240,13 @@ class FileManagerLayout extends React.Component {
               ></div>
               <div
                 className="option folder"
-                data-toggle="modal" 
+                data-toggle="modal"
                 data-target="#create-folder">
                   <i className="material-icons icon">create_new_folder</i>
               </div>
               <div
                 className="option doc"
-                data-toggle="modal" 
+                data-toggle="modal"
                 data-target="#create-document">
               </div>
             </div>
@@ -324,7 +324,7 @@ class FileManagerPage extends React.Component {
     // the props have changed, so we have to remake the subscriptions
     this.getDriveData();
   }
-  
+
   /**
    * getDriveFolder: sets the diamondCloudDriveFolderId state.
    *   It is the folder in the user's Drive in which all
@@ -341,7 +341,7 @@ class FileManagerPage extends React.Component {
     }).then(handleFolderList, (error) => {
       console.log(error); // TODO: handle error
     });
-    
+
     function handleFolderList(response) {
       // There isn't any folder created
       if (response.result.files.length === 0) {
@@ -359,20 +359,20 @@ class FileManagerPage extends React.Component {
         });
       }
     }
-    
+
     function handleCreatedFolder(response) {
       self.setState({
         diamondCloudDriveFolderId: response.result.id,
       });
     }
   }
-  
+
   getDriveData() {
-    
+
     // TODO show only the documents and folders of the current folder
     // TODO dessuscribe from the old folders
     let self = this;
-    
+
     /////////////////////////////////////////
     // Get the files of the current folder //
     /////////////////////////////////////////
@@ -538,7 +538,7 @@ class FileManagerPage extends React.Component {
               }
             });
           }
-  
+
           DiamondAPI.insert({
             collection: 'documents',
             obj: {
@@ -616,16 +616,27 @@ class FileManagerPage extends React.Component {
        },
      });
   }
-  
+
   /**
-   * deleteDocument
-   * @param {String} id
+   * deleteDocument: Deletes a document from the module data and from Drive.
+   * If the document is a folder, deletes all its children.
+   * If it recieves parentFolderId instead of id, it deletes all documents
+   * with the given parent id.
+   * @param {String} id (optional)
+   * @param {String} parentFolderId (optional)
    * @param {Function} callback (optional)
    *   @param {String} error
    *   @param {Object} response
    */
-  deleteDocument({ id, callback = () => {}}) {
-    
+  deleteDocument({ id = '', parentFolderId = '', callback = () => {}}) {
+    if (id === '' && parentFolderId === '') {
+      let error = 'Invalid parameters passed to deleteDocument';
+      console.error(error);
+      callback(error, null);
+    }
+    // If the document is on root directory, remove it.
+
+    // if the document is a folder, recursively delete its children
   }
 
   initPicker(openButtonId, callback) {
@@ -661,7 +672,7 @@ class FileViewerLayout extends React.Component {
     return (
       <div>
         <div className='drive-navbar'>
-          <i 
+          <i
             className="material-icons go-back"
             onClick={ browserHistory.goBack }>
             arrow_back
