@@ -70,5 +70,3 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
 
   return DiamondAPI;
 };
-
-// Copyright (c) 2016 Copyright Diamond All Rights Reserved.
