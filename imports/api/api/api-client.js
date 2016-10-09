@@ -7,22 +7,7 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
   let subscriptions = [];
   let DiamondAPI = {
     subscribe({ collection, filter, callback }) {
-
-    },
-    unsubscribe(subscriptionId) {
-      if (subscriptionId) {
-        subscriptions.forEach((sub, index) => {
-          if (sub.subscriptionId === subscriptionId) {
-            sub.stop();
-            subscriptions.splice(index, 1);
-          }
-        });
-      } else {
-        subscriptions.forEach((sub, index) => {
-          sub.stop();
-          subscriptions.splice(index, 1);
-        });
-      }
+      // TODO: Start and finish this.
     },
     insert({ collection, object, isGlobal, callback }) {
       Meteor.call('API.methods.APIInsert', {
@@ -54,18 +39,41 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
         filter,
       }, callback);
     },
-    getTeamData() {
-      return {
-        boards, // TODO: do not pass every property
-        users,
-      };
-    },
     getCurrentUser() {
       return Meteor.user();
     },
     getCurrentBoard() {
       return ModuleInstances.findOne(moduleInstanceId).board();
     },
+    getLoggedUsers() {
+      return 'This feature is not done yet. Sorry! :/';
+    },
+    getTeam() {
+      return ModuleInstances.findOne(moduleInstanceId).board().team();
+    },
+    getBoard() {
+      return ModuleInstances.findOne(moduleInstanceId).board();
+    },
+    getUser(userId) {
+      // Validation
+      let team = ModuleInstances.findOne(moduleInstanceId).board().team();
+
+      if (!team.hasUser(userId)) {
+        throw new console.error(`User ${userId} doesn't exist in this team.`);
+      }
+
+      // Return and error handling
+      let user = Meteor.users.findOne(userId);
+
+      if (!!user) {
+        return user;
+      } else {
+        throw new console.error(`User ${userId} doesn't exist.`);
+      }
+    },
+    change(callback) {
+      return 'This feature is not done yet. Sorry! :/';
+    }
   };
 
   return DiamondAPI;
