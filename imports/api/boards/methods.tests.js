@@ -76,6 +76,7 @@ if (Meteor.isServer) {
       test_1 = {
         teamId: team._id,
         name: faker.lorem.word(),
+        type: faker.lorem.word(),
         users: [
           { email: users[0].emails[0].address },
         ],
@@ -84,6 +85,7 @@ if (Meteor.isServer) {
       test_2 = {
         teamId: team._id,
         name: faker.lorem.word(),
+        type: faker.lorem.word(),
         isPrivate: true,
         users: [
           { email: users[0].emails[0].address },
@@ -93,6 +95,7 @@ if (Meteor.isServer) {
       };
       expect_1 = {
         name: test_1.name,
+        type: test_1.type,
         isPrivate: test_1.isPrivate,
         users: [
           { email: users[0].emails[0].address, notifications: 0 },
@@ -104,6 +107,7 @@ if (Meteor.isServer) {
       };
       expect_2 = {
         name: test_2.name,
+        type: test_2.type,
         isPrivate: test_2.isPrivate,
         users: [
           { email: users[0].emails[0].address, notifications: 0 },

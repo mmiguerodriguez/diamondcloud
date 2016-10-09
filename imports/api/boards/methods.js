@@ -11,11 +11,12 @@ export const createBoard = new ValidatedMethod({
   validate: new SimpleSchema({
     teamId: { type: String, regEx: SimpleSchema.RegEx.Id },
     name: { type: String, min: 0, max: 200 },
+    type: { type: String },
     isPrivate: { type: Boolean },
     users: { type: [Object], optional: true },
     'users.$.email': { type: String, regEx: SimpleSchema.RegEx.Email, optional: true },
   }).validator(),
-  run({ teamId, name, isPrivate, users }) {
+  run({ teamId, name, type, isPrivate, users }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('Boards.methods.createBoard.notLoggedIn',
       'Must be logged in to create a board.');
@@ -43,11 +44,17 @@ export const createBoard = new ValidatedMethod({
 
     let board = {
       name,
-      isPrivate,
       users,
+      type,
+      isPrivate,
       moduleInstances: [],
       archived: false,
     };
+
+    /**
+     * TODO: Depending on board type, insert different type of
+     * moduleInstances to the board.
+     */
 
     let future = new Future();
     Boards.insert(board, (err, res) => {

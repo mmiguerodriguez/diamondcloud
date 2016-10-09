@@ -20,8 +20,9 @@ Factory.define('user', Meteor.users, {
 
 Factory.define('board', Boards, {
 	name: faker.lorem.word(),
-	isPrivate: null,
 	users: [],
+	type: faker.lorem.word(),
+	isPrivate: null,
 	moduleInstances: [],
 	archived: false,
 });
