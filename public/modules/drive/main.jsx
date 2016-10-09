@@ -564,8 +564,7 @@ class FileManagerPage extends React.Component {
     }
   }
 
-  createFolder({ name, parentFolderId = null, callback = () => {} }) {
-    /**
+  /**
      * Creates a folder (not in Google Drive, but in our data)
      * @param {String} name
      * @param {String} parentFolderId (optional)
@@ -573,7 +572,7 @@ class FileManagerPage extends React.Component {
      *   @param {String} error
      *   @param {Object} response
      */
-
+  createFolder({ name, parentFolderId = null, callback = () => {} }) {
     let folderId = ''; // generates a random string
     const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -616,6 +615,17 @@ class FileManagerPage extends React.Component {
          }
        },
      });
+  }
+  
+  /**
+   * deleteDocument
+   * @param {String} id
+   * @param {Function} callback (optional)
+   *   @param {String} error
+   *   @param {Object} response
+   */
+  deleteDocument({ id, callback = () => {}}) {
+    
   }
 
   initPicker(openButtonId, callback) {
