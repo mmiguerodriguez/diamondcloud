@@ -418,7 +418,7 @@ class CreateTask extends React.Component {
             className='go-back'
             onClick={() => this.props.setLocation('tasks/show')}>
           </div>
-          <h4>Crear una tarea</h4>
+          <h4 className='visible-xs-inline-block'>Crear una tarea</h4>
         </div>
         <div className='col-xs-12 create-task-inputs'>
           <div className='form-group'>
