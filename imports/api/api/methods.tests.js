@@ -202,10 +202,26 @@ if (Meteor.isServer) {
       });
 
       it('should get using persistent data when indicated', function(done) {
-        done();
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleId'] = moduleInstances[0].moduleId;
+        doc['#teamId'] = teams[0]._id;
+        APICollection.insert(doc);
+        APIGet.call(getRequest, (err, res) => {
+          chai.assert.deepEqual(res[0], doc);
+          APICollection.remove({});
+          done();
+        });
       });
 
       it('should remove using persistent data when indicated', function(done) {
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleId'] = moduleInstances[0].moduleId;
+        doc['#teamId'] = teams[0]._id;
+        APICollection.insert(doc);
+        APIRemove.call(removeRequest);
+        chai.assert.isTrue(!APICollection.findOne({ _id: documents[0]._id }));
         done();
       });
     });
