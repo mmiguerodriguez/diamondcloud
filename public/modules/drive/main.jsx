@@ -41,7 +41,17 @@ class FileManagerLayout extends React.Component {
             }>
             <div className='folder-item fixed'>
               <p className="truncate">{folder.name}</p>
-              <i className="material-icons delete">delete</i>
+              <i
+                className="material-icons delete"
+                onClick={this.props.deleteDocument.bind(this, {
+                  id: folder._id,
+                  parentFolderId: this.props.folderId,
+                  mimeType: folderMimeType,
+                  finalCallback: () => {}, // TODO: handle loading and error
+                })}
+              >
+                delete
+              </i>
             </div>
           </div>
         );
@@ -81,7 +91,17 @@ class FileManagerLayout extends React.Component {
                 }
               } >
               <p className="truncate">{document.name}</p>
-              <i className="material-icons delete">delete</i>
+              <i
+                className="material-icons delete"
+                onClick={this.props.deleteDocument.bind(this, {
+                  id: document._id,
+                  parentFolderId: this.props.folderId,
+                  mimeType: document.fileType,
+                  finalCallback: () => {}, // TODO: handle loading and error
+                })}
+              >
+                delete
+              </i>
             </div>
           </div>
         );
@@ -137,14 +157,16 @@ class FileManagerLayout extends React.Component {
                     type="button"
                     className="btn btn-primary"
                     onClick={ this.props.createDocument.bind(this, {
-                    name: this.state.name,
-                    fileType: this.state.fileType,
-                    parentFolderId: this.props.folderId,
-                    diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
-                    callback: () => {
-                      $('#create-document').modal('hide');
-                    },
-                  }) }>Crear</button>
+                      name: this.state.name,
+                      fileType: this.state.fileType,
+                      parentFolderId: this.props.folderId,
+                      diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
+                      callback: () => {
+                        $('#create-document').modal('hide');
+                      },
+                    })}>
+                      Crear
+                    </button>
                 </div>
               </div>
             </div>
@@ -272,6 +294,7 @@ FileManagerLayout.propTypes = {
   documents: React.PropTypes.array.isRequired,
   createDocument: React.PropTypes.func.isRequired,
   createFolder: React.PropTypes.func.isRequired,
+  deleteDocument: React.PropTypes.func.isRequired,
   initPicker: React.PropTypes.func.isRequired,
   diamondCloudDriveFolderId: React.PropTypes.string.isRequired,
 };
@@ -306,6 +329,7 @@ class FileManagerPage extends React.Component {
         documents={this.state.documents}
         createDocument={this.createDocument}
         createFolder={this.createFolder}
+        deleteDocument={this.deleteDocument}
         initPicker={this.initPicker}
         diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
       />
@@ -620,23 +644,109 @@ class FileManagerPage extends React.Component {
   /**
    * deleteDocument: Deletes a document from the module data and from Drive.
    * If the document is a folder, deletes all its children.
-   * If it recieves parentFolderId instead of id, it deletes all documents
+   * If it does not recieve an id, it deletes all documents
    * with the given parent id.
    * @param {String} id (optional)
    * @param {String} parentFolderId (optional)
-   * @param {Function} callback (optional)
+   * @param {String} mimeType (optional)
+   * @param {Function} finalCallback (optional)
    *   @param {String} error
    *   @param {Object} response
    */
-  deleteDocument({ id = '', parentFolderId = '', callback = () => {}}) {
-    if (id === '' && parentFolderId === '') {
-      let error = 'Invalid parameters passed to deleteDocument';
-      console.error(error);
-      callback(error, null);
-    }
-    // If the document is on root directory, remove it.
+  deleteDocument(params) {
+    // We need to redeclare the function to have a reference to it.
+    // Otherwise, we would not be able to call it recursivaly,
+    // as we don't know in which context it is going to run.
+    function recursiveDeleteDocument({ id = '', parentFolderId = '', mimeType = '', finalCallback = () => {}}) {
+      if (id === '' && parentFolderId === '') {
+        let error = 'Invalid parameters passed to deleteDocument';
+        console.error(error);
+        callback(error, null);
+        return false;
+      }
 
-    // if the document is a folder, recursively delete its children
+      let self = this;
+
+      // TODO: handle this with promises
+      removeFromRoot((error, result) => {
+        if (!!error) {
+          finalCallback(error, result);
+          return false;
+        }
+        deleteChildren((error, result) => {
+          if (!!error) {
+            finalCallback(error, result);
+            return false;
+          }
+          deleteFromDrive((error, result) => {
+            if (!!error) {
+              finalCallback(error, result);
+              return false;
+            }
+            deleteFromStorage(finalCallback);
+          });
+        });
+      });
+
+      // If the document is on root directory, removes it.
+      function removeFromRoot(callback) {
+        if (parentFolderId === '') {
+          DiamondAPI.remove({
+            collection: 'rootFiles',
+            filter: {
+              $or: [
+                {
+                  documentId: id
+                },
+                {
+                  folderId: id
+                },
+              ],
+            },
+            callback,
+          });
+        } else {
+          callback();
+        }
+      }
+
+      // If the document is a folder, recursively delete its children.
+      function deleteChildren(callback) {
+        if (mimeType === folderMimeType) {
+          recursiveDeleteDocument({
+            parentFolderId: id,
+            callback,
+          });
+        } else {
+          callback();
+        }
+      }
+      // TODO: delete recursively from drive
+      function deleteFromDrive(callback) {
+        if (mimeType !== folderMimeType) {
+          gapi.client.drive.files.delete({
+            fileId: id,
+          }).then(callback, callback);
+        } else {
+          callback();
+        }
+      }
+
+      function deleteFromStorage(callback) {
+        let collection = (mimeType === folderMimeType) ? 'folders' : 'documents',
+            filter = (!!id) ? {
+              _id: id
+            } : {
+              parentFolderId,
+            };
+        DiamondAPI.remove({
+          collection: collection,
+          filter,
+          callback
+        });
+      }
+    }
+    recursiveDeleteDocument(params);
   }
 
   initPicker(openButtonId, callback) {
