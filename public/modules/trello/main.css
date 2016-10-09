@@ -107,12 +107,19 @@
   background-repeat: no-repeat;
   opacity: 0;
   margin-top: 14px;
+  transition: 0.3s all ease;
 }
 .edit-task {
+  padding-right: 30px !important;
   background-image: url(img/edit-task.svg);
 }
 .archive-task {
   background-image: url(img/archive-task.svg);
+}
+.icon-fixed {
+  padding: 0 15px;
+  width: 18px;
+  float: right;
 }
 .not-doing-task {
   background-image: url(http://image.flaticon.com/icons/svg/61/61221.svg);

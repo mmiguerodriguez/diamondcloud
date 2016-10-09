@@ -1027,6 +1027,14 @@ class Task extends React.Component {
       'col-xs-10': !this.state.editing && this.props.task.status === 'finished',
       'col-xs-8': !this.state.editing && this.props.task.status === 'not_finished',
     });
+    const archiveClass = classNames({
+      'col-xs-2 archive-task': this.props.coordination && !this.state.editing,
+      'col-xs-2 archive-task icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
+    });
+    const editClass = classNames({
+      'col-xs-2 edit-task': this.props.coordination && !this.state.editing && this.props.task.status !== 'not_finished',
+      'col-xs-2 edit-task icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
+    });
     const clickHandle = this.props.coordination ? this.openTask : () => {};
 
     return (
@@ -1061,23 +1069,23 @@ class Task extends React.Component {
           </div>
 
           {
-            this.props.coordination ? (
+            this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
               <div
-                className='col-xs-2 archive-task'
-                title='Archivar tarea'
+                className={editClass}
+                title='Editar tarea'
                 role='button'
-                onClick={this.archiveTask}
+                onClick={this.startEditing}
               />
             ) : (null)
           }
   
           {
-            this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
+            this.props.coordination && !this.state.editing ? (
               <div
-                className='col-xs-2 edit-task'
-                title='Editar tarea'
+                className={archiveClass}
+                title='Archivar tarea'
                 role='button'
-                onClick={this.startEditing}
+                onClick={this.archiveTask}
               />
             ) : (null)
           }
