@@ -18,7 +18,7 @@ const {
 } = ReactRouter;
 
 /**
- * Error component delay
+ * ErrorComponent delay
  * (in miliseconds)
  */
 const ERROR_DELAY = 5000; 
@@ -36,6 +36,32 @@ class TaskManagerPage extends React.Component {
   constructor() {
     super();
 
+    /**
+     * States
+     * 
+     * @param {Array} tasks
+     *  All the tasks we need to show
+     *  to the user.
+     * @param {Object} coordinationBoard
+     *  An object containing the _id
+     *  of the coordination board.
+     * @param {Object} currentBoard
+     *  Current board object.
+     * @param {Object} currentUser
+     *  Current user object.
+     * @param {Boolean} coordination
+     *  A bool that says if the actual
+     *  board is or not a
+     *  coordination
+     *  board.
+     * @param {Boolean} loading
+     *  A bool to check if the subscription
+     *  is loading.
+     * @param {Array} users
+     *  An array of the team users.
+     * @param {Array} boards
+     *  An array of the team boards.
+     */
     this.state = {
       tasks: [],
       coordinationBoard: {},
@@ -86,8 +112,13 @@ class TaskManagerPage extends React.Component {
               boardId: currentBoard._id,
               status: 'not_finished',
             };
-
-            const trelloHandle = DiamondAPI.subscribe({
+            
+            /**
+             * After grabbing all the data we needed, subscribe
+             * to the tasks collection with the filter, and
+             * setting the state on the callback.
+             */
+            const taskManagerHandle = DiamondAPI.subscribe({
               collection: 'tasks',
               filter,
               callback(error, result) {
@@ -136,8 +167,13 @@ class TaskManagerLayout extends React.Component {
    * Sets the error state so we can show an error
    * correctly.
    * @param {Object} object
-   *   @param {String} title
-   *   @param {String} body
+   *  @param {String} body
+   *   Error message.
+   *  @param {Number} delay
+   *   The delay until the message is closed
+   *  @param {Boolean} showing.
+   *   State to check if the message is being
+   *   shown or not.
    */
   showError({ body, delay }) {
     this.setState({
@@ -244,32 +280,39 @@ class CreateTask extends React.Component {
     if (self.state.title.length > 0 && self.state.title !== '') {
       if (self.state.boardId !== '') {
         if (Number.isInteger(dueDate) && dueDate !== 0) {
-          if (position >= 0) {
-            DiamondAPI.insert({
-              collection: 'tasks',
-              obj: {
-                title: self.state.title,
-                boardId: self.state.boardId,
-                durations: [],
-                dueDate,
-                position,
-                status: 'not_finished',
-                archived: false,
-              },
-              isGlobal: true,
-              callback(error, result) {
-                if (error) {
-                  console.error(error);
-                } else {
-                  console.log('Inserted task correctly');
-                  browserHistory.push('/tasks/show');
+          if (Number(dueDate) > new Date().getTime()) {
+            if (position >= 0) {
+              DiamondAPI.insert({
+                collection: 'tasks',
+                obj: {
+                  title: self.state.title,
+                  boardId: self.state.boardId,
+                  durations: [],
+                  dueDate,
+                  position,
+                  status: 'not_finished',
+                  archived: false,
+                },
+                isGlobal: true,
+                callback(error, result) {
+                  if (error) {
+                    console.error(error);
+                  } else {
+                    console.log('Inserted task correctly');
+                    browserHistory.push('/tasks/show');
+                  }
                 }
-              }
-            });
+              });
+            } else {
+              console.error('There was an error inserting task position', position);
+              self.props.showError({
+                body: 'La posición de la tarea es inválida',
+              });
+            }
           } else {
-            console.error('There was error inserting task position', position);
+            console.error('There was an error instering task dueDate', self.state.dueDate);
             self.props.showError({
-              body: 'La posición de la tarea es inválida',
+              body: 'La fecha de la tarea es inválida',
             });
           }
         } else {
@@ -312,16 +355,21 @@ class CreateTask extends React.Component {
       return 0;
     }
   }
-
+  /**
+   * Renders the <option> elements of the boards, except
+   * for the coordination board.
+   */
   renderOptions() {
     return this.props.boards.map((board) => {
-      return (
-        <option
-          key={board._id}
-          value={board._id}>
-          {board.name}
-        </option>
-      );
+      if (board._id !== this.props.coordinationBoard._id) {
+        return (
+          <option
+            key={board._id}
+            value={board._id}>
+            {board.name}
+          </option>
+        );
+      }
     });
   }
 
@@ -337,7 +385,7 @@ class CreateTask extends React.Component {
     });
   }
 
-  constructor(props){
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -424,7 +472,7 @@ class BoardsList extends React.Component {
 
       /**
        * If there are tasks then push task to array
-       * if it is from the actual board
+       * if it is from the actual board.
        */
       if (this.props.tasks !== undefined) {
         this.props.tasks.forEach((task) => {
@@ -435,8 +483,8 @@ class BoardsList extends React.Component {
       }
 
       /**
-       * If it isn't a coordination board then render
-       * only one board tasks
+       * If it isn't a coordination board then we
+       * render only one board tasks.
        */
       if (!this.props.coordination) {
         if (board._id === this.props.currentBoard._id) {
@@ -459,21 +507,26 @@ class BoardsList extends React.Component {
 
       /**
        * If it is a coordination board then it will
-       * return the nformation we want
+       * return all the boards except for the
+       * coordination one.
        */
-      return (
-        <Board
-          key={board._id}
-          board={board}
-          tasks={tasks}
-          coordination={this.props.coordination}
-          setLocation={this.props.setLocation}
-          currentUser={this.props.currentUser}
-          handleChange={this.props.handleChange}
-          showError={this.props.showError}
-          hideError={this.props.hideError}
-        />
-      );
+      if (board._id !== this.props.coordinationBoard._id) {
+        return (
+          <Board
+            key={board._id}
+            board={board}
+            tasks={tasks}
+            coordination={this.props.coordination}
+            setLocation={this.props.setLocation}
+            currentUser={this.props.currentUser}
+            handleChange={this.props.handleChange}
+            showError={this.props.showError}
+            hideError={this.props.hideError}
+          />
+        );
+      } else {
+        return;
+      }
     });
   }
 
@@ -843,7 +896,14 @@ class Task extends React.Component {
 
     return i;
   }
-
+  /**
+   * Starts the timer and sets the interval and
+   * doing state.
+   * 
+   * @param {Function} callback
+   *  Function to be called after the state
+   *  is set, usually to start the task.
+   */
   startTimer(callback) {
     let intervalId = setInterval(this.prettyDate.bind(this), 1000);
 
@@ -856,7 +916,15 @@ class Task extends React.Component {
       }
     });
   }
-
+  /**
+   * Stops the timer, clears the interval
+   * and sets the state as not doing,
+   * no interval and count.
+   * 
+   * @param {Function} callback
+   *  Function to be called after the state
+   *  is set, usually to stop the task.
+   */
   stopTimer(callback) {
     clearInterval(this.state.intervalId);
 
@@ -1009,122 +1077,140 @@ class Task extends React.Component {
     });
     const containerClass = classNames({
       'col-xs-12': this.state.editing,
-      'col-xs-10': !this.state.editing,
+      'col-xs-10': !this.state.editing && this.props.task.status === 'finished',
+      'col-xs-8': !this.state.editing && this.props.task.status === 'not_finished',
+    });
+    const archiveClass = classNames({
+      'col-xs-2 archive-task': this.props.coordination && !this.state.editing,
+      'col-xs-2 archive-task icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
+    });
+    const editClass = classNames({
+      'col-xs-2 edit-task': this.props.coordination && !this.state.editing && this.props.task.status !== 'not_finished',
+      'col-xs-2 edit-task icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
     });
     const clickHandle = this.props.coordination ? this.openTask : () => {};
 
     return (
       <div className='col-xs-12 task'>
-        <div className={containerClass}>
+        <div>
+          <div className={containerClass}>
+            {
+              this.state.editing ? (
+                <input
+                  className='form-control edit-task-input'
+                  type='text'
+                  value={this.state.task_title}
+                  onChange={(e) => this.handleChange('task_title', e)}
+                  onKeyDown={this.handleKeyDown}
+                />
+              ) : (
+                <div>
+                  <h5
+                    role={role}
+                    onClick={clickHandle}
+                    className='task-title col-xs-12'>
+                    {this.state.task_title}
+                  </h5>
+                  {
+                    !this.props.coordination && (this.props.doing && this.state.doing) ? (
+                      <p className='col-xs-12 time-active'>Tiempo activo: {this.state.count}</p>
+                    ) : (null)
+                  }
+                </div>
+              )
+            }
+          </div>
+
           {
-            this.state.editing ? (
-              <input
-                className='form-control edit-task-input'
-                type='text'
-                value={this.state.task_title}
-                onChange={(e) => this.handleChange('task_title', e)}
-                onKeyDown={this.handleKeyDown}
+            this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
+              <div
+                className={editClass}
+                title='Editar tarea'
+                role='button'
+                onClick={this.startEditing}
               />
-            ) : (
+            ) : (null)
+          }
+  
+          {
+            this.props.coordination && !this.state.editing ? (
+              <div
+                className={archiveClass}
+                title='Archivar tarea'
+                role='button'
+                onClick={this.archiveTask}
+              />
+            ) : (null)
+          }
+  
+          {
+            !this.props.coordination && (this.props.doing || this.state.doing) ? (
               <div>
-                <h5
-                  role={role}
-                  onClick={clickHandle}
-                  className='task-title col-xs-12'>
-                  {this.state.task_title}
-                </h5>
-                {
-                  !this.props.coordination && (this.props.doing && this.state.doing) ? (
-                    <p className='col-xs-12 time-active'>Tiempo activo: {this.state.count}</p>
-                  ) : (null)
-                }
+                <div className='record'>
+                  <img
+                    src='/modules/trello/img/record.svg'
+                    width='25px'
+                  />
+                </div>
+                <div
+                  className='done'
+                  title='Marcar como finalizado'
+                  role='button'
+                  onClick={() => this.setTaskStatus('finished')}>
+                    <img
+                      src='/modules/trello/img/finished-task.svg'
+                      width='25px'
+                    />
+                </div>
+                <div
+                  className='pause'
+                  title='Marcar como pausado'
+                  role='button'
+                  onClick={this.finishTask}>
+                    <img
+                      src='/modules/trello/img/pause-button.svg'
+                      width='15px'
+                    />
+                </div>
+              </div>
+            ) : (null)
+          }
+  
+          {
+            !this.props.coordination && (!this.props.doing || !this.state.doing) && this.props.task.status === 'not_finished' ? (
+              <div>
+                <div
+                  className='done'
+                  title='Marcar como finalizado'
+                  role='button'
+                  onClick={() => this.setTaskStatus('finished')}>
+                    <img
+                      src='/modules/trello/img/finished-task.svg'
+                      width='25px'
+                    />
+                </div>
+                <div
+                  className='play'
+                  title='Marcar como haciendo'
+                  role='button'
+                  onClick={this.startTask}>
+                    <img
+                      src='/modules/trello/img/play-arrow.svg'
+                      width='15px'
+                    />
+                </div>
+              </div>
+            ) : (null)
+          }
+        
+          {
+            !this.state.editing ? (
+              <div className='col-xs-12'>
                 <p className='col-xs-12 expiration'>Vencimiento: {new Date(this.props.task.dueDate).toLocaleDateString()}</p>
               </div>
-            )
+            ) : (null)
           }
         </div>
-
-        {
-          this.props.coordination && this.props.task.status === 'finished' ? (
-            <div
-              className='col-xs-2 archive-task'
-              title='Archivar tarea'
-              role='button'
-              onClick={this.archiveTask}
-            />
-          ) : (null)
-        }
-
-        {
-          this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
-            <div
-              className='col-xs-2 edit-task'
-              title='Editar tarea'
-              role='button'
-              onClick={this.startEditing}
-            />
-          ) : (null)
-        }
-
-        {
-          !this.props.coordination && (this.props.doing || this.state.doing) ? (
-            <div>
-              <div className='record'>
-                <img
-                  src='/modules/trello/img/record.svg'
-                  width='25px'
-                />
-              </div>
-              <div
-                className='done'
-                title='Marcar como finalizado'
-                role='button'
-                onClick={() => this.setTaskStatus('finished')}>
-                  <img
-                    src='/modules/trello/img/finished-task.svg'
-                    width='25px'
-                  />
-              </div>
-              <div
-                className='pause'
-                title='Marcar como pausado'
-                role='button'
-                onClick={this.finishTask}>
-                  <img
-                    src='/modules/trello/img/pause-button.svg'
-                    width='15px'
-                  />
-              </div>
-            </div>
-          ) : (null)
-        }
-
-        {
-          !this.props.coordination && (!this.props.doing || !this.state.doing) && this.props.task.status === 'not_finished' ? (
-            <div>
-              <div
-                className='done'
-                title='Marcar como finalizado'
-                role='button'
-                onClick={() => this.setTaskStatus('finished')}>
-                  <img
-                    src='/modules/trello/img/finished-task.svg'
-                    width='25px'
-                  />
-              </div>
-              <div
-                className='play'
-                title='Marcar como haciendo'
-                role='button'
-                onClick={this.startTask}>
-                  <img
-                    src='/modules/trello/img/play-arrow.svg'
-                    width='15px'
-                  />
-              </div>
-            </div>
-          ) : (null)
-        }
       </div>
     );
   }
@@ -1140,6 +1226,10 @@ class TaskInformation extends React.Component {
     this.state = { task: {}, board: {} };
   }
 
+  /**
+   * Sets the state for the task we are showing
+   * information and the board of the task.
+   */
   componentWillMount() {
     this.props.tasks.forEach((task) => {
       if (task._id === this.props.params.taskId) {
@@ -1291,15 +1381,7 @@ class ErrorMessage extends React.Component {
   }
 
   componentDidMount() {
-    // Some nice transition.
-    console.log('mounted correctly');
-    
     setTimeout(this.close.bind(null), this.props.delay);
-  }
-
-  componentWillUnmount() {
-    // Another nice transition
-    console.log('will unmount, byeeee');
   }
 
   render() {
