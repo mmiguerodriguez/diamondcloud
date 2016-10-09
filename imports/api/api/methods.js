@@ -163,6 +163,7 @@ export const APIRemove = new ValidatedMethod({
     }
 
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+    let teamId = moduleInstance.board().team()._id;
 
     if (!Boards.isValid(moduleInstance.board()._id, Meteor.user()._id)) {
       throw new Meteor.Error('API.methods.APIRemove.boardAccessDenied',
@@ -189,7 +190,7 @@ export const APIRemove = new ValidatedMethod({
       ],
     };
 
-    let res = APICollection.find(completeFilter);
+    let res = APICollection.find(completeFilter).fetch();
     APICollection.remove(completeFilter);
     return res;
   }

@@ -95,6 +95,14 @@ if (Meteor.isServer) {
           },
         };
 
+        removeRequest = {
+          moduleInstanceId: moduleInstances[0]._id,
+          collection: collections[0],
+          filter: {
+            something: documents[0].something,
+          },
+        };
+
         // Assign module instances to boards
         boards[0].moduleInstances.push({ _id: moduleInstances[0]._id });
         boards[0].moduleInstances.push({ _id: moduleInstances[1]._id });
@@ -167,6 +175,12 @@ if (Meteor.isServer) {
       });
 
       it('should remove an entry from API Collection correctly', function(done) {
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleInstanceId'] = moduleInstances[0]._id;
+        APICollection.insert(doc);
+        APIRemove.call(removeRequest);
+        chai.assert.isTrue(!APICollection.findOne({ _id: documents[0]._id }));
         done();
       });
 
