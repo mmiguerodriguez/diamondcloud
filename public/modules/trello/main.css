@@ -60,7 +60,7 @@
   color: #fff;
 }
 .board {
-  width: 300px;
+  width: 100%;
   margin-right: 20px;
 }
 .task-manager {
