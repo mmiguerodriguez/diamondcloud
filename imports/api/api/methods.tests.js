@@ -103,6 +103,9 @@ if (Meteor.isServer) {
           },
         };
 
+        let globalInsertRequest = _.clone(insertRequest);
+        globalInsertRequest.isGlobal = true;
+
         // Assign module instances to boards
         boards[0].moduleInstances.push({ _id: moduleInstances[0]._id });
         boards[0].moduleInstances.push({ _id: moduleInstances[1]._id });
@@ -184,8 +187,17 @@ if (Meteor.isServer) {
         done();
       });
 
-      /*
       it('should update using persistent data when indicated', function(done) {
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleId'] = moduleInstances[0].moduleId;
+        doc['#teamId'] = teams[0]._id;
+        APICollection.insert(doc);
+        doc.somethingElse = updateRequest.updateQuery.$set.somethingElse;
+        APIUpdate.call(updateRequest);
+        let updatedDoc = APICollection.findOne({ _id: documents[0]._id });
+        chai.assert.deepEqual(updatedDoc, doc);
+        APICollection.remove({});
         done();
       });
 
@@ -196,7 +208,6 @@ if (Meteor.isServer) {
       it('should remove using persistent data when indicated', function(done) {
         done();
       });
-      */
     });
   });
 }
