@@ -38,8 +38,8 @@ class FileManagerLayout extends React.Component {
           data-toggle="modal"
           data-target="#create-folder">
           <div className="document fixed">
-            <i className="col-xs-4 material-icons icon-type create-folder">folder</i>
-            <p className="col-xs-8 document-title truncate">Crear</p>
+            <i className="col-xs-3 material-icons icon-type create-folder">folder</i>
+            <p className="col-xs-9 document-title truncate">Crear</p>
           </div>
         </div>
       );
@@ -49,13 +49,14 @@ class FileManagerLayout extends React.Component {
           <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
             <div 
               className="document fixed"
+              title={folder.name}
               onClick={
                 () => {
                   browserHistory.push('/folder/' + folder._id);
                 }
               }>
-              <i className="col-xs-4 material-icons icon-type create-folder">folder</i>
-              <p className="col-xs-8 document-title truncate">{folder.name}</p>
+              <i className="col-xs-3 material-icons icon-type create-folder">folder</i>
+              <p className="col-xs-9 document-title truncate">{folder.name}</p>
             </div>
             <i
               className="material-icons delete"
@@ -77,16 +78,16 @@ class FileManagerLayout extends React.Component {
   renderDocumentTypeImg(fileType) {
     switch(fileType) {
       case 'application/vnd.google-apps.document':
-        return <img className='col-xs-4 icon-type create-doc' src='modules/drive/img/google-docs.svg' />;
+        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-docs.svg' />;
         break;
       case 'application/vnd.google-apps.drawing':
-        return <img className='col-xs-4 icon-type create-doc' src='modules/drive/img/google-drawings.svg' />;
+        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-drawings.svg' />;
         break;
       case 'application/vnd.google-apps.spreadsheet':
-        return <img className='col-xs-4 icon-type create-doc' src='modules/drive/img/google-sheets.svg' />;
+        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-sheets.svg' />;
         break;
       case 'application/vnd.google-apps.presentation':
-        return <img className='col-xs-4 icon-type create-doc' src='modules/drive/img/google-slides.svg' />;
+        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-slides.svg' />;
         break;
       default:
         return null;
@@ -101,16 +102,16 @@ class FileManagerLayout extends React.Component {
             data-toggle="modal"
             data-target="#create-document">
             <div className="document fixed">
-              <img className='col-xs-4 icon-type create-doc' src='modules/drive/img/google-docs.svg' />
-              <p className="col-xs-8 document-title truncate">Crear</p>
+              <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-docs.svg' />
+              <p className="col-xs-9 document-title truncate">Crear</p>
             </div>
           </div>
           <div
             className='document-container col-xs-4 col-sm-3 col-lg-2'
             id='import-file-card'>
             <div className="document fixed">
-              <img className='col-xs-4 icon-type import-drive' src='modules/drive/img/google-drive-logo.svg' />
-              <p className="col-xs-8 document-title truncate">Importar</p>
+              <img className='col-xs-3 icon-type import-drive' src='modules/drive/img/google-drive-logo.svg' />
+              <p className="col-xs-9 document-title truncate">Importar</p>
             </div>
           </div>
         </div>
@@ -119,12 +120,14 @@ class FileManagerLayout extends React.Component {
       return this.props.documents.map((document) => {
         return (
           <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
-            <div className="document fixed">
+            <div 
+              className="document fixed"
+              title={document.name}>
               {
                 this.renderDocumentTypeImg(document.fileType)
               }
               <p 
-                className="col-xs-8 document-title truncate"
+                className="col-xs-9 document-title truncate"
                 onClick={
                   () => {
                     browserHistory.push('/document/' + document._id);
