@@ -203,7 +203,11 @@ class FileManagerLayout extends React.Component {
                       this.props.createFolder.bind(this, {
                         name: this.state.name,
                         parentFolderId: this.props.folderId,
-                        callback: () => {
+                        diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
+                        callback: (error) => {
+                          if (!!error) {
+                            console.error(error); // TODO: handle error
+                          }
                           $('#create-folder').modal('hide');
                         },
                       })
@@ -537,7 +541,8 @@ class FileManagerPage extends React.Component {
         resource: {
           name,
           mimeType: fileType,
-          parents: [diamondCloudDriveFolderId],
+          // Create the document inside the parent folder if it exists
+          parents: [parentFolderId || diamondCloudDriveFolderId],
         }
       }).then((resp) => {
         // Make the document editable to everyone with the link
@@ -589,56 +594,68 @@ class FileManagerPage extends React.Component {
   }
 
   /**
-     * Creates a folder (not in Google Drive, but in our data)
+     * Creates a folder in the module storage, and in Drive
      * @param {String} name
      * @param {String} parentFolderId (optional)
      * @param {Function} callback (optional)
      *   @param {String} error
      *   @param {Object} response
      */
-  createFolder({ name, parentFolderId = null, callback = () => {} }) {
-    let folderId = ''; // generates a random string
-    const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-    const ID_LENGTH = 16;
-    for (let i = 0; i < ID_LENGTH; i++) {
-      folderId += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+  createFolder({ name, parentFolderId = null, diamondCloudDriveFolderId, callback = () => {} }) {
+    // Check if there is a Diamond Cloud drive folder
+    if (!diamondCloudDriveFolderId) {
+      callback('There was an error while creating the document. Please try again');
+      return false;
+      // TODO: handle this error
     }
 
-    if (!parentFolderId) {
-      DiamondAPI.insert({
-        collection: 'rootFiles',
-          obj: {
-            folderId: folderId,
-            boardId: DiamondAPI.getCurrentBoard()._id,
-          },
-          isGlobal: true,
-          callback(err, res) {
-            if (!!err) {
-              console.error(err);
-              callback(err, null);
-            } else {
-              callback(null, res);
+    // Create the folder in Drive
+    gapi.client.drive.files.create({
+      resource: {
+        name,
+        mimeType: folderMimeType,
+        parents: [parentFolderId || diamondCloudDriveFolderId],
+      }
+    }).then(handleCreatedFolder, (error) => {
+      callback(error);
+    });
+
+    function handleCreatedFolder(result) {
+      let folderId = result.result.id;
+      console.log("folderId: ", folderId);
+      if (!parentFolderId) {
+        DiamondAPI.insert({
+          collection: 'rootFiles',
+            obj: {
+              folderId: folderId,
+              boardId: DiamondAPI.getCurrentBoard()._id,
+            },
+            isGlobal: true,
+            callback(err, res) {
+              if (!!err) {
+                callback(err, null);
+              } else {
+                insertFolderInStorage(folderId);
+              }
             }
-          }
-      });
+        });
+      } else {
+        insertFolderInStorage(folderId);
+      }
     }
 
-    DiamondAPI.insert({
-       collection: 'folders',
-       obj: {
+    function insertFolderInStorage(folderId) {
+      DiamondAPI.insert({
+        collection: 'folders',
+        obj: {
          _id: folderId,
          parentFolderId,
          name,
-       },
-       isGlobal: true,
-       callback(err, res) {
-         if (!!err) {
-           console.error(err);
-           callback(err, null);
-         }
-       },
-     });
+        },
+        isGlobal: true,
+        callback,
+      });
+    }
   }
 
   /**
@@ -657,7 +674,7 @@ class FileManagerPage extends React.Component {
     // We need to redeclare the function to have a reference to it.
     // Otherwise, we would not be able to call it recursivaly,
     // as we don't know in which context it is going to run.
-    function recursiveDeleteDocument({ id = '', parentFolderId = '', mimeType = '', finalCallback = () => {}}) {
+    function recursiveDeleteDocument({ id = '', parentFolderId = '', mimeType = '', callback = () => {}}) {
       if (id === '' && parentFolderId === '') {
         let error = 'Invalid parameters passed to deleteDocument';
         console.error(error);
@@ -670,26 +687,26 @@ class FileManagerPage extends React.Component {
       // TODO: handle this with promises
       removeFromRoot((error, result) => {
         if (!!error) {
-          finalCallback(error, result);
+          callback(error, result);
           return false;
         }
         deleteChildren((error, result) => {
           if (!!error) {
-            finalCallback(error, result);
+            callback(error, result);
             return false;
           }
           deleteFromDrive((error, result) => {
             if (!!error) {
-              finalCallback(error, result);
+              callback(error, result);
               return false;
             }
-            deleteFromStorage(finalCallback);
+            deleteFromStorage(callback);
           });
         });
       });
 
       // If the document is on root directory, removes it.
-      function removeFromRoot(callback) {
+      function removeFromRoot(_callback) {
         if (parentFolderId === '') {
           DiamondAPI.remove({
             collection: 'rootFiles',
@@ -703,47 +720,70 @@ class FileManagerPage extends React.Component {
                 },
               ],
             },
-            callback,
+            callback: _callback,
           });
         } else {
-          callback();
+          _callback();
         }
       }
 
       // If the document is a folder, recursively delete its children.
-      function deleteChildren(callback) {
+      function deleteChildren(_callback) {
         if (mimeType === folderMimeType) {
           recursiveDeleteDocument({
             parentFolderId: id,
-            callback,
+            callback: _callback,
           });
         } else {
-          callback();
-        }
-      }
-      // TODO: delete recursively from drive
-      function deleteFromDrive(callback) {
-        if (mimeType !== folderMimeType) {
-          gapi.client.drive.files.delete({
-            fileId: id,
-          }).then(callback, callback);
-        } else {
-          callback();
+          _callback();
         }
       }
 
-      function deleteFromStorage(callback) {
-        let collection = (mimeType === folderMimeType) ? 'folders' : 'documents',
-            filter = (!!id) ? {
-              _id: id
-            } : {
-              parentFolderId,
-            };
-        DiamondAPI.remove({
-          collection: collection,
-          filter,
-          callback
-        });
+      function deleteFromDrive(_callback) {
+        if (!!id) {
+          gapi.client.drive.files.delete({
+            fileId: id,
+          }).then(_callback, _callback);
+        } else {
+          _callback();
+        }
+      }
+
+      function deleteFromStorage(_callback) {
+        if (!id) {
+          // It means we have to delete folders and documents
+          DiamondAPI.remove({
+            collection: 'folders',
+            filter: {
+              parentFolderId
+            },
+            callback(error, response) {
+              if (!!error) {
+                _callback(error, response);
+              } else {
+                DiamondAPI.remove({
+                  collection: 'documents',
+                  filter: {
+                    parentFolderId
+                  },
+                  callback
+                });
+              }
+            }
+          })
+        } else {
+          let collection = (mimeType === folderMimeType) ? 'folders' : 'documents',
+              filter = (!!id) ? {
+                _id: id
+              } : {
+                parentFolderId,
+              };
+          DiamondAPI.remove({
+            collection: collection,
+            filter,
+            callback: _callback
+          });
+        }
       }
     }
     recursiveDeleteDocument(params);
