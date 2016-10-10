@@ -92,9 +92,14 @@ export const createBoard = new ValidatedMethod({
           { moduleId: 'task-manager', x: 50, y: 50, width: 300, height: 400, archived: false, minimized: false },
         ];
       }
-      ModuleInstances.insertManyInstances(moduleInstances, boardId);
-
-      future.return(_board);
+      
+      ModuleInstances.insertManyInstances(moduleInstances, boardId, (error, result) => {
+        if (error) {
+          throw new Meteor.Error(error);
+        } else {
+          future.return(_board);
+        }
+      });
     });
     return future.wait();
   }
