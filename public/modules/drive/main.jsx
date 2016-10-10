@@ -929,9 +929,8 @@ class FileViewerLayout extends React.Component {
       <div>
         <div className='drive-navbar'>
           <i
-            className="material-icons go-back"
+            className="go-back"
             onClick={ browserHistory.goBack }>
-            arrow_back
           </i>
         </div>
         <iframe
