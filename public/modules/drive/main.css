@@ -199,7 +199,7 @@ body {
 .go-back {
   display: inline-block;
   width: 32px;
-  height: 32px;
+  height: 42px;
   display: inline-block;
   vertical-align: middle;
   background-image: url(img/go-back.svg);
@@ -222,8 +222,9 @@ body {
   top: 18px;
   right: 25px;
   opacity: 0;
+  cursor: pointer;
   transition: 0.3s all ease;
 }
-.folder-item:hover .delete, .document:hover .delete {
+.folder-item-container:hover .delete, .document-container:hover .delete {
   opacity: 0.9;
 }

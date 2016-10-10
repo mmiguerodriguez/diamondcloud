@@ -46,26 +46,27 @@ class FileManagerLayout extends React.Component {
       return this.props.folders.map((folder) => {
         return (
           <div
-            className="folder-item-container col-xs-4"
-            onClick={
-              () => {
-                browserHistory.push('/folder/' + folder._id);
-              }
-            }>
-            <div className='folder-item fixed'>
+            className="folder-item-container col-xs-4">
+            <i
+              className="material-icons delete"
+              onClick={this.props.deleteDocument.bind(this, {
+                id: folder._id,
+                parentFolderId: this.props.folderId,
+                mimeType: folderMimeType,
+                isImported: folder.isImported,
+                callback: () => {}, // TODO: handle loading and error
+              })}
+            >
+              delete
+            </i>
+            <div 
+              className='folder-item fixed'
+              onClick={
+                () => {
+                  browserHistory.push('/folder/' + folder._id);
+                }
+              }>
               <p className="truncate">{folder.name}</p>
-              <i
-                className="material-icons delete"
-                onClick={this.props.deleteDocument.bind(this, {
-                  id: folder._id,
-                  parentFolderId: this.props.folderId,
-                  mimeType: folderMimeType,
-                  isImported: folder.isImported,
-                  callback: () => {}, // TODO: handle loading and error
-                })}
-              >
-                delete
-              </i>
             </div>
           </div>
         );
@@ -98,6 +99,18 @@ class FileManagerLayout extends React.Component {
       return this.props.documents.map((document) => {
         return (
           <div className='document-container col-xs-4'>
+            <i
+              className="material-icons delete"
+              onClick={this.props.deleteDocument.bind(this, {
+                id: document._id,
+                parentFolderId: this.props.folderId,
+                mimeType: document.fileType,
+                isImported: document.isImported,
+                callback: () => {}, // TODO: handle loading and error
+              })}
+            >
+              delete
+            </i>
             <div
               className="document fixed"
               onClick={
@@ -106,18 +119,6 @@ class FileManagerLayout extends React.Component {
                 }
               } >
               <p className="truncate">{document.name}</p>
-              <i
-                className="material-icons delete"
-                onClick={this.props.deleteDocument.bind(this, {
-                  id: document._id,
-                  parentFolderId: this.props.folderId,
-                  mimeType: document.fileType,
-                  isImported: document.isImported,
-                  callback: () => {}, // TODO: handle loading and error
-                })}
-              >
-                delete
-              </i>
             </div>
           </div>
         );
