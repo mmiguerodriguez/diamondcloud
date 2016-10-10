@@ -65,11 +65,7 @@ export default class ModuleInstance extends React.Component {
   }
 
   componentDidMount() {
-    let DiamondAPI = generateApi({
-      moduleInstanceId: this.props.moduleInstance._id,
-      boards: this.props.boards,
-      users: this.props.users,
-    });
+    let DiamondAPI = generateApi(this.props.moduleInstance._id);
 
     this.refs.iframe.onload = this.iframeLoaded.bind(this);
     this.refs.iframe.contentWindow.DiamondAPI = DiamondAPI;

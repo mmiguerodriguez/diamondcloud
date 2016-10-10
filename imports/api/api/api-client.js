@@ -1,13 +1,59 @@
-import { Meteor }             from 'meteor/meteor';
+import { Meteor }               from 'meteor/meteor';
 
-import { ModuleInstances }    from '../module-instances/module-instances.js';
-import { APICollection }      from '../api-collection/api-collection.js';
+import { printObject }          from '../helpers/print-objects.js';
 
-export const generateApi = ({ moduleInstanceId, boards, users }) => {
+import { Teams }                from '../teams/teams.js';
+import { Boards }               from '../boards/boards.js';
+import { ModuleInstances }      from '../module-instances/module-instances.js';
+import { APICollection }        from '../api-collection/api-collection.js';
+
+export const generateApi = (moduleInstanceId) => {
   let subscriptions = [];
   let DiamondAPI = {
     subscribe({ collection, filter, callback }) {
-      // TODO: Start and finish this.
+      let subscriptionCallback = () => {
+        let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+        let teamId = moduleInstance.board().team();
+
+        let query = APICollection.find({
+          $and: [
+            {
+              '#collection': collection,
+            },
+            filter,
+            {
+              $or: [
+                {
+                  '#moduleInstanceId': moduleInstanceId,
+                },
+                {
+                  '#moduleId': moduleInstance.moduleId,
+                  '#teamId': teamId,
+                }
+              ]
+            }
+          ],
+        });
+
+        let caller = (id, fields) => {
+          callback(undefined, fields);
+        };
+
+        let handle = query.observeChanges({
+          added: caller,
+          changed: caller,
+          removed: caller,
+        });
+      };
+
+      let subscription = Meteor.subscribe(
+      'APICollection.data',
+      moduleInstanceId,
+      collection,
+      filter,
+      subscriptionCallback);
+
+      return subscription;
     },
     insert({ collection, object, isGlobal, callback }) {
       Meteor.call('API.methods.APIInsert', {
@@ -49,10 +95,18 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
       return 'This feature is not done yet. Sorry! :/';
     },
     getTeam() {
-      return ModuleInstances.findOne(moduleInstanceId).board().team();
+      return this.getCurrentBoard().team();
     },
-    getBoard() {
-      return ModuleInstances.findOne(moduleInstanceId).board();
+    getBoard(boardId) {
+      let team = this.getTeam();
+
+      team.boards.forEach((board) => {
+        if (board._id == boardId) {
+          return Boards.findOne(boardId);
+        }
+      });
+
+      return undefined;
     },
     getUser(userId) {
       // Validation

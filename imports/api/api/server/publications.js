@@ -17,10 +17,6 @@ Meteor.publish('APICollection.data', function(moduleInstanceId, collection, filt
   let board = moduleInstance.board();
   let teamId = board.team()._id;
 
-  let boards = Meteor.users.findOne(this.userId)
-               .boards(teamId, { _id: 1 })
-               .map((board) => board._id);
-
   if (!Boards.isValid(board._id, this.userId)) {
     throw new Meteor.Error('ModuleData.data.notAValidMember',
     'Must be a valid member.');
