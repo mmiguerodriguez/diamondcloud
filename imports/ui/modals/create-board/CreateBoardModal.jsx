@@ -8,6 +8,12 @@ import {
   SelectInput
 }                from '../../validation/inputs.jsx';
 
+const BOARD_TYPES = [
+  { _id: '1', name: 'Creativos' },
+  { _id: '2', name: 'Coordinadores' },
+  { _id: '3', name: 'Directores' },
+];
+
 export default class CreateBoardModal extends React.Component {
   createBoard() {
     let board = {
@@ -68,12 +74,6 @@ export default class CreateBoardModal extends React.Component {
   }
 
   renderBoardTypes() {
-    const BOARD_TYPES = [
-      { _id: '1', name: 'Tipo de board 1' },
-      { _id: '2', name: 'Tipo de board 2' },
-      { _id: '3', name: 'Tipo de board 3' },
-    ];
-
     return BOARD_TYPES.map((type) => {
       return (
         <option
@@ -100,7 +100,7 @@ export default class CreateBoardModal extends React.Component {
       name: '',
       // isPrivate: false,
       users: '',
-      type: '',
+      type: BOARD_TYPES[0].name,
     });
   }
 
@@ -127,7 +127,7 @@ export default class CreateBoardModal extends React.Component {
     this.state = {
       name: '',
       users: '',
-      type: 'Tipo de board 1',
+      type: BOARD_TYPES[0].name,
       isPrivate: false,
     };
 

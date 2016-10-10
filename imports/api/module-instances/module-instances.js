@@ -1,4 +1,4 @@
-import { Mongo } from 'meteor/mongo';
+import { Mongo }  from 'meteor/mongo';
 
 import { Boards } from '../boards/boards.js';
 
@@ -81,3 +81,33 @@ export let generateMongoQuery = (input, collection) => {
   }
   return result;
 };
+
+/**
+ * Inserts many moduleInstances to the database to prevent
+ * doing a forEach of callbacks when we are inserting
+ * a certain type of board in the database.
+ * 
+ * After inserting the moduleInstances we add the inserted
+ * ids to the board.moduleInstances attribute.
+ * 
+ * @param {Array} moduleInstances
+ *  The moduleInstances we are inserting.
+ * @param {String} boardId
+ *  The board id in where we are inserting
+ *  the moduleInstances.
+ */
+ModuleInstances.insertManyInstances = (moduleInstances, boardId) => {
+  _.each(moduleInstances, (moduleInstance) => {
+    ModuleInstances.insert(moduleInstance, (error, result) => {
+      let moduleInstanceId = result;
+
+      if (error) {
+        throw new Meteor.Error(error);
+      } else {
+        Boards.addModuleInstance(boardId, moduleInstanceId);
+      }
+    });
+  });
+};
+
+/* global _ */

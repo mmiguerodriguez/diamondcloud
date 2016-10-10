@@ -1,10 +1,11 @@
-import { Meteor } from 'meteor/meteor';
+import { Meteor }          from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import Future from 'fibers/future';
+import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
+import Future              from 'fibers/future';
 
-import { Boards } from './boards.js';
-import { Teams } from '../teams/teams.js';
+import { Boards }          from './boards.js';
+import { Teams }           from '../teams/teams.js';
+import { ModuleInstances } from '../module-instances/module-instances.js';
 
 export const createBoard = new ValidatedMethod({
   name: 'Boards.methods.create',
@@ -51,11 +52,6 @@ export const createBoard = new ValidatedMethod({
       archived: false,
     };
 
-    /**
-     * TODO: Depending on board type, insert different type of
-     * moduleInstances to the board.
-     */
-
     let future = new Future();
     Boards.insert(board, (err, res) => {
       if (!!err) future.throw(err);
@@ -70,6 +66,33 @@ export const createBoard = new ValidatedMethod({
           },
         },
       });
+      
+      /**
+       * Inserts certain moduleInstances for each type
+       * of board.
+       * 
+       * 'Creativos'     -> Task-manager, drive & videocall
+       * 'Coordinadores' -> Task-manager
+       * 'Directores'    -> Task-manager
+       */
+      let moduleInstances;
+      if (board.type === 'Creativos') {
+        moduleInstances = [
+          { moduleId: 'task-manager', x: 50, y: 20, width: 300, height: 400, archived: false, minimized: false },
+          { moduleId: 'drive', x: 50, y: 350, width: 482, height: 400, archived: false, minimized: false },
+          { moduleId: 'videocall', x: 50, y: 852, width: 270, height: 290, archived: false, minimized: false },
+        ];
+        
+      } else if (board.type === 'Coordinadores') {
+        moduleInstances = [
+          { moduleId: 'task-manager', x: 50, y: 50, width: 300, height: 400, archived: false, minimized: false },
+        ];
+      } else if (board.type === 'Directores') {
+        moduleInstances = [
+          { moduleId: 'task-manager', x: 50, y: 50, width: 300, height: 400, archived: false, minimized: false },
+        ];
+      }
+      ModuleInstances.insertManyInstances(moduleInstances, boardId);
 
       future.return(_board);
     });
