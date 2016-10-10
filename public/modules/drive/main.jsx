@@ -34,19 +34,29 @@ class FileManagerLayout extends React.Component {
     if(this.props.folders.length === 0) {
       return (
         <div
-            className="folder-item-container col-xs-4"
-            data-toggle="modal"
-            data-target="#create-folder">
-            <div className='folder-item fixed'>
-              <p className="truncate">Cree una carpeta</p>
-            </div>
+          className='document-container col-xs-4 col-sm-3 col-lg-2'
+          data-toggle="modal"
+          data-target="#create-folder">
+          <div className="document fixed">
+            <i className="col-xs-4 material-icons icon-type create-folder">folder</i>
+            <p className="col-xs-8 document-title truncate">Crear</p>
           </div>
+        </div>
       );
     } else {
       return this.props.folders.map((folder) => {
         return (
-          <div
-            className="folder-item-container col-xs-4">
+          <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
+            <div 
+              className="document fixed"
+              onClick={
+                () => {
+                  browserHistory.push('/folder/' + folder._id);
+                }
+              }>
+              <i className="col-xs-4 material-icons icon-type create-folder">folder</i>
+              <p className="col-xs-8 document-title truncate">{folder.name}</p>
+            </div>
             <i
               className="material-icons delete"
               onClick={this.props.deleteDocument.bind(this, {
@@ -59,38 +69,48 @@ class FileManagerLayout extends React.Component {
             >
               delete
             </i>
-            <div 
-              className='folder-item fixed'
-              onClick={
-                () => {
-                  browserHistory.push('/folder/' + folder._id);
-                }
-              }>
-              <p className="truncate">{folder.name}</p>
-            </div>
           </div>
         );
       });
+    }
+  }
+  renderDocumentTypeImg(fileType) {
+    switch(fileType) {
+      case 'application/vnd.google-apps.document':
+        return <img className='col-xs-4 icon-type create-doc' src='modules/drive/img/google-docs.svg' />;
+        break;
+      case 'application/vnd.google-apps.drawing':
+        return <img className='col-xs-4 icon-type create-doc' src='modules/drive/img/google-drawings.svg' />;
+        break;
+      case 'application/vnd.google-apps.spreadsheet':
+        return <img className='col-xs-4 icon-type create-doc' src='modules/drive/img/google-sheets.svg' />;
+        break;
+      case 'application/vnd.google-apps.presentation':
+        return <img className='col-xs-4 icon-type create-doc' src='modules/drive/img/google-slides.svg' />;
+        break;
+      default:
+        return null;
     }
   }
   renderDocuments() {
     if(this.props.documents.length === 0) {
       return (
         <div>
-          <div className='document-container col-xs-4'>
-            <div
-              className="document fixed"
-              data-toggle="modal"
-              data-target="#create-document">
-              <p className="truncate">Cree un documento</p>
+          <div
+            className='document-container col-xs-4 col-sm-3 col-lg-2'
+            data-toggle="modal"
+            data-target="#create-document">
+            <div className="document fixed">
+              <img className='col-xs-4 icon-type create-doc' src='modules/drive/img/google-docs.svg' />
+              <p className="col-xs-8 document-title truncate">Crear</p>
             </div>
           </div>
-          <div className='document-container col-xs-4'>
-            <div
-              className="document fixed"
-              id="import-file-card"
-            >
-              <p className="truncate">Importe desde drive</p>
+          <div
+            className='document-container col-xs-4 col-sm-3 col-lg-2'
+            id='import-file-card'>
+            <div className="document fixed">
+              <img className='col-xs-4 icon-type import-drive' src='modules/drive/img/google-drive-logo.svg' />
+              <p className="col-xs-8 document-title truncate">Importar</p>
             </div>
           </div>
         </div>
@@ -98,7 +118,21 @@ class FileManagerLayout extends React.Component {
     } else {
       return this.props.documents.map((document) => {
         return (
-          <div className='document-container col-xs-4'>
+          <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
+            <div className="document fixed">
+              {
+                this.renderDocumentTypeImg(document.fileType)
+              }
+              <p 
+                className="col-xs-8 document-title truncate"
+                onClick={
+                  () => {
+                    browserHistory.push('/document/' + document._id);
+                  }
+                }>
+                {document.name}
+              </p>
+            </div>
             <i
               className="material-icons delete"
               onClick={this.props.deleteDocument.bind(this, {
@@ -111,20 +145,12 @@ class FileManagerLayout extends React.Component {
             >
               delete
             </i>
-            <div
-              className="document fixed"
-              onClick={
-                () => {
-                  browserHistory.push('/document/' + document._id);
-                }
-              } >
-              <p className="truncate">{document.name}</p>
-            </div>
           </div>
         );
       });
     }
   }
+  
 
   componentDidMount() {
     this.props.initPicker('import-file', this.handleImport.bind(this));
@@ -291,17 +317,20 @@ class FileManagerLayout extends React.Component {
               <div
                 className="option drive"
                 id="import-file"
+                title='Importar de drive'
               ></div>
               <div
                 className="option folder"
                 data-toggle="modal"
-                data-target="#create-folder">
+                data-target="#create-folder"
+                title='Crear carpeta'>
                   <i className="material-icons icon">create_new_folder</i>
               </div>
               <div
                 className="option doc"
                 data-toggle="modal"
-                data-target="#create-document">
+                data-target="#create-document"
+                title='Crear documento'>
               </div>
             </div>
           </div>

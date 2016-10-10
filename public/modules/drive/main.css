@@ -58,32 +58,25 @@ body {
   background-color: #fafafa;
   border: 1px solid #ccc;
 }
+
+.folders-title-container, .documents-title-container {
+    margin: 10px 0 0;
+    font-weight: bold;
+}
+
 .documents-container {
   margin-bottom: 70px;
-}
-.folders-title-container, .document-title-container {
-  margin: 10px 0 0 !important;
 }
 .divider {
   margin: 5px 0 !important;
   border-top-color: #ccc !important;
 }
-.folder-item {
-  cursor: pointer;
-  text-align: center;
+.document {
+  text-align: left;
   height: 40px;
   background-color: #eee;
   border-radius: 3px;
-  padding: 10px;
-  box-shadow: 0.5px 0.5px 2px 0px rgba(0,0,0, 0.3);
-}
-.document {
   cursor: pointer;
-  text-align: center;
-  height: 150px;
-  background-color: #eee;
-  border-radius: 3px;
-  padding: 10px;
   box-shadow: 0.5px 0.5px 2px 0px rgba(0,0,0, 0.3);
 }
 .fixed {
@@ -127,6 +120,10 @@ body {
   width: 55.5px;
   position: absolute;
   top: -163px;
+  visibility: hidden;
+}
+.create:hover .options {
+  visibility: visible;
 }
 .option {
   width: 37px;
@@ -136,7 +133,7 @@ body {
   box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
   background-position: center;
   background-repeat: no-repeat;
-  background-size: 24px;
+  background-size: 18px;
 }
 .doc, .folder, .drive {
   opacity: 0;
@@ -151,14 +148,14 @@ body {
   box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
 }
 .doc {
-  transform: rotate(-90deg);
-  background-color: #2196f3;
+  background-color: #de690c;
   cursor: pointer;
-  background-image: url('img/attachment-clip.svg');
+  background-image: url('img/google-docs.svg');
+  -webkit-filter: invert(1);
   transition: all 0.3s ease;
 }
 .doc:hover {
-  box-shadow: -5px 0 11px 0 rgba(0,0,0,0.18), -5px 0 15px 0 rgba(0,0,0,0.15);
+  box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
 }
 .folder {
   background-color: #f1c40f;
@@ -172,10 +169,45 @@ body {
   position: absolute;
   left: calc(50% - 10px);
   top: calc(50% - 17px);
+  font-size: 20px;
+  padding: 2px;
   color: #fff;
 }
 .files-container, .folders-container, .documents-container {
   overflow: auto;
+}
+.delete {
+  position: absolute;
+  top: 18px;
+  right: 25px;
+  opacity: 0;
+  cursor: pointer;
+  transition: 0.3s all ease;
+}
+.delete:hover {
+  opacity: 1;
+}
+.folder-item-container:hover .delete, .document-container:hover .delete {
+  opacity: 0.9;
+}
+.icon-type {
+  height: 40px;
+  padding: 7px;
+  text-align: center;
+  font-size: 24px;
+  border-radius: 3px 0 0 3px;
+  opacity: 0.8;
+  background-color: #ccc;
+}
+img.icon-type.import-drive {
+  -webkit-filter: invert(1);
+}
+.icon-type.import-drive {
+  background-color: #333;
+}
+.document-title {
+  padding: 10px;
+  margin: 0;
 }
 
 .drive-navbar {
@@ -199,7 +231,7 @@ body {
 .go-back {
   display: inline-block;
   width: 32px;
-  height: 42px;
+  height: 32px;
   display: inline-block;
   vertical-align: middle;
   background-image: url(img/go-back.svg);
@@ -215,16 +247,5 @@ body {
 }
 .go-back:hover {
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-  opacity: 0.9;
-}
-.delete {
-  position: absolute;
-  top: 18px;
-  right: 25px;
-  opacity: 0;
-  cursor: pointer;
-  transition: 0.3s all ease;
-}
-.folder-item-container:hover .delete, .document-container:hover .delete {
   opacity: 0.9;
 }
