@@ -14,7 +14,20 @@ class FileManagerLayout extends React.Component {
     this.state = {
       name: '',
       fileType: 'application/vnd.google-apps.document',
+      initializedFilePickerCard: false,
     };
+  }
+
+  handleImport(file) {
+    this.props.importDocument({
+      file,
+      parentFolderId: this.props.folderId,
+      callback(error, result) {
+        if (!!error) {
+          console.error(error); // TODO: handle error
+        }
+      }
+    });
   }
 
   renderFolders() {
@@ -47,7 +60,8 @@ class FileManagerLayout extends React.Component {
                   id: folder._id,
                   parentFolderId: this.props.folderId,
                   mimeType: folderMimeType,
-                  finalCallback: () => {}, // TODO: handle loading and error
+                  isImported: folder.isImported,
+                  callback: () => {}, // TODO: handle loading and error
                 })}
               >
                 delete
@@ -73,7 +87,8 @@ class FileManagerLayout extends React.Component {
           <div className='document-container col-xs-4'>
             <div
               className="document fixed"
-              id="import-file">
+              id="import-file-card"
+            >
               <p className="truncate">Importe desde drive</p>
             </div>
           </div>
@@ -97,7 +112,8 @@ class FileManagerLayout extends React.Component {
                   id: document._id,
                   parentFolderId: this.props.folderId,
                   mimeType: document.fileType,
-                  finalCallback: () => {}, // TODO: handle loading and error
+                  isImported: document.isImported,
+                  callback: () => {}, // TODO: handle loading and error
                 })}
               >
                 delete
@@ -110,7 +126,18 @@ class FileManagerLayout extends React.Component {
   }
 
   componentDidMount() {
-    this.props.initPicker('import-file', (file) => {console.log(file)});
+    this.props.initPicker('import-file', this.handleImport.bind(this));
+  }
+
+  componentDidUpdate() {
+    if (!this.state.initializedFilePickerCard &&
+        !this.props.loadingDocuments &&
+        this.props.documents.length === 0) {
+      this.props.initPicker('import-file-card', this.handleImport.bind(this));
+      this.setState({
+        initializedFilePickerCard: true,
+      });
+    }
   }
 
   render() {
@@ -298,6 +325,7 @@ FileManagerLayout.propTypes = {
   documents: React.PropTypes.array.isRequired,
   createDocument: React.PropTypes.func.isRequired,
   createFolder: React.PropTypes.func.isRequired,
+  importDocument: React.PropTypes.func.isRequired,
   deleteDocument: React.PropTypes.func.isRequired,
   initPicker: React.PropTypes.func.isRequired,
   diamondCloudDriveFolderId: React.PropTypes.string.isRequired,
@@ -333,6 +361,7 @@ class FileManagerPage extends React.Component {
         documents={this.state.documents}
         createDocument={this.createDocument}
         createFolder={this.createFolder}
+        importDocument={this.importDocument}
         deleteDocument={this.deleteDocument}
         initPicker={this.initPicker}
         diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
@@ -575,6 +604,7 @@ class FileManagerPage extends React.Component {
               parentFolderId,
               name,
               fileType,
+              isImported: false,
             },
             isGlobal: true,
             callback(err, res) {
@@ -622,7 +652,6 @@ class FileManagerPage extends React.Component {
 
     function handleCreatedFolder(result) {
       let folderId = result.result.id;
-      console.log("folderId: ", folderId);
       if (!parentFolderId) {
         DiamondAPI.insert({
           collection: 'rootFiles',
@@ -659,14 +688,61 @@ class FileManagerPage extends React.Component {
   }
 
   /**
+     * Inserts a Drive file in module storage
+     * @param {Object} file
+     * @param {String} parentFolderId (optional)
+     * @param {Function} callback (optional)
+     *   @param {String} error
+     *   @param {Object} response
+     */
+  importDocument({ file, parentFolderId = '', callback = () => {} }) {
+    if (!parentFolderId) {
+      DiamondAPI.insert({
+        collection: 'rootFiles',
+          obj: {
+            documentId: file.id,
+            boardId: DiamondAPI.getCurrentBoard()._id,
+          },
+          isGlobal: true,
+          callback(err, res) {
+            if (!!err) {
+              callback(err, null);
+            } else {
+              insertDocumentInStorage(file.id, file.name, file.mimeType);
+            }
+          }
+      });
+    } else {
+      insertDocumentInStorage(file.id, file.name, file.mimeType);
+    }
+
+    function insertDocumentInStorage(id, name, fileType) {
+      DiamondAPI.insert({
+        collection: 'documents',
+        obj: {
+          _id: id,
+          parentFolderId,
+          name,
+          fileType,
+          isImported: true,
+        },
+        isGlobal: true,
+        callback,
+      });
+    }
+  }
+
+  /**
    * deleteDocument: Deletes a document from the module data and from Drive.
    * If the document is a folder, deletes all its children.
    * If it does not recieve an id, it deletes all documents
    * with the given parent id.
+   * It does not delete from Drive imported files.
    * @param {String} id (optional)
    * @param {String} parentFolderId (optional)
    * @param {String} mimeType (optional)
-   * @param {Function} finalCallback (optional)
+   * @param {String} isImported true if the file was imported from Drive
+   * @param {Function} callback (optional)
    *   @param {String} error
    *   @param {Object} response
    */
@@ -674,8 +750,8 @@ class FileManagerPage extends React.Component {
     // We need to redeclare the function to have a reference to it.
     // Otherwise, we would not be able to call it recursivaly,
     // as we don't know in which context it is going to run.
-    function recursiveDeleteDocument({ id = '', parentFolderId = '', mimeType = '', callback = () => {}}) {
-      if (id === '' && parentFolderId === '') {
+    function recursiveDeleteDocument({ id = '', parentFolderId = '', mimeType = '', isImported, callback = () => {}}) {
+      if ((id === '' && parentFolderId === '')) {
         let error = 'Invalid parameters passed to deleteDocument';
         console.error(error);
         callback(error, null);
@@ -740,7 +816,7 @@ class FileManagerPage extends React.Component {
       }
 
       function deleteFromDrive(_callback) {
-        if (!!id) {
+        if (!!id && !isImported) {
           gapi.client.drive.files.delete({
             fileId: id,
           }).then(_callback, _callback);
