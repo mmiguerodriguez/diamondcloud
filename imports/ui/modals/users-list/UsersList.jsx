@@ -49,7 +49,7 @@ export default class UsersList extends React.Component {
     }
     else {
       isAdmin = true;
-      users = JSON.parse(JSON.stringify(this.props.usersEmails));
+      users = JSON.parse(JSON.stringify(this.props.users));
       users.forEach((user, index) => {
         let _user = Meteor.users.findByEmail(user, Teams.dashboardUsersFields);
         users[index] = _user ? _user : {
@@ -134,7 +134,9 @@ export default class UsersList extends React.Component {
 
 UsersList.propTypes = {
   team: React.PropTypes.object,
-  usersEmails: React.PropTypes.array,
+  users: React.PropTypes.array,
   addUser: React.PropTypes.func.isRequired,
   removeUser: React.PropTypes.func.isRequired,
 };
+
+// TODO: cambiar la interfaz!!!!!!!!

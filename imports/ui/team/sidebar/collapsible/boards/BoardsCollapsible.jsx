@@ -23,7 +23,7 @@ export default class BoardsCollapsible extends React.Component {
           this.renderBoards()
         }
         footer={
-          this.props.owner ? (
+          this.props.isAdmin ? (
             <a
               className='btn btn-default footer-btn'
               role='button'
@@ -41,7 +41,7 @@ export default class BoardsCollapsible extends React.Component {
         <Board
           key={ board._id }
           board={ board }
-          owner={ this.props.owner }
+          isAdmin={ this.props.isAdmin }
           toggleCollapsible={ this.props.toggleCollapsible }
           changeBoard={ this.props.changeBoard }
           openBoardContextMenu={ this.props.openBoardContextMenu } />
@@ -53,7 +53,7 @@ export default class BoardsCollapsible extends React.Component {
 BoardsCollapsible.propTypes = {
   boards: React.PropTypes.array.isRequired,
   team: React.PropTypes.object.isRequired,
-  owner: React.PropTypes.bool.isRequired,
+  isAdmin: React.PropTypes.bool.isRequired,
 
   toggleCollapsible: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,

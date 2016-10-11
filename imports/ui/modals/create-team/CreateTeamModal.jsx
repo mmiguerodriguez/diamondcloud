@@ -20,7 +20,7 @@ export default class CreateTeamModal extends React.Component {
       plan: '',
       type: 'Web',
       otherType: '',
-      usersEmails: [],
+      users: [],
     };
 
     this.addUser = this.addUser.bind(this);
@@ -158,7 +158,7 @@ export default class CreateTeamModal extends React.Component {
                 style={{ display: 'none' }}>
                 <p className='explanation-text margin container-fluid'>Insertá un mail de Google de los miembros de tu equipo para poder trabajar colaborativamente. Si todavia no tienen cuenta en Diamond Cloud se le enviará un link al mail</p>
                 <UsersList
-                  usersEmails={ this.state.usersEmails }
+                  users={this.state.users}
                   addUser={ this.addUser }
                   removeUser={ this.removeUser } />
               </div>
@@ -199,22 +199,37 @@ export default class CreateTeamModal extends React.Component {
     });
   }
 
+  /**
+   * addUser: adds a user to the state
+   * @param {Object} user { email, hierarchy }
+   */
   addUser(user) {
-    let users = this.state.usersEmails;
-    if (users.indexOf(user) === -1) {
+    let users = this.state.users;
+    // Search if users contains user.email
+    let found = users.find((_user) => {
+      return _user.email === user.email;
+    }) !== undefined;
+    if (!found) {
       users.push(user);
       this.setState({
-        usersEmails: users,
+        users,
       });
     }
   }
+  /**
+   * removeUser: removes a user from the state
+   * @param {Object} user { email }
+   */
   removeUser(user){
-    let users = this.state.usersEmails;
-    let index = users.indexOf(user);
+    let users = this.state.users;
+    // Search if users contains user.email
+    let index = users.findIndex((_user) => {
+      return _user.email === user.email;
+    });
     if (index !== -1) {
       users.splice(index, 1);
       this.setState({
-        usersEmails: users,
+        users: users,
       });
     }
   }
