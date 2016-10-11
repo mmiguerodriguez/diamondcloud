@@ -70,7 +70,6 @@ export default class Team extends React.Component {
               messages={ this.props.messages } />
           ) : ( null )
         }
-
       </div>
     );
   }
@@ -91,6 +90,7 @@ export default class Team extends React.Component {
 
   getChats() {
     let chats = this.state.chats;
+
     chats = chats.map((chat) => {
       if (!!chat.boardId) {
         chat.messages = Boards.findOne(chat.boardId).getMessages().fetch();
@@ -99,65 +99,103 @@ export default class Team extends React.Component {
       }
       return chat;
     });
+
     return chats;
   }
   addChat(obj) {
-    //obj: { boardId || directChatId }
-    let chats = this.state.chats;
-    if (!!obj.boardId) {
-      let found = false;
-      chats.forEach((chat) => {
-        if (chat.boardId === obj.boardId) {
-          found = true;
-        }
-      });
-      if (!found) {
-        let messages = Boards.findOne(obj.boardId).getMessages().fetch();
-        chats.push({
-          boardId: obj.boardId,
-          messages
-        });
-      }
-    } else {
-      let found = false;
-      chats.forEach((chat) => {
-        if (chat.directChatId === obj.directChatId) {
-          found = true;
-        }
-      });
-      if (!found) {
-        let messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
-        chats.push({
-          directChatId: obj.directChatId,
-          messages
-        });
-      }
-    }
-    this.setState({
-      chats
-    });
-  }
-  removeChat(obj) {
-    //obj: { boardId || directChatId }
-    let chats = this.state.chats;
-    if (!!obj.boardId) {
-      chats.forEach((chat, index) => {
-        if (chat.boardId === obj.boardId) {
-          chats.splice(index, 1);
-        }
-      });
-    } else {
-      chats.forEach((chat, index) => {
-        if (chat.directChatId === obj.directChatId) {
-          chats.splice(index, 1);
-        }
-      });
-    }
-    this.setState({
-      chats
-    });
-  }
+    let self = this;
+    let { chats } = this.state;
 
+    if (!!obj.boardId) {
+      let found = false;
+      chats.forEach((chat) => {
+        if (chat.boardId === obj.boardId) {
+          found = true;
+        }
+      });
+
+      if (!found) {
+        const chatHandle = Meteor.subscribe('messages.chat', {
+          boardId: obj.boardId,
+        }, {
+          onReady() {
+            let messages = Boards.findOne(obj.boardId).getMessages().fetch();
+
+            chats.push({
+              boardId: obj.boardId,
+              messages,
+              subscription: chatHandle,
+            });
+
+            self.setState({
+              chats,
+            });
+          }
+        });
+      }
+    } else {
+      let found = false;
+      chats.forEach((chat) => {
+        if (chat.directChatId === obj.directChatId) {
+          found = true;
+        }
+      });
+
+      if (!found) {
+        const chatHandle = Meteor.subscribe('messages.chat', {
+          directChatId: obj.directChatId,
+        }, {
+          onReady() {
+            let messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
+
+            chats.push({
+              directChatId: obj.directChatId,
+              messages,
+              subscription: chatHandle,
+            });
+
+            self.setState({
+              chats,
+            });
+          }
+        });
+      }
+    }
+  }
+  /**
+   * removeChat(obj)
+   * @param {Object} obj
+   *  @param {String} boardId
+   *  @param {String} directChatId
+   *
+   * Removes the chat with boardId || directChatId from
+   * the chats array that is in the state and stops
+   * its subscription.
+   */
+  removeChat(obj) {
+    let { chats } = this.state;
+
+    if (!!obj.boardId) {
+      chats.forEach((chat, index) => {
+        if (chat.boardId === obj.boardId) {
+          chat.subscription.stop();
+          chats.splice(index, 1);
+        }
+      });
+    } else {
+      chats.forEach((chat, index) => {
+        if (chat.directChatId === obj.directChatId) {
+          chat.subscription.stop();
+          chats.splice(index, 1);
+        }
+      });
+    }
+
+    this.setState({
+      chats,
+    });
+  }
+  
   boardSubscribe(boardId) {
     if (Team.board.get()._id === boardId) {
       return;
@@ -194,7 +232,11 @@ export default TeamPageContainer = createContainer(({ params }) => {
   const { teamId } = params;
   let messagesHandle;
   let changesCallback = () => {
-    messagesHandle = Meteor.subscribe('messages.all', teamId);
+    if (messagesHandle) {
+      messagesHandle.stop();
+    }
+
+    messagesHandle = Meteor.subscribe('messages.last', teamId);
   };
 
   const teamsHandle = Meteor.subscribe('teams.dashboard');
@@ -204,7 +246,7 @@ export default TeamPageContainer = createContainer(({ params }) => {
       Team.board.set(Boards.findOne());
     });
     Team.boardSubscription.set(boardHandle);
-    messagesHandle = Meteor.subscribe('messages.all', teamId);
+    messagesHandle = Meteor.subscribe('messages.last', teamId);
   });
   const loading = !teamsHandle.ready() || !teamHandle.ready();
 
@@ -225,8 +267,8 @@ export default TeamPageContainer = createContainer(({ params }) => {
     users: Meteor.users.find({}).fetch(),
     boards: Boards.find({}, { sort: { name: -1 } }).fetch(),
     directChats: DirectChats.find().fetch(),
-    messages: Messages.find().fetch(),
-    moduleInstances: ModuleInstances.find().fetch(),
+    messages: Messages.find({}).fetch(),
+    moduleInstances: ModuleInstances.find({}).fetch(),
     modules: Modules.find({}, { sort: { name: -1 } }).fetch(),
   };
 }, Team);

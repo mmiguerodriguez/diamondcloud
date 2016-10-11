@@ -10,6 +10,10 @@ DirectChats.helpers({
 	getMessages() {
     return Messages.find({
       directChatId: this._id,
+    }, {
+      sort: {
+        createdAt: 1,
+      }
     });
   },
   getLastMessage() {

@@ -8,7 +8,7 @@ import { Teams }                from './teams.js';
 import { Boards }               from '../boards/boards.js';
 import { createBoard }          from '../boards/methods.js';
 import { createModuleInstance } from '../module-instances/methods.js';
-import { apiInsert }            from '../api/methods.js';
+import { APIInsert }            from '../api/methods.js';
 
 export const createTeam = new ValidatedMethod({
   name: 'Teams.methods.create',
@@ -80,7 +80,7 @@ export const createTeam = new ValidatedMethod({
           //create trello module instance
           createModuleInstance.call({
             boardId: coordinationBoard._id,
-            moduleId: 'trello',
+            moduleId: 'task-manager',
             x: 100,
             y: 100,
             width: 500,
@@ -90,10 +90,10 @@ export const createTeam = new ValidatedMethod({
               future.throw(err);
             }
 
-            apiInsert.call({
+            APIInsert.call({
               moduleInstanceId: res._id,
               collection: 'coordinationBoard',
-              obj: {
+              object: {
                 _id: coordinationBoard._id,
               },
               isGlobal: true,

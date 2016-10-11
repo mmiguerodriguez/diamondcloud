@@ -30,7 +30,7 @@ browserHistory.push('/');
 class VideoChatPage extends React.Component {
   constructor() {
     super();
-    
+
     this.state = {
       localVideoId: 'user-video',
       readyToCall: false,
@@ -42,7 +42,7 @@ class VideoChatPage extends React.Component {
 
   componentWillMount() {
     let self = this;
-    
+
     let webrtc = new SimpleWebRTC({
       localVideoEl: self.state.localVideoId,
       remoteVideosEl: '',
@@ -52,7 +52,7 @@ class VideoChatPage extends React.Component {
       // url: 'https://diamondcloud.tk:8888',
       // secure: true,
     });
-    
+
     self.setState({
       webrtc,
     });
@@ -61,24 +61,24 @@ class VideoChatPage extends React.Component {
   componentDidMount() {
     let self = this;
     let webrtc = self.state.webrtc;
-    
-    const VIDEO_WIDTH = 250, 
+
+    const VIDEO_WIDTH = 250,
           VIDEO_HEIGHT = 250,
           VIDEO_START = 'playing',
           AUDIO_START = 'unmuted';
-    
+
     // RTC ready event
     webrtc.on('readyToCall', () => {
       self.setState({
         readyToCall: true,
       });
     });
-    
+
     // Remote peer created event
     webrtc.on('createdPeer', (peer) => {
       // Created peer on room
     });
-    
+
     // New/Removed videos events
     webrtc.on('videoAdded', (video, peer) => {
       let { videos, peers } = self.state;
@@ -86,15 +86,13 @@ class VideoChatPage extends React.Component {
       videos.push({
         id: peer.id,
         domId: webrtc.getDomId(peer),
-        width: VIDEO_WIDTH,
-        height: VIDEO_HEIGHT,
         video: VIDEO_START,
         audio: AUDIO_START,
         peer,
       });
-      
+
       peers.push(peer);
-      
+
       self.setState({
         videos,
         peers,
@@ -103,25 +101,25 @@ class VideoChatPage extends React.Component {
     webrtc.on('videoRemoved', (video, peer) => {
       let { videos, peers } = self.state;
       let videoDomId =  webrtc.getDomId(peer);
-      
+
       videos.forEach((video, index) => {
         if (video.domId === videoDomId) {
           videos.splice(index, 1);
         }
       });
-      
+
       peers.forEach((_peer, index) => {
         if (_peer.id === peer.id) {
           peers.splice(index, 1);
         }
       });
-      
+
       self.setState({
         videos,
         peers,
       });
     });
-    
+
     // Access to media stream events
     webrtc.on('localStream', (stream) => {
       console.log('Access to media stream', stream);
@@ -129,7 +127,7 @@ class VideoChatPage extends React.Component {
     webrtc.on('localMediaError', (error) => {
       console.log('Failed access to media stream', error);
     });
-    
+
     // Local video/audio events
     webrtc.on('videoOn', () => {
       // Local video just turned on
@@ -143,7 +141,7 @@ class VideoChatPage extends React.Component {
     webrtc.on('audioOff', () => {
       // Local audio just turned off
     });
-    
+
     // Failure events
     webrtc.on('iceFailed', (peer) => {
       // Local p2p/ice failure
@@ -172,12 +170,31 @@ class VideoChatPage extends React.Component {
  *          RemoteVideos
  */
 class VideoChatLayout extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      connected: false,
+      maximizedVideo: this.props.localVideoId,
+    };
+
+    this.connect = this.connect.bind(this);
+
+    this.changeMaximizedVideo = this.changeMaximizedVideo.bind(this);
+  }
+
   renderVideos() {
     return this.props.videos.map((video) => {
       return (
-        <Video 
+        <Video
           key={video.id }
-          webrtc={this.props.webrtc }
+          position={
+            (this.state.maximizedVideo === video.id) ?
+              ('maximized-video') :
+              ('minimized-video')
+          }
+          onClick={this.changeMaximizedVideo}
+          webrtc={this.props.webrtc}
           { ...video } />
       );
     });
@@ -186,7 +203,7 @@ class VideoChatLayout extends React.Component {
   connect() {
     if (this.props.readyToCall) {
       let board = DiamondAPI.getCurrentBoard();
-      
+
       this.props.webrtc.joinRoom(board._id);
       this.setState({
         connected: true,
@@ -194,29 +211,27 @@ class VideoChatLayout extends React.Component {
     }
   }
 
-  constructor(props) {
-    super(props);
-    
-    this.state = { connected: false };
-    
-    this.connect = this.connect.bind(this);
-  }
-
   render() {
     return (
       <div>
         <UserVideo
           id={this.props.localVideoId}
+          position={
+            (this.state.maximizedVideo === this.props.localVideoId) ?
+              ('maximized-video') :
+              ('minimized-video')
+          }
+          onClick={this.changeMaximizedVideo}
           webrtc={this.props.webrtc}
           connected={this.state.connected} />
         {
           this.state.connected ? (
-            <div className='minimized-video-container'>
+            <div>
               {this.renderVideos()}
             </div>
           ) : (
             <div className='join-background'>
-              <button 
+              <button
                 className='btn btn-primary join'
                 onClick={this.connect}>
               </button>
@@ -225,6 +240,12 @@ class VideoChatLayout extends React.Component {
         }
       </div>
     );
+  }
+
+  changeMaximizedVideo(id) {
+    this.setState({
+      maximizedVideo: id,
+    });
   }
 }
 
@@ -239,21 +260,21 @@ class UserVideo extends React.Component {
       video: 'paused',
     });
   }
-  
+
   resume() {
     this.props.webrtc.resumeVideo();
     this.setState({
       video: 'playing',
     });
   }
-  
+
   mute() {
     this.props.webrtc.mute();
     this.setState({
       audio: 'muted',
     });
   }
-  
+
   unmute() {
     this.props.webrtc.unmute();
     this.setState({
@@ -271,15 +292,19 @@ class UserVideo extends React.Component {
     this.mute = this.mute.bind(this);
     this.unmute = this.unmute.bind(this);
   }
-  
+
   render() {
     return (
-      <div className='user-video-container'>
+      <div className={
+        (this.props.position === 'maximized-video') ?
+          'user-video-container' : 'minimized-video-container'
+      } >
         <video
           id={this.props.id}
-          className='user-video'>
+          className={this.props.position}
+          onClick={this.props.onClick.bind(null, this.props.id)}>
         </video>
-        { 
+        {
           this.props.connected ? (
             <div className='user-video-btn'>
             {
@@ -333,9 +358,9 @@ class Video extends React.Component {
 
   constructor(props) {
     super(props);
-    
+
     this.state = { startVolume: null };
-    
+
     this.mute = this.mute.bind(this);
     this.unmute = this.unmute.bind(this);
   }
@@ -348,7 +373,9 @@ class Video extends React.Component {
 
   render() {
     return (
-      <div className='minimized-video'>
+      <div className={(this.props.position === 'minimized-video') ?
+        'minimized-video-container' : null
+      }>
         <div className='minimized-user-data'>
           <p className='nick'>{this.props.peer.nick}</p>
           <VideoStatus
@@ -357,9 +384,9 @@ class Video extends React.Component {
         </div>
         <video
           id={this.props.domId}
+          className={this.props.position}
+          onClick={this.props.onClick.bind(null, this.props.id)}
           src={URL.createObjectURL(this.props.peer.stream)}
-          width={this.props.width}
-          height={this.props.height}
           ref={(e) => this.video = e}
           onContextMenu={() => { return false; }}
           autoPlay>
@@ -377,20 +404,20 @@ class Video extends React.Component {
  * Shows the status of a remote video.
  * If the remote video is muted
  * or paused, it shows icons.
- * 
+ *
  * This is made in a separate component to prevent image
  * flickering.
  */
 class VideoStatus extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = { audio: 'unmuted', video: 'playing' };
   }
 
   componentDidMount() {
     let self = this;
-    
+
     self.props.webrtc.on('mute', (data) => {
       self.props.webrtc.getPeers(data.id).forEach((peer) => {
         if (peer.id === self.props.peer.id) {
@@ -434,7 +461,7 @@ class VideoStatus extends React.Component {
 }
 
 /**
- * Router setup. 
+ * Router setup.
  */
 ReactDOM.render(
   <Router history={browserHistory }>

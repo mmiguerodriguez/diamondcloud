@@ -19,6 +19,14 @@ export default class Board extends React.Component {
             { /* <h4 className='title truncate'>{ this.props.board.name }</h4> */ }
           </div>
           <div className='col-xs-6 right-data'>
+            <div className="visibility">
+              {
+                /*  TODO: When visibility-off is clicked change image to visibility-on.
+                <img src="/img/visibility-on.svg" className="visibility-img" title="Hacer visible para directores" />
+                */
+              }
+              <img src="/img/visibility-off.svg" className="visibility-img" title="Hacer no visible para directores" />
+            </div>
             <h4 className='members truncate'>
               { this.renderUsers() }
             </h4>

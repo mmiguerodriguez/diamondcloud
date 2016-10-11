@@ -5,6 +5,7 @@ import { chai }                 from 'meteor/practicalmeteor:chai';
 import   faker                  from 'faker';
 import { Random }               from 'meteor/random';
 import { Mail }                 from '../mails/mails.js';
+import { printObject }             from '../helpers/print-objects.js';
 
 import { Teams }                from './teams.js';
 import { Boards }               from '../boards/boards.js';
@@ -17,7 +18,7 @@ import { createTeam,
 }                               from './methods.js';
 import { createBoard }          from '../boards/methods.js';
 import { createModuleInstance } from '../module-instances/methods.js';
-import { apiInsert }            from '../api/methods.js';
+import { APIInsert }            from '../api/methods.js';
 
 import '../factories/factories.js';
 
@@ -31,7 +32,7 @@ if (Meteor.isServer) {
 
       beforeEach(function() {
         resetDatabase();
-        
+
         createdGeneralBoard = false;
         users = [
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
@@ -73,7 +74,7 @@ if (Meteor.isServer) {
           createModuleInstanceArgs = obj;
           callback(null, { _id: 'moduleInstanceId' });
         });
-        sinon.stub(apiInsert, 'call', (obj, callback) => {
+        sinon.stub(APIInsert, 'call', (obj, callback) => {
           apiInsertArgs = obj;
           callback(null, null);
         });
@@ -85,7 +86,7 @@ if (Meteor.isServer) {
         Meteor.user.restore();
         Mail.sendMail.restore();
         createModuleInstance.call.restore();
-        apiInsert.call.restore();
+        APIInsert.call.restore();
       });
 
       it('should create a team', function(done) {
@@ -124,7 +125,7 @@ if (Meteor.isServer) {
           delete result._id;
           let expectedCreateModuleInstanceArgs = {
                 boardId: coordinationBoardId,
-                moduleId: 'trello',
+                moduleId: 'task-manager',
                 x: 100,
                 y: 100,
                 width: 500,
@@ -133,7 +134,7 @@ if (Meteor.isServer) {
               expectedApiInsertArgs = {
                 moduleInstanceId: 'moduleInstanceId',
                 collection: 'coordinationBoard',
-                obj: {
+                object: {
                   _id: coordinationBoardId,
                 },
                 isGlobal: true,

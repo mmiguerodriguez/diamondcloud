@@ -4,7 +4,8 @@ const { Router, Route, IndexRoute, browserHistory } = ReactRouter;
 browserHistory.push('/'); // initialize the router
 
 // Google Drive API
-let CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
+const CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com',
+      folderMimeType = 'application/vnd.google-apps.folder';
 
 class FileManagerLayout extends React.Component {
   constructor(props) {
@@ -13,43 +14,104 @@ class FileManagerLayout extends React.Component {
     this.state = {
       name: '',
       fileType: 'application/vnd.google-apps.document',
+      initializedFilePickerCard: false,
     };
   }
 
+  handleImport(file) {
+    this.props.importDocument({
+      file,
+      parentFolderId: this.props.folderId,
+      callback(error, result) {
+        if (!!error) {
+          console.error(error); // TODO: handle error
+        }
+      }
+    });
+  }
+
   renderFolders() {
-    console.log(this.props);
     if(this.props.folders.length === 0) {
       return (
-        <p>
-          No hay carpetas
-        </p>
+        <div
+          className='document-container col-xs-4 col-sm-3 col-lg-2'
+          data-toggle="modal"
+          data-target="#create-folder">
+          <div className="document fixed">
+            <i className="col-xs-3 material-icons icon-type create-folder">folder</i>
+            <p className="col-xs-9 document-title truncate">Crear</p>
+          </div>
+        </div>
       );
     } else {
       return this.props.folders.map((folder) => {
         return (
-          <div className="folder col-xs-4 fixed">
-            <p className="truncate">{folder.name}</p>
+          <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
+            <div 
+              className="document fixed"
+              title={folder.name}
+              onClick={
+                () => {
+                  browserHistory.push('/folder/' + folder._id);
+                }
+              }>
+              <i className="col-xs-3 material-icons icon-type create-folder">folder</i>
+              <p className="col-xs-9 document-title truncate">{folder.name}</p>
+            </div>
+            <i
+              className="material-icons delete"
+              onClick={this.props.deleteDocument.bind(this, {
+                id: folder._id,
+                parentFolderId: this.props.folderId,
+                mimeType: folderMimeType,
+                isImported: folder.isImported,
+                callback: () => {}, // TODO: handle loading and error
+              })}
+            >
+              delete
+            </i>
           </div>
         );
       });
+    }
+  }
+  renderDocumentTypeImg(fileType) {
+    switch(fileType) {
+      case 'application/vnd.google-apps.document':
+        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-docs.svg' />;
+        break;
+      case 'application/vnd.google-apps.drawing':
+        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-drawings.svg' />;
+        break;
+      case 'application/vnd.google-apps.spreadsheet':
+        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-sheets.svg' />;
+        break;
+      case 'application/vnd.google-apps.presentation':
+        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-slides.svg' />;
+        break;
+      default:
+        return null;
     }
   }
   renderDocuments() {
     if(this.props.documents.length === 0) {
       return (
         <div>
-          <div className='document-container col-xs-4'>
-            <div
-              className="document fixed"
-              onClick={this.openModal.bind(this)}>
-              <p className="truncate">Cree un documento</p>
+          <div
+            className='document-container col-xs-4 col-sm-3 col-lg-2'
+            data-toggle="modal"
+            data-target="#create-document">
+            <div className="document fixed">
+              <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-docs.svg' />
+              <p className="col-xs-9 document-title truncate">Crear</p>
             </div>
           </div>
-          <div className='document-container col-xs-4'>
-            <div
-              className="document fixed"
-              id="import-file">
-              <p className="truncate">Importe desde drive</p>
+          <div
+            className='document-container col-xs-4 col-sm-3 col-lg-2'
+            id='import-file-card'>
+            <div className="document fixed">
+              <img className='col-xs-3 icon-type import-drive' src='modules/drive/img/google-drive-logo.svg' />
+              <p className="col-xs-9 document-title truncate">Importar</p>
             </div>
           </div>
         </div>
@@ -57,81 +119,172 @@ class FileManagerLayout extends React.Component {
     } else {
       return this.props.documents.map((document) => {
         return (
-          <div className='document-container col-xs-4'>
-            <div
+          <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
+            <div 
               className="document fixed"
-              onClick={() => {
-                browserHistory.push('/document/' + document._id);
-              }}>
-              <p className="truncate">{document.name}</p>
+              title={document.name}>
+              {
+                this.renderDocumentTypeImg(document.fileType)
+              }
+              <p 
+                className="col-xs-9 document-title truncate"
+                onClick={
+                  () => {
+                    browserHistory.push('/document/' + document._id);
+                  }
+                }>
+                {document.name}
+              </p>
             </div>
+            <i
+              className="material-icons delete"
+              onClick={this.props.deleteDocument.bind(this, {
+                id: document._id,
+                parentFolderId: this.props.folderId,
+                mimeType: document.fileType,
+                isImported: document.isImported,
+                callback: () => {}, // TODO: handle loading and error
+              })}
+            >
+              delete
+            </i>
           </div>
         );
       });
     }
   }
+  
 
   componentDidMount() {
-    this.props.initPicker('import-file', (file) => {console.log(file)});
+    this.props.initPicker('import-file', this.handleImport.bind(this));
+  }
+
+  componentDidUpdate() {
+    if (!this.state.initializedFilePickerCard &&
+        !this.props.loadingDocuments &&
+        this.props.documents.length === 0) {
+      this.props.initPicker('import-file-card', this.handleImport.bind(this));
+      this.setState({
+        initializedFilePickerCard: true,
+      });
+    }
   }
 
   render() {
     return (
       <div>
         <div id='resizable' className='file-manager ui-widget-content'>
-          <div
-            className="modal-container"
-            id='create-doc-modal'>
-            <div className="create-doc-modal">
-              <div className="modal-head">
-              <div className="header-data">
-              <h4 className="modal-title">Cree un documento</h4>
-              <i 
-                className="material-icons close" 
-                onClick={ this.closeModal.bind(this) }>close</i>
-            </div>
-              
-            </div>
-              <div className="modal-body">
-              <div className="form-group name">
-                <label for="file-name">Nombre del archivo</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
-                  id="file-name" 
-                  placeholder="Nombre del archivo"
-                  value={ this.state.name }
-                  onChange={ this.handleChange.bind(this, 'name') } />
-              </div>
-              
-              <label for="file-type">Tipo de archivo</label>
-              <select
-                id="file-type" 
-                className="form-control"
-                value={ this.state.fileType }
-                onChange={ this.handleChange.bind(this, 'fileType') }>
-                <option value='application/vnd.google-apps.document'>Docs</option>
-                <option value='application/vnd.google-apps.spreadsheet'>Excel</option>
-                <option value='application/vnd.google-apps.presentation'>Slides</option>
-              </select>
-            </div>
-              <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="btn btn-default" 
-                  data-dismiss="modal"
-                  onClick={ this.closeModal.bind(this) }>Cancelar</button>
-                <button 
-                  type="button" 
-                  className="btn btn-primary"
-                  onClick={ this.props.createDocument.bind(this, {
-                    name: this.state.name,
-                    fileType: this.state.fileType,
-                    parentFolderId: this.props.folderId,
-                  }) }>Crear</button>
+          {
+            // Create document modal
+          }
+          <div className="modal fade" id="create-document" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 className="modal-title" id="myModalLabel">Crear archivo</h4>
+                </div>
+                <div className="modal-body">
+                  <div className="form-group name">
+                    <label for="file-name">Nombre del archivo</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="file-name"
+                      placeholder="Nombre del archivo"
+                      value={ this.state.name }
+                      onChange={ this.handleChange.bind(this, 'name') } />
+                  </div>
+
+                  <label for="file-type">Tipo de archivo</label>
+                  <select
+                    id="file-type"
+                    className="form-control"
+                    value={ this.state.fileType }
+                    onChange={ this.handleChange.bind(this, 'fileType') }>
+                    <option value='application/vnd.google-apps.document'>Docs</option>
+                    <option value='application/vnd.google-apps.drawing'>Drawing</option>
+                    <option value='application/vnd.google-apps.spreadsheet'>Excel</option>
+                    <option value='application/vnd.google-apps.presentation'>Slides</option>
+                  </select>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={ this.props.createDocument.bind(this, {
+                      name: this.state.name,
+                      fileType: this.state.fileType,
+                      parentFolderId: this.props.folderId,
+                      diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
+                      callback: () => {
+                        $('#create-document').modal('hide');
+                      },
+                    })}>
+                      Crear
+                    </button>
+                </div>
               </div>
             </div>
           </div>
+          {
+            // Create folder modal
+          }
+          <div className="modal fade" id="create-folder" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 className="modal-title" id="myModalLabel">Crear capeta</h4>
+                </div>
+                <div className="modal-body">
+                  <div className="form-group name">
+                    <label for="file-name">Nombre de la carpeta</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="file-name"
+                      placeholder="Nombre de la carpeta"
+                      value={ this.state.name }
+                      onChange={ this.handleChange.bind(this, 'name') } />
+                  </div>
+
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={
+                      this.props.createFolder.bind(this, {
+                        name: this.state.name,
+                        parentFolderId: this.props.folderId,
+                        diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
+                        callback: (error) => {
+                          if (!!error) {
+                            console.error(error); // TODO: handle error
+                          }
+                          $('#create-folder').modal('hide');
+                        },
+                      })
+                    }>Crear</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {
+            !!this.props.folderId ?
+            (
+              <div className='folder-navbar'>
+                <div
+                  className='go-back'
+                  onClick={ browserHistory.goBack }>
+                </div>
+              </div>
+            ) : ( null )
+          }
           <div className="container-fluid files-container">
             <p className="folders-title-container">
               Carpetas
@@ -167,10 +320,21 @@ class FileManagerLayout extends React.Component {
               <div
                 className="option drive"
                 id="import-file"
+                title='Importar de drive'
               ></div>
               <div
-                className="option new"
-                onClick={this.openModal.bind(this)}></div>
+                className="option folder"
+                data-toggle="modal"
+                data-target="#create-folder"
+                title='Crear carpeta'>
+                  <i className="material-icons icon">create_new_folder</i>
+              </div>
+              <div
+                className="option doc"
+                data-toggle="modal"
+                data-target="#create-document"
+                title='Crear documento'>
+              </div>
             </div>
           </div>
         </div>
@@ -183,13 +347,7 @@ class FileManagerLayout extends React.Component {
        [index]: event.target.value,
     });
   }
-  
-  closeModal() {
-    $('#create-doc-modal').removeClass('active');
-  }
-  openModal() {
-    $('#create-doc-modal').addClass('active');
-  }
+
 }
 
 FileManagerLayout.propTypes = {
@@ -199,7 +357,11 @@ FileManagerLayout.propTypes = {
   loadingDocuments: React.PropTypes.bool.isRequired,
   documents: React.PropTypes.array.isRequired,
   createDocument: React.PropTypes.func.isRequired,
+  createFolder: React.PropTypes.func.isRequired,
+  importDocument: React.PropTypes.func.isRequired,
+  deleteDocument: React.PropTypes.func.isRequired,
   initPicker: React.PropTypes.func.isRequired,
+  diamondCloudDriveFolderId: React.PropTypes.string.isRequired,
 };
 
 class FileManagerPage extends React.Component {
@@ -216,6 +378,9 @@ class FileManagerPage extends React.Component {
                                *  has already returned data
                                */
       documents: [],
+      diamondCloudDriveFolderId: null, /** The drive folder in which
+                                        *  all files are stored
+                                        */
     };
   }
 
@@ -228,15 +393,137 @@ class FileManagerPage extends React.Component {
         loadingDocuments={this.state.loadingDocuments}
         documents={this.state.documents}
         createDocument={this.createDocument}
+        createFolder={this.createFolder}
+        importDocument={this.importDocument}
+        deleteDocument={this.deleteDocument}
         initPicker={this.initPicker}
+        diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
       />
     );
   }
 
 
   componentDidMount() {
+    this.getDriveData();
+    checkAuth(this.getDriveFolder.bind(this)); /** configure google drive api and
+                                     *  call the getDriveFolder in the callback
+                                     */
+  }
 
+  componentWillReceiveProps() {
+    // the props have changed, so we have to remake the subscriptions
+    this.getDriveData();
+  }
+
+  /**
+   * getDriveFolder: sets the diamondCloudDriveFolderId state.
+   *   It is the folder in the user's Drive in which all
+   *   the Diamond Cloud files will be stored.
+   *   If there is no folder, it creates it.
+   */
+  getDriveFolder() {
+    // Search for the folder
+    const folderName = DiamondAPI.getTeam().name + ' (Diamond Cloud)';
     let self = this;
+    gapi.client.drive.files.list({
+      q: `name = "${folderName}" and mimeType = "${folderMimeType}"`,
+      pageSize: 1,
+    }).then(handleFolderList, (error) => {
+      console.log(error); // TODO: handle error
+    });
+
+    function handleFolderList(response) {
+      // There isn't any folder created
+      if (response.result.files.length === 0) {
+        gapi.client.drive.files.create({
+          resource: {
+            name: folderName,
+            mimeType: folderMimeType,
+          }
+        }).then(handleCreatedFolder, (error) => {
+          console.log(error); // TODO: handle error
+        });
+      } else {
+        self.setState({
+          diamondCloudDriveFolderId: response.result.files[0].id,
+        });
+      }
+    }
+
+    function handleCreatedFolder(response) {
+      self.setState({
+        diamondCloudDriveFolderId: response.result.id,
+      });
+    }
+  }
+
+  getDriveData() {
+
+    // TODO show only the documents and folders of the current folder
+    // TODO dessuscribe from the old folders
+    let self = this;
+
+    /////////////////////////////////////////
+    // Get the files of the current folder //
+    /////////////////////////////////////////
+
+    const getFiles = ({ parentFolderId = null, foldersIds = [], documentsIds = [] }) => {
+      if (foldersIds.length !== 0) {
+        const foldersHandle = DiamondAPI.subscribe({
+          collection: 'folders',
+          filter: (!!parentFolderId) ? { // if we are not in the root folder
+            parentFolderId,
+          } : { //if we are in the root folder
+            _id: {
+              $in: foldersIds,
+            },
+          },
+          callback(err, res) {
+            if (!!err) {
+              console.error(err);
+            } else {
+              self.setState({
+                loadingFolders: false,
+                folders: res
+              });
+            }
+          },
+        });
+      } else {
+        self.setState({
+          loadingFolders: false,
+          folders: []
+        });
+      }
+
+      if (documentsIds.length !== 0) {
+        const documentsHandle = DiamondAPI.subscribe({
+          collection: 'documents',
+          filter: (!!parentFolderId) ? { // if we are not in the root folder
+            parentFolderId,
+          } : { //if we are in the root folder
+            _id: {
+              $in: documentsIds,
+            },
+          },
+          callback(err, res) {
+            if (!!err) {
+              console.error(err);
+            } else {
+              self.setState({
+                loadingDocuments: false,
+                documents: res
+              });
+            }
+          },
+        });
+      } else {
+        self.setState({
+          loadingDocuments: false,
+          documents: [],
+        });
+      }
+    }
 
     ////////////////////////////////////////
     // Check if we are in the root folder //
@@ -293,120 +580,322 @@ class FileManagerPage extends React.Component {
         parentFolderId: this.props.params.folderId,
       });
     }
-
-    /////////////////////////////////////////
-    // Get the files of the current folder //
-    /////////////////////////////////////////
-
-    const getFiles = ({ parentFolderId = null, foldersIds = [], documentsIds = [] }) => {
-      if (foldersIds.length !== 0) {
-        const foldersHandle = DiamondAPI.subscribe({
-          collection: 'folders',
-          filter: (!!parentFolderId) ? { // if we are not in the root folder
-            parentFolderId,
-          } : { //if we are in the root folder
-            _id: {
-              $in: foldersIds,
-            },
-          },
-          callback(err, res) {
-            if (!!err) {
-              console.error(err);
-            } else {
-              self.setState({
-                loadingFolders: false,
-                folders: res
-              });
-            }
-          },
-        });
-      } else {
-        self.setState({
-          loadingFolders: false,
-          folders: []
-        });
-      }
-
-      if (documentsIds.length !== 0) {
-        console.log(documentsIds);
-        const documentsHandle = DiamondAPI.subscribe({
-          collection: 'documents',
-          filter: (!!parentFolderId) ? { // if we are not in the root folder
-            parentFolderId,
-          } : { //if we are in the root folder
-            _id: {
-              $in: documentsIds,
-            },
-          },
-          callback(err, res) {
-            if (!!err) {
-              console.error(err);
-            } else {
-              self.setState({
-                loadingDocuments: false,
-                documents: res
-              });
-            }
-          },
-        });
-      } else {
-        self.setState({
-          loadingDocuments: false,
-          documents: [],
-        });
-      }
-    }
-
-    checkAuth(); // configure google drive api
   }
 
-  createDocument({ name, parentFolderId, fileType, callback = () => {} }) {
+  /**
+   * Creates a document in the user's Drive
+   * @param {String} name
+   * @param {String} parentFolderId (optional)
+   * @param {String} fileType
+   *   it is the mimeType of the fileType
+   *   https://developers.google.com/drive/v3/web/mime-types
+   * @param {Function} callback (optional)
+   *   @param {String} error
+   *   @param {Object} response
+   */
+  createDocument({ name, parentFolderId = null, fileType, diamondCloudDriveFolderId, callback = () => {} }) {
+    // Check if there is a Diamond Cloud drive folder
+    if (!diamondCloudDriveFolderId) {
+      console.error('There was an error while creating the document. Please try again');
+      // TODO: handle this error
+    } else {
+      gapi.client.drive.files.create({
+        resource: {
+          name,
+          mimeType: fileType,
+          // Create the document inside the parent folder if it exists
+          parents: [parentFolderId || diamondCloudDriveFolderId],
+        }
+      }).then((resp) => {
+        // Make the document editable to everyone with the link
+        gapi.client.drive.permissions.create({
+          fileId: resp.result.id,
+          role: 'writer',
+          type: 'anyone',
+        }).then(() => {
+          if (!parentFolderId) {
+            DiamondAPI.insert({
+              collection: 'rootFiles',
+              obj: {
+                documentId: resp.result.id, // resp is the response to the create
+                                            // request, not to the permission one
+                boardId: DiamondAPI.getCurrentBoard()._id,
+              },
+              isGlobal: true,
+              callback(err, res) {
+                if (!!err) {
+                  console.error(err);
+                }
+              }
+            });
+          }
 
-     /**
-      * callback(err, res)
-      * res: file
-      * fileType is the mimeType of the file
-      *   https://developers.google.com/drive/v3/web/mime-types
-      */
+          DiamondAPI.insert({
+            collection: 'documents',
+            obj: {
+              _id: resp.result.id,
+              parentFolderId,
+              name,
+              fileType,
+              isImported: false,
+            },
+            isGlobal: true,
+            callback(err, res) {
+              if (!!err) {
+                console.error(err);
+              }
+            },
+          });
+          callback(null, resp);
+        }, (reason) => {
+          callback(reason, resp);
+        });
+      }, (reason) => {
+        callback(reason, resp);
+      });
+    }
+  }
 
-    $('#create-doc-modal').removeClass('active');
+  /**
+     * Creates a folder in the module storage, and in Drive
+     * @param {String} name
+     * @param {String} parentFolderId (optional)
+     * @param {Function} callback (optional)
+     *   @param {String} error
+     *   @param {Object} response
+     */
+  createFolder({ name, parentFolderId = null, diamondCloudDriveFolderId, callback = () => {} }) {
+    // Check if there is a Diamond Cloud drive folder
+    if (!diamondCloudDriveFolderId) {
+      callback('There was an error while creating the document. Please try again');
+      return false;
+      // TODO: handle this error
+    }
+
+    // Create the folder in Drive
     gapi.client.drive.files.create({
       resource: {
         name,
-        mimeType: fileType,
+        mimeType: folderMimeType,
+        parents: [parentFolderId || diamondCloudDriveFolderId],
       }
-    }).then(function(resp) {
+    }).then(handleCreatedFolder, (error) => {
+      callback(error);
+    });
+
+    function handleCreatedFolder(result) {
+      let folderId = result.result.id;
       if (!parentFolderId) {
         DiamondAPI.insert({
           collection: 'rootFiles',
+            obj: {
+              folderId: folderId,
+              boardId: DiamondAPI.getCurrentBoard()._id,
+            },
+            isGlobal: true,
+            callback(err, res) {
+              if (!!err) {
+                callback(err, null);
+              } else {
+                insertFolderInStorage(folderId);
+              }
+            }
+        });
+      } else {
+        insertFolderInStorage(folderId);
+      }
+    }
+
+    function insertFolderInStorage(folderId) {
+      DiamondAPI.insert({
+        collection: 'folders',
+        obj: {
+         _id: folderId,
+         parentFolderId,
+         name,
+        },
+        isGlobal: true,
+        callback,
+      });
+    }
+  }
+
+  /**
+     * Inserts a Drive file in module storage
+     * @param {Object} file
+     * @param {String} parentFolderId (optional)
+     * @param {Function} callback (optional)
+     *   @param {String} error
+     *   @param {Object} response
+     */
+  importDocument({ file, parentFolderId = '', callback = () => {} }) {
+    if (!parentFolderId) {
+      DiamondAPI.insert({
+        collection: 'rootFiles',
           obj: {
-            documentId: resp.result.id,
+            documentId: file.id,
             boardId: DiamondAPI.getCurrentBoard()._id,
           },
+          isGlobal: true,
           callback(err, res) {
             if (!!err) {
-              console.error(err);
+              callback(err, null);
+            } else {
+              insertDocumentInStorage(file.id, file.name, file.mimeType);
             }
           }
-        });
-      }
+      });
+    } else {
+      insertDocumentInStorage(file.id, file.name, file.mimeType);
+    }
+
+    function insertDocumentInStorage(id, name, fileType) {
       DiamondAPI.insert({
         collection: 'documents',
         obj: {
-          _id: resp.result.id,
+          _id: id,
           parentFolderId,
-          name
+          name,
+          fileType,
+          isImported: true,
         },
-        callback(err, res) {
-          if (!!err) {
-            console.error(err);
-          }
-        },
+        isGlobal: true,
+        callback,
       });
-      callback(null, resp);
-    }, function(reason) {
-      callback(reason, resp);
-    });
+    }
+  }
+
+  /**
+   * deleteDocument: Deletes a document from the module data and from Drive.
+   * If the document is a folder, deletes all its children.
+   * If it does not recieve an id, it deletes all documents
+   * with the given parent id.
+   * It does not delete from Drive imported files.
+   * @param {String} id (optional)
+   * @param {String} parentFolderId (optional)
+   * @param {String} mimeType (optional)
+   * @param {String} isImported true if the file was imported from Drive
+   * @param {Function} callback (optional)
+   *   @param {String} error
+   *   @param {Object} response
+   */
+  deleteDocument(params) {
+    // We need to redeclare the function to have a reference to it.
+    // Otherwise, we would not be able to call it recursivaly,
+    // as we don't know in which context it is going to run.
+    function recursiveDeleteDocument({ id = '', parentFolderId = '', mimeType = '', isImported, callback = () => {}}) {
+      if ((id === '' && parentFolderId === '')) {
+        let error = 'Invalid parameters passed to deleteDocument';
+        console.error(error);
+        callback(error, null);
+        return false;
+      }
+
+      let self = this;
+
+      // TODO: handle this with promises
+      removeFromRoot((error, result) => {
+        if (!!error) {
+          callback(error, result);
+          return false;
+        }
+        deleteChildren((error, result) => {
+          if (!!error) {
+            callback(error, result);
+            return false;
+          }
+          deleteFromDrive((error, result) => {
+            if (!!error) {
+              callback(error, result);
+              return false;
+            }
+            deleteFromStorage(callback);
+          });
+        });
+      });
+
+      // If the document is on root directory, removes it.
+      function removeFromRoot(_callback) {
+        if (parentFolderId === '') {
+          DiamondAPI.remove({
+            collection: 'rootFiles',
+            filter: {
+              $or: [
+                {
+                  documentId: id
+                },
+                {
+                  folderId: id
+                },
+              ],
+            },
+            callback: _callback,
+          });
+        } else {
+          _callback();
+        }
+      }
+
+      // If the document is a folder, recursively delete its children.
+      function deleteChildren(_callback) {
+        if (mimeType === folderMimeType) {
+          recursiveDeleteDocument({
+            parentFolderId: id,
+            callback: _callback,
+          });
+        } else {
+          _callback();
+        }
+      }
+
+      function deleteFromDrive(_callback) {
+        if (!!id && !isImported) {
+          gapi.client.drive.files.delete({
+            fileId: id,
+          }).then(_callback, _callback);
+        } else {
+          _callback();
+        }
+      }
+
+      function deleteFromStorage(_callback) {
+        if (!id) {
+          // It means we have to delete folders and documents
+          DiamondAPI.remove({
+            collection: 'folders',
+            filter: {
+              parentFolderId
+            },
+            callback(error, response) {
+              if (!!error) {
+                _callback(error, response);
+              } else {
+                DiamondAPI.remove({
+                  collection: 'documents',
+                  filter: {
+                    parentFolderId
+                  },
+                  callback
+                });
+              }
+            }
+          })
+        } else {
+          let collection = (mimeType === folderMimeType) ? 'folders' : 'documents',
+              filter = (!!id) ? {
+                _id: id
+              } : {
+                parentFolderId,
+              };
+          DiamondAPI.remove({
+            collection: collection,
+            filter,
+            callback: _callback
+          });
+        }
+      }
+    }
+    recursiveDeleteDocument(params);
   }
 
   initPicker(openButtonId, callback) {
@@ -427,7 +916,7 @@ class FileManagerPage extends React.Component {
 class FileViewerPage extends React.Component {
 
   render() {
-    let url = 'https://docs.google.com/document/d/' + this.props.params.documentId + '/edit';
+    let url = 'https://drive.google.com/open?id=' + this.props.params.documentId;
 
     return (
       <FileViewerLayout
@@ -440,15 +929,23 @@ class FileViewerPage extends React.Component {
 class FileViewerLayout extends React.Component {
   render() {
     return (
-      <iframe
-        src={this.props.url}
-        style={
-          {
-            width: '100%',
-            height: '100%'
+      <div>
+        <div className='drive-navbar'>
+          <i
+            className="go-back"
+            onClick={ browserHistory.goBack }>
+          </i>
+        </div>
+        <iframe
+          src={this.props.url}
+          style={
+            {
+              width: '100%',
+              height: 'calc(100% - 32px)'
+            }
           }
-        }
-      />
+        />
+      </div>
     );
   }
 }
@@ -460,7 +957,7 @@ FileViewerLayout.propTypes = {
 ReactDOM.render(
   <Router history={browserHistory}>
     <Route path='/' component={FileManagerPage} />
-    <Route path='/:folderId' component={FileManagerPage} />
+    <Route path='/folder/:folderId' component={FileManagerPage} />
     <Route path='/document/:documentId' component={FileViewerPage} />
   </Router>,
   document.getElementById('render-target')
@@ -469,8 +966,7 @@ ReactDOM.render(
 /**
  * Check if current user has authorized this application.
  */
-function checkAuth(i) {
-  i = i || 0;
+function checkAuth(callback = () => {}, i = 0) {
   if (i < 5) {
     if (!!gapi.auth) {
       let SCOPES = [
@@ -481,13 +977,12 @@ function checkAuth(i) {
         'scope': SCOPES.join(' '),
         'immediate': true
       }, () => {
-        gapi.client.load('drive', 'v3');
+        gapi.client.load('drive', 'v3', callback);
       });
     } else {
       i++;
-      console.log(i);
       setTimeout(() => {
-        checkAuth(i);
+        checkAuth(callback, i);
       }, 100);
     }
   } else {

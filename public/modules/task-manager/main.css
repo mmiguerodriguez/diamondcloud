@@ -60,13 +60,14 @@
   color: #fff;
 }
 .board {
-  width: 300px;
+  width: 100%;
   margin-right: 20px;
 }
 .task-manager {
   min-height: 100vh;
   background-color: #3fa4e7;
   border: 1px #ccc solid;
+  overflow: hidden;
 }
 .task-manager-title {
   margin-top: 10px;
@@ -106,12 +107,19 @@
   background-repeat: no-repeat;
   opacity: 0;
   margin-top: 14px;
+  transition: 0.3s all ease;
 }
 .edit-task {
+  padding-right: 30px !important;
   background-image: url(img/edit-task.svg);
 }
 .archive-task {
   background-image: url(img/archive-task.svg);
+}
+.icon-fixed {
+  padding: 0 15px;
+  width: 18px;
+  float: right;
 }
 .not-doing-task {
   background-image: url(http://image.flaticon.com/icons/svg/61/61221.svg);
@@ -214,4 +222,85 @@
   100% {
 		opacity: 1;
 	}
+}
+
+.go-back {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  vertical-align: middle;
+  background-image: url(img/go-back.svg);
+  background-position: center;
+  background-size: 18px;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+  background-color: white;
+  border-radius: 50%;
+  margin: 5px;
+  transition: 0.3s all ease;
+}
+.go-back:hover {
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+  opacity: 0.9;
+}
+.task-info {
+  background-color: #e2e4e6;
+  margin-top: 15px;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+.task-info-title {
+  display: inline-block;
+}
+.item {
+  background-color: #fff;
+  padding: 15px 15px 5px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+  margin-bottom: 10px;
+}
+.text-fixed {
+  /* padding: 10px; */
+  font-size: 14px;
+  text-align: left;
+}
+.panel-heading.fixed {
+  padding: 10px;
+  background-color: #efefef;
+}
+.error-message {
+  position: absolute;
+  right: 10px;
+  bottom: 15px;
+  padding: 10px;
+  color: #fff;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.3);
+}
+.show-error {
+  animation-name: appear;
+  animation-duration: 0.7s;
+}
+.hide-error {
+  animation-name: disappear;
+  animation-duration: 0.7s;
+}
+@keyframes appear {
+  0% {right: -100px; opacity: 0;}
+  100% {right: 10px; opacity: 1;}
+}
+@keyframes disappear {
+  0% {right: 10px; opacity: 1;}
+  100% {right: -100px; opacity: 0;}
+}
+.error-body {
+  display: inline-block;
+}
+.error-close {
+  display: inline-block;
+  margin-left: 10px;
+  color: #f1c40f;
+  cursor: pointer;
 }
