@@ -62,10 +62,11 @@ window.onload = () => {
 function insertStartupData(callback) {
   DiamondAPI.insert({
     collection: 'postIt',
-    obj: {
+    object: {
       title: '',
       description: '',
     },
+    isGlobal: false,
     callback,
   });
 }

@@ -2,7 +2,7 @@ import { Mongo } from 'meteor/mongo';
 
 export let Modules = new Mongo.Collection('Modules');
 
-export let createdModules = [
+let modules = [
   {
     _id: "post-it",
     name: "Post it",
@@ -32,3 +32,7 @@ export let createdModules = [
     validated: true,
   },
 ];
+
+modules.forEach((module) => {
+  Modules.insert(module);
+});
