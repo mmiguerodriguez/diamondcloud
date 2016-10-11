@@ -9,9 +9,13 @@ import {
 }                from '../../validation/inputs.jsx';
 
 const BOARD_TYPES = [
-  { _id: '1', name: 'Creativos' },
-  { _id: '2', name: 'Coordinadores' },
-  { _id: '3', name: 'Directores' },
+  { name: 'Creativos', value: 'creativos' },
+  { name: 'Sistemas', value: 'sistemas' },
+  { name: 'Directores Creativos', value: 'directores creativos' },
+  { name: 'Directores de Cuentas', value: 'directores de cuentas' },
+  { name: 'Administradores', value: 'administradores' },
+  { name: 'Coordinadores', value: 'coordinadores' },
+  { name: 'Medios', value: 'medios' },
 ];
 
 export default class CreateBoardModal extends React.Component {
@@ -74,11 +78,11 @@ export default class CreateBoardModal extends React.Component {
   }
 
   renderBoardTypes() {
-    return BOARD_TYPES.map((type) => {
+    return BOARD_TYPES.map((type, index) => {
       return (
         <option
-          key={type._id}
-          value={type.name}>
+          key={index}
+          value={type.value}>
           {type.name}
         </option>
       );
@@ -100,7 +104,7 @@ export default class CreateBoardModal extends React.Component {
       name: '',
       // isPrivate: false,
       users: '',
-      type: BOARD_TYPES[0].name,
+      type: BOARD_TYPES[0].value,
     });
   }
 
@@ -127,7 +131,7 @@ export default class CreateBoardModal extends React.Component {
     this.state = {
       name: '',
       users: '',
-      type: BOARD_TYPES[0].name,
+      type: BOARD_TYPES[0].value,
       isPrivate: false,
     };
 

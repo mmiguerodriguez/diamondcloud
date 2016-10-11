@@ -60,6 +60,7 @@ export const createTeam = new ValidatedMethod({
         teamId,
         name: 'General',
         users: boardUsers,
+        type: 'default',
         isPrivate: false,
       }, (err, res) => {
         if (!!err) {
@@ -72,6 +73,7 @@ export const createTeam = new ValidatedMethod({
           teamId,
           name: 'Coordinación',
           users: boardUsers,
+          type: 'default',
           isPrivate: false,
         }, (err, coordinationBoard) => {
           if (!!err) {

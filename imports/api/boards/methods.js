@@ -76,30 +76,34 @@ export const createBoard = new ValidatedMethod({
        * 'Directores'    -> Task-manager
        */
       let moduleInstances;
-      if (board.type === 'Creativos') {
+      if (board.type === 'creativos') {
         moduleInstances = [
           { moduleId: 'task-manager', x: 50, y: 20, width: 300, height: 400, archived: false, minimized: false },
-          { moduleId: 'drive', x: 50, y: 350, width: 482, height: 400, archived: false, minimized: false },
-          { moduleId: 'videocall', x: 50, y: 852, width: 270, height: 290, archived: false, minimized: false },
+          { moduleId: 'drive', x: 50, y: 340, width: 482, height: 400, archived: false, minimized: false },
+          { moduleId: 'videocall', x: 50, y: 842, width: 270, height: 290, archived: false, minimized: false },
         ];
-        
-      } else if (board.type === 'Coordinadores') {
+      } else if (board.type === 'coordinadores') {
         moduleInstances = [
-          { moduleId: 'task-manager', x: 50, y: 50, width: 300, height: 400, archived: false, minimized: false },
+          { moduleId: 'task-manager', x: 50, y: 20, width: 300, height: 400, archived: false, minimized: false },
         ];
-      } else if (board.type === 'Directores') {
+      } else if (board.type === 'directores creativos' || board.type === 'directores de cuentas' || board.type === 'administradores' ||  board.type === 'medios') {
         moduleInstances = [
-          { moduleId: 'task-manager', x: 50, y: 50, width: 300, height: 400, archived: false, minimized: false },
+          { moduleId: 'task-manager', x: 50, y: 20, width: 300, height: 400, archived: false, minimized: false },
+          { moduleId: 'drive', x: 50, y: 340, width: 482, height: 400, archived: false, minimized: false },
         ];
       }
       
-      ModuleInstances.insertManyInstances(moduleInstances, boardId, (error, result) => {
-        if (error) {
-          throw new Meteor.Error(error);
-        } else {
-          future.return(_board);
-        }
-      });
+      if (!!moduleInstances) {
+        ModuleInstances.insertManyInstances(moduleInstances, boardId, (error, result) => {
+          if (error) {
+            throw new Meteor.Error(error);
+          } else {
+            future.return(_board);
+          }
+        });
+      }
+      
+      future.return(_board);
     });
     return future.wait();
   }
