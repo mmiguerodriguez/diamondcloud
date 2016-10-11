@@ -1,0 +1,29 @@
+.landing {
+  height: calc(100vh - 50px);
+  .background {
+    position: absolute;
+    height: calc(100vh - 50px);
+    width: 100%;
+    background-image: url(https://cdn.businesscollective.com/wp-content/uploads/bigstock-Group-of-Multiethnic-Busy-Peop-660582581-675x320.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    filter: blur(1px);
+    z-index: -1;
+  }
+  .items-container {
+    padding-top: 50px;
+    .title {
+      display: block;
+      max-height: 40vh;
+      margin: 0 auto 50px;
+      border-radius: 30px;
+      opacity: 0.85;
+    }
+    span {
+      margin: 0 0 0 calc(50% - 64px);
+    }
+  }
+}
+footer {
+  display: none;
+}
