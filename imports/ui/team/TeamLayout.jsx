@@ -15,6 +15,7 @@ import NotificationsPermissionAsker from './notifications-permission-asker/Notif
 import CreateBoardModal             from '../modals/create-board/CreateBoardModal.jsx';
 import CreateChatModal              from '../modals/create-chat/CreateChatModal.jsx';
 import ConfigTeamModal              from '../modals/config-team/ConfigTeamModal.jsx';
+import ConfigBoardModal             from '../modals/config-board/ConfigBoardModal.jsx';
 
 export default class TeamLayout extends React.Component {
   constructor(props){
@@ -39,6 +40,7 @@ export default class TeamLayout extends React.Component {
     this.openCreateBoardModal = this.openCreateBoardModal.bind(this);
     this.openCreateChatModal = this.openCreateChatModal.bind(this);
     this.openConfigTeamModal = this.openConfigTeamModal.bind(this);
+    this.openConfigBoardModal = this.openConfigBoardModal.bind(this);
     this.loadTeam = this.loadTeam.bind(this);
     this.toggleCollapsible = this.toggleCollapsible.bind(this);
     this.closePermissionAsker = this.closePermissionAsker.bind(this);
@@ -159,6 +161,12 @@ export default class TeamLayout extends React.Component {
           this.props.owner ? (
             <div>
               <div className='board-context-menu context-menu' ref='board-context-menu'>
+                <div className="row" onClick={this.openConfigBoardModal}>
+                  <div className="col-xs-4">
+                    <img src="/img/teamconfig.svg" width="20px" />
+                  </div>
+                  <div className="col-xs-8">Editar</div>
+                </div>
                 <div className='row' onClick={ this.removeBoard }>
               		<div className='col-xs-4'>
               			<img src='http://image0.flaticon.com/icons/svg/60/60761.svg' width='20px' />
@@ -170,11 +178,17 @@ export default class TeamLayout extends React.Component {
                 team={ this.props.team }
                 addChat={ this.props.addChat }
                 changeBoard={ this.changeBoard }
-                toggleCollapsible={ this.toggleCollapsible } />
+                toggleCollapsible={ this.toggleCollapsible }
+              />
               <ConfigTeamModal
                 key={ this.props.team._id }
                 team={ this.props.team }
-                loadTeam={ this.loadTeam } />
+                loadTeam={ this.loadTeam }
+              />
+              <ConfigBoardModal
+                team={this.props.team}
+                board={this.props.board}
+              />
             </div>
           ) : ( null )
         }
@@ -521,6 +535,9 @@ export default class TeamLayout extends React.Component {
     this.loadTeam(this.props.team._id, () => {
       $('#configTeamModal').modal('show');//show modal once state is updated
     });
+  }
+  openConfigBoardModal(){ 
+    $('#configBoardModal').modal('show');
   }
   loadTeam(id, callback) {
     this.setState({

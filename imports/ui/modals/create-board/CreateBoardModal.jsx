@@ -1,22 +1,14 @@
-import React     from 'react';
-import Select    from 'react-select';
+import React       from 'react';
+import Select      from 'react-select';
 
-import Modal     from '../Modal.jsx';
+import Modal       from '../Modal.jsx';
 import {
   InputError,
   TextInput,
   SelectInput
-}                from '../../validation/inputs.jsx';
+}                  from '../../validation/inputs.jsx';
 
-const BOARD_TYPES = [
-  { name: 'Creativos', value: 'creativos' },
-  { name: 'Sistemas', value: 'sistemas' },
-  { name: 'Directores Creativos', value: 'directores creativos' },
-  { name: 'Directores de Cuentas', value: 'directores de cuentas' },
-  { name: 'Administradores', value: 'administradores' },
-  { name: 'Coordinadores', value: 'coordinadores' },
-  { name: 'Medios', value: 'medios' },
-];
+import { BOARD_TYPES } from '../board-types.js';
 
 export default class CreateBoardModal extends React.Component {
   createBoard() {
@@ -26,12 +18,13 @@ export default class CreateBoardModal extends React.Component {
     };
 
     if (board.isPrivate) {
-      let arr = [];
-
       if (board.users !== '') {
+        let arr = [];
+
         board.users.split(',').map((email) => {
           arr.push({ email });
         });
+
         board.users = arr;
       } else {
         board.users = [];
@@ -144,7 +137,7 @@ export default class CreateBoardModal extends React.Component {
   render() {
     return (
       <Modal
-        id={ 'createBoardModal' }
+        id={'createBoardModal'}
         header={
           <div>
             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
@@ -155,7 +148,7 @@ export default class CreateBoardModal extends React.Component {
         }
         body={
           <div className='modal-body-fixed container-fluid'>
-            <p className='explanation-text'>Insertá el nombre del board y decidí quenes lo van a poder ver.</p>
+            <p className='explanation-text'>Insertá el nombre del board y decidí quienes lo van a poder ver.</p>
             <div className='form-group name-input'>
               <label
                 htmlFor='boardName'
@@ -178,20 +171,20 @@ export default class CreateBoardModal extends React.Component {
               </div>
             </div>
             <div className='form-group type-input'>
-                <label
-                  htmlFor='boardType'
-                  className='control-label'>
-                  Tipo
-                </label>
-                <div className='col-xs-12'>
-                  <select
-                    className='form-control'
-                    value={this.state.type}
-                    onChange={(e) => this.handleChange('type', e)}>
-                    {this.renderBoardTypes()}
-                  </select>
-                </div>
+              <label
+                htmlFor='boardType'
+                className='control-label'>
+                Tipo
+              </label>
+              <div className='col-xs-12'>
+                <select
+                  className='form-control'
+                  value={this.state.type}
+                  onChange={(e) => this.handleChange('type', e)}>
+                  {this.renderBoardTypes()}
+                </select>
               </div>
+            </div>
             <div className='form-group privacy-input'>
               <label
                 htmlFor='privateBoard'

@@ -7,16 +7,18 @@ import   faker           from 'faker';
 
 import { Teams }         from '../teams/teams.js';
 import { Boards }        from './boards.js';
-import { createBoard,
-         archiveBoard,
-         dearchiveBoard,
+import { 
+  createBoard,
+  editBoard,      
+  archiveBoard,
+  dearchiveBoard,
 }                        from './methods.js';
 
 if (Meteor.isServer) {
-  describe('Boards', function() {
+  describe('Boards', () => {
     let users, team, boards;
 
-    beforeEach(function() {
+    beforeEach(() => {
       resetDatabase();
 
       users = [
@@ -32,27 +34,16 @@ if (Meteor.isServer) {
         ],
       });
       boards = [
-        Factory.create('publicBoard', { 
+        Factory.create('publicBoard'),
+        Factory.create('publicBoard'),
+        Factory.create('privateBoard', { 
           users: [
             { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
             { email: users[1].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
             { email: users[2].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
           ]
         }),
-        Factory.create('publicBoard', { 
-          users: [
-            { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
-          ],
-          type: 'Creativos'
-        }),
-        Factory.create('privateBoard', { 
-          users: [
-            { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
-            { email: users[1].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
-            { email: users[2].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
-          ],
-          type: 'Creativos'
-        }),
+        Factory.create('publicBoard'),
       ];
 
       resetDatabase();
@@ -66,12 +57,12 @@ if (Meteor.isServer) {
         Boards.insert(board);
       });
     });
-    afterEach(function() {
+    afterEach(() => {
       Meteor.user.restore();
       Meteor.userId.restore();
     });
 
-    it('should create a board', function(done) {
+    it('should create a board', (done) => {
       let test_1,
           test_2;
 
@@ -116,7 +107,30 @@ if (Meteor.isServer) {
       });
     });
 
-    it('should archive a board', function(done) {
+    it('should edit a board', (done) => {
+      let args = {
+        boardId: boards[3]._id,
+        name: faker.lorem.word(),
+        type: Random.choice(['creativos', 'sistemas', 'directores creativos', 'directores de cuentas', 'administradores', 'coordinadores', 'medios']),
+        //isPrivate: true,
+      };
+
+      let expect = boards[3];
+      expect.name = args.name;
+      expect.type = args.type;
+
+      editBoard.call(args, (error, result) => {
+        if (error) {
+          throw new Meteor.Error(error);
+        } else {
+          chai.assert.deepEqual(expect, result);
+
+          done(); 
+        }
+      });
+    });
+
+    it('should archive a board', (done) => {
       let result,
           expect = boards[0];
 
@@ -133,7 +147,7 @@ if (Meteor.isServer) {
       });
     });
 
-    it('should dearchive a board', function(done) {
+    it('should dearchive a board', (done) => {
       let result,
           expect = boards[0];
 

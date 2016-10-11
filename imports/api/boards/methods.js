@@ -109,6 +109,61 @@ export const createBoard = new ValidatedMethod({
   }
 });
 
+export const editBoard = new ValidatedMethod({
+  name: 'Boards.methods.editBoard',
+  validate: new SimpleSchema({
+    
+  }).validator(),
+  run({ boardId, name, type, isPrivate, users }) {
+    if (!Meteor.user()) {
+      throw new Meteor.Error('Boards.methods.editBoard.notLoggedIn',
+      'Must be logged in to edit a board.');
+    }
+    
+    let board = Boards.findOne(boardId);
+    let team = board.team();
+
+    name = name || board.name;
+    type = type || board.type;
+    isPrivate = isPrivate || board.isPrivate;
+    
+    /**
+     * If the board wasn't private but now it is, then we need
+     * to change the users variable to fit with a private
+     * board.
+     * 
+     * TODO: Fix this implementation since users will allways
+     * be sent with email and without notifications.
+     */
+    if (!board.isPrivate && isPrivate) {
+      users.forEach((user, index, array) => {
+        if (!team.hasUser({ email: user.email })) {
+          throw new Meteor.Error('Boards.methods.editBoard.userNotInTeam',
+          'You cannot add people to a board that are not part of the team.');
+        }
+        
+        if (users[index].notifications !== undefined) {
+          users[index].notifications = 0;
+        }
+      });
+    } else {
+      users = board.users;
+    }
+    
+    Boards.update(boardId, {
+      $set: {
+        name,
+        type,
+        isPrivate,
+        users,
+      }
+    });
+    
+    board = Boards.findOne(boardId);
+    return board;
+  }
+});
+
 export const archiveBoard = new ValidatedMethod({
   name: 'Boards.methods.archiveBoard',
   validate: new SimpleSchema({
