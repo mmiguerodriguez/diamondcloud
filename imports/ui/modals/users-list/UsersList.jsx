@@ -16,13 +16,74 @@ export default class UsersList extends React.Component {
     this.handleKey = this.handleKey.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+  renderUsers() {
+    let arr = [],
+        users,
+        isAdmin = false;
+    if (this.props.team) {
+      users = this.props.team.getUsers(Teams.dashboardUsersFields).fetch();
+      isAdmin = this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas');
+      // Unregistered users will be undefined,
+      // so we have to replace them with the email
+      let emails = [];
+      users.forEach((user) => {
+        if (user) {
+          emails.push(user.email());
+        }
+      });
+      this.props.team.users.forEach((user) => {
+        if (emails.indexOf(user.email) === -1){
+          users.push({
+            _id: user.email,
+            emails: [
+              {
+                address: user.email,
+              }
+            ],
+            profile: {
+              name: user.email,
+            }
+          });
+        }
+      });
+    }
+    else {
+      isAdmin = true;
+      users = JSON.parse(JSON.stringify(this.props.usersEmails));
+      users.forEach((user, index) => {
+        let _user = Meteor.users.findByEmail(user, Teams.dashboardUsersFields);
+        users[index] = _user ? _user : {
+          _id: index,
+          emails: [
+            {
+              address: user,
+            }
+          ],
+          profile: {
+            name: user,
+          },
+        };
+      });
+    }
+    users.map((user) => {
+      arr.push(
+        <User
+          key={user._id}
+          user={user}
+          removeUser={this.props.removeUser}
+          isAdmin={isAdmin}
+        />
+      );
+    });
+    return arr;
+  }
   render() {
     let email = this.state.email;
-    let isOwner = this.props.team ? this.props.team.owner() === Meteor.user().email() : true;
+    let isAdmin = this.props.team ? this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas') : true;
     return (
       <div>
         {
-          (isOwner) ? (
+          (isAdmin) ? (
             <div className='row container-fluid'>
               <div className='input-group col-sm-6 col-xs-12 col-sm-offset-3'>
                 <input  id='searchUsers'
@@ -65,74 +126,6 @@ export default class UsersList extends React.Component {
   handleSubmit() {
     this.props.addUser(this.state.email);
     this.setState({ email: '' });
-  }
-
-  renderUsers() {
-    let arr = [],
-        users,
-        isOwner = false;
-    if (this.props.team) {
-      users = this.props.team.getUsers(Teams.dashboardUsersFields).fetch();
-      let owner = this.props.team.owner();
-      if (owner === Meteor.user().email()) {
-        isOwner = true;
-      }
-      // Unregistered users will be undefined,
-      // so we have to replace them with the email
-      let emails = [];
-      users.forEach((user) => {
-        if (user) {
-          emails.push(user.email());
-          if (user.email() === owner) {
-            user.isOwner = true;
-          }
-        }
-      });
-      this.props.team.users.forEach((user) => {
-        if (emails.indexOf(user.email) === -1){
-          users.push({
-            _id: user.email,
-            emails: [
-              {
-                address: user.email,
-              }
-            ],
-            profile: {
-              name: user.email,
-            }
-          });
-        }
-      });
-    }
-    else {
-      isOwner = true;
-      users = JSON.parse(JSON.stringify(this.props.usersEmails));
-      users.forEach((user, index) => {
-        let _user = Meteor.users.findByEmail(user, Teams.dashboardUsersFields);
-        users[index] = _user ? _user : {
-          _id: index,
-          emails: [
-            {
-              address: user,
-            }
-          ],
-          profile: {
-            name: user,
-          },
-        };
-      });
-    }
-    users.map((user) => {
-      arr.push(
-        <User
-          key={ user._id }
-          user={ user }
-          removeUser={ this.props.removeUser }
-          isOwner={ isOwner }
-        />
-      );
-    });
-    return arr;
   }
   removeUser(email, teamId) {
     Meteor.call('Teams.methods.removeUser', { email, teamId });
