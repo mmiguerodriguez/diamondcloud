@@ -11,6 +11,9 @@ import Help      from '../../ui/help/HelpPage.jsx';
 import About     from '../../ui/about-us/AboutPage.jsx';
 import NotFound  from '../../ui/not-found/NotFoundPage.jsx';
 
+// Override accounts templates
+import '../../ui/accounts/accounts-templates.js';
+
 export const renderRoutes = () => (
   <Router history={ browserHistory }>
     <Route path="/" component={ App }>

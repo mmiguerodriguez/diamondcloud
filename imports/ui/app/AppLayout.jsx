@@ -14,10 +14,11 @@ export default class AppLayout extends React.Component {
           user={ this.props.user }
         />
         { this.props.children }
-        { 
-          this.props.location.pathname.indexOf('/team') === -1 ? (
+        { /*
+          this.props.location.pathname.indexOf('/team') === -1 || this.props.location.pathname.indexOf('/') === -1 ? (
             <Footer />
           ) : ( null )
+          */
         }
       </div>
     );
