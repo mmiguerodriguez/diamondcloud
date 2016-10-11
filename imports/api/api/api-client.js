@@ -99,14 +99,15 @@ export const generateApi = (moduleInstanceId) => {
     },
     getBoard(boardId) {
       let team = this.getTeam();
+      let result;
 
       team.boards.forEach((board) => {
         if (board._id == boardId) {
-          return Boards.findOne(boardId);
+          result = Boards.findOne(boardId);
         }
       });
 
-      return undefined;
+      return result;
     },
     getUser(userId) {
       // Validation

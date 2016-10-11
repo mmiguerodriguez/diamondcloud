@@ -25,7 +25,11 @@ if (Meteor.isClient) {
           moduleInstances,
           collections,
           documents,
-          DiamondAPI;
+          DiamondAPI,
+          params,
+          callback,
+          subscribeInput,
+          subscribeResult;
 
       beforeEach(function() {
         user = Factory.create('user');
@@ -64,6 +68,42 @@ if (Meteor.isClient) {
         }
 
         DiamondAPI = generateApi(moduleInstances[0]._id);
+
+        insertParams = {
+          collection: collections[0],
+          object: documents[0],
+          isGlobal: false,
+          callback: () => 729,
+        };
+
+        updateParams = {
+          collection: collections[0],
+          filter: {},
+          updateQuery: {
+            $set: {
+              something: faker.lorem.word(),
+            },
+          },
+          callback: () => Math.PI,
+        };
+
+        getParams = {
+          collection: collections[0],
+          filter: {},
+          callback: () => 2,
+        };
+
+        removeParams = {
+          collection: collections[0],
+          filter: {},
+          callback: () => () => 4
+        };
+
+        subscribeInput = {
+          collection: collections[0],
+          filter: {},
+          callback: () => 4,
+        };
 
         // Add user to teams
         teams[0].users[0].email = user.emails[0].address;
@@ -117,11 +157,16 @@ if (Meteor.isClient) {
           filter,
           subscriptionCallback
         ) => {
-
+          subscribeResult = {
+            moduleInstanceId,
+            collection,
+            filter,
+          };
         });
 
-        sinon.stub(Meteor, 'call', (methodName) => {
-          // Work with the arguments array
+        sinon.stub(Meteor, 'call', (methodName, callParams, callCallback) => {
+          callback = callCallback;
+          params = callParams;
         });
 
         sinon.stub(ModuleInstances, 'findOne', (moduleInstanceId) => {
@@ -142,17 +187,7 @@ if (Meteor.isClient) {
           return result;
         });
 
-        sinon.stub(Boards, 'findOne', (boardId) => {
-          let result;
-
-          boards.forEach((board) => {
-            if (board._id == boardId) {
-              result = board;
-            }
-          });
-
-          return result;
-        });
+        sinon.stub(Boards, 'findOne', () => boards[0]);
       });
 
       afterEach(function() {
@@ -165,29 +200,67 @@ if (Meteor.isClient) {
       });
 
       it('should get the requested data when subscribing', (done) => {
+        DiamondAPI.subscribe(subscribeInput);
+        delete subscribeInput.callback;
+        subscribeInput.moduleInstanceId = moduleInstances[0]._id;
+        chai.assert.deepEqual(subscribeInput, subscribeResult);
         done();
       });
 
-      it('should insert object to a module instance data', (done) => {
+      it('should insert an API entry', (done) => {
+        DiamondAPI.insert(insertParams);
+        chai.assert.equal(callback.toString(), insertParams.callback.toString());
+        delete insertParams.callback;
+        insertParams.moduleInstanceId = moduleInstances[0]._id;
+        printObject('res:', params, 'expected:', insertParams);
+        chai.assert.deepEqual(insertParams, params);
         done();
       });
 
-      it('should update an entry in module instance data', (done) => {
+      it('should update the requested API entries', (done) => {
+        DiamondAPI.update(updateParams);
+        chai.assert.equal(callback.toString(), updateParams.callback.toString());
+        delete updateParams.callback;
+        updateParams.moduleInstanceId = moduleInstances[0]._id;
+        printObject('res:', params, 'expected:', updateParams);
+        chai.assert.deepEqual(updateParams, params);
         done();
       });
 
-      it('should get an entry in module instance data', (done) => {
+      it('should get the requested API entries', (done) => {
+        DiamondAPI.get(getParams);
+        chai.assert.equal(callback.toString(), getParams.callback.toString());
+        delete getParams.callback;
+        getParams.moduleInstanceId = moduleInstances[0]._id;
+        printObject('res:', params, 'expected:', getParams);
+        chai.assert.deepEqual(getParams, params);
+        done();
+      });
+
+      it('should remove the requested API entries', (done) => {
+        DiamondAPI.remove(removeParams);
+        chai.assert.equal(callback.toString(), removeParams.callback.toString());
+        delete removeParams.callback;
+        removeParams.moduleInstanceId = moduleInstances[0]._id;
+        printObject('res:', params, 'expected:', removeParams);
+        chai.assert.deepEqual(removeParams, params);
         done();
       });
 
       it('should return the current user', (done) => {
-        chai.assert.deepEqual(DiamondAPI.getCurrentUser(), user);
+        chai.assert.equal(DiamondAPI.getCurrentUser(), user);
         done();
       });
 
       it('should return the current board', (done) => {
-        let board = boards[0];
-        chai.assert.deepEqual(DiamondAPI.getCurrentBoard(), board);
+        let res = DiamondAPI.getCurrentBoard();
+        delete res.team;
+        delete res.getModuleInstances;
+        delete res.getMessages;
+        delete res.getLastMessage;
+        delete res.getNotifications;
+        delete res.getUsers;
+        chai.assert.equal(JSON.stringify(res), JSON.stringify(boards[0]));
         done();
       });
 
@@ -197,15 +270,17 @@ if (Meteor.isClient) {
       });
 
       it('should get the current team', (done) => {
-        printObject('Shikaka', DiamondAPI.getTeam());
-        //chai.assert.deepEqual(DiamondAPI.getTeam(), teams[0]);
+        let res = DiamondAPI.getTeam();
+        delete res.owner;
+        delete res.hasUser;
+        delete res.getUsers;
+        chai.assert.equal(JSON.stringify(res), JSON.stringify(teams[0]));
         done();
       });
 
       it('should get the requested board', (done) => {
-        chai.assert.deepEqual(DiamondAPI.getBoard(boards[0]._id), boards[0]);
-        chai.assert.deepEqual(DiamondAPI.getBoard(boards[1]._id), boards[1]);
-        chai.assert.deepEqual(DiamondAPI.getBoard(boards[2]._id), undefined);
+        let res = DiamondAPI.getBoard(boards[0]._id);
+        chai.assert.deepEqual(res, boards[0]);
         done();
       });
 
