@@ -38,7 +38,7 @@ class FileManagerLayout extends React.Component {
           data-toggle="modal"
           data-target="#create-folder">
           <div className="document fixed">
-            <i className="col-xs-3 material-icons icon-type create-folder">folder</i>
+            <img className='col-xs-3 icon-type create-folder' src='modules/drive/img/folder.svg' />
             <p className="col-xs-9 document-title truncate">Crear</p>
           </div>
         </div>
@@ -55,7 +55,7 @@ class FileManagerLayout extends React.Component {
                   browserHistory.push('/folder/' + folder._id);
                 }
               }>
-              <i className="col-xs-3 material-icons icon-type create-folder">folder</i>
+              <img className='col-xs-3 icon-type create-folder' src='modules/drive/img/folder.svg' />
               <p className="col-xs-9 document-title truncate">{folder.name}</p>
             </div>
             <i
