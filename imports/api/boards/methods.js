@@ -1,21 +1,23 @@
-import { Meteor } from 'meteor/meteor';
+import { Meteor }          from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
-import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import Future from 'fibers/future';
+import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
+import Future              from 'fibers/future';
 
-import { Boards } from './boards.js';
-import { Teams } from '../teams/teams.js';
+import { Boards }          from './boards.js';
+import { Teams }           from '../teams/teams.js';
+import { ModuleInstances } from '../module-instances/module-instances.js';
 
 export const createBoard = new ValidatedMethod({
   name: 'Boards.methods.create',
   validate: new SimpleSchema({
     teamId: { type: String, regEx: SimpleSchema.RegEx.Id },
     name: { type: String, min: 0, max: 200 },
+    type: { type: String },
     isPrivate: { type: Boolean },
     users: { type: [Object], optional: true },
     'users.$.email': { type: String, regEx: SimpleSchema.RegEx.Email, optional: true },
   }).validator(),
-  run({ teamId, name, isPrivate, users }) {
+  run({ teamId, name, type, isPrivate, users }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('Boards.methods.createBoard.notLoggedIn',
       'Must be logged in to create a board.');
@@ -43,8 +45,9 @@ export const createBoard = new ValidatedMethod({
 
     let board = {
       name,
-      isPrivate,
       users,
+      type,
+      isPrivate,
       moduleInstances: [],
       archived: false,
     };
@@ -63,7 +66,43 @@ export const createBoard = new ValidatedMethod({
           },
         },
       });
-
+      
+      /**
+       * Inserts certain moduleInstances for each type
+       * of board.
+       * 
+       * 'Creativos'     -> Task-manager, drive & videocall
+       * 'Coordinadores' -> Task-manager
+       * 'Directores'    -> Task-manager
+       */
+      let moduleInstances;
+      if (board.type === 'creativos') {
+        moduleInstances = [
+          { moduleId: 'task-manager', x: 50, y: 20, width: 300, height: 400, archived: false, minimized: false },
+          { moduleId: 'drive', x: 50, y: 340, width: 482, height: 400, archived: false, minimized: false },
+          { moduleId: 'videocall', x: 50, y: 842, width: 270, height: 290, archived: false, minimized: false },
+        ];
+      } else if (board.type === 'coordinadores') {
+        moduleInstances = [
+          { moduleId: 'task-manager', x: 50, y: 20, width: 300, height: 400, archived: false, minimized: false },
+        ];
+      } else if (board.type === 'directores creativos' || board.type === 'directores de cuentas' || board.type === 'administradores' ||  board.type === 'medios') {
+        moduleInstances = [
+          { moduleId: 'task-manager', x: 50, y: 20, width: 300, height: 400, archived: false, minimized: false },
+          { moduleId: 'drive', x: 50, y: 340, width: 482, height: 400, archived: false, minimized: false },
+        ];
+      }
+      
+      if (!!moduleInstances) {
+        ModuleInstances.insertManyInstances(moduleInstances, boardId, (error, result) => {
+          if (error) {
+            throw new Meteor.Error(error);
+          } else {
+            future.return(_board);
+          }
+        });
+      }
+      
       future.return(_board);
     });
     return future.wait();
