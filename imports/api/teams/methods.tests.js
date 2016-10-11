@@ -24,14 +24,13 @@ import '../factories/factories.js';
 if (Meteor.isServer) {
   describe('Teams', function() {
     describe('Methods', function() {
-      let users, team, board, generalBoardId = Random.id(), coordinationBoardId = Random.id(),
+      let users, team, board, generalBoardId = Random.id(),
           createModuleInstanceArgs,
-          apiInsertArgs,
-          createdGeneralBoard = false;
+          apiInsertArgs;
 
       beforeEach(function() {
         resetDatabase();
-        
+
         createdGeneralBoard = false;
         users = [
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
@@ -46,8 +45,8 @@ if (Meteor.isServer) {
         ];
 
         team.users[0].email = users[0].emails[0].address;
-        team.users.push({ email: users[1].emails[0].address, permission: 'member' });
-        team.users.push({ email: users[2].emails[0].address, permission: 'member' });
+        team.users.push({ email: users[1].emails[0].address, hierarchy: 'creativo' });
+        team.users.push({ email: users[2].emails[0].address, hierarchy: 'creativo' });
         team.boards = [
           { _id: board._id },
         ];
@@ -62,12 +61,7 @@ if (Meteor.isServer) {
         Boards.insert(board);
 
         sinon.stub(createBoard, 'call', (obj, callback) => {
-          if (!createdGeneralBoard) {
-            createdGeneralBoard = true;
-            callback(null, { _id: generalBoardId });
-          } else {
-            callback(null, { _id: coordinationBoardId });
-          }
+          callback(null, { _id: generalBoardId });
         });
         sinon.stub(createModuleInstance, 'call', (obj, callback) => {
           createModuleInstanceArgs = obj;
@@ -97,9 +91,15 @@ if (Meteor.isServer) {
           name: team.name,
           plan: 'free',
           type: 'web',
-          usersEmails: [
-            users[1].emails[0].address,
-            users[2].emails[0].address
+          users: [
+            {
+              email: users[1].emails[0].address,
+              hierarchy: 'creativo'
+            },
+            {
+              email: users[2].emails[0].address,
+              hierarchy: 'creativo'
+            }
           ],
         };
         expect = {
@@ -108,13 +108,12 @@ if (Meteor.isServer) {
           type: 'web',
           boards: [
             { _id: generalBoardId },
-            { _id: coordinationBoardId },
 
           ],
           users: [
-            { email: users[0].emails[0].address, permission: 'owner' },
-            { email: users[1].emails[0].address, permission: 'member' },
-            { email: users[2].emails[0].address, permission: 'member' },
+            { email: users[0].emails[0].address, hierarchy: 'sistemas' },
+            { email: users[1].emails[0].address, hierarchy: 'creativo' },
+            { email: users[2].emails[0].address, hierarchy: 'creativo' },
           ],
           archived: false,
         };
@@ -122,26 +121,8 @@ if (Meteor.isServer) {
         createTeam.call(args, (err, res) => {
           result = res;
           delete result._id;
-          let expectedCreateModuleInstanceArgs = {
-                boardId: coordinationBoardId,
-                moduleId: 'task-manager',
-                x: 100,
-                y: 100,
-                width: 500,
-                height: 200,
-              },
-              expectedApiInsertArgs = {
-                moduleInstanceId: 'moduleInstanceId',
-                collection: 'coordinationBoard',
-                obj: {
-                  _id: coordinationBoardId,
-                },
-                isGlobal: true,
-              };
 
           chai.assert.deepEqual(result, expect);
-          chai.assert.deepEqual(createModuleInstanceArgs, expectedCreateModuleInstanceArgs);
-          chai.assert.deepEqual(apiInsertArgs, expectedApiInsertArgs);
           done();
         });
       });
@@ -173,41 +154,43 @@ if (Meteor.isServer) {
         });
         chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
       });
-      it('should share a team', function() {
+      it('should share a team', function(done) {
         let result,
             expect,
             args;
 
         expect = team;
-        expect.users.push({ email: 'test@test.com', permission: 'member' });
+        expect.users.push({ email: 'test@test.com', hierarchy: 'creativo' });
         args = {
           email: 'test@test.com',
+          hierarchy: 'creativo',
           teamId: team._id,
         };
 
-        shareTeam.call(args, (err, res) => {
-          result = res;
+        shareTeam.call(args, (error, result) => {
+          console.log('error: ', error, ' result: ', result);
+          chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
+          done();
         });
-        chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
       });
-      it('should remove a user from a team', function() {
+      it('should remove a user from a team', function(done) {
         let result,
             expect,
             args;
         expect = team;
         expect.users = [
-          { email: users[0].emails[0].address, permission: 'owner' },
-          { email: users[1].emails[0].address, permission: 'member' },
+          { email: users[0].emails[0].address, hierarchy: 'sistemas' },
+          { email: users[1].emails[0].address, hierarchy: 'creativo' },
         ];
         args = {
           email: users[2].emails[0].address,
           teamId: team._id,
         };
-        removeUserFromTeam.call(args, (err, res) => {
-          result = res;
+        removeUserFromTeam.call(args, (err, result) => {
+          chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
+          chai.assert.isTrue(Boards.findOne(board._id).users.length === 0);
+          done();
         });
-        chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
-        chai.assert.isTrue(Boards.findOne(board._id).users.length === 0);
       });
       it('should archive a team', function() {
         let result,

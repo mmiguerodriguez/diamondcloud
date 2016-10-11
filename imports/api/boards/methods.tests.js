@@ -40,9 +40,9 @@ if (Meteor.isServer) {
       board = Factory.create('publicBoard');
 
       team.users = [
-        { email: users[0].emails[0].address, permission: 'owner' },
-        { email: users[1].emails[0].address, permission: 'member' },
-        { email: users[2].emails[0].address, permission: 'member' },
+        { email: users[0].emails[0].address, hierarchy: 'sistemas' },
+        { email: users[1].emails[0].address, hierarchy: 'creativo' },
+        { email: users[2].emails[0].address, hierarchy: 'creativo' },
       ];
       board.users = [
         { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },

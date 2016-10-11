@@ -42,8 +42,8 @@ if (Meteor.isServer) {
 
       team.boards.push({ _id: board._id });
       team.users = [
-        { email: users[0].emails[0].address, permission: 'owner' },
-        { email: users[1].emails[0].address, permission: 'member' },
+        { email: users[0].emails[0].address, hierarchy: 'sistemas' },
+        { email: users[1].emails[0].address, hierarchy: 'creativo' },
       ];
       board.users = [
         { email: users[0].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) },
@@ -160,7 +160,7 @@ if (Meteor.isServer) {
             $in: [users[1]._id],
           }
         };
-        
+
         chai.assert.equal(board.name, title);
         chai.assert.equal(expectText, text);
         chai.assert.deepEqual(expectQuery, query);
