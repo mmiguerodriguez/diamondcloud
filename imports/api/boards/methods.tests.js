@@ -123,7 +123,7 @@ if (Meteor.isServer) {
         if (error) {
           throw new Meteor.Error(error);
         } else {
-          chai.assert.deepEqual(expect, result);
+          chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
 
           done(); 
         }

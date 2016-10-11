@@ -12,10 +12,25 @@ export const createBoard = new ValidatedMethod({
   validate: new SimpleSchema({
     teamId: { type: String, regEx: SimpleSchema.RegEx.Id },
     name: { type: String, min: 0, max: 200 },
-    type: { type: String },
+    type: { 
+      type: String, 
+      allowedValues: [
+        'creativos', 
+        'sistemas', 
+        'directores creativos', 
+        'directores de cuentas', 
+        'administradores', 
+        'coordinadores', 
+        'medios',
+      ],
+    },
     isPrivate: { type: Boolean },
     users: { type: [Object], optional: true },
-    'users.$.email': { type: String, regEx: SimpleSchema.RegEx.Email, optional: true },
+    'users.$.email': { 
+      type: String, 
+      regEx: SimpleSchema.RegEx.Email,
+      optional: true
+    },
   }).validator(),
   run({ teamId, name, type, isPrivate, users }) {
     if (!Meteor.user()) {
@@ -112,7 +127,28 @@ export const createBoard = new ValidatedMethod({
 export const editBoard = new ValidatedMethod({
   name: 'Boards.methods.editBoard',
   validate: new SimpleSchema({
-    
+    boardId: { type: String, regEx: SimpleSchema.RegEx.Id },
+    name: { type: String, optional: true },
+    type: { 
+      type: String, 
+      allowedValues: [
+        'creativos', 
+        'sistemas', 
+        'directores creativos', 
+        'directores de cuentas', 
+        'administradores', 
+        'coordinadores', 
+        'medios',
+      ],
+      optional: true,
+    },
+    isPrivate: { type: Boolean, optional: true },
+    users: { type: [Object], optional: true },
+    'users.$.email': { 
+      type: String, 
+      regEx: SimpleSchema.RegEx.Email,
+      optional: true
+    },
   }).validator(),
   run({ boardId, name, type, isPrivate, users }) {
     if (!Meteor.user()) {
@@ -125,17 +161,16 @@ export const editBoard = new ValidatedMethod({
 
     name = name || board.name;
     type = type || board.type;
-    isPrivate = isPrivate || board.isPrivate;
     
     /**
      * If the board wasn't private but now it is, then we need
      * to change the users variable to fit with a private
      * board.
      * 
-     * TODO: Fix this implementation since users will allways
+     * TODO: Fix this implementation since users will always
      * be sent with email and without notifications.
      */
-    if (!board.isPrivate && isPrivate) {
+    if (!board.isPrivate && !!isPrivate) {
       users.forEach((user, index, array) => {
         if (!team.hasUser({ email: user.email })) {
           throw new Meteor.Error('Boards.methods.editBoard.userNotInTeam',
@@ -149,6 +184,8 @@ export const editBoard = new ValidatedMethod({
     } else {
       users = board.users;
     }
+    
+    isPrivate = isPrivate || board.isPrivate;
     
     Boards.update(boardId, {
       $set: {
