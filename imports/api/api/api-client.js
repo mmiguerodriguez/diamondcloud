@@ -13,9 +13,9 @@ export const generateApi = (moduleInstanceId) => {
     subscribe({ collection, filter, callback }) {
       let subscriptionCallback = {
         onReady() {
-          console.log('Suscribed');
+          console.log('Suscribed to', collection);
           let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-          let teamId = moduleInstance.board().team();
+          let teamId = moduleInstance.board().team()._id;
 
           let query = APICollection.find({
             $and: [
@@ -37,6 +37,11 @@ export const generateApi = (moduleInstanceId) => {
             ],
           });
 
+          if (query.fetch().length === 0) {
+            console.log('New data:', query.fetch());
+            callback(undefined, query.fetch());
+          }
+
           let caller = (id, fields) => {
             let updatedData = APICollection.find({
               $and: [
@@ -57,6 +62,7 @@ export const generateApi = (moduleInstanceId) => {
                 }
               ],
             }).fetch();
+            console.log('New data:', updatedData);
             callback(undefined, updatedData);
           };
 
@@ -82,6 +88,7 @@ export const generateApi = (moduleInstanceId) => {
       return subscription;
     },
     insert({ collection, object, isGlobal, callback }) {
+      console.log('Inserting new document:', object, 'into', collection, ', isGlobal:', isGlobal);
       Meteor.call('API.methods.APIInsert', {
         moduleInstanceId,
         collection,
