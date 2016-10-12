@@ -178,6 +178,7 @@ if (Meteor.isClient) {
             boardResult.team = () => {
               let teamResult = _.clone(teams[0]);
               teamResult.hasUser = () => true;
+              teamResult.getUsers = () => [user];
               return teamResult;
             };
 
@@ -188,6 +189,8 @@ if (Meteor.isClient) {
         });
 
         sinon.stub(Boards, 'findOne', () => boards[0]);
+
+        sinon.stub(Boards, 'find', () => [boards[0], boards[1]]);
       });
 
       afterEach(function() {
@@ -197,6 +200,7 @@ if (Meteor.isClient) {
         Meteor.call.restore();
         ModuleInstances.findOne.restore();
         Boards.findOne.restore();
+        Boards.find.restore();
       });
 
       it('should get the requested data when subscribing', (done) => {
@@ -275,6 +279,18 @@ if (Meteor.isClient) {
         delete res.hasUser;
         delete res.getUsers;
         chai.assert.equal(JSON.stringify(res), JSON.stringify(teams[0]));
+        done();
+      });
+
+      it('should get all boards of the team', (done) => {
+        let boards = DiamondAPI.getBoards();
+        chai.assert.deepEqual(boards, [boards[0], boards[1]]);
+        done();
+      });
+
+      it('should get all users of the team', (done) => {
+        let users = DiamondAPI.getUsers();
+        chai.assert.deepEqual(users, [user]);
         done();
       });
 

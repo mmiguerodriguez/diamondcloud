@@ -412,6 +412,7 @@ class FileManagerPage extends React.Component {
 
   componentWillReceiveProps() {
     // the props have changed, so we have to remake the subscriptions
+    DiamondAPI.unsubscribe();
     this.getDriveData();
   }
 
