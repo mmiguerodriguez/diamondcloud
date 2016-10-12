@@ -47,7 +47,7 @@ class FileManagerLayout extends React.Component {
       return this.props.folders.map((folder) => {
         return (
           <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
-            <div 
+            <div
               className="document fixed"
               title={folder.name}
               onClick={
@@ -120,13 +120,13 @@ class FileManagerLayout extends React.Component {
       return this.props.documents.map((document) => {
         return (
           <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
-            <div 
+            <div
               className="document fixed"
               title={document.name}>
               {
                 this.renderDocumentTypeImg(document.fileType)
               }
-              <p 
+              <p
                 className="col-xs-9 document-title truncate"
                 onClick={
                   () => {
@@ -153,7 +153,7 @@ class FileManagerLayout extends React.Component {
       });
     }
   }
-  
+
 
   componentDidMount() {
     this.props.initPicker('import-file', this.handleImport.bind(this));
@@ -616,7 +616,7 @@ class FileManagerPage extends React.Component {
           if (!parentFolderId) {
             DiamondAPI.insert({
               collection: 'rootFiles',
-              obj: {
+              object: {
                 documentId: resp.result.id, // resp is the response to the create
                                             // request, not to the permission one
                 boardId: DiamondAPI.getCurrentBoard()._id,
@@ -632,7 +632,7 @@ class FileManagerPage extends React.Component {
 
           DiamondAPI.insert({
             collection: 'documents',
-            obj: {
+            object: {
               _id: resp.result.id,
               parentFolderId,
               name,
@@ -688,7 +688,7 @@ class FileManagerPage extends React.Component {
       if (!parentFolderId) {
         DiamondAPI.insert({
           collection: 'rootFiles',
-            obj: {
+            object: {
               folderId: folderId,
               boardId: DiamondAPI.getCurrentBoard()._id,
             },
@@ -709,7 +709,7 @@ class FileManagerPage extends React.Component {
     function insertFolderInStorage(folderId) {
       DiamondAPI.insert({
         collection: 'folders',
-        obj: {
+        object: {
          _id: folderId,
          parentFolderId,
          name,
@@ -732,7 +732,7 @@ class FileManagerPage extends React.Component {
     if (!parentFolderId) {
       DiamondAPI.insert({
         collection: 'rootFiles',
-          obj: {
+          object: {
             documentId: file.id,
             boardId: DiamondAPI.getCurrentBoard()._id,
           },
@@ -752,7 +752,7 @@ class FileManagerPage extends React.Component {
     function insertDocumentInStorage(id, name, fileType) {
       DiamondAPI.insert({
         collection: 'documents',
-        obj: {
+        object: {
           _id: id,
           parentFolderId,
           name,
