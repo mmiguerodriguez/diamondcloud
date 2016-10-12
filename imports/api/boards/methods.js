@@ -179,28 +179,8 @@ export const editBoard = new ValidatedMethod({
      * TODO: Fix this implementation since users will always
      * be sent with email and without notifications.
      */
-    if (!board.isPrivate && !!isPrivate) {
-      board.users.forEach((user, index, array) => {
-        let found = false;
-        users.forEach((_user) => {
-          if (user.email === _user.email) {
-            found = true;
-          }
-        });
 
-        if (!found) {
-          if (!team.hasUser({ email: user.email })) {
-            throw new Meteor.Error('Boards.methods.editBoard.userNotInTeam',
-            'You cannot add people to a board that are not part of the team.');
-          }
-
-          board.users.push({ email: user.email, notifications: 0 });
-        }
-      });
-    } else {
-      users = board.users;
-    }
-
+    users = users || board.users;
     isPrivate = isPrivate || board.isPrivate;
 
     Boards.update(boardId, {

@@ -1,4 +1,5 @@
 export const BOARD_TYPES = [
+  { name: 'Por defecto', value: 'default' },
   { name: 'Creativos', value: 'creativos' },
   { name: 'Sistemas', value: 'sistemas' },
   { name: 'Directores Creativos', value: 'directores creativos' },
