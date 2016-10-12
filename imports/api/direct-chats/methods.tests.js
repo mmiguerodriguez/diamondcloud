@@ -23,8 +23,8 @@ if (Meteor.isServer) {
       team = Factory.create('team');
 
       team.users = [
-        { email: users[0].emails[0].address, permission: 'owner' },
-        { email: users[1].emails[0].address, permission: 'member' },
+        { email: users[0].emails[0].address, hierarchy: 'sistemas' },
+        { email: users[1].emails[0].address, hierarchy: 'creativo' },
       ];
 
       resetDatabase();

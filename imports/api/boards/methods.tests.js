@@ -24,28 +24,28 @@ if (Meteor.isServer) {
         Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
         Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
       ];
-      team = Factory.create('team', { 
+      team = Factory.create('team', {
         users: [
-          { email: users[0].emails[0].address, permission: 'owner' },
-          { email: users[1].emails[0].address, permission: 'member' },
-          { email: users[2].emails[0].address, permission: 'member' },
+          { email: users[0].emails[0].address, hierarchy: 'sistemas' },
+          { email: users[1].emails[0].address, hierarchy: 'creativo' },
+          { email: users[2].emails[0].address, hierarchy: 'creativo' },
         ],
       });
       boards = [
-        Factory.create('publicBoard', { 
+        Factory.create('publicBoard', {
           users: [
             { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
             { email: users[1].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
             { email: users[2].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
           ]
         }),
-        Factory.create('publicBoard', { 
+        Factory.create('publicBoard', {
           users: [
             { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
           ],
           type: 'Creativos'
         }),
-        Factory.create('privateBoard', { 
+        Factory.create('privateBoard', {
           users: [
             { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
             { email: users[1].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
@@ -95,10 +95,10 @@ if (Meteor.isServer) {
           { email: users[2].emails[0].address },
         ],
       };
-      
+
       createBoard.call(test_1, (err, result_1) => {
         if (err) throw new Meteor.Error(err);
-        
+
         boards[1]._id = result_1._id;
         boards[1].users = result_1.users;
 
@@ -110,7 +110,7 @@ if (Meteor.isServer) {
 
           chai.assert.equal(JSON.stringify(result_1), JSON.stringify(boards[1]));
           chai.assert.equal(JSON.stringify(result_2), JSON.stringify(boards[2]));
-          
+
           done();
         });
       });
@@ -124,7 +124,7 @@ if (Meteor.isServer) {
         if (err) throw new Meteor.Error(err);
 
         result = res;
-        
+
         expect._id = res._id;
         expect.archived = true;
 

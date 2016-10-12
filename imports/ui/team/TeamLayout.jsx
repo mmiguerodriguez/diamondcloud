@@ -119,7 +119,7 @@ export default class TeamLayout extends React.Component {
               <div className='boards active' id='boards'>
                 { this.renderBoardsChats() }
                 {
-                  this.props.owner ? (
+                  this.props.isAdmin ? (
                     <div
                       className='new-chat visible-xs-block'
                       role='button'
@@ -156,7 +156,7 @@ export default class TeamLayout extends React.Component {
         </div>
 
         {
-          this.props.owner ? (
+          this.props.isAdmin ? (
             <div>
               <div className='board-context-menu context-menu' ref='board-context-menu'>
                 <div className='row' onClick={ this.removeBoard }>
@@ -188,7 +188,7 @@ export default class TeamLayout extends React.Component {
 
   componentDidMount() {
     let self = this;
-    if (this.props.owner) {
+    if (this.props.isAdmin) {
       $(document).bind('mousedown', (e) => {
         if (!$(e.target).parents('.board-context-menu').length > 0) {
           self.closeContextMenu(this.refs['board-context-menu']);
@@ -343,7 +343,7 @@ export default class TeamLayout extends React.Component {
     this.props.boardSubscribe(boardId);
   }
   removeBoard() {
-    if (this.props.owner) {
+    if (this.props.isAdmin) {
       let boardId = this.state['board-context-menu-id'];
 
       Meteor.call('Boards.methods.archiveBoard', { _id: boardId }, (error, result) => {
@@ -365,7 +365,7 @@ export default class TeamLayout extends React.Component {
     }
   }
   openBoardContextMenu(boardId, event) {
-    if (this.props.owner) {
+    if (this.props.isAdmin) {
       event.persist();
 
       $(this.refs['board-context-menu'])
@@ -532,7 +532,7 @@ export default class TeamLayout extends React.Component {
 TeamLayout.propTypes = {
   teams: React.PropTypes.array.isRequired,
   team: React.PropTypes.object.isRequired,
-  owner: React.PropTypes.bool.isRequired,
+  isAdmin: React.PropTypes.bool.isRequired,
 
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,

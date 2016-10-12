@@ -45,7 +45,7 @@ Factory.define('team', Teams, {
 	type: Random.choice(['web', 'android', 'ios', 'marketing']),
 	boards: [],
 	users: [
-		{ email: faker.internet.email(), permission: 'owner' }
+		{ email: faker.internet.email(), hierarchy: 'sistemas' }
 	],
 	archived: false,
 });
