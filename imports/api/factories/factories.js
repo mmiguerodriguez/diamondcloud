@@ -20,8 +20,9 @@ Factory.define('user', Meteor.users, {
 
 Factory.define('board', Boards, {
 	name: faker.lorem.word(),
-	isPrivate: null,
 	users: [],
+	type: Random.choice(['Creativos', 'Coordinadores', 'Directores']),
+	isPrivate: null,
 	moduleInstances: [],
 	archived: false,
 });
@@ -34,7 +35,7 @@ Factory.define('publicBoard', Boards, Factory.extend('board', {
 Factory.define('privateBoard', Boards, Factory.extend('board', {
 	isPrivate: true,
 	users: [
-		{ _id: Random.id(), notifications: faker.random.number({ min: 0, max: 20 }) },
+		{ email: faker.internet.email(), notifications: faker.random.number({ min: 0, max: 20 }) },
 	],
 }));
 
