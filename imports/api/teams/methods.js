@@ -115,6 +115,35 @@ export const editTeam = new ValidatedMethod({
   }
 });
 
+export const changeUserHierarchy = new ValidatedMethod({
+  name: 'Teams.methods.changeUserHierarchy',
+  validate: new SimpleSchema({
+    teamId: { type: String },
+	userEmail: { type: String },
+	hierarchy: { type: String, allowedValues: [
+      'sistemas',
+      'creativo',
+      'director creativo',
+      'director de cuentas',
+      'coordinador',
+      'administrador',
+      'medios',
+    ] },
+  }).validator(),
+  run({ teamId, userEmail, hierarchy }) {
+    if (!Meteor.user()) {
+      throw new Meteor.Error('Teams.methods.changeUserHierarchy.notLoggedIn',
+      'Must be logged in to edit a team.');
+    }
+
+    Teams.update({ 'users.email': userEmail }, {
+      $set: {
+		'users.$.hierarchy': hierarchy,
+	  },
+    });
+  }
+});
+
 export const shareTeam = new ValidatedMethod({
   name: 'Teams.methods.share',
   validate: new SimpleSchema({
