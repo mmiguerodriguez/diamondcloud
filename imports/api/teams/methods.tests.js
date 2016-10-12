@@ -10,6 +10,7 @@ import { Teams }                from './teams.js';
 import { Boards }               from '../boards/boards.js';
 import { createTeam,
          editTeam,
+         changeUserHierarchy,
          shareTeam,
          removeUserFromTeam,
          archiveTeam,
@@ -154,6 +155,20 @@ if (Meteor.isServer) {
         });
         chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
       });
+      it("should change a user's hierarchy", function(done){
+        let expect = team;
+        expect.users[1].hierarchy = 'director creativo';
+
+        changeUserHierarchy.call({
+          teamId: team._id,
+          userEmail: team.users[1].email,
+          hierarchy: 'director creativo',
+        }, (error) => {
+          let result = Teams.findOne(team._id);
+          chai.assert.deepEqual(result, expect);
+          done();
+        });
+      });
       it('should share a team', function(done) {
         let result,
             expect,
@@ -168,7 +183,6 @@ if (Meteor.isServer) {
         };
 
         shareTeam.call(args, (error, result) => {
-          console.log('error: ', error, ' result: ', result);
           chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
           done();
         });

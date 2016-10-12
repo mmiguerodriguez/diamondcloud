@@ -119,8 +119,8 @@ export const changeUserHierarchy = new ValidatedMethod({
   name: 'Teams.methods.changeUserHierarchy',
   validate: new SimpleSchema({
     teamId: { type: String },
-	userEmail: { type: String },
-	hierarchy: { type: String, allowedValues: [
+  	userEmail: { type: String },
+  	hierarchy: { type: String, allowedValues: [
       'sistemas',
       'creativo',
       'director creativo',
@@ -136,10 +136,19 @@ export const changeUserHierarchy = new ValidatedMethod({
       'Must be logged in to edit a team.');
     }
 
-    Teams.update({ 'users.email': userEmail }, {
+    let team = Teams.findOne(teamId);
+    if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
+      throw new Meteor.Error('Teams.methods.changeUserHierarchy.notAllowed',
+      "The user is not allowed to change the hierarchy of another user.");
+    }
+
+    Teams.update({
+      _id: teamId,
+      'users.email': userEmail
+    }, {
       $set: {
-		'users.$.hierarchy': hierarchy,
-	  },
+		    'users.$.hierarchy': hierarchy,
+	    },
     });
   }
 });
