@@ -130,6 +130,16 @@ export const generateApi = (moduleInstanceId) => {
     getTeam() {
       return this.getCurrentBoard().team();
     },
+    getBoards() {
+      return Boards.find({
+        _id: {
+          $in: this.getTeam().boards.map((board) => board._id)
+        }
+      });
+    },
+    getUsers() {
+      return this.getTeam().getUsers();
+    },
     getBoard(boardId) {
       let team = this.getTeam();
       let result;
