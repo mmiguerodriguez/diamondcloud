@@ -41,25 +41,7 @@ export const generateApi = (moduleInstanceId) => {
           }
 
           let caller = (id, fields) => {
-            let updatedData = APICollection.find({
-              $and: [
-                {
-                  '#collection': collection,
-                },
-                filter,
-                {
-                  $or: [
-                    {
-                      '#moduleInstanceId': moduleInstanceId,
-                    },
-                    {
-                      '#moduleId': moduleInstance.moduleId,
-                      '#teamId': teamId,
-                    }
-                  ]
-                }
-              ],
-            }).fetch();
+            let updatedData = query.fetch();
             console.log('New data:', updatedData);
             callback(undefined, updatedData);
           };
