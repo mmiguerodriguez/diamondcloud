@@ -15,6 +15,7 @@ export const createBoard = new ValidatedMethod({
     type: {
       type: String,
       allowedValues: [
+        'default',
         'creativos',
         'sistemas',
         'directores creativos',
@@ -129,7 +130,7 @@ export const createBoard = new ValidatedMethod({
  * @param {Boolean} isPrivate (optional)
  * @param {Object} users (optional)
  * @returns {Object} board
- *  The board updated
+ *  The updated board
  */
 export const editBoard = new ValidatedMethod({
   name: 'Boards.methods.editBoard',
@@ -139,6 +140,7 @@ export const editBoard = new ValidatedMethod({
     type: {
       type: String,
       allowedValues: [
+        'default',
         'creativos',
         'sistemas',
         'directores creativos',
