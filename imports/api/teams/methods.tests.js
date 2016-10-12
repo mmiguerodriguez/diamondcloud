@@ -5,7 +5,7 @@ import { chai }                 from 'meteor/practicalmeteor:chai';
 import   faker                  from 'faker';
 import { Random }               from 'meteor/random';
 import { Mail }                 from '../mails/mails.js';
-import { printObject }             from '../helpers/print-objects.js';
+import { printObject }          from '../helpers/print-objects.js';
 
 import { Teams }                from './teams.js';
 import { Boards }               from '../boards/boards.js';
