@@ -159,8 +159,8 @@ export default class CreateTeamModal extends React.Component {
                 <p className='explanation-text margin container-fluid'>Insertá un mail de Google de los miembros de tu equipo para poder trabajar colaborativamente. Si todavia no tienen cuenta en Diamond Cloud se le enviará un link al mail</p>
                 <UsersList
                   users={this.state.users}
-                  addUser={ this.addUser }
-                  removeUser={ this.removeUser } />
+                  addUser={this.addUser}
+                  removeUser={this.removeUser} />
               </div>
           </div>
         }
@@ -213,6 +213,7 @@ export default class CreateTeamModal extends React.Component {
       users.push(user);
       this.setState({
         users,
+      }, () => {
       });
     }
   }
@@ -220,11 +221,11 @@ export default class CreateTeamModal extends React.Component {
    * removeUser: removes a user from the state
    * @param {Object} user { email }
    */
-  removeUser(user){
+  removeUser(email){
     let users = this.state.users;
     // Search if users contains user.email
     let index = users.findIndex((_user) => {
-      return _user.email === user.email;
+      return _user.email === email;
     });
     if (index !== -1) {
       users.splice(index, 1);

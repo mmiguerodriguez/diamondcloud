@@ -6,10 +6,9 @@ export default class UsersList extends React.Component {
     let value = event.target.value;
 
     if (index === 'hierarchy') {
-      /*
-      Meteor.call('Teams.methods.changeUserHierarchy', { 
-        teamId: self.props.team._id, 
-        userEmail: self.props.user.emails[0].address, 
+      Meteor.call('Teams.methods.changeUserHierarchy', {
+        teamId: self.props.team._id,
+        userEmail: self.props.user.emails[0].address,
         hierarchy: value,
       }, (error, result) => {
         if (error) {
@@ -18,7 +17,6 @@ export default class UsersList extends React.Component {
           console.log('Changed user hierarchy', result);
         }
       });
-      */
     }
 
     this.setState({
@@ -28,9 +26,9 @@ export default class UsersList extends React.Component {
 
   constructor(props) {
     super(props);
-    
+
     this.state = { hierarchy: this.props.user.hierarchy || 'sistemas' };
-    
+
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -47,7 +45,7 @@ export default class UsersList extends React.Component {
         <div className="col-xs-10">
           <p className="contact-list-name truncate">
             {this.props.user.profile.name}
-            <select 
+            <select
               id="user-type-edit"
               className="form-control user-type edit"
               value={this.state.hierarchy}
@@ -62,11 +60,11 @@ export default class UsersList extends React.Component {
             </select>
           </p>
         </div>
-        { 
+        {
           this.props.isAdmin ? (
             <div className="col-xs-1">
-              <div 
-                className="close" 
+              <div
+                className="close"
                 onClick={ this.props.removeUser.bind(null, this.props.user.emails[0].address) }>
                 <img src="/img/close-icon.svg" width="16px" />
               </div>

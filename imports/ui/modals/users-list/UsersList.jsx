@@ -56,17 +56,17 @@ export default class UsersList extends React.Component {
       users = JSON.parse(JSON.stringify(this.props.users));
 
       users.forEach((user, index) => {
-        let _user = Meteor.users.findByEmail(user, Teams.dashboardUsersFields);
+        let _user = Meteor.users.findByEmail(user.email, Teams.dashboardUsersFields);
 
         users[index] = _user ? _user : {
           _id: index,
           emails: [
             {
-              address: user,
+              address: user.email,
             }
           ],
           profile: {
-            name: user,
+            name: user.email,
           },
         };
       });
@@ -95,7 +95,7 @@ export default class UsersList extends React.Component {
           (isAdmin) ? (
             <div className='row container-fluid'>
               <div className='input-group col-xs-12'>
-                <input  
+                <input
                   id='searchUsers'
                   className='form-control'
                   placeholder='Compartir equipo'
@@ -104,10 +104,10 @@ export default class UsersList extends React.Component {
                   onChange={(e) => this.handleChange('email', e)}
                   onKeyDown={this.handleKey}
                 />
-                <select 
-                  className="form-control user-type" 
+                <select
+                  className="form-control user-type"
                   id="user-type"
-                  onChange={(e) => this.handleChange('type', e)}>
+                  onChange={(e) => this.handleChange('hierarchy', e)}>
                   <option hidden value='-1'>Tipo de trabajador</option>
                   <option value='sistemas'>Sistemas</option>
                   <option value='creativo'>Creativo</option>
@@ -148,11 +148,14 @@ export default class UsersList extends React.Component {
     }
   }
   handleSubmit() {
-    this.props.addUser(this.state.email);
-    this.setState({ email: '' });
-  }
-  removeUser(email, teamId) {
-    Meteor.call('Teams.methods.removeUser', { email, teamId });
+    this.props.addUser({
+      email: this.state.email,
+      hierarchy: this.state.hierarchy,
+    });
+    this.setState({
+      email: '',
+      hierarchy: '-1',
+    });
   }
 }
 
