@@ -4,8 +4,6 @@ import { ValidatedMethod }                       from 'meteor/mdg:validated-meth
 import { SimpleSchema }                          from 'meteor/aldeed:simple-schema';
 import Future                                    from 'fibers/future';
 
-import { printObject }                           from '../helpers/print-objects.js';
-
 import { ModuleInstances }                       from '../module-instances/module-instances.js';
 import { APICollection }                         from '../api-collection/api-collection.js';
 import { Boards }                                from '../boards/boards.js';

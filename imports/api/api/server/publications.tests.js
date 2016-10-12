@@ -4,7 +4,6 @@ import { Random }               from 'meteor/random';
 import { resetDatabase }        from 'meteor/xolvio:cleaner';
 import { chai }                 from 'meteor/practicalmeteor:chai';
 import { sinon }                from 'meteor/practicalmeteor:sinon';
-import { printObject }          from '../../helpers/print-objects.js';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import                               '../../factories/factories.js';
 

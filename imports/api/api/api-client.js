@@ -1,7 +1,5 @@
 import { Meteor }               from 'meteor/meteor';
 
-import { printObject }          from '../helpers/print-objects.js';
-
 import { Teams }                from '../teams/teams.js';
 import { Boards }               from '../boards/boards.js';
 import { ModuleInstances }      from '../module-instances/module-instances.js';

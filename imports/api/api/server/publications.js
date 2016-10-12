@@ -1,7 +1,5 @@
 import { Meteor }           from 'meteor/meteor';
 
-import { printObject }          from '../../helpers/print-objects.js';
-
 import { ModuleInstances }  from '../../module-instances/module-instances.js';
 import { APICollection }       from '../../api-collection/api-collection.js';
 import { Boards }           from '../../boards/boards.js';
