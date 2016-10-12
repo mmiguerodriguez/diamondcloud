@@ -216,7 +216,7 @@ export default class ConfigBoardModal extends React.Component {
                     type='radio'
                     value={false}
                     onChange={(e) => this.handleChange('isPrivate', e)}
-                    defaultChecked={!this.state.isPrivate ? true : false}
+                    checked={!this.state.isPrivate ? true : false}
                   />
                   Publico
                 </label>
@@ -226,7 +226,7 @@ export default class ConfigBoardModal extends React.Component {
                     type='radio'
                     value={true}
                     onChange={(e) => this.handleChange('isPrivate', e)}
-                    defaultChecked={this.state.isPrivate ? true : false}
+                    checked={this.state.isPrivate ? true : false}
                   />
                   Privado
                 </label>
