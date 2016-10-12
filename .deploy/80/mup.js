@@ -17,7 +17,7 @@ module.exports = {
     },
     ssl: {
    crt: 'diamondcloud.tk.crt', // this is a bundle of certificates
-   key: 'diamondcloud.tk.key', // this is the private key of the certificate
+  key: 'diamondcloud.tk.key', // this is the private key of the certificate
    port: 443 // 443 is the default value and it's the standard HTTPS port
  },
     buildOptions: {
