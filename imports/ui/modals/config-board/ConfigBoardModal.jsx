@@ -71,6 +71,8 @@ export default class ConfigBoardModal extends React.Component {
 
     users = users.join(',');
 
+    console.log(board);
+
     this.setState({
       board,
       name: board.name,
@@ -151,7 +153,6 @@ export default class ConfigBoardModal extends React.Component {
   }
 
   render() {
-    console.log(this.state.isPrivate);
     return (
       <Modal
         id={'configBoardModal'}
@@ -177,9 +178,9 @@ export default class ConfigBoardModal extends React.Component {
                   id='boardName'
                   class='form-control'
                   placeholder='Nombre del board'
-                  value={this.state.name}
                   required={true}
                   minCharacters={3}
+                  value={this.state.name}
                   onChange={(e) => this.handleChange('name', e)}
                   errorMessage='El nombre no es válido'
                   emptyMessage='Es obligatorio poner un nombre'
@@ -193,7 +194,7 @@ export default class ConfigBoardModal extends React.Component {
                 className='control-label'>
                 Tipo
               </label>
-              <div className='col-xs-12'>
+              <div className='col-xs-12 type'>
                 <select
                   className='form-control'
                   value={this.state.type}
@@ -208,7 +209,7 @@ export default class ConfigBoardModal extends React.Component {
                 className='control-label'>
                 Privacidad
               </label>
-              <div className='col-xs-12'>
+              <div className='col-xs-12 privacy'>
                 <label className='radio-inline'>
                   <input
                     name='board-private-radio'
@@ -225,7 +226,7 @@ export default class ConfigBoardModal extends React.Component {
                     type='radio'
                     value={true}
                     onChange={(e) => this.handleChange('isPrivate', e)}
-                    defaultChecked={!this.state.isPrivate ? true : false}
+                    defaultChecked={this.state.isPrivate ? true : false}
                   />
                   Privado
                 </label>
@@ -241,14 +242,14 @@ export default class ConfigBoardModal extends React.Component {
                   </label>
                   <Select
                     name='form-field-name'
-                    className=''
+                    className='col-xs-12'
                     placeholder='Ingrese nombre o mail...'
                     noResultsText='No se encontraron usuarios en el equipo'
                     multi={true}
                     simpleValue={true}
                     disabled={false}
-                    options={this.renderTeamUsers()}
                     value={this.state.users}
+                    options={this.renderTeamUsers()}
                     onChange={this.handleSelectChange}
                   />
                 </div>
