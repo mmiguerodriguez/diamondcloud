@@ -32,18 +32,6 @@ InputError.propTypes = {
 };
 
 export class TextInput extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      isEmpty: true,
-      value: this.props.value || '',
-      valid: false,
-      errorMessage: "Input is invalid",
-      errorVisible: false
-    };
-  }
-
   handleChange(event) {
     this.validation(event.target.value);
 
@@ -103,6 +91,31 @@ export class TextInput extends React.Component {
     }
     //pass the result to the local validation element for displaying the error
     this.validation(event.target.value, valid);
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isEmpty: true,
+      value: this.props.value || '',
+      valid: false,
+      errorMessage: "Input is invalid",
+      errorVisible: false
+    };
+  }
+
+  /**
+   * This hotfix was made by Miguel Rodriguez at 12/10/2016 to
+   * fix an issue when the props are modified without
+   * calling the handleChange method.
+   */
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.value !== this.props.value || nextProps.value !== this.state.value) {
+      this.setState({
+        value: nextProps.value,
+      });
+    }
   }
 
   render() {
