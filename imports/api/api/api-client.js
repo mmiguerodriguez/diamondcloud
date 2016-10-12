@@ -85,7 +85,14 @@ export const generateApi = (moduleInstanceId) => {
       filter,
       subscriptionCallback);
 
+      subscriptions.push(subscription);
+
       return subscription;
+    },
+    unsubscribe() {
+      subscriptions.forEach((subscription) => {
+        subscription.stop();
+      });
     },
     insert({ collection, object, isGlobal, callback }) {
       console.log('Inserting new document:', object, 'into', collection, ', isGlobal:', isGlobal);
