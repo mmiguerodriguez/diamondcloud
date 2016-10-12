@@ -292,10 +292,10 @@ export default class CreateTeamModal extends React.Component {
   }
 
   createTeam() {
-    let { name, plan, type, otherType, usersEmails } = this.state;
+    let { name, plan, type, otherType, users } = this.state;
     type = type === 'Otro' ? otherType : type;
 
-    let form = { name, plan, type, usersEmails };
+    let form = { name, plan, type, users };
     Meteor.call('Teams.methods.create', form, (error, result) => {
       if (error) {
         console.error(error);
