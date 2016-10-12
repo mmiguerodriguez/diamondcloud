@@ -11,39 +11,46 @@ export const generateApi = (moduleInstanceId) => {
   let subscriptions = [];
   let DiamondAPI = {
     subscribe({ collection, filter, callback }) {
-      let subscriptionCallback = () => {
-        let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-        let teamId = moduleInstance.board().team();
-
-        let query = APICollection.find({
-          $and: [
-            {
-              '#collection': collection,
-            },
-            filter,
-            {
-              $or: [
-                {
-                  '#moduleInstanceId': moduleInstanceId,
-                },
-                {
-                  '#moduleId': moduleInstance.moduleId,
-                  '#teamId': teamId,
-                }
-              ]
-            }
-          ],
-        });
-
-        let caller = (id, fields) => {
-          callback(undefined, fields);
-        };
-
-        let handle = query.observeChanges({
-          added: caller,
-          changed: caller,
-          removed: caller,
-        });
+      let subscriptionCallback = {
+        onReady() {
+          console.log('Suscribed');
+          let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+          let teamId = moduleInstance.board().team();
+  
+          let query = APICollection.find({
+            $and: [
+              {
+                '#collection': collection,
+              },
+              filter,
+              {
+                $or: [
+                  {
+                    '#moduleInstanceId': moduleInstanceId,
+                  },
+                  {
+                    '#moduleId': moduleInstance.moduleId,
+                    '#teamId': teamId,
+                  }
+                ]
+              }
+            ],
+          });
+          
+          let caller = (id, fields) => {
+            callback(undefined, fields);
+          };
+  
+          let handle = query.observeChanges({
+            added: caller,
+            changed: caller,
+            removed: caller,
+          });
+        },
+        onError(err) {
+          console.log('Suscription error');
+          throw new console.error(err);
+        }
       };
 
       let subscription = Meteor.subscribe(
