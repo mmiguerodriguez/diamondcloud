@@ -16,7 +16,7 @@ export const generateApi = (moduleInstanceId) => {
           console.log('Suscribed');
           let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
           let teamId = moduleInstance.board().team();
-  
+
           let query = APICollection.find({
             $and: [
               {
@@ -36,11 +36,30 @@ export const generateApi = (moduleInstanceId) => {
               }
             ],
           });
-          
+
           let caller = (id, fields) => {
-            callback(undefined, fields);
+            let updatedData = APICollection.find({
+              $and: [
+                {
+                  '#collection': collection,
+                },
+                filter,
+                {
+                  $or: [
+                    {
+                      '#moduleInstanceId': moduleInstanceId,
+                    },
+                    {
+                      '#moduleId': moduleInstance.moduleId,
+                      '#teamId': teamId,
+                    }
+                  ]
+                }
+              ],
+            }).fetch();
+            callback(undefined, updatedData);
           };
-  
+
           let handle = query.observeChanges({
             added: caller,
             changed: caller,

@@ -7,7 +7,7 @@ window.onload = () => {
   /**
    * When module loads, DiamondAPI gets the data it has at first time
    * to check if we need to insert some startup data
-   */ 
+   */
   DiamondAPI.get({
     collection: 'postIt',
     filter: {},
@@ -15,13 +15,13 @@ window.onload = () => {
       if (error) {
         console.error(error);
       }
-      
+
       /**
-       * If we really need a startup data since there is none, then 
+       * If we really need a startup data since there is none, then
        * we insert this data
        * If not we just handle this data to the handleNewData
        * function
-       */ 
+       */
       if (!result || result.length === 0) {
         insertStartupData((error, result) => {
           if (error) {
@@ -36,7 +36,7 @@ window.onload = () => {
 
   /**
    * Finally we subscribe to the data
-   */ 
+   */
   DiamondAPI.subscribe({
     collection: 'postIt',
     filter: {},
@@ -44,8 +44,10 @@ window.onload = () => {
       if (error) {
         console.error(error);
       }
-      
-      if (result && result.length > 0) {
+
+      console.log('New data:', result);
+
+      if (!!result && result.length > 0) {
         handleNewData(result[0]);
       }
     },
@@ -55,11 +57,12 @@ window.onload = () => {
 /**
  * insertStartupData(callback)
  * callback: Function
- * 
+ *
  * Called when we need to insert startup data for the module.
  * TODO: Deprecate this.
- */ 
+ */
 function insertStartupData(callback) {
+  console.log('Due to the lack of data, inserting empty document');
   DiamondAPI.insert({
     collection: 'postIt',
     object: {
@@ -75,16 +78,17 @@ function insertStartupData(callback) {
  * updatePostIt(e, key)
  * e: String // input or textarea target
  * key: String // title or description
- * 
+ *
  * Called on the keyDown of the <input> and <textarea> elements.
  * It contains a timeout that is removed when the function gets
  * called again, since we want to update the data once every
  * 1000 ms.
- */ 
+ */
 function updatePostIt(e, key) {
   clearTimeout(TIMEOUT);
 
   TIMEOUT = setTimeout(() => {
+    console.log('Updating data to match local data');
     DiamondAPI.update({
       collection: 'postIt',
       filter: {},
@@ -96,6 +100,8 @@ function updatePostIt(e, key) {
       callback(error, result) {
         if (error) {
           console.error(error);
+        } else {
+          console.log('Successfuly updated the data');
         }
       }
     });
@@ -105,11 +111,11 @@ function updatePostIt(e, key) {
 /**
  * handleNewData(data)
  * data: Object // { title, description }
- * 
+ *
  * Handles the new data either called from the subscription
  * or the first APIGet and gives it to the respective
  * <input> and <textarea> elements.
- */ 
+ */
 function handleNewData(data) {
   pushData('title', data.title);
   pushData('description', data.description);
@@ -118,7 +124,7 @@ function handleNewData(data) {
    * pushData(e, value)
    * e: String // DOM Element Id
    * value: String // Value of the element
-   * 
+   *
    * Sets the value for a DOM element
    */
   function pushData(e, value) {

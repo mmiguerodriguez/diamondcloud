@@ -34,5 +34,7 @@ let modules = [
 ];
 
 modules.forEach((module) => {
-  Modules.insert(module);
+  if(!Modules.findOne(module._id)) {
+    Modules.insert(module);
+  }
 });
