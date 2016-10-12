@@ -12,22 +12,22 @@ export const createBoard = new ValidatedMethod({
   validate: new SimpleSchema({
     teamId: { type: String, regEx: SimpleSchema.RegEx.Id },
     name: { type: String, min: 0, max: 200 },
-    type: { 
-      type: String, 
+    type: {
+      type: String,
       allowedValues: [
-        'creativos', 
-        'sistemas', 
-        'directores creativos', 
-        'directores de cuentas', 
-        'administradores', 
-        'coordinadores', 
+        'creativos',
+        'sistemas',
+        'directores creativos',
+        'directores de cuentas',
+        'administradores',
+        'coordinadores',
         'medios',
       ],
     },
     isPrivate: { type: Boolean },
     users: { type: [Object], optional: true },
-    'users.$.email': { 
-      type: String, 
+    'users.$.email': {
+      type: String,
       regEx: SimpleSchema.RegEx.Email,
       optional: true
     },
@@ -81,14 +81,10 @@ export const createBoard = new ValidatedMethod({
           },
         },
       });
-      
+
       /**
        * Inserts certain moduleInstances for each type
        * of board.
-       * 
-       * 'Creativos'     -> Task-manager, drive & videocall
-       * 'Coordinadores' -> Task-manager
-       * 'Directores'    -> Task-manager
        */
       let moduleInstances;
       if (board.type === 'creativos') {
@@ -107,7 +103,7 @@ export const createBoard = new ValidatedMethod({
           { moduleId: 'drive', x: 50, y: 340, width: 482, height: 400, archived: false, minimized: false },
         ];
       }
-      
+
       if (!!moduleInstances) {
         ModuleInstances.insertManyInstances(moduleInstances, boardId, (error, result) => {
           if (error) {
@@ -117,35 +113,46 @@ export const createBoard = new ValidatedMethod({
           }
         });
       }
-      
+
       future.return(_board);
     });
     return future.wait();
   }
 });
 
+/**
+ * Edits a board information
+ * @type {ValidatedMethod}
+ * @param {String} boardId
+ * @param {String} name (optional)
+ * @param {String} type (optional)
+ * @param {Boolean} isPrivate (optional)
+ * @param {Object} users (optional)
+ * @returns {Object} board
+ *  The board updated
+ */
 export const editBoard = new ValidatedMethod({
   name: 'Boards.methods.editBoard',
   validate: new SimpleSchema({
     boardId: { type: String, regEx: SimpleSchema.RegEx.Id },
     name: { type: String, optional: true },
-    type: { 
-      type: String, 
+    type: {
+      type: String,
       allowedValues: [
-        'creativos', 
-        'sistemas', 
-        'directores creativos', 
-        'directores de cuentas', 
-        'administradores', 
-        'coordinadores', 
+        'creativos',
+        'sistemas',
+        'directores creativos',
+        'directores de cuentas',
+        'administradores',
+        'coordinadores',
         'medios',
       ],
       optional: true,
     },
     isPrivate: { type: Boolean, optional: true },
     users: { type: [Object], optional: true },
-    'users.$.email': { 
-      type: String, 
+    'users.$.email': {
+      type: String,
       regEx: SimpleSchema.RegEx.Email,
       optional: true
     },
@@ -155,38 +162,45 @@ export const editBoard = new ValidatedMethod({
       throw new Meteor.Error('Boards.methods.editBoard.notLoggedIn',
       'Must be logged in to edit a board.');
     }
-    
+
     let board = Boards.findOne(boardId);
     let team = board.team();
 
     name = name || board.name;
     type = type || board.type;
-    
+
     /**
      * If the board wasn't private but now it is, then we need
      * to change the users variable to fit with a private
      * board.
-     * 
+     *
      * TODO: Fix this implementation since users will always
      * be sent with email and without notifications.
      */
     if (!board.isPrivate && !!isPrivate) {
-      users.forEach((user, index, array) => {
-        if (!team.hasUser({ email: user.email })) {
-          throw new Meteor.Error('Boards.methods.editBoard.userNotInTeam',
-          'You cannot add people to a board that are not part of the team.');
-        }
-        
-        if (users[index].notifications !== undefined) {
-          users[index].notifications = 0;
+      board.users.forEach((user, index, array) => {
+        let found = false;
+        users.forEach((_user) => {
+          if (user.email === _user.email) {
+            found = true;
+          }
+        });
+
+        if (!found) {
+          if (!team.hasUser({ email: user.email })) {
+            throw new Meteor.Error('Boards.methods.editBoard.userNotInTeam',
+            'You cannot add people to a board that are not part of the team.');
+          }
+
+          board.users.push({ email: user.email, notifications: 0 });
         }
       });
     } else {
       users = board.users;
     }
-    
+
     isPrivate = isPrivate || board.isPrivate;
-    
+
     Boards.update(boardId, {
       $set: {
         name,
@@ -195,7 +209,7 @@ export const editBoard = new ValidatedMethod({
         users,
       }
     });
-    
+
     board = Boards.findOne(boardId);
     return board;
   }

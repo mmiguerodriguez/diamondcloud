@@ -11,67 +11,15 @@ import {
 import { BOARD_TYPES } from '../board-types.js';
 
 export default class ConfigBoardModal extends React.Component {
-  renderTeamUsers() {
-    let arr = [];
-
-    this.props.team.users.map((_user) => {
-      let user = Meteor.users.findByEmail(_user.email, {});
-      if (user) {
-        if (user._id !== Meteor.userId()) {
-          arr.push({
-            label: user.profile.name,
-            value: user.email(),
-          });
-        }
-      }
-    });
-
-    return arr;
-  }
-  
-  renderBoardUsersSelectValue() {
-    return this.props.board.users.map((user, index) => {
-      if (this.props.board.users.length - 1 === index) {
-        return user.email;
-      } else {
-        return user.email + ',';
-      }
-    });
-  }
-  
-  renderBoardTypes() {
-    return BOARD_TYPES.map((type, index) => {
-      return (
-        <option
-          key={index}
-          value={type.value}>
-          {type.name}
-        </option>
-      );
-    });
-  }
-  
-  handleChange(index, event) {
-    let val = event.target.value;
-    if (index === 'isPrivate')  {
-      val = val === 'true' ? true : false;
-    }
-
-    this.setState({
-      [index]: val,
-    });
-  }
-
-  handleSelectChange(value) {
-    this.setState({
-      users: value,
-    });
-  }
-  
   editBoard() {
-    let board = { ...this.state };
-    let boardId = this.props.board._id;
-    
+    let boardId = this.state.board._id;
+    let board = {
+      name: this.state.name,
+      type: this.state.type,
+      isPrivate: this.state.isPrivate,
+      users: this.state.users,
+    };
+
     if (board.isPrivate) {
       if (board.users !== '') {
         let arr = [];
@@ -89,42 +37,130 @@ export default class ConfigBoardModal extends React.Component {
     } else {
       board.users = [];
     }
-    
-    console.log(board.users);
-    /*
-    
-    Meteor.call('Boards.methods.edit', { boardId, ...board }, (error, result) => {
+
+    Meteor.call('Boards.methods.editBoard', { boardId, ...board }, (error, result) => {
       if (error) {
         console.error(error);
       } else {
         console.log('Success editing board data');
       }
     });
-    
-    */
   }
-  
+
+  startup(nextProps) {
+    let board, users = [];
+    let props = nextProps || this.props;
+
+    /**
+     * Get the real board
+     */
+    props.boards.forEach((_board) => {
+      if (_board._id === props.boardId) {
+        board = _board;
+      }
+    });
+
+    /**
+     * Set board users
+     */
+    board.users.forEach((user) => {
+      if (user.email !== Meteor.user().email()) {
+        users.push(user.email);
+      }
+    });
+
+    users = users.join(',');
+
+    this.setState({
+      board,
+      name: board.name,
+      type: board.type,
+      isPrivate: board.isPrivate,
+      users,
+    });
+  }
+
+  renderTeamUsers() {
+    let arr = [];
+
+    this.props.team.users.map((_user) => {
+      let user = Meteor.users.findByEmail(_user.email, {});
+      if (user) {
+        if (user._id !== Meteor.userId()) {
+          arr.push({
+            label: user.profile.name,
+            value: user.email(),
+          });
+        }
+      }
+    });
+
+    return arr;
+  }
+
+  renderBoardTypes() {
+    return BOARD_TYPES.map((type, index) => {
+      return (
+        <option
+          key={index}
+          value={type.value}>
+          {type.name}
+        </option>
+      );
+    });
+  }
+
+  handleChange(index, event) {
+    let val = event.target.value;
+    if (index === 'isPrivate')  {
+      val = val === 'true' ? true : false;
+    }
+
+    this.setState({
+      [index]: val,
+    });
+  }
+
+  handleSelectChange(value) {
+    this.setState({
+      users: value,
+    });
+  }
+
   constructor(props) {
     super(props);
-    
+
     this.state = {
-      name: this.props.board.name,
-      type: this.props.board.type,
-      isPrivate: this.props.board.isPrivate,
+      name: '',
+      type: '',
+      isPrivate: '',
       users: '',
     };
-    
+
     this.handleChange = this.handleChange.bind(this);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
     this.editBoard = this.editBoard.bind(this);
   }
 
+  componentWillMount() {
+    this.startup();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.startup(nextProps);
+  }
+
   render() {
+    console.log(this.state.isPrivate);
     return (
       <Modal
         id={'configBoardModal'}
         header={
           <div>
-            
+            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
+              <img src='/img/close-icon.svg' width='18px' />
+            </button>
+            <h4 className='modal-title'>Editar un board</h4>
           </div>
         }
         body={
@@ -175,11 +211,11 @@ export default class ConfigBoardModal extends React.Component {
               <div className='col-xs-12'>
                 <label className='radio-inline'>
                   <input
-                    name='board-public-radio'
+                    name='board-private-radio'
                     type='radio'
                     value={false}
                     onChange={(e) => this.handleChange('isPrivate', e)}
-                    checked={!this.state.isPrivate ? true : false}
+                    defaultChecked={!this.state.isPrivate ? true : false}
                   />
                   Publico
                 </label>
@@ -189,7 +225,7 @@ export default class ConfigBoardModal extends React.Component {
                     type='radio'
                     value={true}
                     onChange={(e) => this.handleChange('isPrivate', e)}
-                    checked={this.state.isPrivate ? true : false}
+                    defaultChecked={!this.state.isPrivate ? true : false}
                   />
                   Privado
                 </label>
@@ -212,7 +248,7 @@ export default class ConfigBoardModal extends React.Component {
                     simpleValue={true}
                     disabled={false}
                     options={this.renderTeamUsers()}
-                    value={this.renderBoardUsersSelectValue()}
+                    value={this.state.users}
                     onChange={this.handleSelectChange}
                   />
                 </div>
@@ -243,5 +279,7 @@ export default class ConfigBoardModal extends React.Component {
 }
 
 ConfigBoardModal.propTypes = {
-  board: React.PropTypes.object.isRequired,
+  team: React.PropTypes.object,
+  boards: React.PropTypes.array.isRequired,
+  boardId: React.PropTypes.string.isRequired,
 };

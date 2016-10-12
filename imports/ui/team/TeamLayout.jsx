@@ -185,10 +185,15 @@ export default class TeamLayout extends React.Component {
                 team={ this.props.team }
                 loadTeam={ this.loadTeam }
               />
-              <ConfigBoardModal
-                team={this.props.team}
-                board={this.props.board}
-              />
+            {
+              this.state['board-context-menu-id'] ? (
+                <ConfigBoardModal
+                  team={this.props.team}
+                  boards={this.props.boards}
+                  boardId={this.state['board-context-menu-id']}
+                  />
+              ) : (null)
+            }
             </div>
           ) : ( null )
         }
@@ -536,7 +541,7 @@ export default class TeamLayout extends React.Component {
       $('#configTeamModal').modal('show');//show modal once state is updated
     });
   }
-  openConfigBoardModal(){ 
+  openConfigBoardModal(){
     $('#configBoardModal').modal('show');
   }
   loadTeam(id, callback) {
