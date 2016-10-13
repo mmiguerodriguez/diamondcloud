@@ -25,7 +25,7 @@ export const createTeam = new ValidatedMethod({
       'Must be logged in to make a team.');
     }
 
-    let team, teamId, boardUsers = [{ email: Meteor.user().email() }];
+    let team, teamId;
     team = {
       name,
       plan,
@@ -45,7 +45,6 @@ export const createTeam = new ValidatedMethod({
       }
 
       team.users.push({ email, hierarchy });
-      boardUsers.push({ email });
     });
 
     let future = new Future(); // Needed to make asynchronous call to db
@@ -59,7 +58,6 @@ export const createTeam = new ValidatedMethod({
       createBoard.call({
         teamId,
         name: 'General',
-        users: boardUsers,
         type: 'default',
         isPrivate: false,
       }, (err, res) => {
