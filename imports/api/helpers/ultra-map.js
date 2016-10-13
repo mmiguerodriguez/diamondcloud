@@ -1,8 +1,8 @@
 // Ultra Map function
 
-_.ultraMap = (arr, func) => {
+Array.prototype.ultraMap = (func) => {
   let result;
-  arr = arr.map(func);
+  let arr = this.map(func);
 
   arr.forEach((e) => {
     if (e !== undefined) {

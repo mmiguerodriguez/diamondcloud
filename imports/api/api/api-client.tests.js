@@ -3,6 +3,7 @@ import { resetDatabase }        from 'meteor/xolvio:cleaner';
 import { sinon }                from 'meteor/practicalmeteor:sinon';
 import { chai }                 from 'meteor/practicalmeteor:chai';
 import { Random }               from 'meteor/random';
+import { printObject }          from '../helpers/print-objects.js';
 import   faker                  from 'faker';
 import                               '../factories/factories.js';
 
@@ -215,7 +216,7 @@ if (Meteor.isClient) {
         chai.assert.equal(callback.toString(), insertParams.callback.toString());
         delete insertParams.callback;
         insertParams.moduleInstanceId = moduleInstances[0]._id;
-        _.printObject('res:', params, 'expected:', insertParams);
+        printObject('res:', params, 'expected:', insertParams);
         chai.assert.deepEqual(insertParams, params);
         done();
       });
@@ -225,7 +226,7 @@ if (Meteor.isClient) {
         chai.assert.equal(callback.toString(), updateParams.callback.toString());
         delete updateParams.callback;
         updateParams.moduleInstanceId = moduleInstances[0]._id;
-        _.printObject('res:', params, 'expected:', updateParams);
+        printObject('res:', params, 'expected:', updateParams);
         chai.assert.deepEqual(updateParams, params);
         done();
       });
@@ -235,7 +236,7 @@ if (Meteor.isClient) {
         chai.assert.equal(callback.toString(), getParams.callback.toString());
         delete getParams.callback;
         getParams.moduleInstanceId = moduleInstances[0]._id;
-        _.printObject('res:', params, 'expected:', getParams);
+        printObject('res:', params, 'expected:', getParams);
         chai.assert.deepEqual(getParams, params);
         done();
       });
@@ -245,7 +246,7 @@ if (Meteor.isClient) {
         chai.assert.equal(callback.toString(), removeParams.callback.toString());
         delete removeParams.callback;
         removeParams.moduleInstanceId = moduleInstances[0]._id;
-        _.printObject('res:', params, 'expected:', removeParams);
+        printObject('res:', params, 'expected:', removeParams);
         chai.assert.deepEqual(removeParams, params);
         done();
       });

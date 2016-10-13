@@ -60,6 +60,7 @@ export const createTeam = new ValidatedMethod({
         users: boardUsers,
         type: 'default',
         isPrivate: false,
+        visibleForDirectors: false,
       }, (err, res) => {
         if (!!err) {
           future.throw(err);
@@ -73,6 +74,7 @@ export const createTeam = new ValidatedMethod({
           users: boardUsers,
           type: 'default',
           isPrivate: false,
+          visibleForDirectors: false,
         }, (err, coordinationBoard) => {
           if (!!err) {
             future.throw(err);

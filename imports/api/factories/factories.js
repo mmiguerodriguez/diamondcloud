@@ -25,6 +25,7 @@ Factory.define('board', Boards, {
 	isPrivate: null,
 	moduleInstances: [],
 	archived: false,
+	visibleForDirectors: false,
 });
 
 Factory.define('publicBoard', Boards, Factory.extend('board', {

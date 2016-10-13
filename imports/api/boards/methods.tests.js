@@ -3,6 +3,7 @@ import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
 import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
+import { printObject }   from '../helpers/print-objects.js';
 import   faker           from 'faker';
 
 import { Teams }         from '../teams/teams.js';
@@ -10,6 +11,8 @@ import { Boards }        from './boards.js';
 import { createBoard,
          archiveBoard,
          dearchiveBoard,
+         unlockBoard,
+         lockBoard,
 }                        from './methods.js';
 
 if (Meteor.isServer) {
@@ -24,7 +27,7 @@ if (Meteor.isServer) {
         Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
         Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
       ];
-      team = Factory.create('team', { 
+      team = Factory.create('team', {
         users: [
           { email: users[0].emails[0].address, permission: 'owner' },
           { email: users[1].emails[0].address, permission: 'member' },
@@ -32,20 +35,20 @@ if (Meteor.isServer) {
         ],
       });
       boards = [
-        Factory.create('publicBoard', { 
+        Factory.create('publicBoard', {
           users: [
             { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
             { email: users[1].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
             { email: users[2].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
           ]
         }),
-        Factory.create('publicBoard', { 
+        Factory.create('publicBoard', {
           users: [
             { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
           ],
           type: 'Creativos'
         }),
-        Factory.create('privateBoard', { 
+        Factory.create('privateBoard', {
           users: [
             { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
             { email: users[1].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
@@ -83,6 +86,7 @@ if (Meteor.isServer) {
           { email: users[0].emails[0].address },
         ],
         isPrivate: false,
+        visibleForDirectors: false,
       };
       test_2 = {
         teamId: team._id,
@@ -94,11 +98,12 @@ if (Meteor.isServer) {
           { email: users[1].emails[0].address },
           { email: users[2].emails[0].address },
         ],
+        visibleForDirectors: false,
       };
-      
+
       createBoard.call(test_1, (err, result_1) => {
         if (err) throw new Meteor.Error(err);
-        
+
         boards[1]._id = result_1._id;
         boards[1].users = result_1.users;
 
@@ -108,9 +113,11 @@ if (Meteor.isServer) {
           boards[2]._id = result_2._id;
           boards[2].users = result_2.users;
 
+          printObject('result_1:', result_1, 'expected:', boards[1]);
+          printObject('result_2:', result_2, 'expected:', boards[2]);
           chai.assert.equal(JSON.stringify(result_1), JSON.stringify(boards[1]));
           chai.assert.equal(JSON.stringify(result_2), JSON.stringify(boards[2]));
-          
+
           done();
         });
       });
@@ -124,7 +131,7 @@ if (Meteor.isServer) {
         if (err) throw new Meteor.Error(err);
 
         result = res;
-        
+
         expect._id = res._id;
         expect.archived = true;
 
@@ -145,6 +152,33 @@ if (Meteor.isServer) {
         expect.archived = false;
 
         chai.assert.equal(JSON.stringify(result), JSON.stringify(expect));
+        done();
+      });
+    });
+
+    it('should unlock a board', (done) => {
+      let expected = boards[0];
+      expected.visibleForDirectors = true;
+
+      unlockBoard.call({ _id: boards[0]._id }, (err, res) => {
+        if (err) throw new Meteor.Error(err);
+
+        expected._id = res._id;
+        chai.assert.equal(JSON.stringify(res), JSON.stringify(expected));
+        done();
+      });
+    });
+
+    it('should lock a board', (done) => {
+      let expected = boards[0];
+      expected.visibleForDirectors = false;
+      Boards.update({ _id: boards[0]._id }, { $set: { visibleForDirectors: true } });
+
+      lockBoard.call({ _id: boards[0]._id }, (err, res) => {
+        if (err) throw new Meteor.Error(err);
+
+        expected._id = res._id;
+        chai.assert.equal(JSON.stringify(res), JSON.stringify(expected));
         done();
       });
     });
