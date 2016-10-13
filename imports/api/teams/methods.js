@@ -8,8 +8,7 @@ import { Teams }                from './teams.js';
 import { Boards }               from '../boards/boards.js';
 import { createBoard }          from '../boards/methods.js';
 import { createModuleInstance } from '../module-instances/methods.js';
-import { createModuleData }     from '../module-data/module-data-creation.js';
-import { apiInsert }            from '../api/methods.js';
+import { APIInsert }            from '../api/methods.js';
 
 export const createTeam = new ValidatedMethod({
   name: 'Teams.methods.create',
@@ -51,7 +50,6 @@ export const createTeam = new ValidatedMethod({
     Teams.insert(team, (err, res) => {
       if (err) throw new Meteor.Error(err);
 
-      createModuleData(); // Creates the data storages for each module
       teamId = res;
       team._id = teamId;
 

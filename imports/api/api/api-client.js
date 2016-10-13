@@ -1,116 +1,110 @@
-import { Meteor } from 'meteor/meteor';
+import { Meteor }               from 'meteor/meteor';
 
-import { ModuleInstances } from '../module-instances/module-instances.js';
-import { ModuleData } from '../module-data/module-data.js';
+import { Teams }                from '../teams/teams.js';
+import { Boards }               from '../boards/boards.js';
+import { ModuleInstances }      from '../module-instances/module-instances.js';
+import { APICollection }        from '../api-collection/api-collection.js';
 
-export const generateApi = ({ moduleInstanceId, boards, users }) => {
+export const generateApi = (moduleInstanceId) => {
   let subscriptions = [];
   let DiamondAPI = {
     subscribe({ collection, filter, callback }) {
-      let oldRes = null;
-      let recursiveGet = () => {
-        DiamondAPI.get({
-          collection,
-          filter,
-          callback: (err, res) => {
-            if (!!err) {
-              callback(err, res);
-            } else if (!_.isEqual(res, oldRes)) {
-              oldRes = res;
-              callback(err, res);
-            }
-            setTimeout(recursiveGet, 1000);
-          },
-        });
+      let subscriptionCallback = {
+        onReady() {
+          console.log('Suscribed to', collection);
+          let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+          let teamId = moduleInstance.board().team()._id;
+
+          let query = APICollection.find({
+            $and: [
+              {
+                '#collection': collection,
+              },
+              filter,
+              {
+                $or: [
+                  {
+                    '#moduleInstanceId': moduleInstanceId,
+                  },
+                  {
+                    '#moduleId': moduleInstance.moduleId,
+                    '#teamId': teamId,
+                  }
+                ]
+              }
+            ],
+          });
+
+          if (query.fetch().length === 0) {
+            console.log('New data:', query.fetch());
+            callback(undefined, query.fetch());
+          }
+
+          let caller = (id, fields) => {
+            let updatedData = query.fetch();
+            console.log('New data:', updatedData);
+            callback(undefined, updatedData);
+          };
+
+          let handle = query.observeChanges({
+            added: caller,
+            changed: caller,
+            removed: caller,
+          });
+        },
+        onError(err) {
+          console.log('Suscription error');
+          throw new console.error(err);
+        }
       };
 
-      recursiveGet();
+      let subscription = Meteor.subscribe(
+      'APICollection.data',
+      moduleInstanceId,
+      collection,
+      filter,
+      subscriptionCallback);
+
+      subscriptions.push(subscription);
+
+      return subscription;
     },
-    unsubscribe(subscriptionId) {
-      if (subscriptionId) {
-        subscriptions.forEach((sub, index) => {
-          if (sub.subscriptionId === subscriptionId) {
-            sub.stop();
-            subscriptions.splice(index, 1);
-          }
-        });
-      } else {
-        subscriptions.forEach((sub, index) => {
-          sub.stop();
-          subscriptions.splice(index, 1);
-        });
-      }
+    unsubscribe() {
+      subscriptions.forEach((subscription) => {
+        subscription.stop();
+      });
+      subscriptions = [];
     },
-    insert({ collection, obj, isGlobal, visibleBy, callback }) {
-      let validation = typeof collection == 'string';
-      validation = validation && typeof obj == 'object';
-      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
-      if (validation) {
-        Meteor.call('API.methods.apiInsert', {
-          moduleInstanceId,
-          collection,
-          obj,
-          isGlobal,
-          visibleBy,
-        }, callback);
-      } else {
-        callback(console.error('The provided data is wrong.'), undefined);
-      }
+    insert({ collection, object, isGlobal, callback }) {
+      console.log('Inserting new document:', object, 'into', collection, ', isGlobal:', isGlobal);
+      Meteor.call('API.methods.APIInsert', {
+        moduleInstanceId,
+        collection,
+        object,
+        isGlobal,
+      }, callback);
     },
     update({ collection, filter, updateQuery, callback }) {
-      let validation = typeof collection == 'string';
-      validation = validation && typeof filter == 'object';
-      validation = validation && typeof updateQuery == 'object';
-      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
-      if (validation) {
-        Meteor.call('API.methods.apiUpdate', {
-          moduleInstanceId,
-          collection,
-          filter,
-          updateQuery,
-        }, callback);
-      } else {
-        callback(console.error('The provided data is wrong.'), undefined);
-      }
+      Meteor.call('API.methods.APIUpdate', {
+        moduleInstanceId,
+        collection,
+        filter,
+        updateQuery,
+      }, callback);
     },
     get({ collection, filter, callback }) {
-      let validation = typeof collection == 'string';
-      validation = validation && typeof filter == 'object';
-      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
-      if (validation) {
-        Meteor.call('API.methods.apiGet', {
-          moduleInstanceId,
-          collection,
-          filter,
-        }, callback);
-      } else {
-        callback(console.error('The provided data is wrong.'), undefined);
-      }
+      Meteor.call('API.methods.APIGet', {
+        moduleInstanceId,
+        collection,
+        filter,
+      }, callback);
     },
     remove({ collection, filter, callback }) {
-      let validation = typeof collection == 'string';
-      validation = validation && typeof filter == 'object';
-      validation = validation && (typeof callback == 'function' || typeof callback == 'undefined');
-      if (validation) {
-        Meteor.call('API.methods.apiRemove', {
-          moduleInstanceId,
-          collection,
-          filter,
-        }, callback);
-      } else {
-        callback(console.error('The provided data is wrong.'), undefined);
-      }
-    },
-    getTeam() {
-      return {
-        name: 'Carlos y Darío', // TODO: unhardcode this
-      };
-    },
-    getTeamData() {
-      return {
-        boards, // TODO: do not pass every property
-        users,
-      };
+      Meteor.call('API.methods.APIRemove', {
+        moduleInstanceId,
+        collection,
+        filter,
+      }, callback);
     },
     getCurrentUser() {
       return Meteor.user();
@@ -118,9 +112,55 @@ export const generateApi = ({ moduleInstanceId, boards, users }) => {
     getCurrentBoard() {
       return ModuleInstances.findOne(moduleInstanceId).board();
     },
+    getLoggedUsers() {
+      return 'This feature is not done yet. Sorry! :/';
+    },
+    getTeam() {
+      return this.getCurrentBoard().team();
+    },
+    getBoards() {
+      return Boards.find({
+        _id: {
+          $in: this.getTeam().boards.map((board) => board._id)
+        }
+      });
+    },
+    getUsers() {
+      return this.getTeam().getUsers();
+    },
+    getBoard(boardId) {
+      let team = this.getTeam();
+      let result;
+
+      team.boards.forEach((board) => {
+        if (board._id == boardId) {
+          result = Boards.findOne(boardId);
+        }
+      });
+
+      return result;
+    },
+    getUser(userId) {
+      // Validation
+      let team = ModuleInstances.findOne(moduleInstanceId).board().team();
+
+      if (!team.hasUser(userId)) {
+        throw new console.error(`User ${userId} doesn't exist in this team.`);
+      }
+
+      // Return and error handling
+      let user = Meteor.users.findOne(userId);
+
+      if (!!user) {
+        return user;
+      } else {
+        throw new console.error(`User ${userId} doesn't exist.`);
+      }
+    },
+    change(callback) {
+      return 'This feature is not done yet. Sorry! :/';
+    }
   };
 
   return DiamondAPI;
 };
-
-// Copyright (c) 2016 Copyright Diamond All Rights Reserved.

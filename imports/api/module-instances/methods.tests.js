@@ -1,25 +1,21 @@
-import { Meteor }        from 'meteor/meteor';
-import { resetDatabase } from 'meteor/xolvio:cleaner';
-import { sinon }         from 'meteor/practicalmeteor:sinon';
-import { chai }          from 'meteor/practicalmeteor:chai';
-import { Random }        from 'meteor/random';
-import   faker           from 'faker';
+import { Meteor }             from 'meteor/meteor';
+import { resetDatabase }      from 'meteor/xolvio:cleaner';
+import { sinon }              from 'meteor/practicalmeteor:sinon';
+import { chai }               from 'meteor/practicalmeteor:chai';
+import { Random }             from 'meteor/random';
+import   faker                from 'faker';
 
-import { Boards }        from '../boards/boards.js';
-import { ModuleInstances }         from './module-instances.js';
-import { Teams }         from '../teams/teams.js';
+import { Boards }             from '../boards/boards.js';
+import { ModuleInstances }    from './module-instances.js';
+import { Teams }              from '../teams/teams.js';
 import {
   createModuleInstance,
   editModuleInstance,
   archiveModuleInstance,
   dearchiveModuleInstance,
-  apiInsert,
-  apiUpdate,
-  apiGet,
-  apiRemove,
-}                        from './methods.js';
+}                             from './methods.js';
 
-import '../factories/factories.js';
+import                             '../factories/factories.js';
 
 if (Meteor.isServer){
   describe('Module Instances', function() {
@@ -83,7 +79,8 @@ if (Meteor.isServer){
           let _board = Boards.findOne(board._id);
 
           chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
-          // Changed to [1] since a moduleInstance is already inserted // board.moduleInstances.push({ _id: module._id });
+          // Changed to [1] since a moduleInstance is already inserted
+          // board.moduleInstances.push({ _id: module._id });
           chai.assert.equal(_board.moduleInstances[1]._id, result._id);
           done();
         });

@@ -21,7 +21,7 @@ const {
  * ErrorComponent delay
  * (in miliseconds)
  */
-const ERROR_DELAY = 5000; 
+const ERROR_DELAY = 5000;
 
 /**
  * Starts the module with the following route.
@@ -38,7 +38,7 @@ class TaskManagerPage extends React.Component {
 
     /**
      * States
-     * 
+     *
      * @param {Array} tasks
      *  All the tasks we need to show
      *  to the user.
@@ -112,7 +112,7 @@ class TaskManagerPage extends React.Component {
               boardId: currentBoard._id,
               status: 'not_finished',
             };
-            
+
             /**
              * After grabbing all the data we needed, subscribe
              * to the tasks collection with the filter, and
@@ -135,7 +135,8 @@ class TaskManagerPage extends React.Component {
             });
 
             self.setState({
-              ...DiamondAPI.getTeamData(),
+              boards: DiamondAPI.getBoards(),
+              users: DiamondAPI.getUsers(),
             });
           });
         }
@@ -284,7 +285,7 @@ class CreateTask extends React.Component {
             if (position >= 0) {
               DiamondAPI.insert({
                 collection: 'tasks',
-                obj: {
+                object: {
                   title: self.state.title,
                   boardId: self.state.boardId,
                   durations: [],
@@ -414,7 +415,7 @@ class CreateTask extends React.Component {
     return (
       <div className='row create-task-form'>
         <div className='col-xs-12'>
-          <div 
+          <div
             className='go-back'
             onClick={() => this.props.setLocation('tasks/show')}>
           </div>
@@ -899,7 +900,7 @@ class Task extends React.Component {
   /**
    * Starts the timer and sets the interval and
    * doing state.
-   * 
+   *
    * @param {Function} callback
    *  Function to be called after the state
    *  is set, usually to start the task.
@@ -920,7 +921,7 @@ class Task extends React.Component {
    * Stops the timer, clears the interval
    * and sets the state as not doing,
    * no interval and count.
-   * 
+   *
    * @param {Function} callback
    *  Function to be called after the state
    *  is set, usually to stop the task.
@@ -1131,7 +1132,7 @@ class Task extends React.Component {
               />
             ) : (null)
           }
-  
+
           {
             this.props.coordination && !this.state.editing ? (
               <div
@@ -1142,7 +1143,7 @@ class Task extends React.Component {
               />
             ) : (null)
           }
-  
+
           {
             !this.props.coordination && (this.props.doing || this.state.doing) ? (
               <div>
@@ -1175,7 +1176,7 @@ class Task extends React.Component {
               </div>
             ) : (null)
           }
-  
+
           {
             !this.props.coordination && (!this.props.doing || !this.state.doing) && this.props.task.status === 'not_finished' ? (
               <div>
@@ -1202,7 +1203,7 @@ class Task extends React.Component {
               </div>
             ) : (null)
           }
-        
+
           {
             !this.state.editing ? (
               <div className='col-xs-12'>
@@ -1251,7 +1252,7 @@ class TaskInformation extends React.Component {
   render() {
     return (
       <div className='task-info col-xs-12'>
-        <div 
+        <div
           className='go-back'
           onClick={() => this.props.setLocation('tasks/show')}>
         </div>
@@ -1365,18 +1366,18 @@ class UserTaskInformation extends React.Component {
 class ErrorMessage extends React.Component {
   close() {
     let self = this;
-    
+
     $('.error-message').removeClass('show-error');
     $('.error-message').addClass('hide-error', () => {
       setTimeout(self.props.hideError.bind(null), 700);
     });
   }
-  
+
   constructor(props) {
     super(props);
 
     this.state = {};
-    
+
     this.close = this.close.bind(this);
   }
 

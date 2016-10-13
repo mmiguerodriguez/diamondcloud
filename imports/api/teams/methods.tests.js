@@ -18,7 +18,7 @@ import { createTeam,
 }                               from './methods.js';
 import { createBoard }          from '../boards/methods.js';
 import { createModuleInstance } from '../module-instances/methods.js';
-import { apiInsert }            from '../api/methods.js';
+import { APIInsert }            from '../api/methods.js';
 
 import '../factories/factories.js';
 
@@ -68,7 +68,7 @@ if (Meteor.isServer) {
           createModuleInstanceArgs = obj;
           callback(null, { _id: 'moduleInstanceId' });
         });
-        sinon.stub(apiInsert, 'call', (obj, callback) => {
+        sinon.stub(APIInsert, 'call', (obj, callback) => {
           apiInsertArgs = obj;
           callback(null, null);
         });
@@ -80,7 +80,7 @@ if (Meteor.isServer) {
         Meteor.user.restore();
         Mail.sendMail.restore();
         createModuleInstance.call.restore();
-        apiInsert.call.restore();
+        APIInsert.call.restore();
       });
 
       it('should create a team', function(done) {

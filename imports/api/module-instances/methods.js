@@ -4,10 +4,8 @@ import { ValidatedMethod }                     from 'meteor/mdg:validated-method
 import { SimpleSchema }                        from 'meteor/aldeed:simple-schema';
 import Future                                  from 'fibers/future';
 
-import { ModuleInstances, generateMongoQuery } from './module-instances.js';
+import { ModuleInstances }                     from './module-instances.js';
 import { Boards }                              from '../boards/boards.js';
-
-let sift = require('sift'); // Query arrays with mongo api
 
 export const createModuleInstance = new ValidatedMethod({
   name: 'ModuleInstances.methods.create',

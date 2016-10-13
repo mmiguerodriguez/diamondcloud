@@ -195,7 +195,7 @@ export default class Team extends React.Component {
       chats,
     });
   }
-  
+
   boardSubscribe(boardId) {
     if (Team.board.get()._id === boardId) {
       return;
