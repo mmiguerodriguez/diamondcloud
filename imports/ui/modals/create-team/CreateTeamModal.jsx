@@ -20,7 +20,7 @@ export default class CreateTeamModal extends React.Component {
       plan: '',
       type: 'Web',
       otherType: '',
-      usersEmails: [],
+      users: [],
     };
 
     this.addUser = this.addUser.bind(this);
@@ -35,7 +35,7 @@ export default class CreateTeamModal extends React.Component {
         header={
           <div>
             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-              <img src='/img/close-modal-icon.svg' width='18px' />
+              <img src='/img/close-icon.svg' width='18px' />
             </button>
             <h4 className='modal-title'>Crear equipo</h4>
           </div>
@@ -158,9 +158,9 @@ export default class CreateTeamModal extends React.Component {
                 style={{ display: 'none' }}>
                 <p className='explanation-text margin container-fluid'>Insertá un mail de Google de los miembros de tu equipo para poder trabajar colaborativamente. Si todavia no tienen cuenta en Diamond Cloud se le enviará un link al mail</p>
                 <UsersList
-                  usersEmails={ this.state.usersEmails }
-                  addUser={ this.addUser }
-                  removeUser={ this.removeUser } />
+                  users={this.state.users}
+                  addUser={this.addUser}
+                  removeUser={this.removeUser} />
               </div>
           </div>
         }
@@ -199,22 +199,38 @@ export default class CreateTeamModal extends React.Component {
     });
   }
 
+  /**
+   * addUser: adds a user to the state
+   * @param {Object} user { email, hierarchy }
+   */
   addUser(user) {
-    let users = this.state.usersEmails;
-    if (users.indexOf(user) === -1) {
+    let users = this.state.users;
+    // Search if users contains user.email
+    let found = users.find((_user) => {
+      return _user.email === user.email;
+    }) !== undefined;
+    if (!found) {
       users.push(user);
       this.setState({
-        usersEmails: users,
+        users,
+      }, () => {
       });
     }
   }
-  removeUser(user){
-    let users = this.state.usersEmails;
-    let index = users.indexOf(user);
+  /**
+   * removeUser: removes a user from the state
+   * @param {Object} user { email }
+   */
+  removeUser(email){
+    let users = this.state.users;
+    // Search if users contains user.email
+    let index = users.findIndex((_user) => {
+      return _user.email === email;
+    });
     if (index !== -1) {
       users.splice(index, 1);
       this.setState({
-        usersEmails: users,
+        users: users,
       });
     }
   }
@@ -277,10 +293,10 @@ export default class CreateTeamModal extends React.Component {
   }
 
   createTeam() {
-    let { name, plan, type, otherType, usersEmails } = this.state;
+    let { name, plan, type, otherType, users } = this.state;
     type = type === 'Otro' ? otherType : type;
 
-    let form = { name, plan, type, usersEmails };
+    let form = { name, plan, type, users };
     Meteor.call('Teams.methods.create', form, (error, result) => {
       if (error) {
         console.error(error);

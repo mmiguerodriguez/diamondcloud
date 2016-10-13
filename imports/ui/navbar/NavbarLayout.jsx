@@ -12,6 +12,7 @@ export default class NavbarLayout extends React.Component {
     super(props);
 
     this.state = { createdPopover: false };
+
     this.logout = this.logout.bind(this);
   }
   render() {
@@ -19,11 +20,12 @@ export default class NavbarLayout extends React.Component {
       <nav className='navbar header'>
         <div className='container-fluid'>
           <div className='navbar-header row'>
-            <button className='navbar-toggle collapsed'
-                    type='button'
-                    data-toggle='collapse'
-                    data-target='#navbar'
-                    aria-expanded='false'>
+            <button
+              className='navbar-toggle collapsed'
+              type='button'
+              data-toggle='collapse'
+              data-target='#navbar'
+              aria-expanded='false'>
               <span className='sr-only'>Toggle navigation</span>
               <span className='icon-bar'></span>
               <span className='icon-bar'></span>
@@ -85,22 +87,22 @@ export default class NavbarLayout extends React.Component {
       </nav>
     );
   }
-  logout() {
-    let self = this;
-    Meteor.logout(() => {
-      browserHistory.push('/'); // Redirect to landing page
-      $('div[role="tooltip"].popover').remove(); // Remove actual node element
-    });
+  componentDidMount() {
+    this.createPopover();
   }
   componentDidUpdate() {
+    this.createPopover();
+  }
+  
+  createPopover() {
     if (this.props.user && !this.state.createdPopover) {
       let onLogout = () => {
-        // Change createdPopover state to false when the user logs out
         this.setState({
           createdPopover: false,
-        })
-      }
+        });
+      };
 
+      // Create popover
       $('[data-toggle="popover"]').popover({
         react: true,
         content: (
@@ -115,6 +117,12 @@ export default class NavbarLayout extends React.Component {
         createdPopover: true,
       });
     }
+  }
+  logout() {
+    Meteor.logout(() => {
+      browserHistory.push('/'); // Redirect to landing page
+      $('div[role="tooltip"].popover').remove(); // Remove actual node element
+    });
   }
 }
 

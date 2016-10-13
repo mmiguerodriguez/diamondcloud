@@ -12,7 +12,7 @@ nav.header {
   height: 40px;
 }
 .user-info, .user-mail {
-  padding-left: 10px;
+  padding-left: 15px;
 }
 .user-data {
   .user-info {
@@ -45,7 +45,6 @@ nav.header {
   }
 }
 .navbar-toggle {
-  background-color: $sidebar-text-color !important;
   .icon-bar {
     background-color: $sidebar-color !important;
   }

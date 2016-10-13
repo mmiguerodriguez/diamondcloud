@@ -15,6 +15,7 @@ import NotificationsPermissionAsker from './notifications-permission-asker/Notif
 import CreateBoardModal             from '../modals/create-board/CreateBoardModal.jsx';
 import CreateChatModal              from '../modals/create-chat/CreateChatModal.jsx';
 import ConfigTeamModal              from '../modals/config-team/ConfigTeamModal.jsx';
+import ConfigBoardModal             from '../modals/config-board/ConfigBoardModal.jsx';
 
 export default class TeamLayout extends React.Component {
   constructor(props){
@@ -39,6 +40,7 @@ export default class TeamLayout extends React.Component {
     this.openCreateBoardModal = this.openCreateBoardModal.bind(this);
     this.openCreateChatModal = this.openCreateChatModal.bind(this);
     this.openConfigTeamModal = this.openConfigTeamModal.bind(this);
+    this.openConfigBoardModal = this.openConfigBoardModal.bind(this);
     this.loadTeam = this.loadTeam.bind(this);
     this.toggleCollapsible = this.toggleCollapsible.bind(this);
     this.closePermissionAsker = this.closePermissionAsker.bind(this);
@@ -56,87 +58,94 @@ export default class TeamLayout extends React.Component {
     return (
       <div>
         {
-          this.state.permissionAsker && !isMobile.any ? (
-            <NotificationsPermissionAsker close={ this.closePermissionAsker } />
-          ) : ( null )
-        }
-        <SidebarLayout
-          { ...this.props }
-          addChat={ this.props.addChat }
-          changeBoard={ this.changeBoard }
-          permissionAsker={ this.state.permissionAsker }
-          openBoardContextMenu={ this.openBoardContextMenu }
-          toggleCollapsible={ this.toggleCollapsible }
-          openCreateBoardModal={ this.openCreateBoardModal }
-          openCreateChatModal={ this.openCreateChatModal }
-          openConfigTeamModal={ this.openConfigTeamModal } />
-        <Board
-          team={ this.props.team }
-          boards={ this.props.boards }
-          board={ this.props.board }
-          users={ this.props.users }
-          moduleInstances={ this.props.moduleInstances }
-          moduleInstancesFrames={ this.props.moduleInstancesFrames }
-          modules={ this.props.modules }
-          addChat={ this.props.addChat }
-          openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu }
-          permissionAsker={ this.state.permissionAsker } />
-        <div className={ chatsContainer }>
-          { this.renderChats() }
-        </div>
-
-        <div className='dropdown visible-xs-block'>
-          <button className='btn col-xs-12'
-                  id='dLabel'
-                  type='button'
-                  data-toggle='dropdown'
-                  aria-haspopup='true'
-                  aria-expanded='false'>
-            { this.props.team.name }
-            <span className='caret'></span>
-          </button>
-          <ul className='dropdown-menu col-xs-12' aria-labelledby='dLabel'>
-            { this.renderTeams() }
-          </ul>
-        </div>
-
-        <div className='tabs visible-xs-block'>
-            <ul className='nav nav-tabs' role='tablist'>
-              <li className='item col-xs-6 active'>
-                <a href='#boards' aria-controls='boards' role='tab' data-toggle='tab' aria-expanded='false'>
-                  Boards
-                </a>
-              </li>
-              <li className='item col-xs-6'>
-                <a href='#users' aria-controls='users' role='tab' data-toggle='tab' aria-expanded='true'>
-                  Users
-                </a>
-              </li>
-            </ul>
-        </div>
-
-        <div className='chats visible-xs-block'>
-          <div className='boards active' id='boards'>
-            { this.renderBoardsChats() }
-            {
-              this.props.owner ? (
+          !isMobile.any ? (
+            <div>
+              {
+                this.state.permissionAsker ? (
+                  <NotificationsPermissionAsker close={ this.closePermissionAsker } />
+                ) : ( null )
+              }
+              <SidebarLayout
+                { ...this.props }
+                addChat={ this.props.addChat }
+                changeBoard={ this.changeBoard }
+                permissionAsker={ this.state.permissionAsker }
+                openBoardContextMenu={ this.openBoardContextMenu }
+                toggleCollapsible={ this.toggleCollapsible }
+                openCreateBoardModal={ this.openCreateBoardModal }
+                openCreateChatModal={ this.openCreateChatModal }
+                openConfigTeamModal={ this.openConfigTeamModal } />
+              <Board
+                team={ this.props.team }
+                boards={ this.props.boards }
+                board={ this.props.board }
+                users={ this.props.users }
+                moduleInstances={ this.props.moduleInstances }
+                moduleInstancesFrames={ this.props.moduleInstancesFrames }
+                modules={ this.props.modules }
+                addChat={ this.props.addChat }
+                openModuleInstanceContextMenu={ this.openModuleInstanceContextMenu }
+                permissionAsker={ this.state.permissionAsker } />
+            </div>
+          ) : (
+            <div>
+              <div className='dropdown'>
+                <button className='btn col-xs-12'
+                        id='dLabel'
+                        type='button'
+                        data-toggle='dropdown'
+                        aria-haspopup='true'
+                        aria-expanded='false'>
+                  { this.props.team.name }
+                  <span className='caret'></span>
+                </button>
+                <ul className='dropdown-menu col-xs-12' aria-labelledby='dLabel'>
+                  { this.renderTeams() }
+                </ul>
+              </div>
+              <div className='tabs'>
+                  <ul className='nav nav-tabs' role='tablist'>
+                    <li className='item col-xs-6 active'>
+                      <a href='#boards' aria-controls='boards' role='tab' data-toggle='tab' aria-expanded='false'>
+                        Boards
+                      </a>
+                    </li>
+                    <li className='item col-xs-6'>
+                      <a href='#users' aria-controls='users' role='tab' data-toggle='tab' aria-expanded='true'>
+                        Users
+                      </a>
+                    </li>
+                  </ul>
+              </div>
+              <div className='chats'>
+              <div className='boards active' id='boards'>
+                { this.renderBoardsChats() }
+                {
+                  this.props.isAdmin ? (
+                    <div
+                      className='new-chat visible-xs-block'
+                      role='button'
+                      onClick={ this.openCreateBoardModal }>
+                      <img className='icon boards active' src='/img/sidebar/messages.svg' width='26px' />
+                    </div>
+                  ) : ( null )
+                }
+              </div>
+              <div className='users' id='users'>
+                { this.renderDirectChats() }
                 <div
                   className='new-chat visible-xs-block'
-                  role='button'
-                  onClick={ this.openCreateBoardModal }>
-                  <img className='icon boards active' src='/img/sidebar/messages.svg' width='26px' />
+                  onClick={ this.openCreateChatModal }>
+                  <img className='icon users' src='/img/add-people-icon.svg' width='26px' />
                 </div>
-              ) : ( null )
-            }
-          </div>
-          <div className='users' id='users'>
-            { this.renderDirectChats() }
-            <div
-              className='new-chat visible-xs-block'
-              onClick={ this.openCreateChatModal }>
-              <img className='icon users' src='/img/add-people-icon.svg' width='26px' />
+              </div>
             </div>
-          </div>
+            </div>
+          )
+        }
+
+        <div className={ chatsContainer }>
+          { this.renderChats() }
         </div>
 
         <div className='moduleinstance-context-menu context-menu' ref='moduleinstance-context-menu'>
@@ -149,9 +158,15 @@ export default class TeamLayout extends React.Component {
         </div>
 
         {
-          this.props.owner ? (
+          this.props.isAdmin ? (
             <div>
               <div className='board-context-menu context-menu' ref='board-context-menu'>
+                <div className="row" onClick={this.openConfigBoardModal}>
+                  <div className="col-xs-4">
+                    <img src="/img/teamconfig.svg" width="20px" />
+                  </div>
+                  <div className="col-xs-8">Editar</div>
+                </div>
                 <div className='row' onClick={ this.removeBoard }>
               		<div className='col-xs-4'>
               			<img src='http://image0.flaticon.com/icons/svg/60/60761.svg' width='20px' />
@@ -163,11 +178,22 @@ export default class TeamLayout extends React.Component {
                 team={ this.props.team }
                 addChat={ this.props.addChat }
                 changeBoard={ this.changeBoard }
-                toggleCollapsible={ this.toggleCollapsible } />
+                toggleCollapsible={ this.toggleCollapsible }
+              />
               <ConfigTeamModal
                 key={ this.props.team._id }
                 team={ this.props.team }
-                loadTeam={ this.loadTeam } />
+                loadTeam={ this.loadTeam }
+              />
+            {
+              this.state['board-context-menu-id'] ? (
+                <ConfigBoardModal
+                  team={this.props.team}
+                  boards={this.props.boards}
+                  boardId={this.state['board-context-menu-id']}
+                  />
+              ) : (null)
+            }
             </div>
           ) : ( null )
         }
@@ -181,7 +207,7 @@ export default class TeamLayout extends React.Component {
 
   componentDidMount() {
     let self = this;
-    if (this.props.owner) {
+    if (this.props.isAdmin) {
       $(document).bind('mousedown', (e) => {
         if (!$(e.target).parents('.board-context-menu').length > 0) {
           self.closeContextMenu(this.refs['board-context-menu']);
@@ -198,10 +224,8 @@ export default class TeamLayout extends React.Component {
 
   // chats
   renderChats() {
-    let arr = [];
-
-    this.props.chats.map((chat) => {
-      arr.push(
+    return this.props.chats.map((chat) => {
+      return (
         <ChatLayout
           key={ chat.directChatId || chat.boardId }
           chat={ chat }
@@ -211,11 +235,9 @@ export default class TeamLayout extends React.Component {
           position={ isMobile.any ? 'mobile' : 'medium' }
           togglePosition={ this.togglePosition }
           removeChat={ this.props.removeChat }
-          hasMaximizedChats={ this.state['has-maximized-chats']}/>
+          hasMaximizedChats={ this.state['has-maximized-chats']} />
       );
     });
-
-    return arr;
   }
   togglePosition(chat, oldPosition, newPosition) {
     chat.setState({
@@ -246,9 +268,7 @@ export default class TeamLayout extends React.Component {
     return arr;
   }
   renderDirectChats() {
-    let arr = [];
-
-    this.props.directChats.map((_directChat) => {
+    return this.props.directChats.map((_directChat) => {
       let directChat = DirectChats.findOne(_directChat._id);
 
       let lastMessage = directChat.getLastMessage();
@@ -260,7 +280,7 @@ export default class TeamLayout extends React.Component {
         'col-xs-10': notifications === 0,
       }, 'info');
 
-      arr.push(
+      return (
         <div
           className='item'
           role='button'
@@ -288,13 +308,9 @@ export default class TeamLayout extends React.Component {
         </div>
       );
     });
-
-    return arr;
   }
   renderBoardsChats() {
-    let arr = [];
-
-    this.props.boards.map((_board) => {
+    return this.props.boards.map((_board) => {
       let board = Boards.findOne(_board._id);
 
       let lastMessage = board.getLastMessage();
@@ -305,7 +321,7 @@ export default class TeamLayout extends React.Component {
         'col-xs-10': notifications === 0,
       }, 'info');
 
-      arr.push(
+      return (
         <div
           className='item'
           role='button'
@@ -339,8 +355,6 @@ export default class TeamLayout extends React.Component {
         </div>
       );
     });
-
-    return arr;
   }
 
   // boards
@@ -348,8 +362,9 @@ export default class TeamLayout extends React.Component {
     this.props.boardSubscribe(boardId);
   }
   removeBoard() {
-    if (this.props.owner) {
+    if (this.props.isAdmin) {
       let boardId = this.state['board-context-menu-id'];
+
       Meteor.call('Boards.methods.archiveBoard', { _id: boardId }, (error, result) => {
         if (error) {
           console.error(error);
@@ -369,7 +384,7 @@ export default class TeamLayout extends React.Component {
     }
   }
   openBoardContextMenu(boardId, event) {
-    if (this.props.owner) {
+    if (this.props.isAdmin) {
       event.persist();
 
       $(this.refs['board-context-menu'])
@@ -526,6 +541,9 @@ export default class TeamLayout extends React.Component {
       $('#configTeamModal').modal('show');//show modal once state is updated
     });
   }
+  openConfigBoardModal(){
+    $('#configBoardModal').modal('show');
+  }
   loadTeam(id, callback) {
     this.setState({
       team: Teams.findOne(id),
@@ -536,7 +554,7 @@ export default class TeamLayout extends React.Component {
 TeamLayout.propTypes = {
   teams: React.PropTypes.array.isRequired,
   team: React.PropTypes.object.isRequired,
-  owner: React.PropTypes.bool.isRequired,
+  isAdmin: React.PropTypes.bool.isRequired,
 
   boards: React.PropTypes.array.isRequired,
   board: React.PropTypes.object.isRequired,

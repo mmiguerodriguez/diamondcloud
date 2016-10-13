@@ -11,14 +11,13 @@
   border-bottom-right-radius: 0px;
 }
 .contacts-list {
-  border-bottom-right-radius: 5px !important;
-  border-bottom-left-radius: 5px !important;
+  margin-top: 10px;
+  border-radius: 5px;
   border: solid #ccc 1px;
   padding: 10px;
   max-height: 265px;
   overflow-y: auto;
   overflow-x: hidden;
-  border-top: none;
 }
 .form-control {
   height: 38px !important;
@@ -29,4 +28,11 @@
 }
 .contacts-list-row {
   margin-top: -1px;
+}
+.user-type {
+  border-bottom-left-radius: 4px !important;
+  border-top: none !important;
+}
+.search-input {
+  border-bottom-right-radius: 4px !important
 }

@@ -3,23 +3,23 @@ import { Mongo } from 'meteor/mongo';
 export let Teams = new Mongo.Collection('Teams');
 
 Teams.helpers({
-  owner() {
-    let found = false;
-    let owner;
-
-    this.users.forEach((user, index) => {
-      if (user.permission == "owner"){
-        found = true;
-        owner = user.email;
+  /**
+   * Shows if the user has certain hierarchy in the given team
+   * @param {String} email
+   * @param {String} hierarchy
+   * @returns {Boolean} isCertainHierarchy
+   */
+  userIsCertainHierarchy(email, hierarchy) {
+    for (let i = 0; i < this.users.length; i++) {
+      if (email === this.users[i].email) {
+        if (hierarchy === this.users[i].hierarchy) {
+          return true;
+        } else {
+          return false;
+        }
       }
-    });
-
-    if (!found) {
-      throw new Meteor.Error('Teams.owner.noOwner',
-      'The team has no owner.');
     }
-
-    return owner;
+    return false;
   },
   hasUser(user) {
     let mail, found = false;

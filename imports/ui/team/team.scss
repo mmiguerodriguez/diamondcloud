@@ -98,29 +98,40 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   .nav-tabs {
     .item {
-      border: none;
+      padding: 0px;
+      border: none !important;
       text-align: center;
       background-color: transparent !important;
       &.active {
         a {
-          background-color: $body !important;
-          color: $sidebar-color !important;
-        }
-        &:hover {
-          a{
-            background-color: $body !important;
-            color: $sidebar-color !important;
+          border-bottom: 6px $body solid !important;
+          &:hover {
+            border-bottom: 6px $body solid !important;
+            background-color: transparent !important;
+            color: $body !important;
+          }
+          &:focus {
+            border-color: transparent;
+            border-bottom: 6px $body solid !important;
+            background-color: transparent !important;
+            color: $body !important;
           }
         }
       }
       a {
-        transition: .2s ease;
+        margin-right: 0px;
+        border-bottom: 6px transparent solid;
+        border-radius: 0px !important;
+        transition: .2s all ease;
         color: $body !important;
+        background-color: transparent !important;
+        border-color: transparent !important;
       }
       a:hover {
         border-color: transparent;
-        background-color: $body !important;
-        color: $sidebar-color !important;
+        border-bottom: 6px $body solid !important;
+        background-color: transparent !important;
+        color: $body !important;
       }
     }
   }

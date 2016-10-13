@@ -22,9 +22,6 @@ import '../../api/users/users.js';
 // Module Instances
 import '../../api/module-instances/methods.js';
 
-// Module Data
-import '../../api/module-data/module-data-creation.js';
-
 // API
 import '../../api/api/server/publications.js';
 import '../../api/api/methods.js';

@@ -7,7 +7,7 @@ import ChatsCollapsible   from './collapsible/chats/ChatsCollapsible.jsx';
 
 export default class SidebarLayout extends React.Component {
   render() {
-    let classes = classNames('sidebar', 'hidden-xs', {
+    let classes = classNames('sidebar', {
       'permission-asker-opened': this.props.permissionAsker,
     });
 
@@ -32,7 +32,7 @@ export default class SidebarLayout extends React.Component {
           <p className='text item-title'>Mensajes</p>
         </div>
         {
-          this.props.owner ? (
+          this.props.isAdmin ? (
             <div  id='settings-item'
                   className='item bottom'
                   onClick={ this.props.openConfigTeamModal }>
@@ -47,7 +47,7 @@ export default class SidebarLayout extends React.Component {
         <BoardsCollapsible
           boards={ this.props.boards }
           team={ this.props.team }
-          owner={ this.props.owner }
+          isAdmin={ this.props.isAdmin }
           toggleCollapsible={ this.props.toggleCollapsible }
           changeBoard={ this.props.changeBoard }
           openCreateBoardModal={ this.props.openCreateBoardModal }
@@ -65,7 +65,7 @@ export default class SidebarLayout extends React.Component {
 
 SidebarLayout.propTypes = {
   team: React.PropTypes.object.isRequired,
-  owner: React.PropTypes.bool.isRequired,
+  isAdmin: React.PropTypes.bool.isRequired,
 
   boards: React.PropTypes.array.isRequired,
   modules: React.PropTypes.array.isRequired,

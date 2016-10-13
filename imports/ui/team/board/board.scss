@@ -28,7 +28,7 @@
   margin-right: 0px !important;
   margin-left: 0px !important;
   z-index: 1;
-  box-shadow: 0px 3px 5px 0px rgba(0,0,0,0.3);
+  box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.3);
   float: right;
   transition: all $sidebar-speed ease-in-out;
 
@@ -64,6 +64,13 @@
           content: '/' !important;
         }
       }
+    }
+  }
+  .visibility {
+    display: inline;
+    .visibility-img {
+      width: 28px;
+      opacity: 0.7;
     }
   }
   .members {

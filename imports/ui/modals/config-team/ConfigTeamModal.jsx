@@ -30,7 +30,7 @@ export default class ConfigTeamModal extends React.Component {
         header={
           <div>
             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-              <img src='/img/close-modal-icon.svg' width='18px' />
+              <img src='/img/close-icon.svg' width='18px' />
             </button>
             <h4 className='modal-title'>Configuración del equipo</h4>
           </div>
@@ -134,7 +134,11 @@ export default class ConfigTeamModal extends React.Component {
   }
 
   addUser(user) {
-    Meteor.call('Teams.methods.share', { teamId: this.props.team._id, email: user }, (error, result) => {
+    Meteor.call('Teams.methods.share', {
+      teamId: this.props.team._id,
+      email: user.email,
+      hierarchy: user.hierarchy,
+    }, (error, result) => {
       if (error) {
         console.error(error);
       }

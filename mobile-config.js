@@ -1,9 +1,9 @@
 // This section sets up some basic app metadata,
 // the entire section is optional.
 App.info({
-  id: 'com.diamond.diamondcloud',
-  name: 'Diamond Cloud',
-  description: 'Diamond Cloud',
+  id: 'com.diamond.diamondcloud.development',
+  name: 'Diamond Cloud Dev',
+  description: 'Diamond Cloud Dev',
   author: 'Diamond',
   email: 'diamondclouddev@gmail.com',
   website: 'https://diamondcloud.tk'

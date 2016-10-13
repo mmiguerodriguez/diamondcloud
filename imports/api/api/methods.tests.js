@@ -3,94 +3,131 @@ import { resetDatabase }           from 'meteor/xolvio:cleaner';
 import { sinon }                   from 'meteor/practicalmeteor:sinon';
 import { chai }                    from 'meteor/practicalmeteor:chai';
 import { Random }                  from 'meteor/random';
-import { printObject }             from '../helpers/print-objects.js';
 import   faker                     from 'faker';
 import                                  '../factories/factories.js';
 
 import { Boards }                  from '../boards/boards.js';
 import { ModuleInstances }         from '../module-instances/module-instances.js';
-import { ModuleData }              from '../module-data/module-data.js';
+import { APICollection }           from '../api-collection/api-collection.js';
 import { Teams }                   from '../teams/teams.js';
 import {
-  createModuleInstance,
-  editModuleInstance,
-  archiveModuleInstance,
-  dearchiveModuleInstance,
-  apiInsert,
-  apiUpdate,
-  apiGet,
-  apiRemove,
+  APIInsert,
+  APIUpdate,
+  APIGet,
+  APIRemove,
 }                                  from './methods.js';
 
 if (Meteor.isServer) {
   describe('API', function() {
     describe('Methods', function() {
-      let moduleData, moduleInstance, user, board, team;
+      let user,
+          moduleInstances,
+          boards,
+          teams,
+          collections,
+          documents;
+
+      let insertRequest,
+          globalInsertRequest,
+          updateRequest,
+          getRequest,
+          removeRequest;
 
       beforeEach(function() {
         resetDatabase();
+
         user = Factory.create('user');
-        team = Factory.create('team');
-        board = Factory.create('publicBoard');
-        moduleInstance = Factory.create('moduleInstance');
-        otherModuleInstance = Factory.create('moduleInstance');
-        moduleData = Factory.create('moduleData');
-        moduleData._id = Random.id();
-        moduleData.data = {
-          todos: [
-            {
-              _id: 1,
-              text: 'Todo 1',
-              color: 'Red',
-              isGlobal: true,
-              visibleBy: [
-                { userId: user._id },
-              ]
-            },
-            {
-              _id: 2,
-              text: 'Todo 2',
-              color: 'Green',
-              isGlobal: false,
-              moduleInstanceId: moduleInstance._id,
-              visibleBy: [
-                { boardId: board._id },
-              ],
-            },
-            {
-              _id: 3,
-              text: 'Todo 3',
-              color: 'Red',
-              isGlobal: true
-            },
-            {
-              _id: 4,
-              text: 'Todo 4',
-              color: 'Red',
-              isGlobal: false,
-              moduleInstanceId: moduleInstance._id,
-              visibleBy: [
-                { userId: Random.id() },
-              ],
-            },
-          ],
+
+        moduleInstances = [
+          Factory.create('moduleInstance'),
+          Factory.create('moduleInstance'),
+        ];
+
+        boards = [
+          Factory.create('publicBoard', { name: 'General' }),
+          Factory.create('publicBoard'),
+        ];
+
+        teams = [
+          Factory.create('team'),
+          Factory.create('team'),
+        ];
+
+        collections = [
+          faker.lorem.word(),
+          faker.lorem.word(),
+          faker.lorem.word(),
+        ];
+
+        // Make documents
+        documents = [];
+        for (let i = 0; i < 8; i++) {
+          documents.push(Factory.create('spamAPIDocument'));
+        }
+        documents[0].something = faker.lorem.word();
+
+        insertRequest = {
+          moduleInstanceId: moduleInstances[0]._id,
+          collection: collections[0],
+          object: documents[0],
+          isGlobal: false,
         };
-        team.boards.push({ _id: board._id });
-        team.users[0].email = user.emails[0].address;
-        board.moduleInstances.push({ _id: moduleInstance._id });
-        board.moduleInstances.push({ _id: otherModuleInstance._id });
-        moduleInstance.boardId = board._id;
-        moduleData.teamId = team._id;
-        moduleData.moduleId = moduleInstance.moduleId;
-        otherModuleInstance.moduleId = moduleData.moduleId;
+
+        updateRequest = {
+          moduleInstanceId: moduleInstances[0]._id,
+          collection: collections[0],
+          filter: {
+            something: documents[0].something,
+          },
+          updateQuery: {
+            $set: {
+              somethingElse: faker.lorem.word(),
+            }
+          },
+        };
+
+        getRequest = {
+          moduleInstanceId: moduleInstances[0]._id,
+          collection: collections[0],
+          filter: {
+            something: documents[0].something,
+          },
+        };
+
+        removeRequest = {
+          moduleInstanceId: moduleInstances[0]._id,
+          collection: collections[0],
+          filter: {
+            something: documents[0].something,
+          },
+        };
+
+        let globalInsertRequest = _.clone(insertRequest);
+        globalInsertRequest.isGlobal = true;
+
+        // Assign module instances to boards
+        boards[0].moduleInstances.push({ _id: moduleInstances[0]._id });
+        boards[0].moduleInstances.push({ _id: moduleInstances[1]._id });
+
+        // Assign boards to module instances
+        teams[0].boards.push({ _id: boards[0]._id });
+        teams[0].boards.push({ _id: boards[1]._id });
 
         resetDatabase();
-        Teams.insert(team);
-        Boards.insert(board);
-        ModuleInstances.insert(moduleInstance);
-        ModuleInstances.insert(otherModuleInstance);
-        ModuleData.insert(moduleData);
+
         Meteor.users.insert(user);
+
+        moduleInstances.forEach((moduleInstance) => {
+          ModuleInstances.insert(moduleInstance);
+        });
+
+        boards.forEach((board) => {
+          Boards.insert(board);
+        });
+
+        teams.forEach((team) => {
+          Teams.insert(team);
+        });
 
         sinon.stub(Meteor, 'user', () => user);
         sinon.stub(Meteor, 'userId', () => user._id);
@@ -103,177 +140,88 @@ if (Meteor.isServer) {
         Boards.isValid.restore();
       });
 
-      it('should create a collection and an entry in module data', function(done) {
-        let args, expect, result;
-        let temp = moduleData;
-        temp.data = {};
-        ModuleData.update(moduleData._id, temp);
-        args = {
-          collection: 'todos',
-          obj: {
-            _id: 'id',
-            prop1: 'val1',
-          },
-          isGlobal: false,
-          visibleBy: [
-            { userId: 'userId' },
-          ],
-          moduleInstanceId: moduleInstance._id,
-        };
-
-        apiInsert.call(args);
-        expect = {
-          todos: [
-            {
-              _id: 'id',
-              prop1: 'val1',
-              visibleBy: [
-                { userId: 'userId' },
-              ],
-              isGlobal: false,
-              moduleInstanceId: moduleInstance._id
-            }
-          ],
-        };
-
-        chai.assert.deepEqual(ModuleData.findOne(moduleData._id).data, expect);
-        ModuleData.update(moduleData._id, moduleData);
+      it('should insert correctly the API data', function(done) {
+        APIInsert.call(insertRequest);
+        let res = APICollection.findOne({ _id: documents[0]._id });
+        let expected = documents[0];
+        expected['#collection'] = collections[0];
+        expected['#moduleInstanceId'] = moduleInstances[0]._id;
+        chai.assert.deepEqual(res, expected);
+        APICollection.remove({});
         done();
       });
 
-      it('should update an entry in module data', function(done) {
-        ModuleData.update(moduleData._id, moduleData, () => {
-          apiUpdate.call({
-            moduleInstanceId: moduleInstance._id,
-            collection: 'todos',
-            filter: {
-              color: {
-                $in: ['Red', 'Green'],
-              }
-            },
-            updateQuery: {
-              $set: {
-                color: 'Yellow',
-              }
-            }
-          }, (err, res) => {
-            let expect = moduleData.data;
-            expect.todos[0].color = 'Yellow';
-            expect.todos[1].color = 'Yellow';
-            expect.todos[2].color = 'Yellow';
-            chai.assert.deepEqual(ModuleData.findOne(moduleData._id).data, expect);
-            done();
-          });
+      it('should update an API entry correctly', function(done) {
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleInstanceId'] = moduleInstances[0]._id;
+        APICollection.insert(doc);
+        doc.somethingElse = updateRequest.updateQuery.$set.somethingElse;
+        APIUpdate.call(updateRequest);
+        let updatedDoc = APICollection.findOne({ _id: documents[0]._id });
+        chai.assert.deepEqual(updatedDoc, doc);
+        APICollection.remove({});
+        done();
+      });
+
+      it('should get an entry from API Collection correctly', function(done) {
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleInstanceId'] = moduleInstances[0]._id;
+        APICollection.insert(doc);
+        APIGet.call(getRequest, (err, res) => {
+          chai.assert.deepEqual(res[0], doc);
+          APICollection.remove({});
+          done();
         });
       });
 
-      // Checkpoint
-
-      it('should get an entry from module data', function(done) {
-        ModuleData.update(moduleData._id, moduleData, () => {
-          apiGet.call({
-            moduleInstanceId: moduleInstance._id,
-            collection: 'todos',
-            filter: {
-              color: {
-                $in: ['Red', 'Green'],
-              }
-            },
-          }, (err, res) => {
-            let expect = [];
-            expect.push(moduleData.data.todos[0]);
-            expect.push(moduleData.data.todos[1]);
-            expect.push(moduleData.data.todos[2]);
-            chai.assert.deepEqual(res, expect);
-            done();
-          });
-        });
-      });
-
-      it('should remove an entry from module data', function(done) {
-        ModuleData.update(moduleData._id, moduleData, () => {
-          apiRemove.call({
-            moduleInstanceId: moduleInstance._id,
-            collection: 'todos',
-            filter: {
-              color: {
-                $in: ['Red', 'Green'],
-              }
-            }
-          }, (err, res) => {
-            let expect = [moduleData.data.todos[3]];
-            let result = ModuleData.findOne(moduleData._id).data.todos;
-            chai.assert.deepEqual(result, expect);
-            done();
-          });
-        });
+      it('should remove an entry from API Collection correctly', function(done) {
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleInstanceId'] = moduleInstances[0]._id;
+        APICollection.insert(doc);
+        APIRemove.call(removeRequest);
+        chai.assert.isTrue(!APICollection.findOne({ _id: documents[0]._id }));
+        done();
       });
 
       it('should update using persistent data when indicated', function(done) {
-        ModuleData.update(moduleData._id, moduleData, () => {
-          apiUpdate.call({
-            moduleInstanceId: otherModuleInstance._id,
-            collection: 'todos',
-            filter: {
-              color: {
-                $in: ['Red', 'Green'],
-              }
-            },
-            updateQuery: {
-              $set: {
-                color: 'Yellow',
-              }
-            }
-          }, (err, res) => {
-            let expect = moduleData.data;
-            expect.todos[0].color =  'Yellow';
-            expect.todos[2].color =  'Yellow';
-            chai.assert.deepEqual(ModuleData.findOne(moduleData._id).data, expect);
-            done();
-          });
-        });
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleId'] = moduleInstances[0].moduleId;
+        doc['#teamId'] = teams[0]._id;
+        APICollection.insert(doc);
+        doc.somethingElse = updateRequest.updateQuery.$set.somethingElse;
+        APIUpdate.call(updateRequest);
+        let updatedDoc = APICollection.findOne({ _id: documents[0]._id });
+        chai.assert.deepEqual(updatedDoc, doc);
+        APICollection.remove({});
+        done();
       });
 
       it('should get using persistent data when indicated', function(done) {
-        ModuleData.update(moduleData._id, moduleData, () => {
-          apiGet.call({
-            moduleInstanceId: otherModuleInstance._id,
-            collection: 'todos',
-            filter: {
-              color: {
-                $in: ['Red', 'Green'],
-              }
-            },
-          }, (err, res) => {
-            let expect = [];
-            expect.push(moduleData.data.todos[0]);
-            expect.push(moduleData.data.todos[2]);
-            chai.assert.deepEqual(res, expect);
-            done();
-          });
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleId'] = moduleInstances[0].moduleId;
+        doc['#teamId'] = teams[0]._id;
+        APICollection.insert(doc);
+        APIGet.call(getRequest, (err, res) => {
+          chai.assert.deepEqual(res[0], doc);
+          APICollection.remove({});
+          done();
         });
       });
 
       it('should remove using persistent data when indicated', function(done) {
-        ModuleData.update(moduleData._id, moduleData, () => {
-          apiRemove.call({
-            moduleInstanceId: otherModuleInstance._id,
-            collection: 'todos',
-            filter: {
-              color: {
-                $in: ['Red', 'Green'],
-              }
-            }
-          }, (err, res) => {
-            let expect = [
-              moduleData.data.todos[1],
-              moduleData.data.todos[3]
-            ];
-            let result = ModuleData.findOne(moduleData._id).data.todos;
-            chai.assert.deepEqual(result, expect);
-            done();
-          });
-        });
+        let doc = documents[0];
+        doc['#collection'] = collections[0];
+        doc['#moduleId'] = moduleInstances[0].moduleId;
+        doc['#teamId'] = teams[0]._id;
+        APICollection.insert(doc);
+        APIRemove.call(removeRequest);
+        chai.assert.isTrue(!APICollection.findOne({ _id: documents[0]._id }));
+        done();
       });
     });
   });

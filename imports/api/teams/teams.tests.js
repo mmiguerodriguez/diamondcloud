@@ -1,6 +1,5 @@
 import { Meteor }        from 'meteor/meteor';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
-import { printObject }   from '../helpers/print-objects.js';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
 import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
@@ -20,11 +19,11 @@ if (Meteor.isServer) {
         user = Factory.create('user');
         team = Factory.create('team');
         team.users = [
-          { email: user.emails[0].address, permission: 'member' },
-          { email: faker.internet.email(), permission: 'owner' },
-          { email: faker.internet.email(), permission: 'member' },
-          { email: faker.internet.email(), permission: 'member' },
-          { email: faker.internet.email(), permission: 'member' },
+          { email: user.emails[0].address, hierarchy: 'creativo' },
+          { email: faker.internet.email(), permission: 'sistemas' },
+          { email: faker.internet.email(), permission: 'creativo' },
+          { email: faker.internet.email(), permission: 'creativo' },
+          { email: faker.internet.email(), permission: 'creativo' },
         ];
 
         resetDatabase();
@@ -42,10 +41,11 @@ if (Meteor.isServer) {
         //Meteor.users.findByEmail.restore();
       });
 
-      it('should return owner of a team', function() {
-        let expected = team.users[1].email;
-        let result = Teams.findOne(team._id).owner();
-        chai.assert.isTrue(result == expected);
+      it('should return if the user has a given hierarchy', function() {
+        let result = Teams.findOne(team._id).userIsCertainHierarchy(user.emails[0].address, 'creativo');
+        chai.assert.isTrue(result);
+        result = Teams.findOne(team._id).userIsCertainHierarchy(user.emails[0].address, 'sistemas');
+        chai.assert.isFalse(result);
       });
 
       it('should return if a team has a user', function() {

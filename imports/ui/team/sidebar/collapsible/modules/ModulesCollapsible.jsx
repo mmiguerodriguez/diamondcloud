@@ -14,7 +14,7 @@ export default class ModulesCollapsible extends React.Component {
               type='button'
               className='close col-xs-2'
               onClick={ this.props.toggleCollapsible.bind(null, 'modules') }>
-              <img src='/img/close-modal-icon.svg' width='18px' />
+              <img src='/img/close-icon.svg' width='18px' />
             </div>
             <h3 className='col-xs-10 title'>Módulos</h3>
           </div>

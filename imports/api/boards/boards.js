@@ -32,9 +32,13 @@ Boards.helpers({
       fields
     });
   },
-  getMessages() {
+  getMessages(options) {
     return Messages.find({
       boardId: this._id,
+    }, {
+      sort: {
+        createdAt: 1,
+      }
     });
   },
   getLastMessage() {
@@ -78,8 +82,9 @@ Boards.helpers({
 
 Boards.boardFields = {
   name: 1,
-  isPrivate: 1,
+  type: 1,
   users: 1,
+  isPrivate: 1,
   drawings: 1,
   moduleInstances: 1,
   archived: 1,

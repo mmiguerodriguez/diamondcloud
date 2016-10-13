@@ -5,7 +5,7 @@ import ModuleInstance from '../../module-instance/ModuleInstance.jsx';
 
 export default class Board extends React.Component {
   render() {
-    let classes = classNames('board-container', 'hidden-xs', {
+    let classes = classNames('board-container', {
       'permission-asker-opened': this.props.permissionAsker
     });
     return (
@@ -19,6 +19,14 @@ export default class Board extends React.Component {
             { /* <h4 className='title truncate'>{ this.props.board.name }</h4> */ }
           </div>
           <div className='col-xs-6 right-data'>
+            <div className="visibility">
+              {
+                /*  TODO: When visibility-off is clicked change image to visibility-on.
+                <img src="/img/visibility-on.svg" className="visibility-img" title="Hacer visible para directores" />
+                */
+              }
+              <img src="/img/visibility-off.svg" className="visibility-img" title="Hacer no visible para directores" />
+            </div>
             <h4 className='members truncate'>
               { this.renderUsers() }
             </h4>
@@ -112,7 +120,7 @@ export default class Board extends React.Component {
         let module;
         this.props.modules.forEach((_module) => {
           if (_module._id === moduleInstance.moduleId) {
-            module = _module; 
+            module = _module;
           }
         });
 
@@ -136,7 +144,7 @@ export default class Board extends React.Component {
     if (this.props.board.isPrivate) {
       return this.props.board.users.map((_user) => {
         let user = Meteor.users.findByEmail(_user.email, {}) || _user;
-        
+
         return (
           <img
             key={ user._id || _user.email }
@@ -147,13 +155,15 @@ export default class Board extends React.Component {
         );
       });
     } else {
-      return this.props.users.map((user) => {
+      return this.props.team.users.map((_user) => {
+        let user = Meteor.users.findByEmail(_user.email, {}) || _user;
+
         return (
           <img
-            key={ user._id }
+            key={ user._id || _user.email }
             className='img-circle shared-people'
-            src={ user.profile.picture  }
-            title={ user.profile.name }
+            src={ user.profile ? user.profile.picture : '/img/user-shape.svg'  }
+            title={ user.profile ? user.profile.name : user.email }
             width='32px' />
         );
       });
