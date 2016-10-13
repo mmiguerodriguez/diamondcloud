@@ -23,6 +23,26 @@ const {
  */
 const ERROR_DELAY = 5000;
 
+/** 
+ * Checks if a board is a coordination board
+ * by checking its type.
+ * 
+ * @param {Object} board
+ * @returns {Boolean} isCoordination
+ */
+const isCoordination = (board) => {
+  if (
+    board.type === 'coordinadores' || 
+    board.type === 'directores creativos' || 
+    board.type === 'directores de cuentas' || 
+    board.type === 'administradores'
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 /**
  * Starts the module with the following route.
  */
@@ -77,7 +97,7 @@ class TaskManagerPage extends React.Component {
     currentBoard = DiamondAPI.getCurrentBoard();
     currentUser = DiamondAPI.getCurrentUser();
     
-    if (currentBoard.type === 'coordinadores' || currentBoard.type === 'directores creativos' || currentBoard.type === 'directores de cuentas' || currentBoard.type === 'administradores' || currentBoard.type === 'medios') {
+    if (isCoordination(currentBoard)) {
       coordination = true;
     } else {
       coordination = false;
@@ -351,7 +371,7 @@ class CreateTask extends React.Component {
    */
   renderOptions() {
     return this.props.boards.map((board) => {
-      if (!this.props.coordination) {
+      if (!isCoordination(board)) {
         return (
           <option
             key={board._id}
@@ -500,7 +520,7 @@ class BoardsList extends React.Component {
        * return all the boards except for the
        * coordination one.
        */
-      if (!this.props.coordination) {
+      if (!isCoordination(board)) {
         return (
           <Board
             key={board._id}
@@ -655,9 +675,6 @@ class Task extends React.Component {
         updateQuery: {
           $push: {
             durations: {
-              $flags: {
-                insertAsPlainObject: true,
-              },
               userId: self.props.currentUser._id,
               startTime: new Date().getTime(),
               endTime: undefined,
@@ -668,13 +685,13 @@ class Task extends React.Component {
           if (error) {
             console.error(error);
 
-            this.props.showError({
+            self.props.showError({
               body: 'Ocurrió un error interno al iniciar la tarea',
             });
 
             self.stopTimer();
           } else {
-            console.log('Started task correctly', result);
+            console.log('Started task correctly');
           }
         }
       });
@@ -696,11 +713,6 @@ class Task extends React.Component {
         collection: 'tasks',
         filter: {
           _id: self.props.task._id,
-          // This doesn't work
-          'durations.userId': self.props.currentUser._id,
-          'durations.startTime': self.getLastTaskUpdate(),
-          'durations.endTime': undefined,
-          // End this doesn't work
         },
         updateQuery: {
           $set: {
@@ -711,13 +723,13 @@ class Task extends React.Component {
           if (error) {
             console.error(error);
 
-            this.props.showError({
+            self.props.showError({
               body: 'Error al pausar una tarea',
             });
 
             self.startTimer();
           } else {
-            console.log('Paused task correctly', result);
+            console.log('Paused task correctly');
           }
         }
       });
@@ -746,7 +758,7 @@ class Task extends React.Component {
           if (error) {
             console.error(error);
 
-            this.props.showError({
+            self.props.showError({
               body: 'Error al archivar una tarea',
             });
           } else {
@@ -1138,7 +1150,7 @@ class Task extends React.Component {
               <div>
                 <div className='record'>
                   <img
-                    src='/modules/trello/img/record.svg'
+                    src='/modules/task-manager/img/record.svg'
                     width='25px'
                   />
                 </div>
@@ -1148,7 +1160,7 @@ class Task extends React.Component {
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
-                      src='/modules/trello/img/finished-task.svg'
+                      src='/modules/task-manager/img/finished-task.svg'
                       width='25px'
                     />
                 </div>
@@ -1158,7 +1170,7 @@ class Task extends React.Component {
                   role='button'
                   onClick={this.finishTask}>
                     <img
-                      src='/modules/trello/img/pause-button.svg'
+                      src='/modules/task-manager/img/pause-button.svg'
                       width='15px'
                     />
                 </div>
@@ -1175,7 +1187,7 @@ class Task extends React.Component {
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
-                      src='/modules/trello/img/finished-task.svg'
+                      src='/modules/task-manager/img/finished-task.svg'
                       width='25px'
                     />
                 </div>
@@ -1185,7 +1197,7 @@ class Task extends React.Component {
                   role='button'
                   onClick={this.startTask}>
                     <img
-                      src='/modules/trello/img/play-arrow.svg'
+                      src='/modules/task-manager/img/play-arrow.svg'
                       width='15px'
                     />
                 </div>
