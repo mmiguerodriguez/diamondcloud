@@ -176,7 +176,7 @@ export default class CreateBoardModal extends React.Component {
                 className='control-label'>
                 Tipo
               </label>
-              <div className='col-xs-12'>
+              <div className='col-xs-12 type'>
                 <select
                   className='form-control'
                   value={this.state.type}
@@ -191,7 +191,7 @@ export default class CreateBoardModal extends React.Component {
                 className='control-label'>
                 Privacidad
               </label>
-              <div className='col-xs-12'>
+              <div className='col-xs-12 privacy'>
                 <label className='radio-inline'>
                   <input
                     name='board-private-radio'
@@ -223,7 +223,7 @@ export default class CreateBoardModal extends React.Component {
                   </label>
                   <Select
                     name='form-field-name'
-                    className=''
+                    className='col-xs-12'
                     placeholder='Ingrese nombre o mail...'
                     noResultsText='No se encontraron usuarios en el equipo'
                     multi={true}
