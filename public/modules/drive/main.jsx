@@ -38,7 +38,7 @@ class FileManagerLayout extends React.Component {
           data-toggle="modal"
           data-target="#create-folder">
           <div className="document fixed">
-            <img className='col-xs-3 icon-type create-folder' src='modules/drive/img/folder.svg' />
+            <img className='col-xs-3 icon-type create-folder' src='/modules/drive/img/folder.svg' />
             <p className="col-xs-9 document-title truncate">Crear</p>
           </div>
         </div>
@@ -55,7 +55,7 @@ class FileManagerLayout extends React.Component {
                   browserHistory.push('/folder/' + folder._id);
                 }
               }>
-              <img className='col-xs-3 icon-type create-folder' src='modules/drive/img/folder.svg' />
+              <img className='col-xs-3 icon-type create-folder' src='/modules/drive/img/folder.svg' />
               <p className="col-xs-9 document-title truncate">{folder.name}</p>
             </div>
             <i
@@ -78,16 +78,16 @@ class FileManagerLayout extends React.Component {
   renderDocumentTypeImg(fileType) {
     switch(fileType) {
       case 'application/vnd.google-apps.document':
-        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-docs.svg' />;
+        return <img className='col-xs-3 icon-type create-doc' src='/modules/drive/img/google-docs.svg' />;
         break;
       case 'application/vnd.google-apps.drawing':
-        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-drawings.svg' />;
+        return <img className='col-xs-3 icon-type create-doc' src='/modules/drive/img/google-drawings.svg' />;
         break;
       case 'application/vnd.google-apps.spreadsheet':
-        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-sheets.svg' />;
+        return <img className='col-xs-3 icon-type create-doc' src='/modules/drive/img/google-sheets.svg' />;
         break;
       case 'application/vnd.google-apps.presentation':
-        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-slides.svg' />;
+        return <img className='col-xs-3 icon-type create-doc' src='/modules/drive/img/google-slides.svg' />;
         break;
       default:
         return null;
@@ -102,7 +102,7 @@ class FileManagerLayout extends React.Component {
             data-toggle="modal"
             data-target="#create-document">
             <div className="document fixed">
-              <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-docs.svg' />
+              <img className='col-xs-3 icon-type create-doc' src='/modules/drive/img/google-docs.svg' />
               <p className="col-xs-9 document-title truncate">Crear</p>
             </div>
           </div>
@@ -110,7 +110,7 @@ class FileManagerLayout extends React.Component {
             className='document-container col-xs-6 col-sm-4 col-md-3 col-lg-2'
             id='import-file-card'>
             <div className="document fixed">
-              <img className='col-xs-3 icon-type import-drive' src='modules/drive/img/google-drive-logo.svg' />
+              <img className='col-xs-3 icon-type import-drive' src='/modules/drive/img/google-drive-logo.svg' />
               <p className="col-xs-9 document-title truncate">Importar</p>
             </div>
           </div>
