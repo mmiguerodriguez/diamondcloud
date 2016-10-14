@@ -170,14 +170,18 @@ export const shareTeam = new ValidatedMethod({
       throw new Meteor.Error('Teams.methods.share.notLoggedIn',
       'Must be logged in to edit a team.');
     }
+
     let team = Teams.findOne(teamId);
     if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
       throw new Meteor.Error('Teams.methods.share.notAllowed',
       "The user is not allowed to share the team");
     }
+
     let user = { email, hierarchy };
 
     Teams.addUser(teamId, user);
+    // TODO: Add user to public Boards
+
     if (Meteor.users.findByEmail(email, {})) {
       //if user is not registered in Diamond Cloud
       Mail.sendMail({
@@ -194,6 +198,7 @@ export const shareTeam = new ValidatedMethod({
         html: Mail.messages.sharedTeamNotRegistered(teamId),
       });
     }
+
     return Teams.findOne(teamId);
   }
 });
