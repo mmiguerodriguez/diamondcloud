@@ -1,15 +1,6 @@
-import { Mongo }      from 'meteor/mongo';
+import { Mongo } from 'meteor/mongo';
 
 export let Teams = new Mongo.Collection('Teams');
-
-import { createTeam } from './methods.js';
-if (Teams.find().count() === 0) {
-  createTeam.call({
-    name: 'Carlos y Darío',
-    plan: 'free',
-    type: 'Agencia publicitaria',
-  });
-}
 
 Teams.helpers({
   /**

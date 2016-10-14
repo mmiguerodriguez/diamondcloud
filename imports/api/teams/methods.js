@@ -15,8 +15,9 @@ export const createTeam = new ValidatedMethod({
     plan: { type: String, allowedValues: ['free', 'premium'] },
     type: { type: String, min: 0, max: 200 },
     users: { type: [Object], blackbox: true, optional: true }, // [{ email, hierarchy }]
+    url: { type: String },
   }).validator(),
-  run({ name, plan, type, users }) {
+  run({ name, plan, type, users, url }) {
     if (!!users) {
       if (!Meteor.user()) {
         throw new Meteor.Error('Teams.methods.create.notLoggedIn',
@@ -31,6 +32,7 @@ export const createTeam = new ValidatedMethod({
       type,
       boards: [],
       users: [],
+      url,
       archived: false,
     };
 
@@ -69,24 +71,28 @@ export const createTeam = new ValidatedMethod({
         }
 
         team.boards.push({ _id: res._id });
-        users.forEach(({ email }) => {
-          if (Meteor.users.findByEmail(email, {})) {
-            // If user is not registered in Diamond Cloud
-            Mail.sendMail({
-              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
-              to: email,
-              subject: 'Te invitaron a colaborar en Diamond Cloud',
-              html: Mail.messages.sharedTeamRegistered(teamId),
-            });
-          } else {
-            Mail.sendMail({
-              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
-              to: email,
-              subject: 'Te invitaron a colaborar en Diamond Cloud',
-              html: Mail.messages.sharedTeamNotRegistered(teamId),
-            });
-          }
-        });
+
+        if (!!users) {
+          users.forEach(({ email }) => {
+            if (Meteor.users.findByEmail(email, {})) {
+              // If user is not registered in Diamond Cloud
+              Mail.sendMail({
+                from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+                to: email,
+                subject: 'Te invitaron a colaborar en Diamond Cloud',
+                html: Mail.messages.sharedTeamRegistered(teamId),
+              });
+            } else {
+              Mail.sendMail({
+                from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+                to: email,
+                subject: 'Te invitaron a colaborar en Diamond Cloud',
+                html: Mail.messages.sharedTeamNotRegistered(teamId),
+              });
+            }
+          });
+        }
+
         future.return(team);
       });
     });
