@@ -3,15 +3,17 @@ import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
 import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
+import { printObject }   from '../helpers/print-objects.js';
 import   faker           from 'faker';
 
 import { Teams }         from '../teams/teams.js';
 import { Boards }        from './boards.js';
-import {
-  createBoard,
-  editBoard,
-  archiveBoard,
-  dearchiveBoard,
+import { createBoard,
+         editBoard,
+         archiveBoard,
+         dearchiveBoard,
+         unlockBoard,
+         lockBoard,
 }                        from './methods.js';
 
 if (Meteor.isServer) {
@@ -74,6 +76,7 @@ if (Meteor.isServer) {
           { email: users[0].emails[0].address },
         ],
         isPrivate: false,
+        visibleForDirectors: false,
       };
       test_2 = {
         teamId: team._id,
@@ -85,6 +88,7 @@ if (Meteor.isServer) {
           { email: users[1].emails[0].address },
           { email: users[2].emails[0].address },
         ],
+        visibleForDirectors: false,
       };
 
       createBoard.call(test_1, (err, result_1) => {
@@ -160,6 +164,33 @@ if (Meteor.isServer) {
         expect.archived = false;
 
         chai.assert.equal(JSON.stringify(result), JSON.stringify(expect));
+        done();
+      });
+    });
+
+    it('should unlock a board', (done) => {
+      let expected = boards[0];
+      expected.visibleForDirectors = true;
+
+      unlockBoard.call({ _id: boards[0]._id }, (err, res) => {
+        if (err) throw new Meteor.Error(err);
+
+        expected._id = res._id;
+        chai.assert.equal(JSON.stringify(res), JSON.stringify(expected));
+        done();
+      });
+    });
+
+    it('should lock a board', (done) => {
+      let expected = boards[0];
+      expected.visibleForDirectors = false;
+      Boards.update({ _id: boards[0]._id }, { $set: { visibleForDirectors: true } });
+
+      lockBoard.call({ _id: boards[0]._id }, (err, res) => {
+        if (err) throw new Meteor.Error(err);
+
+        expected._id = res._id;
+        chai.assert.equal(JSON.stringify(res), JSON.stringify(expected));
         done();
       });
     });

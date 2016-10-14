@@ -1,6 +1,7 @@
 import { Meteor }          from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
+import { printObject }     from '../helpers/print-objects.js';
 import Future              from 'fibers/future';
 
 import { Boards }          from './boards.js';
@@ -27,13 +28,10 @@ export const createBoard = new ValidatedMethod({
     },
     isPrivate: { type: Boolean },
     users: { type: [Object], optional: true },
-    'users.$.email': {
-      type: String,
-      regEx: SimpleSchema.RegEx.Email,
-      optional: true
-    },
+    'users.$.email': { type: String, regEx: SimpleSchema.RegEx.Email, optional: true },
+    visibleForDirectors: { type: Boolean },
   }).validator(),
-  run({ teamId, name, type, isPrivate, users }) {
+  run({ teamId, name, type, isPrivate, users, visibleForDirectors }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('Boards.methods.createBoard.notLoggedIn',
       'Must be logged in to create a board.');
@@ -66,6 +64,7 @@ export const createBoard = new ValidatedMethod({
       isPrivate,
       moduleInstances: [],
       archived: false,
+      visibleForDirectors,
     };
 
     let future = new Future();
@@ -237,6 +236,58 @@ export const dearchiveBoard = new ValidatedMethod({
     Boards.update(_id, {
       $set: {
         archived: false,
+      }
+    });
+
+    board = Boards.findOne(_id);
+    return board;
+  },
+});
+
+/*
+ * @summary Make board visible for directors
+ */
+
+export const unlockBoard = new ValidatedMethod({
+  name: 'Boards.methods.unlockBoard',
+  validate: new SimpleSchema({
+    _id: { type: String, regEx: SimpleSchema.RegEx.Id },
+  }).validator(),
+  run({ _id }){
+    if (!Meteor.user()) {
+      throw new Meteor.Error('Boards.methods.unlockBoard.notLoggedIn',
+      'Must be logged in to unlock a board.');
+    }
+
+    let board;
+
+    Boards.update(_id, {
+      $set: {
+        visibleForDirectors: true,
+      }
+    });
+
+    board = Boards.findOne(_id);
+    return board;
+  },
+});
+
+export const lockBoard = new ValidatedMethod({
+  name: 'Boards.methods.lockBoard',
+  validate: new SimpleSchema({
+    _id: { type: String, regEx: SimpleSchema.RegEx.Id },
+  }).validator(),
+  run({ _id }){
+    if (!Meteor.user()) {
+      throw new Meteor.Error('Boards.methods.lockBoard.notLoggedIn',
+      'Must be logged in to lock a board.');
+    }
+
+    let board;
+
+    Boards.update(_id, {
+      $set: {
+        visibleForDirectors: false,
       }
     });
 
