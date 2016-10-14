@@ -20,23 +20,27 @@ if (Meteor.isServer) {
 
       beforeEach(function() {
         resetDatabase();
+
         user = Factory.create('user');
+
         teams = [
           Factory.create('team'),
           Factory.create('team', { archived: true }),
           Factory.create('team'),
         ];
+
         boards = [
           Factory.create('publicBoard', { name: 'General' }),
           Factory.create('publicBoard', { name: 'Publico archivado', archived: true }),
           Factory.create('privateBoard', { name: 'Privado con usuario' }),
           Factory.create('privateBoard', { name: 'Privado sin usuario' }),
         ];
+
         boards[2].users[0].email = user.emails[0].address;
 
         teams[0].users[0] = { email: user.emails[0].address, hierarchy: 'sistemas' };
         teams[1].users[0] = { email: user.emails[0].address, hierarchy: 'sistemas' };
-        teams[2].users[0] = { email: Random.id(), hierarchy: 'sistemas' };
+        teams[2].users = [{ email: faker.internet.email(), hierarchy: 'sistemas' }];
 
         boards.forEach((board) => {
           teams[0].boards.push({ _id: board._id });
@@ -77,7 +81,7 @@ if (Meteor.isServer) {
       it('should not publish team data if the team is archived', function(done){
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('teams.team', teams[1]._id, (collections) => {//pass the id of an archived team
+        collector.collect('teams.team', teams[1].url, (collections) => {//pass the id of an archived team
           chai.assert.isUndefined(collections.Teams);//assert it does not return any team
           done();
         });
@@ -85,7 +89,7 @@ if (Meteor.isServer) {
       it('should not publish team data if the user is not in the team', function(done){
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('teams.team', teams[2]._id, (collections) => {//pass the id of a team the user is not in
+        collector.collect('teams.team', teams[2].url, (collections) => {//pass the id of a team the user is not in
           chai.assert.isUndefined(collections.Teams);//assert it does not return any team
           done();
         });
@@ -93,7 +97,7 @@ if (Meteor.isServer) {
       it('should publish the correct boards, direct chats and users data', function(done){
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('teams.team', teams[0]._id, (collections) => {
+        collector.collect('teams.team', teams[0].url, (collections) => {
           chai.assert.equal(collections.Teams.length, 1);
           chai.assert.equal(collections.Teams[0].name, teams[0].name);
           chai.assert.equal(collections.Teams[0].plan, teams[0].plan);

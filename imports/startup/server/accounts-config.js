@@ -36,7 +36,7 @@ Accounts.onCreateUser((options, user) => {
  */
 Accounts.onLogin(() => {
   console.log(Teams.find().fetch());
-  let team = Teams.findOne({ url: 'carlosydario' });
+  let team = Teams.findOne({ url: 'carlosydario' }); // TODO: GET ROUTE!!!
   
   if (team.users.length === 0) {
     Teams.update({ _id: team._id }, {

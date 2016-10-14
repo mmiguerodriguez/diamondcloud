@@ -158,7 +158,7 @@ if (Meteor.isServer) {
       it('should publish the last message of a user', function(done) {
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('messages.last', teamWithUser._id, (collections) => {
+        collector.collect('messages.last', teamWithUser.url, (collections) => {
           chai.assert.equal(collections.Messages.length, 1);
           done();
         });

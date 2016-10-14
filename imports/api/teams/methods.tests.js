@@ -92,6 +92,7 @@ if (Meteor.isServer) {
           name: team.name,
           plan: 'free',
           type: 'web',
+          url: team.name.toLowerCase(),
           users: [
             {
               email: users[1].emails[0].address,
@@ -107,6 +108,7 @@ if (Meteor.isServer) {
           name: team.name,
           plan: 'free',
           type: 'web',
+          url: team.name.toLowerCase(),
           boards: [
             { _id: generalBoardId },
 
@@ -127,6 +129,7 @@ if (Meteor.isServer) {
           done();
         });
       });
+
       it('should edit a team', function() {
         let result,
             expect,
@@ -134,18 +137,20 @@ if (Meteor.isServer) {
 
         expect = {
           _id: team._id,
-          name: 'test',
+          name: 'new_name',
           plan: 'premium',
-          type: 'dota',
+          type: 'new_type',
+          url: 'new_url',
           boards: team.boards,
           users: team.users,
           archived: false,
         };
         args = {
           team: {
-            name: 'test',
+            name: 'new_name',
             plan: 'premium',
-            type: 'dota',
+            type: 'new_type',
+            url: 'new_url',
           },
           teamId: team._id,
         };
@@ -155,6 +160,7 @@ if (Meteor.isServer) {
         });
         chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
       });
+
       it("should change a user's hierarchy", function(done){
         let expect = team;
         expect.users[1].hierarchy = 'director creativo';
@@ -169,6 +175,7 @@ if (Meteor.isServer) {
           done();
         });
       });
+
       it('should share a team', function(done) {
         let result,
             expect,
@@ -187,6 +194,7 @@ if (Meteor.isServer) {
           done();
         });
       });
+
       it('should remove a user from a team', function(done) {
         let result,
             expect,
@@ -206,6 +214,7 @@ if (Meteor.isServer) {
           done();
         });
       });
+
       it('should archive a team', function() {
         let result,
             expect,
@@ -223,6 +232,7 @@ if (Meteor.isServer) {
         });
         chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
       });
+
       it('should dearchive a team', function() {
         let result,
             expect,
