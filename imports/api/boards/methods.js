@@ -34,9 +34,11 @@ export const createBoard = new ValidatedMethod({
     },
   }).validator(),
   run({ teamId, name, type, isPrivate, users }) {
-    if (!Meteor.user()) {
-      throw new Meteor.Error('Boards.methods.createBoard.notLoggedIn',
-      'Must be logged in to create a board.');
+    if (name !== 'General' && type !== 'default') {
+      if (!Meteor.user()) {
+        throw new Meteor.Error('Boards.methods.createBoard.notLoggedIn',
+        'Must be logged in to create a board.');
+      }
     }
 
     let team = Teams.findOne(teamId);

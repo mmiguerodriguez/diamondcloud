@@ -1,14 +1,12 @@
-import { Meteor }               from 'meteor/meteor';
-import { ValidatedMethod }      from 'meteor/mdg:validated-method';
-import { SimpleSchema }         from 'meteor/aldeed:simple-schema';
-import  Future                  from 'fibers/future';
-import { Mail }                 from '../mails/mails.js';
+import { Meteor }          from 'meteor/meteor';
+import { ValidatedMethod } from 'meteor/mdg:validated-method';
+import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
+import  Future             from 'fibers/future';
 
-import { Teams }                from './teams.js';
-import { Boards }               from '../boards/boards.js';
-import { createBoard }          from '../boards/methods.js';
-import { createModuleInstance } from '../module-instances/methods.js';
-import { APIInsert }            from '../api/methods.js';
+import { Teams }           from './teams.js';
+import { Mail }            from '../mails/mails.js';
+import { Boards }          from '../boards/boards.js';
+import { createBoard }     from '../boards/methods.js';
 
 export const createTeam = new ValidatedMethod({
   name: 'Teams.methods.create',
@@ -16,12 +14,14 @@ export const createTeam = new ValidatedMethod({
     name: { type: String },
     plan: { type: String, allowedValues: ['free', 'premium'] },
     type: { type: String, min: 0, max: 200 },
-    users: { type: [Object], blackbox: true, }, // [{ email, hierarchy }]
+    users: { type: [Object], blackbox: true, optional: true }, // [{ email, hierarchy }]
   }).validator(),
   run({ name, plan, type, users }) {
-    if (!Meteor.user()) {
-      throw new Meteor.Error('Teams.methods.create.notLoggedIn',
-      'Must be logged in to make a team.');
+    if (!!users) {
+      if (!Meteor.user()) {
+        throw new Meteor.Error('Teams.methods.create.notLoggedIn',
+        'Must be logged in to make a team.');
+      }
     }
 
     let team, teamId;
@@ -30,23 +30,28 @@ export const createTeam = new ValidatedMethod({
       plan,
       type,
       boards: [],
-      users: [
-        { email: Meteor.user().email(), hierarchy: 'sistemas' }
-      ],
+      users: [],
       archived: false,
     };
 
-    users.forEach(({ email, hierarchy }) => {
-      if (email === Meteor.user().email()) {
-        throw new Meteor.Error('Teams.methods.create.emailIsActualUser',
-        'You can\'t add yourself to a team',
-        'user_adds_himself');
-      }
+    if (!!users) {
+      team.users.push({
+        email: Meteor.user().email(),
+        hierarchy: 'sistemas',
+      });
 
-      team.users.push({ email, hierarchy });
-    });
+      users.forEach(({ email, hierarchy }) => {
+        if (email === Meteor.user().email()) {
+          throw new Meteor.Error('Teams.methods.create.emailIsActualUser',
+          'You can\'t add yourself to a team',
+          'user_adds_himself');
+        }
+  
+        team.users.push({ email, hierarchy });
+      });
+    }
 
-    let future = new Future(); // Needed to make asynchronous call to db
+    let future = new Future();
     Teams.insert(team, (err, res) => {
       if (err) throw new Meteor.Error(err);
 

@@ -1,6 +1,15 @@
-import { Mongo } from 'meteor/mongo';
+import { Mongo }      from 'meteor/mongo';
 
 export let Teams = new Mongo.Collection('Teams');
+
+import { createTeam } from './methods.js';
+if (Teams.find().count() === 0) {
+  createTeam.call({
+    name: 'Carlos y Darío',
+    plan: 'free',
+    type: 'Agencia publicitaria',
+  });
+}
 
 Teams.helpers({
   /**
@@ -58,18 +67,15 @@ Teams.dashboardFields = {
   users: 1,
   boards: 1,
 };
-
 Teams.dashboardUsersFields = {
   profile: 1,
   emails: 1,
 };
-
 Teams.teamUsersFields = {
   _id: 1,
   profile: 1,
   emails: 1,
 };
-
 // Fields that are shown in the team page (/team)
 Teams.teamFields = {
   name: 1,
