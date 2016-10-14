@@ -7,17 +7,16 @@ import LandingLayout       from './LandingLayout.jsx';
 
 export default class Landing extends React.Component {
   render() {
-    console.log(this.props.router)
     return (
       <LandingLayout />
     );
   }
   componentWillMount() {
     if (Meteor.user()) {
-      if (this.props.location.pathname.indexOf('carlosydario')) {
-        browserHistory.push('/team/elIdDelEquipoCarlosYDario');
+      if (this.props.location.pathname.indexOf('carlosydario') > -1) {
+        browserHistory.push('/team/idCarlos');
       } else {
-        browserHistory.push('/team/elIdDelEquipoDiamond');
+        browserHistory.push('/team/idDiamond');
       }
     }
   }

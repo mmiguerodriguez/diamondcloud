@@ -1,9 +1,6 @@
-import { Meteor }   from 'meteor/meteor';
-
 import React        from 'react';
 
 import NavbarLayout from '../navbar/NavbarLayout.jsx';
-import Footer       from '../footer/Footer.jsx';
 
 export default class AppLayout extends React.Component {
   render() {
@@ -13,12 +10,10 @@ export default class AppLayout extends React.Component {
           path={ this.props.location.pathname }
           user={ this.props.user }
         />
-        { this.props.children }
-        { /*
-          this.props.location.pathname.indexOf('/team') === -1 || this.props.location.pathname.indexOf('/') === -1 ? (
-            <Footer />
-          ) : ( null )
-          */
+        { 
+          React.cloneElement(this.props.children, { 
+            ...this.props 
+          })
         }
       </div>
     );
