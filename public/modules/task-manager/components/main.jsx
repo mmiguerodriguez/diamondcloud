@@ -21,7 +21,27 @@ const {
  * ErrorComponent delay
  * (in miliseconds)
  */
-const ERROR_DELAY = 5000; 
+const ERROR_DELAY = 5000;
+
+/** 
+ * Checks if a board is a coordination board
+ * by checking its type.
+ * 
+ * @param {Object} board
+ * @returns {Boolean} isCoordination
+ */
+const isCoordination = (board) => {
+  if (
+    board.type === 'coordinadores' || 
+    board.type === 'directores creativos' || 
+    board.type === 'directores de cuentas' || 
+    board.type === 'administradores'
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 /**
  * Starts the module with the following route.
@@ -38,13 +58,10 @@ class TaskManagerPage extends React.Component {
 
     /**
      * States
-     * 
+     *
      * @param {Array} tasks
      *  All the tasks we need to show
      *  to the user.
-     * @param {Object} coordinationBoard
-     *  An object containing the _id
-     *  of the coordination board.
      * @param {Object} currentBoard
      *  Current board object.
      * @param {Object} currentUser
@@ -64,7 +81,6 @@ class TaskManagerPage extends React.Component {
      */
     this.state = {
       tasks: [],
-      coordinationBoard: {},
       currentBoard: {},
       currentUser: {},
       coordination: false,
@@ -76,70 +92,64 @@ class TaskManagerPage extends React.Component {
 
   componentDidMount() {
     let self = this;
-    let coordinationBoard, currentBoard, currentUser, coordination;
+    let currentBoard, currentUser, coordination;
 
-    DiamondAPI.get({
-      collection: 'coordinationBoard',
-      filter: {},
-      callback(error, result) {
-        if (error) {
-          console.error(error);
-        } else {
-          coordinationBoard = result[0];
-          currentBoard =  DiamondAPI.getCurrentBoard();
-          currentUser = DiamondAPI.getCurrentUser();
-          coordination = coordinationBoard._id === currentBoard._id;
+    currentBoard = DiamondAPI.getCurrentBoard();
+    currentUser = DiamondAPI.getCurrentUser();
+    
+    if (isCoordination(currentBoard)) {
+      coordination = true;
+    } else {
+      coordination = false;
+    }
 
-          /**
-           *  Set coordinationBoard, currentBoard, user and if
-           *  it's a coordinationBoard, a boolean.
-           */
-          self.setState({
-            coordinationBoard,
-            currentBoard,
-            currentUser,
-            coordination,
-          }, () => {
-            /**
-             * If it's a coordinationBoard then fetch all tasks,
-             * even finished ones, except archived.
-             * If not, fetch the ones that are from the
-             * currentBoard and that are not finished.
-             */
-            let filter = coordination ? {
-              archived: false,
-            } : {
-              boardId: currentBoard._id,
-              status: 'not_finished',
-            };
-            
-            /**
-             * After grabbing all the data we needed, subscribe
-             * to the tasks collection with the filter, and
-             * setting the state on the callback.
-             */
-            const taskManagerHandle = DiamondAPI.subscribe({
-              collection: 'tasks',
-              filter,
-              callback(error, result) {
-                if (error) {
-                  console.error(error);
-                } else {
-                  console.log('Subscribe callback', result ? result : []);
-                  self.setState({
-                    tasks: result ? result : [],
-                    loading: false,
-                  });
-                }
-              }
-            });
+    /**
+     * Set currentBoard, user and if it's a
+     * coordination board type, a boolean.
+     */
+    self.setState({
+      currentBoard,
+      currentUser,
+      coordination,
+    }, () => {
+      /**
+       * If it's a cordination board type then fetch all tasks,
+       * even finished ones, except archived.
+       * If not, fetch the ones that are from the
+       * currentBoard and that are not finished.
+       */
+      let filter = coordination ? {
+        archived: false,
+      } : {
+        boardId: currentBoard._id,
+        status: 'not_finished',
+      };
 
+      /**
+       * After grabbing all the data we needed, subscribe
+       * to the tasks collection with the filter, and
+       * setting the state on the callback.
+       */
+      const taskManagerHandle = DiamondAPI.subscribe({
+        collection: 'tasks',
+        filter,
+        callback(error, result) {
+          if (error) {
+            console.error(error);
+          } else {
+            console.log('Subscribe callback', result ? result : []);
             self.setState({
-              ...DiamondAPI.getTeamData(),
+              tasks: result ? result : [],
+              loading: false,
             });
-          });
+          }
         }
-      }
+      });
+
+      self.setState({
+        boards: DiamondAPI.getBoards(),
+        users: DiamondAPI.getUsers(),
+      });
     });
   }
 
@@ -284,7 +294,7 @@ class CreateTask extends React.Component {
             if (position >= 0) {
               DiamondAPI.insert({
                 collection: 'tasks',
-                obj: {
+                object: {
                   title: self.state.title,
                   boardId: self.state.boardId,
                   durations: [],
@@ -361,7 +371,7 @@ class CreateTask extends React.Component {
    */
   renderOptions() {
     return this.props.boards.map((board) => {
-      if (board._id !== this.props.coordinationBoard._id) {
+      if (!isCoordination(board)) {
         return (
           <option
             key={board._id}
@@ -414,7 +424,7 @@ class CreateTask extends React.Component {
     return (
       <div className='row create-task-form'>
         <div className='col-xs-12'>
-          <div 
+          <div
             className='go-back'
             onClick={() => this.props.setLocation('tasks/show')}>
           </div>
@@ -510,7 +520,7 @@ class BoardsList extends React.Component {
        * return all the boards except for the
        * coordination one.
        */
-      if (board._id !== this.props.coordinationBoard._id) {
+      if (!isCoordination(board)) {
         return (
           <Board
             key={board._id}
@@ -665,9 +675,6 @@ class Task extends React.Component {
         updateQuery: {
           $push: {
             durations: {
-              $flags: {
-                insertAsPlainObject: true,
-              },
               userId: self.props.currentUser._id,
               startTime: new Date().getTime(),
               endTime: undefined,
@@ -678,13 +685,13 @@ class Task extends React.Component {
           if (error) {
             console.error(error);
 
-            this.props.showError({
+            self.props.showError({
               body: 'Ocurrió un error interno al iniciar la tarea',
             });
 
             self.stopTimer();
           } else {
-            console.log('Started task correctly', result);
+            console.log('Started task correctly');
           }
         }
       });
@@ -706,11 +713,6 @@ class Task extends React.Component {
         collection: 'tasks',
         filter: {
           _id: self.props.task._id,
-          // This doesn't work
-          'durations.userId': self.props.currentUser._id,
-          'durations.startTime': self.getLastTaskUpdate(),
-          'durations.endTime': undefined,
-          // End this doesn't work
         },
         updateQuery: {
           $set: {
@@ -721,13 +723,13 @@ class Task extends React.Component {
           if (error) {
             console.error(error);
 
-            this.props.showError({
+            self.props.showError({
               body: 'Error al pausar una tarea',
             });
 
             self.startTimer();
           } else {
-            console.log('Paused task correctly', result);
+            console.log('Paused task correctly');
           }
         }
       });
@@ -756,7 +758,7 @@ class Task extends React.Component {
           if (error) {
             console.error(error);
 
-            this.props.showError({
+            self.props.showError({
               body: 'Error al archivar una tarea',
             });
           } else {
@@ -899,7 +901,7 @@ class Task extends React.Component {
   /**
    * Starts the timer and sets the interval and
    * doing state.
-   * 
+   *
    * @param {Function} callback
    *  Function to be called after the state
    *  is set, usually to start the task.
@@ -920,7 +922,7 @@ class Task extends React.Component {
    * Stops the timer, clears the interval
    * and sets the state as not doing,
    * no interval and count.
-   * 
+   *
    * @param {Function} callback
    *  Function to be called after the state
    *  is set, usually to stop the task.
@@ -1131,7 +1133,7 @@ class Task extends React.Component {
               />
             ) : (null)
           }
-  
+
           {
             this.props.coordination && !this.state.editing ? (
               <div
@@ -1142,13 +1144,13 @@ class Task extends React.Component {
               />
             ) : (null)
           }
-  
+
           {
             !this.props.coordination && (this.props.doing || this.state.doing) ? (
               <div>
                 <div className='record'>
                   <img
-                    src='/modules/trello/img/record.svg'
+                    src='/modules/task-manager/img/record.svg'
                     width='25px'
                   />
                 </div>
@@ -1158,7 +1160,7 @@ class Task extends React.Component {
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
-                      src='/modules/trello/img/finished-task.svg'
+                      src='/modules/task-manager/img/finished-task.svg'
                       width='25px'
                     />
                 </div>
@@ -1168,14 +1170,14 @@ class Task extends React.Component {
                   role='button'
                   onClick={this.finishTask}>
                     <img
-                      src='/modules/trello/img/pause-button.svg'
+                      src='/modules/task-manager/img/pause-button.svg'
                       width='15px'
                     />
                 </div>
               </div>
             ) : (null)
           }
-  
+
           {
             !this.props.coordination && (!this.props.doing || !this.state.doing) && this.props.task.status === 'not_finished' ? (
               <div>
@@ -1185,7 +1187,7 @@ class Task extends React.Component {
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
-                      src='/modules/trello/img/finished-task.svg'
+                      src='/modules/task-manager/img/finished-task.svg'
                       width='25px'
                     />
                 </div>
@@ -1195,14 +1197,14 @@ class Task extends React.Component {
                   role='button'
                   onClick={this.startTask}>
                     <img
-                      src='/modules/trello/img/play-arrow.svg'
+                      src='/modules/task-manager/img/play-arrow.svg'
                       width='15px'
                     />
                 </div>
               </div>
             ) : (null)
           }
-        
+
           {
             !this.state.editing ? (
               <div className='col-xs-12'>
@@ -1251,7 +1253,7 @@ class TaskInformation extends React.Component {
   render() {
     return (
       <div className='task-info col-xs-12'>
-        <div 
+        <div
           className='go-back'
           onClick={() => this.props.setLocation('tasks/show')}>
         </div>
@@ -1365,18 +1367,18 @@ class UserTaskInformation extends React.Component {
 class ErrorMessage extends React.Component {
   close() {
     let self = this;
-    
+
     $('.error-message').removeClass('show-error');
     $('.error-message').addClass('hide-error', () => {
       setTimeout(self.props.hideError.bind(null), 700);
     });
   }
-  
+
   constructor(props) {
     super(props);
 
     this.state = {};
-    
+
     this.close = this.close.bind(this);
   }
 

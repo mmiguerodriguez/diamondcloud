@@ -5,8 +5,8 @@ import faker		           from 'faker';
 import { Teams }           from '../teams/teams.js';
 import { Boards }          from '../boards/boards.js';
 import { Messages }        from '../messages/messages.js';
-import { ModuleData }      from '../module-data/module-data.js';
 import { DirectChats }     from '../direct-chats/direct-chats.js';
+import { APICollection } 	 from '../api-collection/api-collection.js';
 import { ModuleInstances } from '../module-instances/module-instances.js';
 
 Factory.define('user', Meteor.users, {
@@ -21,7 +21,7 @@ Factory.define('user', Meteor.users, {
 Factory.define('board', Boards, {
 	name: faker.lorem.word(),
 	users: [],
-	type: Random.choice(['Creativos', 'Coordinadores', 'Directores']),
+	type: Random.choice(['creativos', 'sistemas', 'directores creativos', 'directores de cuentas', 'administradores', 'coordinadores', 'medios']),
 	isPrivate: null,
 	moduleInstances: [],
 	archived: false,
@@ -45,7 +45,7 @@ Factory.define('team', Teams, {
 	type: Random.choice(['web', 'android', 'ios', 'marketing']),
 	boards: [],
 	users: [
-		{ email: faker.internet.email(), permission: 'owner' }
+		{ email: faker.internet.email(), hierarchy: 'sistemas' }
 	],
 	archived: false,
 });
@@ -85,90 +85,20 @@ Factory.define('moduleInstance', ModuleInstances, {
 	minimized: false,
 });
 
-Factory.define('moduleData', ModuleData, {
+Factory.define('globalAPIDocument', APICollection, {
 	moduleId: Random.id(),
-	teamId: Factory.get('team')._id,
+	teamId: Random.id(),
+	collection: faker.lorem.word(),
 });
 
-Factory.define('todosModuleData', ModuleData, Factory.extend('moduleData', {
-	data: {
-		todos: [
-      {
-        name: 'Define business model',
-        boardId: 'businessBoardId',
-        categoryId: 'categoryId1',
-				isGlobal: false,
-				moduleInstanceId: Factory.get('moduleInstance')._id,
-      },
-      {
-        name: 'Research payment processors',
-        boardId: 'businessBoardId',
-        categoryId: 'categoryId1',
-				isGlobal: false,
-				moduleInstanceId: Factory.get('moduleInstance')._id,
-      },
-      {
-        name: 'Design landing wireframe',
-        boardId: 'designBoardId',
-        categoryId: 'categoryId1',
-				isGlobal: true,
-      },
-      {
-        name: 'Develop modules API',
-        boardId: 'programmingBoardId',
-        users: [
-          { _id: 'dylanId' },
-          { _id: 'joelId' },
-          { _id: 'migueId' },
-        ],
-        categoryId: 'categoryId2',
-				isGlobal: true,
-      },
-      {
-        name: 'Release the MVP',
-        boardId: 'generalBoardId',
-        categoryId: 'categoryId2',
-				isGlobal: true,
-      },
-      {
-        name: 'Some super secret task',
-        boardId: 'secretBoardId',
-        visibleBy: [
-          { userId: 'obamaId' },
-          { boardId: 'General' },
-        ],
-        categoryId: 'categoryId2',
-				isGlobal: false,
-				moduleInstanceId: Factory.get('moduleInstance')._id
-      },
-			{
-        name: 'Conquer the world',
-        boardId: 'secretBoardId',
-        categoryId: 'categoryId3',
-				isGlobal: false,
-				moduleInstanceId: Factory.get('moduleInstance')._id
-      }
-    ],
-		categories: [
-      {
-        _id: 'categoryId1',
-        name: 'Lorem ipsum category',
-				color: 'red',
-				isGlobal: true,
-      },
-      {
-        _id: 'categoryId2',
-        name: 'Another great category',
-				color: 'red',
-				isGlobal: true,
-      },
-			{
-        _id: 'categoryId3',
-        name: 'Another great banana',
-				color: 'blue',
-				isGlobal: false,
-				moduleInstanceId: Factory.get('moduleInstance')._id
-      },
-    ]
-	},
-}));
+Factory.define('notGlobalAPIDocument', APICollection, {
+	moduleInstanceId: Random.id(),
+	collection: faker.lorem.word(),
+});
+
+let obj = {};
+for (let i = 0; i < 4; i++) {
+	obj[faker.lorem.word()] = faker.lorem.word();
+}
+
+Factory.define('spamAPIDocument', APICollection, obj);

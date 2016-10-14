@@ -15,7 +15,6 @@ standard-minifier-js@1.1.8            # JS minifier run for production mode
 es5-shim@4.6.13                       # ECMAScript 5 compatibility for older browsers.
 ecmascript@0.5.7                      # Enable ECMAScript2015+ syntax in app code
 
-meteorhacks:aggregate                 # Mongo aggregate
 accounts-ui@1.1.9                     # Login UI
 accounts-google@1.0.10                # Login with Google
 service-configuration                 # Set clientId and secret keys automatically for login with google
@@ -38,6 +37,5 @@ check@1.2.3                           # Check whether a value matches a pattern
 reywood:publish-composite             # Publish a set of related documents from multiple collections with a reactive join
 dburles:collection-helpers            # Helpers
 meteorhacks:kadira                    # Kadira
-jcbernack:reactive-aggregate          # Reactively publish Mongo aggregations
 velocity:meteor-stubs                 # Stubs
 raix:push                             # Mobile notifications

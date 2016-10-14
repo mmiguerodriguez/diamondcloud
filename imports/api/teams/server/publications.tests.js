@@ -34,9 +34,9 @@ if (Meteor.isServer) {
         ];
         boards[2].users[0].email = user.emails[0].address;
 
-        teams[0].users[0] = { email: user.emails[0].address, permission: 'owner' };
-        teams[1].users[0] = { email: user.emails[0].address, permission: 'owner' };
-        teams[2].users[0] = { email: Random.id(), permission: 'owner' };
+        teams[0].users[0] = { email: user.emails[0].address, hierarchy: 'sistemas' };
+        teams[1].users[0] = { email: user.emails[0].address, hierarchy: 'sistemas' };
+        teams[2].users[0] = { email: Random.id(), hierarchy: 'sistemas' };
 
         boards.forEach((board) => {
           teams[0].boards.push({ _id: board._id });
@@ -101,7 +101,7 @@ if (Meteor.isServer) {
           chai.assert.deepEqual(collections.Teams[0].users, teams[0].users);
 
           chai.assert.equal(collections.Boards.length, 2);
-          
+
           chai.assert.isDefined(collections.users);
           chai.assert.isDefined(collections.users[0].emails);
           chai.assert.isDefined(collections.users[0].profile);
