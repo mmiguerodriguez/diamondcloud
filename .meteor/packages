@@ -29,6 +29,7 @@ mdg:validated-method                  # Methods on drugs
 mdg:validation-error                  # Throw validation errors
 useraccounts:bootstrap                # Bootstrap login
 aldeed:simple-schema@1.5.3            # Collection schemas
+aldeed:template-extension             # Templates extensions for accounts login/register
 practicalmeteor:mocha                 # Testing
 xolvio:cleaner                        # Reset database
 johanbrook:publication-collector      # Test a Meteor publication by collecting its output
