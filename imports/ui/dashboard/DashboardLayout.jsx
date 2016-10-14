@@ -10,7 +10,7 @@ import ConfigTeamModal from '../modals/config-team/ConfigTeamModal.jsx';
 export default class DashboardLayout extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = { team: null };
     this.loadTeam = this.loadTeam.bind(this);
     this.openConfigTeamModal = this.openConfigTeamModal.bind(this);
@@ -29,7 +29,7 @@ export default class DashboardLayout extends React.Component {
         <CreateTeamModal />
         {
           (this.state.team) ? (
-            (this.state.team.owner() === Meteor.user().email()) ? (
+            (this.state.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) ? (
               <ConfigTeamModal
                 key={ this.state.team._id }
                 team={ this.state.team }

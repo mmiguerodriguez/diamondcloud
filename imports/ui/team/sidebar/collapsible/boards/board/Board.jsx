@@ -10,7 +10,7 @@ export default class Board extends React.Component {
           <h4 className='board-name'>{ this.props.board.name }</h4>
         </div>
         {
-          this.props.owner ? (
+          this.props.isAdmin ? (
             <div
               className='col-xs-2'
               onClick={ this.props.openBoardContextMenu.bind(null, this.props.board._id) }>
@@ -32,7 +32,7 @@ export default class Board extends React.Component {
 
 Board.propTypes = {
   board: React.PropTypes.object.isRequired,
-  owner: React.PropTypes.bool.isRequired,
+  isAdmin: React.PropTypes.bool.isRequired,
 
   toggleCollapsible: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,

@@ -8,3 +8,12 @@
 .Select-menu-outer {
   position: static !important;
 }
+.visible {
+  display: block;
+}
+.invisible {
+  display: none;
+}
+.privacy, .type {
+  margin-bottom: 15px;
+}

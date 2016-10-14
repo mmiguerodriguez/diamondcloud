@@ -1,20 +1,23 @@
-import React       from 'react';
-import Select      from 'react-select';
+import React           from 'react';
+import Select          from 'react-select';
 
-import Modal       from '../Modal.jsx';
+import Modal           from '../Modal.jsx';
 import {
   InputError,
   TextInput,
   SelectInput
-}                  from '../../validation/inputs.jsx';
+}                      from '../../validation/inputs.jsx';
 
 import { BOARD_TYPES } from '../board-types.js';
 
-export default class CreateBoardModal extends React.Component {
-  createBoard() {
+export default class ConfigBoardModal extends React.Component {
+  editBoard() {
+    let boardId = this.state.board._id;
     let board = {
-      teamId: this.props.team._id,
-      ...this.state,
+      name: this.state.name,
+      type: this.state.type,
+      isPrivate: this.state.isPrivate,
+      users: this.state.users,
     };
 
     if (board.isPrivate) {
@@ -35,21 +38,48 @@ export default class CreateBoardModal extends React.Component {
       board.users = [];
     }
 
-    if (board.name != '' && board.name.length >= 3) {
-      Meteor.call('Boards.methods.create', board, (error, result) => {
-        if (error) {
-          console.error(error);
-        } else {
-          this.onClose();
+    Meteor.call('Boards.methods.editBoard', { boardId, ...board }, (error, result) => {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log('Success editing board data');
+      }
+    });
+  }
 
-          this.props.toggleCollapsible('boards');
-          this.props.changeBoard(result._id);
-          this.props.addChat({ boardId: result._id });
-        }
-      });
-    } else {
-      this.errorBorder('#boardName');
-    }
+  startup(nextProps) {
+    let board, users = [];
+    let props = nextProps || this.props;
+
+    /**
+     * Get the real board
+     */
+    props.boards.forEach((_board) => {
+      if (_board._id === props.boardId) {
+        board = _board;
+      }
+    });
+
+    /**
+     * Set board users
+     */
+    board.users.forEach((user) => {
+      if (user.email !== Meteor.user().email()) {
+        users.push(user.email);
+      }
+    });
+
+    users = users.join(',');
+
+    console.log(board);
+
+    this.setState({
+      board,
+      name: board.name,
+      type: board.type,
+      isPrivate: board.isPrivate,
+      users,
+    });
   }
 
   renderTeamUsers() {
@@ -82,25 +112,6 @@ export default class CreateBoardModal extends React.Component {
     });
   }
 
-  errorBorder(element) {
-    $(element).css('transition', 'border-color 500ms');
-    $(element).css('border-color', 'red');
-    setTimeout(() => {
-      $(element).css('border-color', '#ccc');
-    }, 500);
-  }
-
-  onClose() {
-    $('#createBoardModal').modal('hide'); // hide modal
-    // reset state
-    this.setState({
-      name: '',
-      // isPrivate: false,
-      users: '',
-      type: BOARD_TYPES[0].value,
-    });
-  }
-
   handleChange(index, event) {
     let val = event.target.value;
     if (index === 'isPrivate')  {
@@ -123,32 +134,39 @@ export default class CreateBoardModal extends React.Component {
 
     this.state = {
       name: '',
+      type: '',
+      isPrivate: '',
       users: '',
-      type: BOARD_TYPES[0].value,
-      isPrivate: false,
     };
 
-    this.onClose = this.onClose.bind(this);
-    this.createBoard = this.createBoard.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.editBoard = this.editBoard.bind(this);
+  }
+
+  componentWillMount() {
+    this.startup();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.startup(nextProps);
   }
 
   render() {
     return (
       <Modal
-        id={'createBoardModal'}
+        id={'configBoardModal'}
         header={
           <div>
             <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
               <img src='/img/close-icon.svg' width='18px' />
             </button>
-            <h4 className='modal-title'>Crear un board</h4>
+            <h4 className='modal-title'>Editar un board</h4>
           </div>
         }
         body={
           <div className='modal-body-fixed container-fluid'>
-            <p className='explanation-text'>Insertá el nombre del board y decidí quienes lo van a poder ver.</p>
+            <p className='explanation-text'>Modificá el nombre del board y decidí quienes lo van a poder ver.</p>
             <div className='form-group name-input'>
               <label
                 htmlFor='boardName'
@@ -160,9 +178,9 @@ export default class CreateBoardModal extends React.Component {
                   id='boardName'
                   class='form-control'
                   placeholder='Nombre del board'
-                  value={this.state.name}
                   required={true}
                   minCharacters={3}
+                  value={this.state.name}
                   onChange={(e) => this.handleChange('name', e)}
                   errorMessage='El nombre no es válido'
                   emptyMessage='Es obligatorio poner un nombre'
@@ -198,7 +216,7 @@ export default class CreateBoardModal extends React.Component {
                     type='radio'
                     value={false}
                     onChange={(e) => this.handleChange('isPrivate', e)}
-                    defaultChecked
+                    checked={!this.state.isPrivate ? true : false}
                   />
                   Publico
                 </label>
@@ -208,6 +226,7 @@ export default class CreateBoardModal extends React.Component {
                     type='radio'
                     value={true}
                     onChange={(e) => this.handleChange('isPrivate', e)}
+                    checked={this.state.isPrivate ? true : false}
                   />
                   Privado
                 </label>
@@ -229,32 +248,30 @@ export default class CreateBoardModal extends React.Component {
                     multi={true}
                     simpleValue={true}
                     disabled={false}
-                    options={this.renderTeamUsers()}
                     value={this.state.users}
+                    options={this.renderTeamUsers()}
                     onChange={this.handleSelectChange}
                   />
                 </div>
               ) : (null)
             }
-        </div>
+          </div>
         }
         footer={
-          <div>
-            <div className='row'>
-              <button
-                type='button'
-                className='btn btn-cancel btn-hover'
-                data-dismiss='modal'
-                onClick={this.onClose}>
-                Cancelar
-              </button>
-              <button
-                type='button'
-                className='btn btn-accept btn-hover'
-                onClick={this.createBoard}>
-                Crear
-              </button>
-            </div>
+          <div className='row'>
+            <button
+              type='button'
+              className='btn btn-cancel btn-hover'
+              data-dismiss='modal'>
+              Cancelar
+            </button>
+            <button
+              type='button'
+              className='btn btn-accept btn-hover'
+              data-dismiss='modal'
+              onClick={this.editBoard}>
+              Guardar
+            </button>
           </div>
         }
       />
@@ -262,9 +279,8 @@ export default class CreateBoardModal extends React.Component {
   }
 }
 
-CreateBoardModal.propTypes = {
-  team: React.PropTypes.object.isRequired,
-  addChat: React.PropTypes.func.isRequired,
-  changeBoard: React.PropTypes.func.isRequired,
-  toggleCollapsible: React.PropTypes.func.isRequired,
+ConfigBoardModal.propTypes = {
+  team: React.PropTypes.object,
+  boards: React.PropTypes.array.isRequired,
+  boardId: React.PropTypes.string.isRequired,
 };

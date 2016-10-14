@@ -21,7 +21,7 @@ Factory.define('user', Meteor.users, {
 Factory.define('board', Boards, {
 	name: faker.lorem.word(),
 	users: [],
-	type: Random.choice(['Creativos', 'Coordinadores', 'Directores']),
+	type: Random.choice(['creativos', 'sistemas', 'directores creativos', 'directores de cuentas', 'administradores', 'coordinadores', 'medios']),
 	isPrivate: null,
 	moduleInstances: [],
 	archived: false,
@@ -46,7 +46,7 @@ Factory.define('team', Teams, {
 	type: Random.choice(['web', 'android', 'ios', 'marketing']),
 	boards: [],
 	users: [
-		{ email: faker.internet.email(), permission: 'owner' }
+		{ email: faker.internet.email(), hierarchy: 'sistemas' }
 	],
 	archived: false,
 });

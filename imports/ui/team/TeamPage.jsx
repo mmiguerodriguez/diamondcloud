@@ -49,7 +49,7 @@ export default class Team extends React.Component {
           teams={ this.props.teams }
           team={ this.props.team }
           users={ this.props.users }
-          owner={ this.props.team.owner() === Meteor.user().email() }
+          isAdmin={ this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas') }
 
           boards={ this.props.boards }
           board={ board }

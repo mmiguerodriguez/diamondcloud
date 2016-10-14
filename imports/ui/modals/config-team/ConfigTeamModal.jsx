@@ -134,7 +134,11 @@ export default class ConfigTeamModal extends React.Component {
   }
 
   addUser(user) {
-    Meteor.call('Teams.methods.share', { teamId: this.props.team._id, email: user }, (error, result) => {
+    Meteor.call('Teams.methods.share', {
+      teamId: this.props.team._id,
+      email: user.email,
+      hierarchy: user.hierarchy,
+    }, (error, result) => {
       if (error) {
         console.error(error);
       }

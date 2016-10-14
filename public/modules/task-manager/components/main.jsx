@@ -23,6 +23,26 @@ const {
  */
 const ERROR_DELAY = 5000;
 
+/** 
+ * Checks if a board is a coordination board
+ * by checking its type.
+ * 
+ * @param {Object} board
+ * @returns {Boolean} isCoordination
+ */
+const isCoordination = (board) => {
+  if (
+    board.type === 'coordinadores' || 
+    board.type === 'directores creativos' || 
+    board.type === 'directores de cuentas' || 
+    board.type === 'administradores'
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 /**
  * Starts the module with the following route.
  */
@@ -42,9 +62,6 @@ class TaskManagerPage extends React.Component {
      * @param {Array} tasks
      *  All the tasks we need to show
      *  to the user.
-     * @param {Object} coordinationBoard
-     *  An object containing the _id
-     *  of the coordination board.
      * @param {Object} currentBoard
      *  Current board object.
      * @param {Object} currentUser
@@ -64,7 +81,6 @@ class TaskManagerPage extends React.Component {
      */
     this.state = {
       tasks: [],
-      coordinationBoard: {},
       currentBoard: {},
       currentUser: {},
       coordination: false,
@@ -76,71 +92,64 @@ class TaskManagerPage extends React.Component {
 
   componentDidMount() {
     let self = this;
-    let coordinationBoard, currentBoard, currentUser, coordination;
+    let currentBoard, currentUser, coordination;
 
-    DiamondAPI.get({
-      collection: 'coordinationBoard',
-      filter: {},
-      callback(error, result) {
-        if (error) {
-          console.error(error);
-        } else {
-          coordinationBoard = result[0];
-          currentBoard =  DiamondAPI.getCurrentBoard();
-          currentUser = DiamondAPI.getCurrentUser();
-          coordination = coordinationBoard._id === currentBoard._id;
+    currentBoard = DiamondAPI.getCurrentBoard();
+    currentUser = DiamondAPI.getCurrentUser();
+    
+    if (isCoordination(currentBoard)) {
+      coordination = true;
+    } else {
+      coordination = false;
+    }
 
-          /**
-           *  Set coordinationBoard, currentBoard, user and if
-           *  it's a coordinationBoard, a boolean.
-           */
-          self.setState({
-            coordinationBoard,
-            currentBoard,
-            currentUser,
-            coordination,
-          }, () => {
-            /**
-             * If it's a coordinationBoard then fetch all tasks,
-             * even finished ones, except archived.
-             * If not, fetch the ones that are from the
-             * currentBoard and that are not finished.
-             */
-            let filter = coordination ? {
-              archived: false,
-            } : {
-              boardId: currentBoard._id,
-              status: 'not_finished',
-            };
+    /**
+     * Set currentBoard, user and if it's a
+     * coordination board type, a boolean.
+     */
+    self.setState({
+      currentBoard,
+      currentUser,
+      coordination,
+    }, () => {
+      /**
+       * If it's a cordination board type then fetch all tasks,
+       * even finished ones, except archived.
+       * If not, fetch the ones that are from the
+       * currentBoard and that are not finished.
+       */
+      let filter = coordination ? {
+        archived: false,
+      } : {
+        boardId: currentBoard._id,
+        status: 'not_finished',
+      };
 
-            /**
-             * After grabbing all the data we needed, subscribe
-             * to the tasks collection with the filter, and
-             * setting the state on the callback.
-             */
-            const taskManagerHandle = DiamondAPI.subscribe({
-              collection: 'tasks',
-              filter,
-              callback(error, result) {
-                if (error) {
-                  console.error(error);
-                } else {
-                  console.log('Subscribe callback', result ? result : []);
-                  self.setState({
-                    tasks: result ? result : [],
-                    loading: false,
-                  });
-                }
-              }
-            });
-
+      /**
+       * After grabbing all the data we needed, subscribe
+       * to the tasks collection with the filter, and
+       * setting the state on the callback.
+       */
+      const taskManagerHandle = DiamondAPI.subscribe({
+        collection: 'tasks',
+        filter,
+        callback(error, result) {
+          if (error) {
+            console.error(error);
+          } else {
+            console.log('Subscribe callback', result ? result : []);
             self.setState({
-              boards: DiamondAPI.getBoards(),
-              users: DiamondAPI.getUsers(),
+              tasks: result ? result : [],
+              loading: false,
             });
-          });
+          }
         }
-      }
+      });
+
+      self.setState({
+        boards: DiamondAPI.getBoards(),
+        users: DiamondAPI.getUsers(),
+      });
     });
   }
 
@@ -362,7 +371,7 @@ class CreateTask extends React.Component {
    */
   renderOptions() {
     return this.props.boards.map((board) => {
-      if (board._id !== this.props.coordinationBoard._id) {
+      if (!isCoordination(board)) {
         return (
           <option
             key={board._id}
@@ -511,7 +520,7 @@ class BoardsList extends React.Component {
        * return all the boards except for the
        * coordination one.
        */
-      if (board._id !== this.props.coordinationBoard._id) {
+      if (!isCoordination(board)) {
         return (
           <Board
             key={board._id}
@@ -666,9 +675,6 @@ class Task extends React.Component {
         updateQuery: {
           $push: {
             durations: {
-              $flags: {
-                insertAsPlainObject: true,
-              },
               userId: self.props.currentUser._id,
               startTime: new Date().getTime(),
               endTime: undefined,
@@ -679,13 +685,13 @@ class Task extends React.Component {
           if (error) {
             console.error(error);
 
-            this.props.showError({
+            self.props.showError({
               body: 'Ocurrió un error interno al iniciar la tarea',
             });
 
             self.stopTimer();
           } else {
-            console.log('Started task correctly', result);
+            console.log('Started task correctly');
           }
         }
       });
@@ -707,11 +713,6 @@ class Task extends React.Component {
         collection: 'tasks',
         filter: {
           _id: self.props.task._id,
-          // This doesn't work
-          'durations.userId': self.props.currentUser._id,
-          'durations.startTime': self.getLastTaskUpdate(),
-          'durations.endTime': undefined,
-          // End this doesn't work
         },
         updateQuery: {
           $set: {
@@ -722,13 +723,13 @@ class Task extends React.Component {
           if (error) {
             console.error(error);
 
-            this.props.showError({
+            self.props.showError({
               body: 'Error al pausar una tarea',
             });
 
             self.startTimer();
           } else {
-            console.log('Paused task correctly', result);
+            console.log('Paused task correctly');
           }
         }
       });
@@ -757,7 +758,7 @@ class Task extends React.Component {
           if (error) {
             console.error(error);
 
-            this.props.showError({
+            self.props.showError({
               body: 'Error al archivar una tarea',
             });
           } else {
@@ -1149,7 +1150,7 @@ class Task extends React.Component {
               <div>
                 <div className='record'>
                   <img
-                    src='/modules/trello/img/record.svg'
+                    src='/modules/task-manager/img/record.svg'
                     width='25px'
                   />
                 </div>
@@ -1159,7 +1160,7 @@ class Task extends React.Component {
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
-                      src='/modules/trello/img/finished-task.svg'
+                      src='/modules/task-manager/img/finished-task.svg'
                       width='25px'
                     />
                 </div>
@@ -1169,7 +1170,7 @@ class Task extends React.Component {
                   role='button'
                   onClick={this.finishTask}>
                     <img
-                      src='/modules/trello/img/pause-button.svg'
+                      src='/modules/task-manager/img/pause-button.svg'
                       width='15px'
                     />
                 </div>
@@ -1186,7 +1187,7 @@ class Task extends React.Component {
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
-                      src='/modules/trello/img/finished-task.svg'
+                      src='/modules/task-manager/img/finished-task.svg'
                       width='25px'
                     />
                 </div>
@@ -1196,7 +1197,7 @@ class Task extends React.Component {
                   role='button'
                   onClick={this.startTask}>
                     <img
-                      src='/modules/trello/img/play-arrow.svg'
+                      src='/modules/task-manager/img/play-arrow.svg'
                       width='15px'
                     />
                 </div>

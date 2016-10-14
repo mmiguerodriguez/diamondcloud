@@ -5,7 +5,7 @@ import TeamCard from './team-card/TeamCard.jsx';
 export default class TeamsLayout extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = { search: '' };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -58,11 +58,11 @@ export default class TeamsLayout extends React.Component {
       return this.props.teams.map((team) => {
         return team.name.toLowerCase().indexOf(this.state.search.toLowerCase()) > -1 ? (
           <TeamCard
-            key={ team._id }
-            team={ team }
-            owner={ team.owner() === Meteor.user().email() }
-            hasTeams={ this.props.hasTeams }
-            openConfigTeamModal={ this.props.openConfigTeamModal }
+            key={team._id}
+            team={team}
+            isAdmin={team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')}
+            hasTeams={this.props.hasTeams}
+            openConfigTeamModal={this.props.openConfigTeamModal}
           />
       ) : ( null );
       });

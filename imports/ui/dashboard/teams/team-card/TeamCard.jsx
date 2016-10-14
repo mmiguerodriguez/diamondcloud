@@ -9,7 +9,7 @@ export default class TeamCard extends React.Component {
           <div className='teams'>
             <div className='team-image'>
               {
-                this.props.owner ? (
+                this.props.isAdmin ? (
                   <a className='config-background' role='button'
                      onClick={ this.props.openConfigTeamModal.bind(null, this.props.team) }>
                     <img src='/img/teamconfig.svg' className='config-icon' />
@@ -49,6 +49,6 @@ export default class TeamCard extends React.Component {
 TeamCard.propTypes = {
   team: React.PropTypes.object,
   hasTeams: React.PropTypes.bool.isRequired,
-  owner: React.PropTypes.bool,
+  isAdmin: React.PropTypes.bool,
   openConfigTeamModal: React.PropTypes.func,
 };

@@ -49,9 +49,9 @@ if (Meteor.isServer) {
           Factory.create('moduleInstance'),
         ];
 
-        teams[0].users.push({ email: users[0].emails[0].address, permission: 'owner' });
+        teams[0].users.push({ email: users[0].emails[0].address, hierarchy: 'sistemas' });
         teams[0].boards.push({ _id: boards[0]._id });
-        teams[1].users.push({ email: users[0].emails[0].address, permission: 'owner' });
+        teams[1].users.push({ email: users[0].emails[0].address, hierarchy: 'sistemas' });
 
         boards[0].users.push({ email: users[0].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[0].users.push({ email: users[1].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
