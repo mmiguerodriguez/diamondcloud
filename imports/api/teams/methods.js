@@ -23,7 +23,6 @@ export const createTeam = new ValidatedMethod({
       throw new Meteor.Error('Teams.methods.create.notLoggedIn',
       'Must be logged in to make a team.');
     }
-
     let team, teamId;
     team = {
       name,
@@ -35,14 +34,12 @@ export const createTeam = new ValidatedMethod({
       ],
       archived: false,
     };
-
     users.forEach(({ email, hierarchy }) => {
       if (email === Meteor.user().email()) {
         throw new Meteor.Error('Teams.methods.create.emailIsActualUser',
         'You can\'t add yourself to a team',
         'user_adds_himself');
       }
-
       team.users.push({ email, hierarchy });
     });
 
@@ -58,6 +55,7 @@ export const createTeam = new ValidatedMethod({
         name: 'General',
         type: 'default',
         isPrivate: false,
+        visibleForDirectors: false,
       }, (err, res) => {
         if (!!err) {
           future.throw(err);

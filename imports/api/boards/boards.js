@@ -1,4 +1,5 @@
 import { Mongo }           from 'meteor/mongo';
+import { printObject }   from '../helpers/print-objects.js';
 
 import { Teams }           from '../teams/teams.js';
 import { Messages }        from '../messages/messages.js';
@@ -103,12 +104,20 @@ Boards.moduleInstancesFields = {
 Boards.getBoards = (boardsIds, userId, fields) => {
   fields = fields || {};
   if (Object.prototype.toString.call(boardsIds[0]) === "[object Object]"){
-    boardsIds.forEach((board, index) => {
-      boardsIds[index] = board._id;
-    });
+    boardsIds = boardsIds.map((board) => board._id);
   }
-
+  
+  // Se asume que todos los boardsIds pertenecen al mismo Team
+  
+  let team = Boards.findOne(boardsIds[0]).team();
+  
   let user = Meteor.users.findOne(userId);
+  
+  let isDirector =
+    team.userIsCertainHierarchy(user.email(), 'directores creativos') ||
+    team.userIsCertainHierarchy(user.email(), 'directores de cuentas') ||
+    team.userIsCertainHierarchy(user.email(), 'coordinadores');
+  
   return Boards.find({
     $and: [
       {
@@ -128,6 +137,18 @@ Boards.getBoards = (boardsIds, userId, fields) => {
           {
             isPrivate: false,
           },
+          {
+            $and: [
+              {
+                visibleForDirectors: true,
+              },
+              {
+                _id: {
+                  $in: isDirector ? boardsIds : [],
+                }
+              }
+            ],
+          }
         ],
       },
       { archived: false }
