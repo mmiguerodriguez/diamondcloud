@@ -57,6 +57,7 @@ Teams.dashboardFields = {
   type: 1,
   users: 1,
   boards: 1,
+  url: 1,
 };
 Teams.dashboardUsersFields = {
   profile: 1,
@@ -74,6 +75,7 @@ Teams.teamFields = {
   type: 1,
   users: 1,
   boards: 1,
+  url: 1,
 };
 
 Teams.addUser = (teamId, user) => {
@@ -94,6 +96,7 @@ Teams.removeUser = (teamId, userEmail) => {
 };
 Teams.getTeam = (teamId, userEmail, fields) => {
   fields = fields || { _id: 1, name: 1 };
+
   return Teams.find({
     _id: teamId,
     'users.email': userEmail,

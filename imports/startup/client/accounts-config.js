@@ -1,4 +1,5 @@
-import { Accounts } from 'meteor/accounts-base';
+import { Accounts }       from 'meteor/accounts-base';
+import { browserHistory } from 'react-router';
 
 Accounts.ui.config({
   requestPermissions: {
@@ -14,4 +15,16 @@ Accounts.ui.config({
   forceApprovalPrompt: {
     google: true,
   },
+});
+
+Accounts.onLogin(() => {
+  let path;
+
+  browserHistory.listen((e) => {
+    path = e.pathname;
+  });
+
+  if (path === '/carlosydario' || path === '/diamondcloud') {
+    browserHistory.push(`/team${path}`);
+  }
 });
