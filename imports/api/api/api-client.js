@@ -9,9 +9,9 @@ export const generateApi = (moduleInstanceId) => {
   let subscriptions = [];
   let DiamondAPI = {
     subscribe({ collection, filter, callback }) {
-      let subscriptionCallback = {
+      let subscription,
+      subscriptionCallback = {
         onReady() {
-          console.log('Suscribed to', collection);
           let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
           let teamId = moduleInstance.board().team()._id;
 
@@ -36,14 +36,21 @@ export const generateApi = (moduleInstanceId) => {
           });
 
           if (query.fetch().length === 0) {
-            console.log('New data:', query.fetch());
             callback(undefined, query.fetch());
           }
 
-          let caller = (id, fields) => {
-            let updatedData = query.fetch();
-            console.log('New data:', updatedData);
-            callback(undefined, updatedData);
+          let caller = () => {
+            // Check that the subscription is inside the subscriptions array
+            let subscriptionIsAlive = subscriptions.find((_subscription) => {
+              return _subscription.subscriptionId === subscription.subscriptionId;
+            }) !== undefined;
+            console.log('SUBSCRIPTION IS ALIVE: ', subscriptionIsAlive);
+            if (subscriptionIsAlive) {
+              console.log('ARRAY DE SUBSCRIPTIONS: ', subscriptions);
+              let updatedData = query.fetch();
+              console.log('Esta es la collection de drive: ', updatedData);
+              callback(undefined, updatedData);
+            }
           };
 
           let handle = query.observeChanges({
@@ -58,12 +65,13 @@ export const generateApi = (moduleInstanceId) => {
         }
       };
 
-      let subscription = Meteor.subscribe(
-      'APICollection.data',
-      moduleInstanceId,
-      collection,
-      filter,
-      subscriptionCallback);
+      subscription = Meteor.subscribe(
+        'APICollection.data',
+        moduleInstanceId,
+        collection,
+        filter,
+        subscriptionCallback);
+        
 
       subscriptions.push(subscription);
 
@@ -76,7 +84,6 @@ export const generateApi = (moduleInstanceId) => {
       subscriptions = [];
     },
     insert({ collection, object, isGlobal, callback }) {
-      console.log('Inserting new document:', object, 'into', collection, ', isGlobal:', isGlobal);
       Meteor.call('API.methods.APIInsert', {
         moduleInstanceId,
         collection,

@@ -404,16 +404,16 @@ class FileManagerPage extends React.Component {
 
 
   componentDidMount() {
-    this.getDriveData();
+    this.getDriveData(this.props.params.folderId);
     checkAuth(this.getDriveFolder.bind(this)); /** configure google drive api and
                                      *  call the getDriveFolder in the callback
                                      */
   }
 
-  componentWillReceiveProps() {
+  componentWillReceiveProps(nextProps) {
     // the props have changed, so we have to remake the subscriptions
     DiamondAPI.unsubscribe();
-    this.getDriveData();
+    this.getDriveData(nextProps.params.folderId);
   }
 
   /**
@@ -458,8 +458,8 @@ class FileManagerPage extends React.Component {
     }
   }
 
-  getDriveData() {
-
+  getDriveData(folderId) {
+    console.log('Se esta por llamar getDriveData; las props son: ', folderId);
     // TODO show only the documents and folders of the current folder
     // TODO dessuscribe from the old folders
     let self = this;
@@ -480,6 +480,7 @@ class FileManagerPage extends React.Component {
             },
           },
           callback(err, res) {
+            console.log('Me acaban de llegar carpetas. Son: ', res);
             if (!!err) {
               console.error(err);
             } else {
@@ -508,6 +509,7 @@ class FileManagerPage extends React.Component {
             },
           },
           callback(err, res) {
+            console.log('Me acaban de llegar archivos. Son: ', res);
             if (!!err) {
               console.error(err);
             } else {
@@ -530,7 +532,7 @@ class FileManagerPage extends React.Component {
     // Check if we are in the root folder //
     ////////////////////////////////////////
 
-    if (!this.props.params.folderId) {
+    if (!folderId) {
       //////////////////////////////////////////////////////////
       // Get the list of folders and documents in root folder //
       //////////////////////////////////////////////////////////
@@ -578,7 +580,7 @@ class FileManagerPage extends React.Component {
       ///////////////////////////////////
 
       getFiles({
-        parentFolderId: this.props.params.folderId,
+        parentFolderId: folderId,
       });
     }
   }
