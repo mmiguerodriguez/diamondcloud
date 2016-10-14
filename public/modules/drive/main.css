@@ -67,6 +67,9 @@ body {
 .documents-container {
   margin-bottom: 70px;
 }
+.document-container {
+  transition: 0.3s all ease;
+}
 .divider {
   margin: 5px 0 !important;
   border-top-color: #ccc !important;
@@ -208,6 +211,10 @@ img.icon-type.import-drive {
 .document-title {
   padding: 10px 15px 10px 5px;
   margin: 0;
+  transition: 0.3s all ease;
+}
+.document-container:hover .document-title {
+  background-color: #d3d3d3;
 }
 
 .drive-navbar {

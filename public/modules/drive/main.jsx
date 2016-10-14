@@ -34,7 +34,7 @@ class FileManagerLayout extends React.Component {
     if(this.props.folders.length === 0) {
       return (
         <div
-          className='document-container col-xs-4 col-sm-3 col-lg-2'
+          className='document-container col-xs-6 col-sm-4 col-md-3 col-lg-2'
           data-toggle="modal"
           data-target="#create-folder">
           <div className="document fixed">
@@ -46,7 +46,7 @@ class FileManagerLayout extends React.Component {
     } else {
       return this.props.folders.map((folder) => {
         return (
-          <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
+          <div className='document-container col-xs-6 col-sm-4 col-md-3 col-lg-2'>
             <div
               className="document fixed"
               title={folder.name}
@@ -98,7 +98,7 @@ class FileManagerLayout extends React.Component {
       return (
         <div>
           <div
-            className='document-container col-xs-4 col-sm-3 col-lg-2'
+            className='document-container col-xs-6 col-sm-4 col-md-3 col-lg-2'
             data-toggle="modal"
             data-target="#create-document">
             <div className="document fixed">
@@ -107,7 +107,7 @@ class FileManagerLayout extends React.Component {
             </div>
           </div>
           <div
-            className='document-container col-xs-4 col-sm-3 col-lg-2'
+            className='document-container col-xs-6 col-sm-4 col-md-3 col-lg-2'
             id='import-file-card'>
             <div className="document fixed">
               <img className='col-xs-3 icon-type import-drive' src='modules/drive/img/google-drive-logo.svg' />
@@ -119,7 +119,7 @@ class FileManagerLayout extends React.Component {
     } else {
       return this.props.documents.map((document) => {
         return (
-          <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
+          <div className='document-container col-xs-6 col-sm-4 col-md-3 col-lg-2'>
             <div
               className="document fixed"
               title={document.name}>

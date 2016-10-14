@@ -31,8 +31,9 @@ export default class NavbarLayout extends React.Component {
               <span className='icon-bar'></span>
               <span className='icon-bar'></span>
             </button>
-            <a className="col-xs-2">
-              <img src='/img/logo.svg' className='logo-photo'/>
+            <a className="logo-container">
+              <img src='/img/logo.svg' className='photo'/>
+              <p className='name'>Diamond Cloud</p>
             </a>
           </div>
           <div className='collapse navbar-collapse' id='navbar'>
