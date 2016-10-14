@@ -113,8 +113,6 @@ if (Meteor.isServer) {
           boards[2]._id = result_2._id;
           boards[2].users = result_2.users;
 
-          printObject('result_1:', result_1, 'expected:', boards[1]);
-          printObject('result_2:', result_2, 'expected:', boards[2]);
           chai.assert.equal(JSON.stringify(result_1), JSON.stringify(boards[1]));
           chai.assert.equal(JSON.stringify(result_2), JSON.stringify(boards[2]));
 

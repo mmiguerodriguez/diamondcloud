@@ -128,6 +128,20 @@ Boards.getBoards = (boardsIds, userId, fields) => {
           {
             isPrivate: false,
           },
+          /*
+          {
+            $and: [
+              {
+                visibleForDirectors: true,
+              },
+              {
+                _id: {
+                  $in:
+                }
+              }
+            ],
+          }
+          */
         ],
       },
       { archived: false }
