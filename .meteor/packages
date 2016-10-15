@@ -6,18 +6,18 @@
 
 meteor-base@1.0.4                     # Packages every Meteor app needs to have
 mobile-experience@1.0.4               # Packages for a great mobile UX
-mongo@1.1.10                          # The database Meteor supports right now
+mongo@1.1.12_1                          # The database Meteor supports right now
 blaze-html-templates@1.0.4            # Compile .html files into Meteor Blaze views
 reactive-var@1.0.10                   # Reactive variable for tracker
 tracker@1.1.0                         # Meteor's client-side reactive programming library
 
-standard-minifier-js@1.1.8            # JS minifier run for production mode
-es5-shim@4.6.13                       # ECMAScript 5 compatibility for older browsers.
-ecmascript@0.5.7                      # Enable ECMAScript2015+ syntax in app code
+standard-minifier-js@1.2.0_1            # JS minifier run for production mode
+es5-shim@4.6.14_1                       # ECMAScript 5 compatibility for older browsers.
+ecmascript@0.5.8_1                      # Enable ECMAScript2015+ syntax in app code
 
 accounts-ui@1.1.9                     # Login UI
 accounts-google@1.0.10                # Login with Google
-service-configuration                 # Set clientId and secret keys automatically for login with google
+service-configuration@1.0.10                 # Set clientId and secret keys automatically for login with google
 react-meteor-data                     # React Meteor
 seba:minifiers-autoprefixer           # Sass stuff
 fourseven:scss                        # Sass
@@ -38,3 +38,4 @@ dburles:collection-helpers            # Helpers
 meteorhacks:kadira                    # Kadira
 velocity:meteor-stubs                 # Stubs
 raix:push                             # Mobile notifications
+shell-server
