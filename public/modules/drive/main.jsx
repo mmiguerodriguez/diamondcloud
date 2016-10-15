@@ -1,13 +1,47 @@
-const { DiamondAPI, React, ReactDOM, ReactRouter, classNames } = window;
-const { Router, Route, IndexRoute, browserHistory } = ReactRouter;
+const { DiamondAPI, React, ReactDOM, ReactRouter } = window;
+const { Router, Route, browserHistory } = ReactRouter;
 
 browserHistory.push('/'); // initialize the router
 
 // Google Drive API
-const CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com',
-      folderMimeType = 'application/vnd.google-apps.folder';
+const CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
+const folderMimeType = 'application/vnd.google-apps.folder';
 
 class FileManagerLayout extends React.Component {
+  static renderDocumentTypeImg(fileType) {
+    switch (fileType) {
+      case 'application/vnd.google-apps.document':
+        return (
+          <img
+            alt="Documento"
+            className="col-xs-3 icon-type create-doc"
+            src="modules/drive/img/google-docs.svg"
+          />);
+      case 'application/vnd.google-apps.drawing':
+        return (
+          <img
+            alt="Dibujo"
+            className="col-xs-3 icon-type create-doc"
+            src="modules/drive/img/google-drawings.svg"
+          />);
+      case 'application/vnd.google-apps.spreadsheet':
+        return (
+          <img
+            alt="Hoja de cálculo"
+            className="col-xs-3 icon-type create-doc"
+            src="modules/drive/img/google-sheets.svg"
+          />);
+      case 'application/vnd.google-apps.presentation':
+        return (
+          <img
+            alt="Presentación"
+            className="col-xs-3 icon-type create-doc"
+            src="modules/drive/img/google-slides.svg"
+          />);
+      default:
+        return null;
+    }
+  }
   constructor(props) {
     super(props);
 
@@ -22,95 +56,95 @@ class FileManagerLayout extends React.Component {
     this.props.importDocument({
       file,
       parentFolderId: this.props.folderId,
-      callback(error, result) {
-        if (!!error) {
+      callback(error) {
+        if (error) {
           console.error(error); // TODO: handle error
         }
-      }
+      },
     });
   }
 
   renderFolders() {
-    if(this.props.folders.length === 0) {
+    if (this.props.folders.length === 0) {
       return (
         <div
-          className='document-container col-xs-4 col-sm-3 col-lg-2'
+          className="document-container col-xs-4 col-sm-3 col-lg-2"
           data-toggle="modal"
-          data-target="#create-folder">
+          data-target="#create-folder"
+        >
           <div className="document fixed">
-            <img className='col-xs-3 icon-type create-folder' src='modules/drive/img/folder.svg' />
+            <img
+              alt="Crear carpeta"
+              className="col-xs-3 icon-type create-folder"
+              src="/modules/drive/img/folder.svg"
+            />
             <p className="col-xs-9 document-title truncate">Crear</p>
           </div>
         </div>
       );
-    } else {
-      return this.props.folders.map((folder) => {
-        return (
-          <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
-            <div
-              className="document fixed"
-              title={folder.name}
-              onClick={
-                () => {
-                  browserHistory.push('/folder/' + folder._id);
-                }
-              }>
-              <img className='col-xs-3 icon-type create-folder' src='modules/drive/img/folder.svg' />
-              <p className="col-xs-9 document-title truncate">{folder.name}</p>
-            </div>
-            <i
-              className="material-icons delete"
-              onClick={this.props.deleteDocument.bind(this, {
-                id: folder._id,
-                parentFolderId: this.props.folderId,
-                mimeType: folderMimeType,
-                isImported: folder.isImported,
-                callback: () => {}, // TODO: handle loading and error
-              })}
-            >
-              delete
-            </i>
-          </div>
-        );
-      });
     }
+    return this.props.folders.map(folder => (
+      <div className="document-container col-xs-4 col-sm-3 col-lg-2">
+        <div
+          className="document fixed"
+          title={folder.name}
+          onClick={
+            () => {
+              browserHistory.push(`/folder/${folder._id}`);
+            }
+          }
+        >
+          <img
+            alt="Crear carpeta"
+            className="col-xs-3 icon-type create-folder"
+            src="modules/drive/img/folder.svg"
+          />
+          <p className="col-xs-9 document-title truncate">{folder.name}</p>
+        </div>
+        <i
+          className="material-icons delete"
+          onClick={this.props.deleteDocument.bind(this, {
+            id: folder._id,
+            parentFolderId: this.props.folderId,
+            mimeType: folderMimeType,
+            isImported: folder.isImported,
+            callback: () => {}, // TODO: handle loading and error
+          })}
+        >
+          delete
+        </i>
+      </div>
+    ));
   }
-  renderDocumentTypeImg(fileType) {
-    switch(fileType) {
-      case 'application/vnd.google-apps.document':
-        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-docs.svg' />;
-        break;
-      case 'application/vnd.google-apps.drawing':
-        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-drawings.svg' />;
-        break;
-      case 'application/vnd.google-apps.spreadsheet':
-        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-sheets.svg' />;
-        break;
-      case 'application/vnd.google-apps.presentation':
-        return <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-slides.svg' />;
-        break;
-      default:
-        return null;
-    }
-  }
+
   renderDocuments() {
-    if(this.props.documents.length === 0) {
+    if (this.props.documents.length === 0) {
       return (
         <div>
           <div
-            className='document-container col-xs-4 col-sm-3 col-lg-2'
+            className="document-container col-xs-4 col-sm-3 col-lg-2"
             data-toggle="modal"
-            data-target="#create-document">
+            data-target="#create-document"
+          >
             <div className="document fixed">
-              <img className='col-xs-3 icon-type create-doc' src='modules/drive/img/google-docs.svg' />
+              <img
+                alt="Crear documento"
+                className="col-xs-3 icon-type create-doc"
+                src="modules/drive/img/google-docs.svg"
+              />
               <p className="col-xs-9 document-title truncate">Crear</p>
             </div>
           </div>
           <div
-            className='document-container col-xs-4 col-sm-3 col-lg-2'
-            id='import-file-card'>
+            className="document-container col-xs-4 col-sm-3 col-lg-2"
+            id="import-file-card"
+          >
             <div className="document fixed">
-              <img className='col-xs-3 icon-type import-drive' src='modules/drive/img/google-drive-logo.svg' />
+              <img
+                alt="Importar"
+                className="col-xs-3 icon-type import-drive"
+                src="modules/drive/img/google-drive-logo.svg"
+              />
               <p className="col-xs-9 document-title truncate">Importar</p>
             </div>
           </div>
@@ -643,13 +677,8 @@ class FileManagerPage extends React.Component {
               isImported: false,
             },
             isGlobal: true,
-            callback(err, res) {
-              if (!!err) {
-                console.error(err);
-              }
-            },
+            callback,
           });
-          callback(null, resp);
         }, (reason) => {
           callback(reason, resp);
         });

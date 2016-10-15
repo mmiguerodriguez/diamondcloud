@@ -48,7 +48,24 @@ export const generateApi = (moduleInstanceId) => {
             if (subscriptionIsAlive) {
               console.log('ARRAY DE SUBSCRIPTIONS: ', subscriptions);
               let updatedData = query.fetch();
-              console.log('Esta es la collection de drive: ', updatedData);
+              console.log('Esta es la collection de drive: ', APICollection.find({
+                $and: [
+                  {
+                    '#collection': collection,
+                  },
+                  {
+                    $or: [
+                      {
+                        '#moduleInstanceId': moduleInstanceId,
+                      },
+                      {
+                        '#moduleId': moduleInstance.moduleId,
+                        '#teamId': teamId,
+                      }
+                    ]
+                  }
+                ],
+              }).fetch());
               callback(undefined, updatedData);
             }
           };
@@ -71,7 +88,7 @@ export const generateApi = (moduleInstanceId) => {
         collection,
         filter,
         subscriptionCallback);
-        
+
 
       subscriptions.push(subscription);
 
