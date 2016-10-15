@@ -72,7 +72,7 @@ if (Meteor.isServer) {
         
         teams[2].users = [];
         teams[2].users.push({ email: users[2].emails[0].address, hierarchy: 'creativos' });
-        teams[2].users.push({ email: users[3].emails[0].address, hierarchy: 'directores creativos' });
+        teams[2].users.push({ email: users[3].emails[0].address, hierarchy: 'director creativo' });
         
         boards[3].users.push({ email: users[2].emails[0].address });
         
