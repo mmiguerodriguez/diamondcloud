@@ -42,10 +42,10 @@ export default class ConfigTeamModal extends React.Component {
             <div className='row'>
               <div className='name-input'>
                 <label  htmlFor='projectName'
-                        className='col-xs-2 col-sm-offset-2 control-label left-align'>
+                        className='col-xs-2 control-label left-align'>
                   Nombre
                 </label>
-                <div className='col-xs-12 col-sm-6'>
+                <div className='col-xs-12 col-sm-10'>
                   <TextInput
                     id='projectName'
                     class='form-control'
@@ -61,11 +61,11 @@ export default class ConfigTeamModal extends React.Component {
               </div>
               <div className='name-input'>
                 <label  htmlFor='projectType'
-                        className='col-xs-2 col-sm-offset-2 control-label left-align'>
+                        className='col-xs-2 control-label left-align'>
                   Tipo
                 </label>
                 <div  id='otherProjectType'
-                      className='col-xs-12 col-sm-6'>
+                      className='col-xs-12 col-sm-10'>
                   <TextInput
                     id='projectType'
                     class='form-control'
@@ -88,7 +88,7 @@ export default class ConfigTeamModal extends React.Component {
             <h4 className='configuration-title'>Plan</h4>
             <p className='explanation-text margin'>Visualize mas información de su proyecto</p>
             <div className='row'>
-              <div className='col-sm-6 col-sm-offset-2 col-xs-12'>
+              <div className='col-xs-12'>
                 <p>Plan actual: { this.props.team.plan }</p>
                 <p>Personas: { this.props.team.users.length }</p>
                 <p>Boards: { this.props.team.boards.length }/12</p>

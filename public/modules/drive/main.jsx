@@ -206,9 +206,10 @@ class FileManagerLayout extends React.Component {
   }
 
   render() {
+    console.log(this.props.loadingDocuments);
     return (
       <div>
-        <div id='resizable' className='file-manager ui-widget-content'>
+        <div className='file-manager ui-widget-content'>
           {
             // Create document modal
           }
@@ -317,39 +318,38 @@ class FileManagerLayout extends React.Component {
                   className='go-back'
                   onClick={ browserHistory.goBack }>
                 </div>
+                <p className='folder-name'>Nombre de la carpeta</p>
               </div>
             ) : ( null )
           }
-          <div className="container-fluid files-container">
-            <p className="folders-title-container">
-              Carpetas
-            </p>
-            <hr className="divider" />
-            <div className="folders-container">
-              {
-                (this.props.loadingFolders) ?
-                  (
-                    <p>Cargando...</p>
-                  ) : (
+          {
+            (this.props.loadingFolders || this.props.loadingDocuments) ? (
+              <div className='loading'>
+                <div className='loader'></div>
+              </div>
+            ) : (
+              <div className="container-fluid files-container">
+                <p className="folders-title-container">
+                  Carpetas
+                </p>
+                <hr className="divider" />
+                <div className="folders-container">
+                  {
                     this.renderFolders()
-                  )
-              }
-            </div>
-            <p className="documents-title-container">
-              Archivos
-            </p>
-            <hr className="divider" />
-            <div className="documents-container">
-              {
-                (this.props.loadingDocuments) ?
-                  (
-                    <p>Cargando...</p>
-                  ) : (
+                  }
+                </div>
+                <p className="documents-title-container">
+                  Archivos
+                </p>
+                <hr className="divider" />
+                <div className="documents-container">
+                  {
                     this.renderDocuments()
-                  )
-              }
-            </div>
-          </div>
+                  }
+                </div>
+              </div>
+            )
+          }
           <div className="create">
             <div className="options">
               <div
@@ -362,7 +362,6 @@ class FileManagerLayout extends React.Component {
                 data-toggle="modal"
                 data-target="#create-folder"
                 title='Crear carpeta'>
-                  <i className="material-icons icon">create_new_folder</i>
               </div>
               <div
                 className="option doc"
@@ -637,6 +636,10 @@ class FileManagerPage extends React.Component {
       console.error('There was an error while creating the document. Please try again');
       // TODO: handle this error
     } else {
+      let self = this;
+      self.setState({
+        loadingDocuments: true,
+      });
       gapi.client.drive.files.create({
         resource: {
           name,
@@ -678,13 +681,24 @@ class FileManagerPage extends React.Component {
               isImported: false,
             },
             isGlobal: true,
-            callback,
+            callback(error, result){
+              self.setState({
+                loadingDocuments: false,
+              });
+              callback(error, result);
+            },
           });
         }, (reason) => {
-          callback(reason, resp);
+          self.setState({
+            loadingDocuments: false,
+          });
+          callback(reason);
         });
       }, (reason) => {
-        callback(reason, resp);
+        self.setState({
+          loadingDocuments: false,
+        });
+        callback(reason);
       });
     }
   }
@@ -704,7 +718,10 @@ class FileManagerPage extends React.Component {
       return false;
       // TODO: handle this error
     }
-
+    let self = this;
+    self.setState({
+      loadingFolders: true,
+    });
     // Create the folder in Drive
     gapi.client.drive.files.create({
       resource: {
@@ -713,6 +730,9 @@ class FileManagerPage extends React.Component {
         parents: [parentFolderId || diamondCloudDriveFolderId],
       }
     }).then(handleCreatedFolder, (error) => {
+      self.setState({
+        loadingFolders: false,
+      });
       callback(error);
     });
 
@@ -727,7 +747,10 @@ class FileManagerPage extends React.Component {
             },
             isGlobal: true,
             callback(err, res) {
-              if (!!err) {
+              if (err) {
+                self.setState({
+                  loadingFolders
+                });
                 callback(err, null);
               } else {
                 insertFolderInStorage(folderId);
@@ -748,7 +771,12 @@ class FileManagerPage extends React.Component {
          name,
         },
         isGlobal: true,
-        callback,
+        callback(error, result) {
+          self.setState({
+            loadingFolders: false,
+          });
+          callback(error, result);
+        },
       });
     }
   }
