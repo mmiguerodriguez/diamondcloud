@@ -48,6 +48,7 @@ Meteor.publishComposite('teams.team', function(teamId) {
             type: 1,
             users: 1,
             isPrivate: 1,
+            visibleForDirectors: 1,
           });
         },
       },
