@@ -52,13 +52,13 @@ export const APIUpdate = new ValidatedMethod({
     collection: { type: String },
     filter: { type: Object, blackbox: true },
     updateQuery: { type: Object, blackbox: true },
+    options: { type: Object, optional: true, blackbox: true },
   }).validator(),
-  run({ moduleInstanceId, collection, filter, updateQuery }) {
+  run({ moduleInstanceId, collection, filter, updateQuery, options }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('API.methods.APIUpdate.notLoggedIn',
       'Must be logged in to use a module.');
     }
-
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
     let teamId = moduleInstance.board().team()._id;
 
@@ -89,6 +89,7 @@ export const APIUpdate = new ValidatedMethod({
       ],
     },
     updateQuery,
+    options,
     (err, res) => {
       if (!!err) {
         throw new Meteor.Error('API.methods.APIUpdate.failedUpdating',

@@ -44,28 +44,8 @@ export const generateApi = (moduleInstanceId) => {
             let subscriptionIsAlive = subscriptions.find((_subscription) => {
               return _subscription.subscriptionId === subscription.subscriptionId;
             }) !== undefined;
-            console.log('SUBSCRIPTION IS ALIVE: ', subscriptionIsAlive);
             if (subscriptionIsAlive) {
-              console.log('ARRAY DE SUBSCRIPTIONS: ', subscriptions);
               let updatedData = query.fetch();
-              console.log('Esta es la collection de drive: ', APICollection.find({
-                $and: [
-                  {
-                    '#collection': collection,
-                  },
-                  {
-                    $or: [
-                      {
-                        '#moduleInstanceId': moduleInstanceId,
-                      },
-                      {
-                        '#moduleId': moduleInstance.moduleId,
-                        '#teamId': teamId,
-                      }
-                    ]
-                  }
-                ],
-              }).fetch());
               callback(undefined, updatedData);
             }
           };
@@ -77,7 +57,6 @@ export const generateApi = (moduleInstanceId) => {
           });
         },
         onError(err) {
-          console.log('Suscription error');
           throw new console.error(err);
         }
       };
@@ -108,12 +87,13 @@ export const generateApi = (moduleInstanceId) => {
         isGlobal,
       }, callback);
     },
-    update({ collection, filter, updateQuery, callback }) {
+    update({ collection, filter, updateQuery, options = {}, callback }) {
       Meteor.call('API.methods.APIUpdate', {
         moduleInstanceId,
         collection,
         filter,
         updateQuery,
+        options,
       }, callback);
     },
     get({ collection, filter, callback }) {

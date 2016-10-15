@@ -13,8 +13,6 @@ export default class UsersList extends React.Component {
       }, (error, result) => {
         if (error) {
           console.error(error);
-        } else {
-          console.log('Changed user hierarchy', result);
         }
       });
     }
@@ -26,7 +24,6 @@ export default class UsersList extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log('props: ', this.props);
     this.state = {
       hierarchy: this.props.user.hierarchy || 'sistemas',
     };

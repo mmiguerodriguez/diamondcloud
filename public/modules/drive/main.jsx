@@ -465,7 +465,7 @@ class FileManagerPage extends React.Component {
       q: `name = "${folderName}" and mimeType = "${folderMimeType}"`,
       pageSize: 1,
     }).then(handleFolderList, (error) => {
-      console.log(error); // TODO: handle error
+      console.error(error); // TODO: handle error
     });
 
     function handleFolderList(response) {
@@ -477,7 +477,7 @@ class FileManagerPage extends React.Component {
             mimeType: folderMimeType,
           }
         }).then(handleCreatedFolder, (error) => {
-          console.log(error); // TODO: handle error
+          console.error(error); // TODO: handle error
         });
       } else {
         self.setState({
@@ -494,7 +494,6 @@ class FileManagerPage extends React.Component {
   }
 
   getDriveData(folderId) {
-    console.log('Se esta por llamar getDriveData; las props son: ', folderId);
     // TODO show only the documents and folders of the current folder
     // TODO dessuscribe from the old folders
     let self = this;
@@ -515,7 +514,6 @@ class FileManagerPage extends React.Component {
             },
           },
           callback(err, res) {
-            console.log('Me acaban de llegar carpetas. Son: ', res);
             if (err) {
               console.error(err);
             } else {
@@ -544,7 +542,6 @@ class FileManagerPage extends React.Component {
             },
           },
           callback(err, res) {
-            console.log('Me acaban de llegar archivos. Son: ', res);
             if (err) {
               console.error(err);
             } else {
@@ -609,11 +606,7 @@ class FileManagerPage extends React.Component {
         }
       });
     } else {
-
-      ///////////////////////////////////
-      // we are not in the root folder //
-      ///////////////////////////////////
-
+      // we are not in the root folder
       getFiles({
         parentFolderId: folderId,
       });
@@ -957,15 +950,19 @@ class FileViewerPage extends React.Component {
         />
     );
   }
-  
+
   componentDidMount() {
     // Set in the data storage the opened document
     DiamondAPI.update({
       collection: 'globalValues',
+      filter: {},
       updateQuery: {
         $set: {
           '$.openedDocumentId': this.props.params.documentId,
         },
+      },
+      options: {
+        upsert: true,
       },
       callback(error) {
         if (error) {

@@ -414,7 +414,6 @@ export default class TeamLayout extends React.Component {
       } else {
         iframe.contentWindow.DiamondAPI.unsubscribe();
         self.closeContextMenu(contextMenu);
-        console.log(result);
       }
     });
   }
