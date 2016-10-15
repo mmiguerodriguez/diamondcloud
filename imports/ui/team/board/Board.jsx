@@ -4,6 +4,12 @@ import classNames     from 'classnames';
 import ModuleInstance from '../../module-instance/ModuleInstance.jsx';
 
 export default class Board extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.toggleBoardToDirectors = this.toggleBoardToDirectors.bind(this);
+  }
+
   render() {
     let classes = classNames('board-container', {
       'permission-asker-opened': this.props.permissionAsker
@@ -20,15 +26,28 @@ export default class Board extends React.Component {
           </div>
           <div className='col-xs-6 right-data'>
             <h4 className='members truncate'>
-              { this.renderUsers() }
+              {this.renderUsers()}
             </h4>
             <div className="visibility">
               {
-                /*  TODO: When visibility-off is clicked change image to visibility-on.
-                <img src="/img/visibility-on.svg" className="visibility-img" title="Hacer visible para directores" />
-                */
+                this.props.board.visibleForDirectors ? (
+                  <img
+                    role="button"
+                    onClick={() => this.toggleBoardToDirectors('lockBoard')}
+                    src="/img/visibility-off.svg"
+                    className="visibility-img"
+                    title="Hacer no visible para directores"
+                  />
+                ) : (
+                  <img
+                    role="button"
+                    onClick={() => this.toggleBoardToDirectors('unlockBoard')}
+                    src="/img/visibility-on.svg"
+                    className="visibility-img"
+                    title="Hacer visible para directores"
+                  />
+                )
               }
-              <img src="/img/visibility-off.svg" className="visibility-img" title="Hacer no visible para directores" />
             </div>
             <span className='message-icon-span' onClick={ this.props.addChat.bind(null, { boardId: this.props.board._id }) }>
               { /* <h4 className='message-text'>Chat del board</h4> */ }
@@ -46,6 +65,7 @@ export default class Board extends React.Component {
       </div>
     );
   }
+
   componentDidMount() {
     let self = this;
 
@@ -111,6 +131,7 @@ export default class Board extends React.Component {
       }
     });
   }
+
   renderModules() {
     let arr = [];
 
@@ -140,6 +161,7 @@ export default class Board extends React.Component {
 
     return arr;
   }
+
   renderUsers() {
     if (this.props.board.isPrivate) {
       return this.props.board.users.map((_user) => {
@@ -168,6 +190,20 @@ export default class Board extends React.Component {
         );
       });
     }
+  }
+
+  toggleBoardToDirectors(methodName) {
+    Meteor.call(
+      `Boards.methods.${methodName}`,
+      {
+        _id: this.props.board._id
+      },
+      (err, res) => {
+        if (err) {
+          throw new console.error(err);
+        }
+      }
+    );
   }
 }
 

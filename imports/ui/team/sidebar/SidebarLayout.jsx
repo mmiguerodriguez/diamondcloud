@@ -19,9 +19,10 @@ export default class SidebarLayout extends React.Component {
           <img src='/img/sidebar/boards.svg' width='32px' />
           <p className='text item-title'>Boards</p>
         </div>
-        <div  id='modules-item'
-              className='item'
-              onClick={ this.props.toggleCollapsible.bind(null, 'modules') }>
+        <div
+          id='modules-item'
+          className='item'
+          onClick={ this.props.toggleCollapsible.bind(null, 'modules') }>
           <img src='/img/sidebar/modules.svg' width='32px' />
           <p className='text item-title'>Módulos</p>
         </div>

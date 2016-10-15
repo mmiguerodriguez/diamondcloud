@@ -29,18 +29,22 @@ export default class Team extends React.Component {
     this.boardSubscribe = this.boardSubscribe.bind(this);
   }
   render() {
-    const board = Team.board.get();
+    if (!Team.boardId.get()) {
+      return null;
+    }
+
+    const board = Boards.findOne(Team.boardId.get());
 
     if (this.props.loading) {
-      return ( null );
+      return null;
     }
 
     if (this.props.team === undefined) {
-      return ( null );
+      return null;
     }
 
     if (!board) {
-      return ( null );
+      return null;
     }
 
     return (
@@ -175,7 +179,7 @@ export default class Team extends React.Component {
   removeChat(obj) {
     let { chats } = this.state;
 
-    if (!!obj.boardId) {
+    if (obj.boardId) {
       chats.forEach((chat, index) => {
         if (chat.boardId === obj.boardId) {
           chat.subscription.stop();
@@ -197,7 +201,7 @@ export default class Team extends React.Component {
   }
 
   boardSubscribe(boardId) {
-    if (Team.board.get()._id === boardId) {
+    if (Team.boardId.get() === boardId) {
       return;
     }
 
@@ -210,7 +214,7 @@ export default class Team extends React.Component {
 
     let subscription = Meteor.subscribe('boards.board', boardId, {
       onReady() {
-        Team.board.set(Boards.findOne(boardId));
+        Team.boardId.set(boardId);
       },
       onError(error) {
         console.error(error);
@@ -221,7 +225,7 @@ export default class Team extends React.Component {
   }
 }
 
-Team.board = new ReactiveVar();
+Team.boardId = new ReactiveVar();
 Team.boardSubscription = new ReactiveVar();
 
 export default TeamPageContainer = createContainer(({ params }) => {
@@ -243,7 +247,7 @@ export default TeamPageContainer = createContainer(({ params }) => {
   const teamHandle = Meteor.subscribe('teams.team', teamId, () => {
     let firstBoard = Boards.findOne();
     let boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
-      Team.board.set(Boards.findOne());
+      Team.boardId.set(Boards.findOne()._id);
     });
     Team.boardSubscription.set(boardHandle);
     messagesHandle = Meteor.subscribe('messages.last', teamId);
