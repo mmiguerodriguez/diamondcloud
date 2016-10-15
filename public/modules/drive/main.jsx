@@ -68,7 +68,7 @@ class FileManagerLayout extends React.Component {
     if (this.props.folders.length === 0) {
       return (
         <div
-          className="document-container col-xs-4 col-sm-3 col-lg-2"
+          className='document-container col-xs-6 col-sm-4 col-md-3 col-lg-2'
           data-toggle="modal"
           data-target="#create-folder"
         >
@@ -82,9 +82,10 @@ class FileManagerLayout extends React.Component {
           </div>
         </div>
       );
+
     }
     return this.props.folders.map(folder => (
-      <div className="document-container col-xs-4 col-sm-3 col-lg-2">
+      <div className="document-container col-xs-6 col-sm-4 col-md-3 col-lg-2">
         <div
           className="document fixed"
           title={folder.name}
@@ -122,7 +123,7 @@ class FileManagerLayout extends React.Component {
       return (
         <div>
           <div
-            className="document-container col-xs-4 col-sm-3 col-lg-2"
+            className="document-container col-xs-6 col-sm-4 col-md-3 col-lg-2"
             data-toggle="modal"
             data-target="#create-document"
           >
@@ -136,7 +137,7 @@ class FileManagerLayout extends React.Component {
             </div>
           </div>
           <div
-            className="document-container col-xs-4 col-sm-3 col-lg-2"
+            className="document-container col-xs-6 col-sm-4 col-md-3 col-lg-2"
             id="import-file-card"
           >
             <div className="document fixed">
@@ -150,9 +151,10 @@ class FileManagerLayout extends React.Component {
           </div>
         </div>
       );
+
     }
     return this.props.documents.map(document => (
-      <div className="document-container col-xs-4 col-sm-3 col-lg-2">
+      <div className="document-container col-xs-6 col-sm-4 col-md-3 col-lg-2">
         <div
           className="document fixed"
           title={document.name}

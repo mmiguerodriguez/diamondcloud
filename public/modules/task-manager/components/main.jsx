@@ -423,11 +423,11 @@ class CreateTask extends React.Component {
   render() {
     return (
       <div className='row create-task-form'>
+        <div
+          className='go-back go-back-task'
+          onClick={() => this.props.setLocation('tasks/show')}>
+        </div>
         <div className='col-xs-12'>
-          <div
-            className='go-back'
-            onClick={() => this.props.setLocation('tasks/show')}>
-          </div>
           <h4 className='visible-xs-inline-block'>Crear una tarea</h4>
         </div>
         <div className='col-xs-12 create-task-inputs'>
@@ -578,7 +578,7 @@ class TasksList extends React.Component {
   renderTasks() {
     if (this.props.tasks.length === 0) {
       return (
-        <div className='text-center'>No hay tareas asignadas a este board</div>
+        <div className='text-center no-task'>No hay tareas asignadas a este board</div>
       );
     }
 
@@ -1252,32 +1252,34 @@ class TaskInformation extends React.Component {
 
   render() {
     return (
-      <div className='task-info col-xs-12'>
+      <div>
         <div
-          className='go-back'
+          className='go-back go-back-task'
           onClick={() => this.props.setLocation('tasks/show')}>
         </div>
-        <h4 className='task-info-title'>Información de la tarea</h4>
-        <div className='item'>
-          <p>
-            <b>Tarea:</b> {this.state.task.title}
-          </p>
-          <p>
-            <b>Fecha de vencimiento:</b> {new Date(this.state.task.dueDate).toLocaleDateString()}
-          </p>
-          <p>
-            <b>Estado:</b> {this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada'}
-          </p>
-          <p>
-            <b>Board:</b> {this.state.board.name}
-          </p>
-          <p>
-            <b>Usuarios:</b>
-          </p>
-          <UserTaskInformation
-            durations={this.state.task.durations}
-            users={this.props.users}
-          />
+        <div className='task-info col-xs-12'>
+          <h4 className='task-info-title'>Información de la tarea</h4>
+          <div className='item'>
+            <p>
+              <b>Tarea:</b> {this.state.task.title}
+            </p>
+            <p>
+              <b>Fecha de vencimiento:</b> {new Date(this.state.task.dueDate).toLocaleDateString()}
+            </p>
+            <p>
+              <b>Estado:</b> {this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada'}
+            </p>
+            <p>
+              <b>Board:</b> {this.state.board.name}
+            </p>
+            <p>
+              <b>Usuarios:</b>
+            </p>
+            <UserTaskInformation
+              durations={this.state.task.durations}
+              users={this.props.users}
+            />
+          </div>
         </div>
       </div>
     );

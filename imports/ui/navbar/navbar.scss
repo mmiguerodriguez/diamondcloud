@@ -26,10 +26,25 @@ nav.header {
 .collapse-close-btn {
   margin-top: 9px;
 }
-.logo-photo {
-  height: 40px;
-  margin-top: 5px;
-  margin-right: 15px;
+.logo-container {
+  display: inline-block;
+  padding: 0 5px;
+  .photo {
+    height: 40px;
+    margin-top: 5px;
+    padding-right: 20px;
+    display: inline;
+  }
+  .name {
+    display: inline;
+    color: #ecf0f1;
+    font-size: 18px;
+    font-weight: bold;
+    vertical-align: text-top;
+  }
+  &:hover, &:focus {
+    text-decoration: none !important;
+  }
 }
 .li-navbar-text {
   color: $white !important;

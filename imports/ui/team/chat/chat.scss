@@ -86,11 +86,12 @@
   }
 }
 .maximized {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: calc(100vh - 90px);
+  width: calc(100vw - 64px);
   background-color: #ddd;
-  width: 100%;
-  float: right;
-  margin-left: 24px;
-  height: calc(100% - 82px);
   .chat-header {
     height: 32px;
     background-color: #f1f2f3;
@@ -122,8 +123,8 @@
   }
 
   .chat-body {
-    height: calc(100% + 11px);
-    min-height: calc(100% + 11px);
+    height: calc(100% - 70px);
+    min-height: calc(100% - 70px);
     width: 100%;
     background-image: linear-gradient(to bottom, #dadada, #c4c4c4);
     overflow-y: auto;

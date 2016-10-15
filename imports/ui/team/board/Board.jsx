@@ -19,6 +19,9 @@ export default class Board extends React.Component {
             { /* <h4 className='title truncate'>{ this.props.board.name }</h4> */ }
           </div>
           <div className='col-xs-6 right-data'>
+            <h4 className='members truncate'>
+              { this.renderUsers() }
+            </h4>
             <div className="visibility">
               {
                 /*  TODO: When visibility-off is clicked change image to visibility-on.
@@ -27,9 +30,6 @@ export default class Board extends React.Component {
               }
               <img src="/img/visibility-off.svg" className="visibility-img" title="Hacer no visible para directores" />
             </div>
-            <h4 className='members truncate'>
-              { this.renderUsers() }
-            </h4>
             <span className='message-icon-span' onClick={ this.props.addChat.bind(null, { boardId: this.props.board._id }) }>
               { /* <h4 className='message-text'>Chat del board</h4> */ }
               <img

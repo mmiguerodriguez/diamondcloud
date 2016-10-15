@@ -45,22 +45,22 @@ export default class UsersList extends React.Component {
           />
         </div>
         <div className="col-xs-10">
-          <p className="contact-list-name truncate">
+          <p className="contact-list-name truncate col-xs-6">
             {this.props.user.profile.name}
-            <select
-              id="user-type-edit"
-              className="form-control user-type edit"
-              value={this.state.hierarchy}
-              onChange={(e) => this.handleChange('hierarchy', e)}>
-              <option value='sistemas'>Sistemas</option>
-              <option value='creativo'>Creativo</option>
-              <option value='director creativo'>Director creativo</option>
-              <option value='director de cuentas'>Director de cuentas</option>
-              <option value='coordinador'>Coordinador</option>
-              <option value='administrador'>Administrador</option>
-              <option value='medios'>Medios</option>
-            </select>
           </p>
+          <select
+            id="user-type-edit"
+            className="form-control user-type edit"
+            value={this.state.hierarchy}
+            onChange={(e) => this.handleChange('hierarchy', e)}>
+            <option value='sistemas'>Sistemas</option>
+            <option value='creativo'>Creativo</option>
+            <option value='director creativo'>Director creativo</option>
+            <option value='director de cuentas'>Director de cuentas</option>
+            <option value='coordinador'>Coordinador</option>
+            <option value='administrador'>Administrador</option>
+            <option value='medios'>Medios</option>
+          </select>
         </div>
         {
           this.props.isAdmin ? (
