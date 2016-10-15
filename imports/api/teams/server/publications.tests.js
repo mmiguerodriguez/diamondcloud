@@ -20,28 +20,34 @@ if (Meteor.isServer) {
 
       beforeEach(function() {
         resetDatabase();
+
         user = Factory.create('user');
+
         teams = [
-          Factory.create('team'),
-          Factory.create('team', { archived: true }),
-          Factory.create('team'),
+          Factory.create('team', { url: faker.company.companyName().toLowerCase() }),
+          Factory.create('team', { url: faker.company.companyName().toLowerCase(), archived: true }),
+          Factory.create('team', { url: faker.company.companyName().toLowerCase() }),
         ];
+
         boards = [
           Factory.create('publicBoard', { name: 'General' }),
           Factory.create('publicBoard', { name: 'Publico archivado', archived: true }),
           Factory.create('privateBoard', { name: 'Privado con usuario' }),
           Factory.create('privateBoard', { name: 'Privado sin usuario' }),
         ];
+
         boards[2].users[0].email = user.emails[0].address;
 
         teams[0].users[0] = { email: user.emails[0].address, hierarchy: 'sistemas' };
         teams[1].users[0] = { email: user.emails[0].address, hierarchy: 'sistemas' };
-        teams[2].users[0] = { email: Random.id(), hierarchy: 'sistemas' };
+        teams[2].users = [{ email: faker.internet.email(), hierarchy: 'sistemas' }];
 
         boards.forEach((board) => {
           teams[0].boards.push({ _id: board._id });
         });
+
         resetDatabase();
+
         Meteor.users.insert(user);
         boards.forEach((board) => {
           Boards.insert(board);
@@ -49,6 +55,7 @@ if (Meteor.isServer) {
         teams.forEach((team) => {
           Teams.insert(team);
         });
+
         sinon.stub(Meteor, 'user', () => user);
       });
 
@@ -61,6 +68,7 @@ if (Meteor.isServer) {
         collector.collect('teams.dashboard', (collections) => {
           chai.assert.equal(collections.Teams.length, 1);
           chai.assert.equal(collections.users.length, 1);
+
           let _team = collections.Teams[0];
           chai.assert.isDefined(_team.name);
           chai.assert.isDefined(_team.plan);
@@ -68,6 +76,7 @@ if (Meteor.isServer) {
           chai.assert.isDefined(_team.users);
           chai.assert.isDefined(_team.boards);
           chai.assert.isUndefined(_team.directChats);
+
           let _user = collections.users[0];
           chai.assert.isDefined(_user.emails);
           chai.assert.isDefined(_user.profile);
@@ -77,23 +86,23 @@ if (Meteor.isServer) {
       it('should not publish team data if the team is archived', function(done){
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('teams.team', teams[1]._id, (collections) => {//pass the id of an archived team
-          chai.assert.isUndefined(collections.Teams);//assert it does not return any team
+        collector.collect('teams.team', teams[1].url, (collections) => {
+          chai.assert.isUndefined(collections.Teams);
           done();
         });
       });
       it('should not publish team data if the user is not in the team', function(done){
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('teams.team', teams[2]._id, (collections) => {//pass the id of a team the user is not in
-          chai.assert.isUndefined(collections.Teams);//assert it does not return any team
+        collector.collect('teams.team', teams[2].url, (collections) => {
+          chai.assert.isUndefined(collections.Teams);
           done();
         });
       });
       it('should publish the correct boards, direct chats and users data', function(done){
         const collector = new PublicationCollector({ userId: user._id });
 
-        collector.collect('teams.team', teams[0]._id, (collections) => {
+        collector.collect('teams.team', teams[0].url, (collections) => {
           chai.assert.equal(collections.Teams.length, 1);
           chai.assert.equal(collections.Teams[0].name, teams[0].name);
           chai.assert.equal(collections.Teams[0].plan, teams[0].plan);

@@ -5,9 +5,6 @@ import '../../api/boards/methods.js';
 // Direct chats
 import '../../api/direct-chats/methods.js';
 
-// Drawings
-// import '../../api/drawings/methods.js';
-
 // Messages
 import '../../api/messages/server/publications.js';
 import '../../api/messages/methods.js';
@@ -25,3 +22,6 @@ import '../../api/module-instances/methods.js';
 // API
 import '../../api/api/server/publications.js';
 import '../../api/api/methods.js';
+
+// Accounts
+import '../../api/accounts/methods.js';

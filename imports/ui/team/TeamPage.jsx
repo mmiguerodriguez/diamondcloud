@@ -229,24 +229,25 @@ export default TeamPageContainer = createContainer(({ params }) => {
     browserHistory.push('/');
   }
 
-  const { teamId } = params;
+  const { teamUrl } = params;
+
   let messagesHandle;
   let changesCallback = () => {
     if (messagesHandle) {
       messagesHandle.stop();
     }
 
-    messagesHandle = Meteor.subscribe('messages.last', teamId);
+    messagesHandle = Meteor.subscribe('messages.last', teamUrl);
   };
 
   const teamsHandle = Meteor.subscribe('teams.dashboard');
-  const teamHandle = Meteor.subscribe('teams.team', teamId, () => {
+  const teamHandle = Meteor.subscribe('teams.team', teamUrl, () => {
     let firstBoard = Boards.findOne();
     let boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
       Team.board.set(Boards.findOne());
     });
     Team.boardSubscription.set(boardHandle);
-    messagesHandle = Meteor.subscribe('messages.last', teamId);
+    messagesHandle = Meteor.subscribe('messages.last', teamUrl);
   });
   const loading = !teamsHandle.ready() || !teamHandle.ready();
 
@@ -262,7 +263,7 @@ export default TeamPageContainer = createContainer(({ params }) => {
 
   return {
     loading,
-    team: Teams.findOne(teamId),
+    team: Teams.findOne({ url: teamUrl }),
     teams: Teams.find({}, { sort: { name: - 1 } }).fetch(),
     users: Meteor.users.find({}).fetch(),
     boards: Boards.find({}, { sort: { name: -1 } }).fetch(),

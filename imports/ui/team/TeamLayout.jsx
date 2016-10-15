@@ -220,6 +220,10 @@ export default class TeamLayout extends React.Component {
         self.closeContextMenu(this.refs['moduleinstance-context-menu']);
       }
     });
+    
+    if (this.props.team.users.length === 1) {
+      this.openConfigTeamModal();
+    }
   }
 
   // chats
@@ -259,7 +263,7 @@ export default class TeamLayout extends React.Component {
       if (this.props.team._id !== team._id) {
         arr.push(
           <li key={ team._id } className='item-li'>
-            <Link to={ '/team/' + team._id } className='item-a truncate'>{ team.name }</Link>
+            <Link to={ '/team/' + team.url } className='item-a truncate'>{ team.name }</Link>
           </li>
         );
       }
