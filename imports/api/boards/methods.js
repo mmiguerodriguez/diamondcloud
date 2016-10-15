@@ -29,7 +29,7 @@ export const createBoard = new ValidatedMethod({
     isPrivate: { type: Boolean },
     users: { type: [Object], optional: true },
     'users.$.email': { type: String, regEx: SimpleSchema.RegEx.Email, optional: true },
-    visibleForDirectors: { type: Boolean },
+    visibleForDirectors: { type: Boolean, optional: true },
   }).validator(),
   run({ teamId, name, type, isPrivate, users, visibleForDirectors }) {
     if (name !== 'General' && type !== 'default') {
@@ -41,6 +41,7 @@ export const createBoard = new ValidatedMethod({
 
     let team = Teams.findOne(teamId);
     users = users || [];
+    visibleForDirectors = !!visibleForDirectors;
 
     if (isPrivate) {
       users.forEach((user, index, array) => {

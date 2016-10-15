@@ -1,5 +1,5 @@
 import { Mongo }           from 'meteor/mongo';
-import { printObject }   from '../helpers/print-objects.js';
+import { printObject }     from '../helpers/print-objects.js';
 
 import { Teams }           from '../teams/teams.js';
 import { Messages }        from '../messages/messages.js';
@@ -89,6 +89,7 @@ Boards.boardFields = {
   drawings: 1,
   moduleInstances: 1,
   archived: 1,
+  visibleForDirectors: 1,
 };
 
 Boards.moduleInstancesFields = {
@@ -106,19 +107,18 @@ Boards.getBoards = (boardsIds, userId, fields) => {
   if (Object.prototype.toString.call(boardsIds[0]) === "[object Object]"){
     boardsIds = boardsIds.map((board) => board._id);
   }
-  
+
   // Se asume que todos los boardsIds pertenecen al mismo Team
-  
+
   let team = Boards.findOne(boardsIds[0]).team();
-  
   let user = Meteor.users.findOne(userId);
-  
+
   let isDirector =
-    team.userIsCertainHierarchy(user.email(), 'directores creativos') ||
-    team.userIsCertainHierarchy(user.email(), 'directores de cuentas') ||
+    team.userIsCertainHierarchy(user.email(), 'director creativo') ||
+    team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
     team.userIsCertainHierarchy(user.email(), 'coordinadores');
-  
-  return Boards.find({
+
+  let result = Boards.find({
     $and: [
       {
         _id: {
@@ -151,11 +151,15 @@ Boards.getBoards = (boardsIds, userId, fields) => {
           }
         ],
       },
-      { archived: false }
+      {
+        archived: false
+      }
     ]
   }, {
     fields
   });
+
+  return result;
 };
 
 Boards.isValid = (boardId, userId) => {
