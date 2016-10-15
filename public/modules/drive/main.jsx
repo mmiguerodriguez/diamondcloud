@@ -15,28 +15,28 @@ class FileManagerLayout extends React.Component {
           <img
             alt="Documento"
             className="col-xs-3 icon-type create-doc"
-            src="modules/drive/img/google-docs.svg"
+            src="/modules/drive/img/google-docs.svg"
           />);
       case 'application/vnd.google-apps.drawing':
         return (
           <img
             alt="Dibujo"
             className="col-xs-3 icon-type create-doc"
-            src="modules/drive/img/google-drawings.svg"
+            src="/modules/drive/img/google-drawings.svg"
           />);
       case 'application/vnd.google-apps.spreadsheet':
         return (
           <img
             alt="Hoja de cálculo"
             className="col-xs-3 icon-type create-doc"
-            src="modules/drive/img/google-sheets.svg"
+            src="/modules/drive/img/google-sheets.svg"
           />);
       case 'application/vnd.google-apps.presentation':
         return (
           <img
             alt="Presentación"
             className="col-xs-3 icon-type create-doc"
-            src="modules/drive/img/google-slides.svg"
+            src="/modules/drive/img/google-slides.svg"
           />);
       default:
         return null;
@@ -97,7 +97,7 @@ class FileManagerLayout extends React.Component {
           <img
             alt="Crear carpeta"
             className="col-xs-3 icon-type create-folder"
-            src="modules/drive/img/folder.svg"
+            src="/modules/drive/img/folder.svg"
           />
           <p className="col-xs-9 document-title truncate">{folder.name}</p>
         </div>
@@ -130,7 +130,7 @@ class FileManagerLayout extends React.Component {
               <img
                 alt="Crear documento"
                 className="col-xs-3 icon-type create-doc"
-                src="modules/drive/img/google-docs.svg"
+                src="/modules/drive/img/google-docs.svg"
               />
               <p className="col-xs-9 document-title truncate">Crear</p>
             </div>
@@ -143,49 +143,48 @@ class FileManagerLayout extends React.Component {
               <img
                 alt="Importar"
                 className="col-xs-3 icon-type import-drive"
-                src="modules/drive/img/google-drive-logo.svg"
+                src="/modules/drive/img/google-drive-logo.svg"
               />
               <p className="col-xs-9 document-title truncate">Importar</p>
             </div>
           </div>
         </div>
       );
-    } else {
-      return this.props.documents.map((document) => {
-        return (
-          <div className='document-container col-xs-4 col-sm-3 col-lg-2'>
-            <div
-              className="document fixed"
-              title={document.name}>
-              {
-                this.renderDocumentTypeImg(document.fileType)
-              }
-              <p
-                className="col-xs-9 document-title truncate"
-                onClick={
-                  () => {
-                    browserHistory.push('/document/' + document._id);
-                  }
-                }>
-                {document.name}
-              </p>
-            </div>
-            <i
-              className="material-icons delete"
-              onClick={this.props.deleteDocument.bind(this, {
-                id: document._id,
-                parentFolderId: this.props.folderId,
-                mimeType: document.fileType,
-                isImported: document.isImported,
-                callback: () => {}, // TODO: handle loading and error
-              })}
-            >
-              delete
-            </i>
-          </div>
-        );
-      });
     }
+    return this.props.documents.map(document => (
+      <div className="document-container col-xs-4 col-sm-3 col-lg-2">
+        <div
+          className="document fixed"
+          title={document.name}
+        >
+          {
+            FileManagerLayout.renderDocumentTypeImg(document.fileType)
+          }
+          <p
+            className="col-xs-9 document-title truncate"
+            onClick={
+              () => {
+                browserHistory.push(`/document/${document._id}`);
+              }
+            }
+          >
+            {document.name}
+          </p>
+        </div>
+        <i
+          className="material-icons delete"
+          onClick={this.props.deleteDocument.bind(this, {
+            id: document._id,
+            parentFolderId: this.props.folderId,
+            mimeType: document.fileType,
+            isImported: document.isImported,
+            callback: () => {}, // TODO: handle loading and error
+          })}
+        >
+          delete
+        </i>
+      </div>
+    ));
   }
 
 
@@ -503,24 +502,24 @@ class FileManagerPage extends React.Component {
     /////////////////////////////////////////
 
     const getFiles = ({ parentFolderId = null, foldersIds = [], documentsIds = [] }) => {
-      if (foldersIds.length !== 0) {
-        const foldersHandle = DiamondAPI.subscribe({
+      if (foldersIds.length !== 0 || parentFolderId) {
+        DiamondAPI.subscribe({
           collection: 'folders',
-          filter: (!!parentFolderId) ? { // if we are not in the root folder
+          filter: (parentFolderId) ? { // if we are not in the root folder
             parentFolderId,
-          } : { //if we are in the root folder
+          } : { // If we are in the root folder
             _id: {
               $in: foldersIds,
             },
           },
           callback(err, res) {
             console.log('Me acaban de llegar carpetas. Son: ', res);
-            if (!!err) {
+            if (err) {
               console.error(err);
             } else {
               self.setState({
                 loadingFolders: false,
-                folders: res
+                folders: res,
               });
             }
           },
@@ -528,28 +527,28 @@ class FileManagerPage extends React.Component {
       } else {
         self.setState({
           loadingFolders: false,
-          folders: []
+          folders: [],
         });
       }
 
-      if (documentsIds.length !== 0) {
-        const documentsHandle = DiamondAPI.subscribe({
+      if (documentsIds.length !== 0 || parentFolderId) {
+        DiamondAPI.subscribe({
           collection: 'documents',
-          filter: (!!parentFolderId) ? { // if we are not in the root folder
+          filter: (parentFolderId) ? { // if we are not in the root folder
             parentFolderId,
-          } : { //if we are in the root folder
+          } : { // If we are in the root folder
             _id: {
               $in: documentsIds,
             },
           },
           callback(err, res) {
             console.log('Me acaban de llegar archivos. Son: ', res);
-            if (!!err) {
+            if (err) {
               console.error(err);
             } else {
               self.setState({
                 loadingDocuments: false,
-                documents: res
+                documents: res,
               });
             }
           },
@@ -560,7 +559,7 @@ class FileManagerPage extends React.Component {
           documents: [],
         });
       }
-    }
+    };
 
     ////////////////////////////////////////
     // Check if we are in the root folder //
