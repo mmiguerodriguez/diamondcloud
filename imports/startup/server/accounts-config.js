@@ -26,26 +26,3 @@ Accounts.onCreateUser((options, user) => {
 
   return user;
 });
-
-/**
- * Callback when an user logs in.
- * @param {Function} func
- *
- * 
- * TODO: Get the team url depending from the actual route
- */
-Accounts.onLogin(() => {
-  console.log(Teams.find().fetch());
-  let team = Teams.findOne({ url: 'carlosydario' }); // TODO: GET ROUTE!!!
-  
-  if (team.users.length === 0) {
-    Teams.update({ _id: team._id }, {
-      $push: {
-        users: {
-          email: Meteor.user().email(),
-          hierarchy: 'sistemas',
-        },
-      },
-    });
-  }
-});

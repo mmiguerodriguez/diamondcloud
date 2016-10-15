@@ -140,7 +140,7 @@ if (Meteor.isServer) {
           name: 'new_name',
           plan: 'premium',
           type: 'new_type',
-          url: 'new_url',
+          url: team.url,
           boards: team.boards,
           users: team.users,
           archived: false,
@@ -150,7 +150,6 @@ if (Meteor.isServer) {
             name: 'new_name',
             plan: 'premium',
             type: 'new_type',
-            url: 'new_url',
           },
           teamId: team._id,
         };
