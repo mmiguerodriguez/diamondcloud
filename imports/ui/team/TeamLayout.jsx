@@ -220,6 +220,10 @@ export default class TeamLayout extends React.Component {
         self.closeContextMenu(this.refs['moduleinstance-context-menu']);
       }
     });
+    
+    if (this.props.team.users.length === 1) {
+      this.openConfigTeamModal();
+    }
   }
 
   // chats

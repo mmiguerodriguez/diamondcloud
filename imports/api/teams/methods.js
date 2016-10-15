@@ -225,19 +225,29 @@ export const removeUserFromTeam = new ValidatedMethod({
       throw new Meteor.Error('Teams.methods.removeUser.notLoggedIn',
       'Must be logged in to edit a team.');
     }
+    
+    if (Meteor.user().email() === email) {
+      throw new Meteor.Error('Teams.methods.removeUser.cantRemoveYourself',
+      'You can\'t remove yourself from a team.');
+    }
 
     let team = Teams.findOne(teamId);
     let user = Meteor.users.findByEmail(email, {});
+
     if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
       throw new Meteor.Error('Teams.methods.removeUser.notAllowed',
       "The user is not allowed to remove a user from the team");
     }
 
-    //remove user from boards
-    let boards = user.boards(teamId).fetch();
-    boards.forEach((board) => {
-      Boards.removeUser(board._id, user._id);
-    });
+    // Remove user from boards if user exists on the database
+    if (user) {
+      let boards = user.boards(teamId).fetch();
+
+      boards.forEach((board) => {
+        Boards.removeUser(board._id, user._id);
+      });
+    }
+
     Teams.removeUser(teamId, email);
 
     return Teams.findOne(teamId);
