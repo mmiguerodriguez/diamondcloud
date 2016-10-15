@@ -1,8 +1,9 @@
 import { Meteor }      from 'meteor/meteor';
-import { Messages }    from '../messages.js';
 
-import { DirectChats } from '../../direct-chats/direct-chats.js';
+import { Messages }    from '../messages.js';
+import { Teams }       from '../../teams/teams.js';
 import { Boards }      from '../../boards/boards.js';
+import { DirectChats } from '../../direct-chats/direct-chats.js';
 
 /**
  * TODO: Pass MESSAGES_LIMIT from client side,
@@ -50,7 +51,7 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
   });
 });
 
-Meteor.publish('messages.last', function(teamId) {
+Meteor.publish('messages.last', function(teamUrl) {
   if (!this.userId) {
     throw new Meteor.Error('Messages.last.notLoggedIn',
     'Must be logged in to view chats.');
@@ -58,6 +59,7 @@ Meteor.publish('messages.last', function(teamId) {
 
   const MESSAGES_LIMIT = 1;
   let user = Meteor.users.findOne(this.userId);
+  let teamId = Teams.findOne({ url: teamUrl })._id;
 
   let directChats = DirectChats.getUserDirectChats(this.userId, teamId).fetch();
   directChats = directChats.map((directChat) => {

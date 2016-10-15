@@ -29,16 +29,19 @@ export const createBoard = new ValidatedMethod({
     isPrivate: { type: Boolean },
     users: { type: [Object], optional: true },
     'users.$.email': { type: String, regEx: SimpleSchema.RegEx.Email, optional: true },
-    visibleForDirectors: { type: Boolean },
+    visibleForDirectors: { type: Boolean, optional: true },
   }).validator(),
   run({ teamId, name, type, isPrivate, users, visibleForDirectors }) {
-    if (!Meteor.user()) {
-      throw new Meteor.Error('Boards.methods.createBoard.notLoggedIn',
-      'Must be logged in to create a board.');
+    if (name !== 'General' && type !== 'default') {
+      if (!Meteor.user()) {
+        throw new Meteor.Error('Boards.methods.createBoard.notLoggedIn',
+        'Must be logged in to create a board.');
+      }
     }
 
     let team = Teams.findOne(teamId);
     users = users || [];
+    visibleForDirectors = !!visibleForDirectors;
 
     if (isPrivate) {
       users.forEach((user, index, array) => {

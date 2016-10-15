@@ -63,7 +63,7 @@ export default class UsersList extends React.Component {
           </select>
         </div>
         {
-          this.props.isAdmin ? (
+          this.props.isAdmin && Meteor.user().email() !== this.props.user.emails[0].address ? (
             <div className="col-xs-1">
               <div
                 className="close"

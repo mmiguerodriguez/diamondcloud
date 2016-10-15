@@ -1,0 +1,70 @@
+#login-buttons {
+  display: block !important;
+  text-align: center !important;
+  line-height: 0 !important;
+}
+#login-buttons .login-button, .accounts-dialog .login-button {
+  line-height: 0.5 !important;
+  transition: 0.3s all ease;
+}
+#login-buttons:hover .login-button, .accounts-dialog:hover .login-button {
+  box-shadow: 0 0 3px 5px rgba(66,133,244,.3);
+}
+#login-buttons-image-google {
+  position: static !important;
+  height: 51px !important;
+  width: 51px !important;
+  background-color: #fff;
+  border-radius: 0;
+}
+
+#login-buttons-image-google {
+  background-image: url(https://www.google.es/images/branding/googleg/1x/googleg_standard_color_128dp.png);
+  background-size: 20px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#login-buttons .text-besides-image {
+  display: inline-block;
+  margin: 15px !important;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.5 !important;
+  vertical-align: top;
+}
+
+#login-buttons-google {
+  padding: 0 !important;
+  background: #3498db !important;
+  border: 1px solid #3498db !important;
+  border-radius: 0 !important;
+}
+
+#login-buttons .login-button:hover, .accounts-dialog .login-button:hover {
+  background-color: #2980b9 !important;
+  border-color: #2980b9 !important;
+}
+
+#login-buttons .login-button:active, .accounts-dialog .login-button:active {
+  background-color: #2980b9 !important;
+  border-color: #2980b9 !important;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2) inset;
+}
+#login-buttons-logout {
+  background-color: #2e8ece !important;
+  border: 1px solid #3498db !important;
+  height: 51px;
+  vertical-align: top;
+  border-radius: 0 !important;
+  padding: 22px 10px 0 !important;
+}
+.login-display-name {
+  padding: 15px;
+}
+.login-text-and-button {
+  background-color: #3498db;
+  color: #fff;
+  font-size: 14px;
+  font-weight: normal;
+}
