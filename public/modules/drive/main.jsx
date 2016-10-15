@@ -955,6 +955,24 @@ class FileViewerPage extends React.Component {
         />
     );
   }
+  
+  componentDidMount() {
+    // Set in the data storage the opened document
+    DiamondAPI.update({
+      collection: 'globalValues',
+      updateQuery: {
+        $set: {
+          '$.openedDocumentId': this.props.params.documentId,
+        },
+      },
+      callback(error) {
+        if (error) {
+          console.error(error);
+        }
+        console.log('hola. Cambie el openedDocumentId');
+      }
+    });
+  }
 }
 
 class FileViewerLayout extends React.Component {
@@ -982,7 +1000,7 @@ class FileViewerLayout extends React.Component {
 }
 
 FileViewerLayout.propTypes = {
-  url: React.PropTypes.string.isRequired,
+                                  url: React.PropTypes.string.isRequired,
 };
 
 ReactDOM.render(
