@@ -87,7 +87,6 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('teams.team', teams[1].url, (collections) => {
-          // console.log(JSON.stringify(collections.Teams[0], null, 2), 'archived', teams[1].archived);
           chai.assert.isUndefined(collections.Teams);
           done();
         });
@@ -96,7 +95,6 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('teams.team', teams[2].url, (collections) => {
-          // console.log(JSON.stringify(collections.Teams[0], null, 2), JSON.stringify(teams[2].users, null, 2));
           chai.assert.isUndefined(collections.Teams);
           done();
         });
