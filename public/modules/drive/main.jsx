@@ -454,6 +454,30 @@ FileManagerLayout.propTypes = {
 
 class FileManagerPage extends React.Component {
 
+  /**
+   * Returns if the current user is the drive owner of certain folder
+   * @param {String} folderId
+   * @param {String} fileType
+   * @param {Function} callback (optional)
+   *   @param {String} error
+   *   @param {Boolean} response
+   */
+  static isUserOwnerOfFolder(folderId, callback) {
+    DiamondAPI.get({
+      collection: 'folders',
+      filter: {
+        _id: folderId,
+      },
+      callback(error, result) {
+        if (error) {
+          callback(error);
+          return;
+        }
+        callback(null, result[0].ownerId === DiamondAPI.getCurrentUser);
+      },
+    });
+  }
+
   constructor(props) {
     super(props);
 
@@ -759,6 +783,7 @@ class FileManagerPage extends React.Component {
       });
     }
     if (parentFolderId) {
+      // Check if user is owner of current folder
       DiamondAPI.get({
         collection: 'folders',
         filter: {
@@ -778,6 +803,27 @@ class FileManagerPage extends React.Component {
             }, callback);
         },
       });
+      FileManagerPage.isUserOwnerOfFolder(parentFolderId, (error, result) => {
+        if (error) {
+          callback(error);
+          return;
+        }
+        createDocumentInDrive(result)
+          .then((response) => {
+            createDrivePermission(response)
+            .then(() => {
+              insertDocumentInStorage(response);
+            }, callback);
+          }, callback);
+      });
+    } else {
+      createDocumentInDrive()
+        .then((response) => {
+          createDrivePermission(response)
+          .then(() => {
+            insertDocumentInStorage(response);
+          }, callback);
+        }, callback);
     }
   }
 
@@ -800,20 +846,23 @@ class FileManagerPage extends React.Component {
     self.setState({
       loadingFolders: true,
     });
-    // Create the folder in Drive
-    gapi.client.drive.files.create({
-      resource: {
-        name,
-        mimeType: folderMimeType,
-        parents: [parentFolderId || diamondCloudDriveFolderId],
-      }
-    }).then(handleCreatedFolder, (error) => {
-      self.setState({
-        loadingFolders: false,
+    function createFolderInDrive(isOwner) {
+      // Create the folder in Drive
+      gapi.client.drive.files.create({
+        resource: {
+          name,
+          mimeType: folderMimeType,
+          parents: (isOwner) ?
+                   [parentFolderId || diamondCloudDriveFolderId]
+                   : [diamondCloudDriveFolderId],
+        }
+      }).then(handleCreatedFolder, (error) => {
+        self.setState({
+          loadingFolders: false,
+        });
+        callback(error);
       });
-      callback(error);
-    });
-
+    }
     function handleCreatedFolder(result) {
       let folderId = result.result.id;
       if (!parentFolderId) {
@@ -839,7 +888,6 @@ class FileManagerPage extends React.Component {
         insertFolderInStorage(folderId);
       }
     }
-
     function insertFolderInStorage(folderId) {
       DiamondAPI.insert({
         collection: 'folders',
@@ -857,6 +905,17 @@ class FileManagerPage extends React.Component {
           callback(error, result);
         },
       });
+    }
+    if (parentFolderId) {
+      FileManagerPage.isUserOwnerOfFolder(parentFolderId, (error, result) => {
+        if (error) {
+          callback(error);
+          return;
+        }
+        createFolderInDrive(result);
+      });
+    } else {
+      createFolderInDrive();
     }
   }
 
