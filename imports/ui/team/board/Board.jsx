@@ -46,13 +46,19 @@ export default class Board extends React.Component {
               height: 400, // must change to fixed
             }, (error, result) => {
               if (error) {
-                console.error(error);
+                self.props.toggleError({
+                  type: 'show',
+                  body: 'Hubo un error interno al crear el módulo',
+                });
               } else {
                 console.log(result);
               }
             });
           } else {
-            console.error('Can\'t create module on those coordinates.');
+            self.props.toggleError({
+              type: 'show',
+              body: 'No se puede crear un módulo en esas coordenadas',
+            });
           }
         } else if (container) {
           const moduleInstanceId = ui.draggable.data('moduleinstance-id');
@@ -67,17 +73,31 @@ export default class Board extends React.Component {
               y,
             }, (error, result) => {
               if (error) {
-                console.error(error);
+                self.props.toggleError({
+                  type: 'show',
+                  body: 'Hubo un error interno al crear el módulo',
+                });
               } else {
                 console.log(result);
               }
             });
           } else {
-            console.error('Can\'t create module on those coordinates.');
+            self.props.toggleError({
+              type: 'show',
+              body: 'No se puede crear un módulo en esas coordenadas',
+            });
           }
         }
       },
     });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.board.visibleForDirectors !== this.props.board.visibleForDirectors) {
+      this.setState({
+        visibleForDirectors: nextProps.board.visibleForDirectors,
+      });
+    }
   }
 
   toggleBoardToDirectors(methodName) {
@@ -91,7 +111,11 @@ export default class Board extends React.Component {
       _id: this.props.board._id,
     }, (error, result) => {
       if (error) {
-        console.error(error);
+        self.props.toggleError({
+          type: 'show',
+          body: 'Hubo un error interno al cambiar el estado del board',
+        });
+
         // If there was an error, reset state to the correct one.
         self.setState({
           visibleForDirectors: methodName === 'unlockBoard',
@@ -135,7 +159,6 @@ export default class Board extends React.Component {
   renderModules() {
     if (this.props.moduleInstances) {
       return this.props.moduleInstances.map((moduleInstance) => {
-
         let module;
         this.props.modules.forEach((_module) => {
           if (_module._id === moduleInstance.moduleId) {
@@ -208,7 +231,8 @@ export default class Board extends React.Component {
               className="message-icon-span"
               onClick={this.props.addChat.bind(null, {
                 boardId: this.props.board._id
-              })}>
+              })}
+            >
               { /* <h4 className='message-text'>Chat del board</h4> */ }
               <img
                 src="/img/sidebar/messages.svg"
@@ -238,4 +262,5 @@ Board.propTypes = {
   addChat: React.PropTypes.func.isRequired,
   openModuleInstanceContextMenu: React.PropTypes.func.isRequired,
   permissionAsker: React.PropTypes.bool.isRequired,
+  toggleError: React.PropTypes.func.isRequired,
 };

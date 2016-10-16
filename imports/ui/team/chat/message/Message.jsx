@@ -92,7 +92,7 @@ export default class Message extends React.Component {
   }
   componentDidMount() {
     this.props.scrollDown();
-    
+
     if (!this.props.isSender) {
       if (this.props.position !== 'minimized') {
         if (this.props.message.directChatId) {
@@ -101,9 +101,7 @@ export default class Message extends React.Component {
               messageId: this.props.message._id
             }, (error, result) => {
               if (error) {
-                console.error(error);
-              } else {
-                // console.log(result);
+                // handle error
               }
             });
           }
@@ -117,9 +115,7 @@ export default class Message extends React.Component {
               messageId: this.props.message._id,
             }, (error, result) => {
               if (error) {
-                console.error(error);
-              } else {
-                console.log(result);
+                // handle error
               }
             });
           }
