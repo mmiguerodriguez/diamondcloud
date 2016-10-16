@@ -22,19 +22,16 @@ export default class AppLayout extends React.Component {
   /**
   * Sets the error state so we can show an error
   * correctly.
-  * @param {String} type
-  *  Used to say if we are hiding or showing
-  *  the error message.
   * @param {Object} object
+  *  @param {String} type
+  *   Used to say if we are hiding or showing
+  *   the error message.
   *  @param {String} body
   *   Error message.
   *  @param {Number} delay
   *   The delay until the message is closed
-  *  @param {Boolean} showing.
-  *   State to check if the message is being
-  *   shown or not.
   */
-  error(type, { body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
+  error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
     if (type === 'hide') {
       this.setState({
         error: {

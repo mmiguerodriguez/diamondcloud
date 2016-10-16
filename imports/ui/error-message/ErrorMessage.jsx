@@ -18,7 +18,7 @@ export default class ErrorMessage extends React.Component {
 
     $('.error-message').removeClass('show-error');
     $('.error-message').addClass('hide-error', () => {
-      setTimeout(self.props.error.bind(null, 'hide'), 700);
+      setTimeout(self.props.error.bind(null, { type: 'hide' }), 700);
     });
   }
 
