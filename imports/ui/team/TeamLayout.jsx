@@ -27,6 +27,7 @@ export default class TeamLayout extends React.Component {
       'moduleinstance-iframe': null,
       'has-maximized-chats': false,
       permissionAsker: !isMobile.any ? Notification.permission === 'default' : false,
+      togglingCollapsible: false,
     };
 
     this.refs = {
@@ -490,21 +491,31 @@ export default class TeamLayout extends React.Component {
   }
   // collapsibles
   toggleCollapsible(name) {
-    const elem = name + '-' + 'collapsible';
-    const active = this.checkActive(elem);
+    if (!this.state.togglingCollapsible) {
+      this.setState({
+        togglingCollapsible: true,
+      }, () => {
+        const elem = `${name}-collapsible`;
+        const active = this.checkActive(elem);
 
-    this.hideAllActiveBackgrounds();
+        this.hideAllActiveBackgrounds();
 
-    if (active) {
-      this.hideActive();
-      this.toggleSubHeader();
-    } else {
-      this.hideActive(() => {
-        const collapsible = $('#' + elem);
-        this.effect(collapsible, 'slide', 'left', 'show', 350);
+        if (active) {
+          this.toggleSubHeader();
+          this.hideActive(() => {
+            this.setState({ togglingCollapsible: false });
+          });
+        } else {
+          this.hideActive(() => {
+            const collapsible = $(`#${elem}`);
+            const item = $(`#${name}-item`);
 
-        const item = $('#' + name + '-' + 'item');
-        this.showBackground(item);
+            this.effect(collapsible, 'slide', 'left', 'show', 350, () => {
+              this.setState({ togglingCollapsible: false });
+            });
+            this.showBackground(item);
+          });
+        }
       });
     }
   }
@@ -534,7 +545,7 @@ export default class TeamLayout extends React.Component {
       }
     });
 
-    if (!!activeElement) {
+    if (activeElement) {
       this.effect(activeElement, 'slide', 'left', 'hide', 350, callback);
     } else {
       callback();
