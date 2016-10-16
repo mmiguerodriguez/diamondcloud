@@ -26,21 +26,21 @@ if (Meteor.isServer) {
 
         sinon.stub(Meteor, 'user', () => user);
       });
-      
+
       afterEach(() => {
         Meteor.user.restore();
       });
-      
+
       it('should insert the first user of a team on login', (done) => {
         insertFirstUser.call({ url: team.url }, (error, result) => {
           if (error) {
             throw new Meteor.Error(error);
           } else {
             let _team = Teams.findOne({ _id: team._id });
-            
+
             chai.assert.equal(_team.users.length, 1);
             chai.assert.deepEqual(_team.users, [{ email: user.emails[0].address, hierarchy: 'sistemas' }]);
-            
+
             done();
           }
         });
