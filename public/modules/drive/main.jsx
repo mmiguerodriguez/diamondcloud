@@ -1,18 +1,28 @@
 const { DiamondAPI, React, ReactDOM, ReactRouter } = window;
 const { Router, Route, browserHistory } = ReactRouter;
 
-browserHistory.push('/folder/'); // initialize the router
+browserHistory.push('/folder'); // initialize the router
 
 // Google Drive API
 const CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
 const folderMimeType = 'application/vnd.google-apps.folder';
 
 class Index extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      openedDocumentId: '',
+    };
+  }
   render() {
-    return this.props.children;
+    return React.cloneElement(this.props.children, {
+      openedDocumentId: this.state.openedDocumentId,
+    });
   }
 
   componentDidMount() {
+    let self = this;
     DiamondAPI.subscribe({
       collection: 'globalValues',
       callback: (error, result) => {
@@ -20,8 +30,10 @@ class Index extends React.Component {
           console.error(error); // TODO: handle error
           return;
         }
-        console.log(result);
         if (result.length > 0) {
+          self.setState({
+            openedDocumentId: result[0].openedDocumentId,
+          });
           browserHistory.push(`/document/${result[0].openedDocumentId}`);
         }
       },
@@ -113,7 +125,7 @@ class FileManagerLayout extends React.Component {
           title={folder.name}
           onClick={
             () => {
-              browserHistory.push(`/folder/${folder._id}/${this.props.openedDocumentId}`);
+              browserHistory.push(`/folder/${folder._id}`);
             }
           }
         >
@@ -309,7 +321,13 @@ class FileManagerLayout extends React.Component {
 
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  <button
+                    type="button"
+                    className="btn btn-default"
+                    data-dismiss="modal"
+                  >
+                    Cancelar
+                  </button>
                   <button
                     type="button"
                     className="btn btn-primary"
@@ -451,6 +469,10 @@ class FileManagerPage extends React.Component {
       diamondCloudDriveFolderId: null, /** The drive folder in which
                                         *  all files are stored
                                         */
+
+      subscriptions: [], /** Array that stores the rootFiles,
+                          *  folders and documents subscriptions
+                          */
     };
   }
 
@@ -468,7 +490,7 @@ class FileManagerPage extends React.Component {
         deleteDocument={this.deleteDocument}
         initPicker={this.initPicker}
         diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
-        openedDocumentId={this.props.params.openedDocumentId}
+        openedDocumentId={this.props.openedDocumentId}
       />
     );
   }
@@ -484,7 +506,12 @@ class FileManagerPage extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     // the props have changed, so we have to remake the subscriptions
-    DiamondAPI.unsubscribe();
+    this.state.subscriptions.forEach((subscription) => {
+      subscription.stop();
+    });
+    this.setState({
+      subscriptions: [],
+    });
     this.getDriveData(nextProps.params.folderId);
   }
 
@@ -533,15 +560,14 @@ class FileManagerPage extends React.Component {
   getDriveData(folderId) {
     // TODO show only the documents and folders of the current folder
     // TODO dessuscribe from the old folders
-    let self = this;
+    const self = this;
+    let subscriptions = [];
 
-    /////////////////////////////////////////
-    // Get the files of the current folder //
-    /////////////////////////////////////////
+    // Get the files of the current folder
 
     const getFiles = ({ parentFolderId = null, foldersIds = [], documentsIds = [] }) => {
       if (foldersIds.length !== 0 || parentFolderId) {
-        DiamondAPI.subscribe({
+        subscriptions.push(DiamondAPI.subscribe({
           collection: 'folders',
           filter: (parentFolderId) ? { // if we are not in the root folder
             parentFolderId,
@@ -560,7 +586,7 @@ class FileManagerPage extends React.Component {
               });
             }
           },
-        });
+        }));
       } else {
         self.setState({
           loadingFolders: false,
@@ -569,7 +595,7 @@ class FileManagerPage extends React.Component {
       }
 
       if (documentsIds.length !== 0 || parentFolderId) {
-        DiamondAPI.subscribe({
+        subscriptions.push(DiamondAPI.subscribe({
           collection: 'documents',
           filter: (parentFolderId) ? { // if we are not in the root folder
             parentFolderId,
@@ -588,13 +614,17 @@ class FileManagerPage extends React.Component {
               });
             }
           },
-        });
+        }));
       } else {
         self.setState({
           loadingDocuments: false,
           documents: [],
         });
       }
+
+      this.setState({
+        subscriptions,
+      });
     };
 
     ////////////////////////////////////////
@@ -606,13 +636,13 @@ class FileManagerPage extends React.Component {
       // Get the list of folders and documents in root folder //
       //////////////////////////////////////////////////////////
 
-      DiamondAPI.subscribe({
+      subscriptions.push(DiamondAPI.subscribe({
         collection: 'rootFiles',
         filter: {
           boardId: DiamondAPI.getCurrentBoard()._id,
         },
         callback(err, res) {
-          if (!!err) {
+          if (err) {
             console.error(err);
           } else {
             if (!res || res.length === 0) {
@@ -641,7 +671,7 @@ class FileManagerPage extends React.Component {
             }
           }
         }
-      });
+      }));
     } else {
       // we are not in the root folder
       getFiles({
@@ -980,7 +1010,6 @@ class FileViewerPage extends React.Component {
 
   render() {
     let url = 'https://drive.google.com/open?id=' + this.props.params.documentId;
-
     return (
       <FileViewerLayout
         url={url}
@@ -990,23 +1019,34 @@ class FileViewerPage extends React.Component {
 
   componentDidMount() {
     // Set in the data storage the opened document
-    DiamondAPI.update({
-      collection: 'globalValues',
-      updateQuery: {
-        $set: {
+    if (!this.props.openedDocumentId) {
+      DiamondAPI.insert({
+        collection: 'globalValues',
+        object: {
           openedDocumentId: this.props.params.documentId,
         },
-      },
-      options: {
-        upsert: true,
-      },
-      callback(error) {
-        if (error) {
-          console.error(error);
+        isGlobal: false,
+        callback(error) {
+          if (error) {
+            console.error(error); // TODO: handle error
+          }
+        },
+      });
+    } else if (this.props.openedDocumentId !== this.props.params.documentId) {
+      DiamondAPI.update({
+        collection: 'globalValues',
+        updateQuery: {
+          $set: {
+            openedDocumentId: this.props.params.documentId,
+          }
+        },
+        callback(error) {
+          if (error) {
+            console.error(error); // TODO: handle error
+          }
         }
-        console.log('hola. Cambie el openedDocumentId');
-      }
-    });
+      });
+    }
   }
 }
 
@@ -1017,7 +1057,7 @@ class FileViewerLayout extends React.Component {
         <div className='drive-navbar'>
           <i
             className="go-back"
-            onClick={ browserHistory.goBack }>
+            onClick={ () => { browserHistory.push('/folder') } }>
           </i>
         </div>
         <iframe
@@ -1041,9 +1081,8 @@ FileViewerLayout.propTypes = {
 ReactDOM.render(
   <Router history={browserHistory}>
     <Route path='/' component={Index} >
-      <Route path='/folder/' component={FileManagerPage} />
-      <Route path='/folder/:openedDocumentId' component={FileManagerPage} />
-      <Route path='/folder/:folderId/:openedDocumentId' component={FileManagerPage} />
+      <Route path='/folder' component={FileManagerPage} />
+      <Route path='/folder/:folderId' component={FileManagerPage} />
       <Route path='/document/:documentId' component={FileViewerPage} />
     </Route>
   </Router>,
