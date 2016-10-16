@@ -9,8 +9,8 @@ export const generateApi = (moduleInstanceId) => {
   let subscriptions = [];
   let DiamondAPI = {
     subscribe({ collection, filter = {}, callback }) {
-      let subscription,
-      subscriptionCallback = {
+      let subscription;
+      let subscriptionCallback = {
         onReady() {
           let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
           let teamId = moduleInstance.board().team()._id;
@@ -87,13 +87,12 @@ export const generateApi = (moduleInstanceId) => {
         isGlobal,
       }, callback);
     },
-    update({ collection, filter = {}, updateQuery, options = {}, callback }) {
+    update({ collection, filter = {}, updateQuery, callback }) {
       Meteor.call('API.methods.APIUpdate', {
         moduleInstanceId,
         collection,
         filter,
         updateQuery,
-        options,
       }, callback);
     },
     get({ collection, filter = {}, callback }) {

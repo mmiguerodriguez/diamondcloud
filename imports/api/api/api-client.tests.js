@@ -224,7 +224,6 @@ if (Meteor.isClient) {
         DiamondAPI.update(updateParams);
         chai.assert.equal(callback.toString(), updateParams.callback.toString());
         delete updateParams.callback;
-        updateparams.options = {};
         updateParams.moduleInstanceId = moduleInstances[0]._id;
         chai.assert.deepEqual(updateParams, params);
         done();

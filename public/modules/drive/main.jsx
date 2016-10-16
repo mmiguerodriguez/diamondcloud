@@ -11,7 +11,7 @@ class Index extends React.Component {
   render() {
     return this.props.children;
   }
-  
+
   componentDidMount() {
     DiamondAPI.subscribe({
       collection: 'globalValues',
@@ -332,7 +332,7 @@ class FileManagerLayout extends React.Component {
           </div>
           <div className='folder-navbar'>
             {
-              (this.props.folderId) ? 
+              (this.props.folderId) ?
                 (
                   <div
                     className="go-back"
@@ -475,7 +475,7 @@ class FileManagerPage extends React.Component {
 
 
   componentDidMount() {
-    
+
     this.getDriveData(this.props.params.folderId);
     checkAuth(this.getDriveFolder.bind(this)); /** configure google drive api and
                                      *  call the getDriveFolder in the callback
@@ -1055,21 +1055,20 @@ ReactDOM.render(
  */
 function checkAuth(callback = () => {}, i = 0) {
   if (i < 5) {
-    if (!!gapi.auth) {
-      let SCOPES = [
-        'https://www.googleapis.com/auth/drive'
+    if (gapi.auth) {
+      const SCOPES = [
+        'https://www.googleapis.com/auth/drive',
       ];
       gapi.auth.authorize({
-        'client_id': CLIENT_ID,
-        'scope': SCOPES.join(' '),
-        'immediate': true
+        client_id: CLIENT_ID,
+        scope: SCOPES.join(' '),
+        immediate: true,
       }, () => {
         gapi.client.load('drive', 'v3', callback);
       });
     } else {
-      i++;
       setTimeout(() => {
-        checkAuth(callback, i);
+        checkAuth(callback, i + 1);
       }, 100);
     }
   } else {
