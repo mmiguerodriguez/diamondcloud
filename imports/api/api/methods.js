@@ -91,9 +91,9 @@ export const APIUpdate = new ValidatedMethod({
     updateQuery,
     options,
     (err, res) => {
-      if (!!err) {
+      if (err) {
         throw new Meteor.Error('API.methods.APIUpdate.failedUpdating',
-        'Could not update the APICollection.');
+        `Could not update the APICollection. Reason: ${err}`);
       } else {
         future.return(res);
       }

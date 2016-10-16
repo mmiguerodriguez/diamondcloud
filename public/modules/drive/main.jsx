@@ -1,11 +1,33 @@
 const { DiamondAPI, React, ReactDOM, ReactRouter } = window;
 const { Router, Route, browserHistory } = ReactRouter;
 
-browserHistory.push('/'); // initialize the router
+browserHistory.push('/folder/'); // initialize the router
 
 // Google Drive API
 const CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
 const folderMimeType = 'application/vnd.google-apps.folder';
+
+class Index extends React.Component {
+  render() {
+    return this.props.children;
+  }
+  
+  componentDidMount() {
+    DiamondAPI.subscribe({
+      collection: 'globalValues',
+      callback: (error, result) => {
+        if (error) {
+          console.error(error); // TODO: handle error
+          return;
+        }
+        console.log(result);
+        if (result.length > 0) {
+          browserHistory.push(`/document/${result[0].openedDocumentId}`);
+        }
+      },
+    });
+  }
+}
 
 class FileManagerLayout extends React.Component {
   static renderDocumentTypeImg(fileType) {
@@ -91,7 +113,7 @@ class FileManagerLayout extends React.Component {
           title={folder.name}
           onClick={
             () => {
-              browserHistory.push(`/folder/${folder._id}`);
+              browserHistory.push(`/folder/${folder._id}/${this.props.openedDocumentId}`);
             }
           }
         >
@@ -308,18 +330,30 @@ class FileManagerLayout extends React.Component {
               </div>
             </div>
           </div>
-
-          {
-            !!this.props.folderId ?
-            (
-              <div className='folder-navbar'>
-                <div
-                  className='go-back'
-                  onClick={ browserHistory.goBack }>
-                </div>
-              </div>
-            ) : ( null )
-          }
+          <div className='folder-navbar'>
+            {
+              (this.props.folderId) ? 
+                (
+                  <div
+                    className="go-back"
+                    onClick={browserHistory.goBack}
+                  />
+                ) : (null)
+            }
+            {
+              (this.props.openedDocumentId) ?
+                (
+                  <div
+                    className="go-back-to-document"
+                    onClick={() => {
+                      browserHistory.push(`/document/${this.props.openedDocumentId}`);
+                    }}
+                  >
+                    Volver al documento
+                  </div>
+                ) : (null)
+            }
+          </div>
           <div className="container-fluid files-container">
             <p className="folders-title-container">
               Carpetas
@@ -397,6 +431,7 @@ FileManagerLayout.propTypes = {
   deleteDocument: React.PropTypes.func.isRequired,
   initPicker: React.PropTypes.func.isRequired,
   diamondCloudDriveFolderId: React.PropTypes.string.isRequired,
+  openedDocumentId: React.PropTypes.string.isRequired,
 };
 
 class FileManagerPage extends React.Component {
@@ -433,12 +468,14 @@ class FileManagerPage extends React.Component {
         deleteDocument={this.deleteDocument}
         initPicker={this.initPicker}
         diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
+        openedDocumentId={this.props.params.openedDocumentId}
       />
     );
   }
 
 
   componentDidMount() {
+    
     this.getDriveData(this.props.params.folderId);
     checkAuth(this.getDriveFolder.bind(this)); /** configure google drive api and
                                      *  call the getDriveFolder in the callback
@@ -955,10 +992,9 @@ class FileViewerPage extends React.Component {
     // Set in the data storage the opened document
     DiamondAPI.update({
       collection: 'globalValues',
-      filter: {},
       updateQuery: {
         $set: {
-          '$.openedDocumentId': this.props.params.documentId,
+          openedDocumentId: this.props.params.documentId,
         },
       },
       options: {
@@ -1004,9 +1040,12 @@ FileViewerLayout.propTypes = {
 
 ReactDOM.render(
   <Router history={browserHistory}>
-    <Route path='/' component={FileManagerPage} />
-    <Route path='/folder/:folderId' component={FileManagerPage} />
-    <Route path='/document/:documentId' component={FileViewerPage} />
+    <Route path='/' component={Index} >
+      <Route path='/folder/' component={FileManagerPage} />
+      <Route path='/folder/:openedDocumentId' component={FileManagerPage} />
+      <Route path='/folder/:folderId/:openedDocumentId' component={FileManagerPage} />
+      <Route path='/document/:documentId' component={FileViewerPage} />
+    </Route>
   </Router>,
   document.getElementById('render-target')
 );

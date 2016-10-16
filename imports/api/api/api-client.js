@@ -8,7 +8,7 @@ import { APICollection }        from '../api-collection/api-collection.js';
 export const generateApi = (moduleInstanceId) => {
   let subscriptions = [];
   let DiamondAPI = {
-    subscribe({ collection, filter, callback }) {
+    subscribe({ collection, filter = {}, callback }) {
       let subscription,
       subscriptionCallback = {
         onReady() {
@@ -87,7 +87,7 @@ export const generateApi = (moduleInstanceId) => {
         isGlobal,
       }, callback);
     },
-    update({ collection, filter, updateQuery, options = {}, callback }) {
+    update({ collection, filter = {}, updateQuery, options = {}, callback }) {
       Meteor.call('API.methods.APIUpdate', {
         moduleInstanceId,
         collection,
@@ -96,7 +96,7 @@ export const generateApi = (moduleInstanceId) => {
         options,
       }, callback);
     },
-    get({ collection, filter, callback }) {
+    get({ collection, filter = {}, callback }) {
       Meteor.call('API.methods.APIGet', {
         moduleInstanceId,
         collection,
