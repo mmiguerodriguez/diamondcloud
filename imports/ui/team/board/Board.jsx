@@ -68,8 +68,6 @@ export default class Board extends React.Component {
             }, (error, result) => {
               if (error) {
                 console.error(error);
-              } else {
-                console.log(result);
               }
             });
           } else {

@@ -8,9 +8,9 @@ import { APICollection }        from '../api-collection/api-collection.js';
 export const generateApi = (moduleInstanceId) => {
   let subscriptions = [];
   let DiamondAPI = {
-    subscribe({ collection, filter, callback }) {
-      let subscription,
-      subscriptionCallback = {
+    subscribe({ collection, filter = {}, callback }) {
+      let subscription;
+      let subscriptionCallback = {
         onReady() {
           let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
           let teamId = moduleInstance.board().team()._id;
@@ -44,28 +44,8 @@ export const generateApi = (moduleInstanceId) => {
             let subscriptionIsAlive = subscriptions.find((_subscription) => {
               return _subscription.subscriptionId === subscription.subscriptionId;
             }) !== undefined;
-            console.log('SUBSCRIPTION IS ALIVE: ', subscriptionIsAlive);
             if (subscriptionIsAlive) {
-              console.log('ARRAY DE SUBSCRIPTIONS: ', subscriptions);
               let updatedData = query.fetch();
-              console.log('Esta es la collection de drive: ', APICollection.find({
-                $and: [
-                  {
-                    '#collection': collection,
-                  },
-                  {
-                    $or: [
-                      {
-                        '#moduleInstanceId': moduleInstanceId,
-                      },
-                      {
-                        '#moduleId': moduleInstance.moduleId,
-                        '#teamId': teamId,
-                      }
-                    ]
-                  }
-                ],
-              }).fetch());
               callback(undefined, updatedData);
             }
           };
@@ -77,7 +57,6 @@ export const generateApi = (moduleInstanceId) => {
           });
         },
         onError(err) {
-          console.log('Suscription error');
           throw new console.error(err);
         }
       };
@@ -108,7 +87,7 @@ export const generateApi = (moduleInstanceId) => {
         isGlobal,
       }, callback);
     },
-    update({ collection, filter, updateQuery, callback }) {
+    update({ collection, filter = {}, updateQuery, callback }) {
       Meteor.call('API.methods.APIUpdate', {
         moduleInstanceId,
         collection,
@@ -116,7 +95,7 @@ export const generateApi = (moduleInstanceId) => {
         updateQuery,
       }, callback);
     },
-    get({ collection, filter, callback }) {
+    get({ collection, filter = {}, callback }) {
       Meteor.call('API.methods.APIGet', {
         moduleInstanceId,
         collection,
