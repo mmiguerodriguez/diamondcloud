@@ -1,45 +1,11 @@
 import React        from 'react';
 
-import NavbarLayout from '../navbar/NavbarLayout.jsx';
-import ErrorMessage from '../error-message/ErrorMessage.jsx';
+import NavbarLayout from '../navbar/NavbarLayout';
+import ErrorMessage from '../error-message/ErrorMessage';
 
 const ERROR_DELAY = 5000;
 
 export default class AppLayout extends React.Component {
-  /**
-   * Sets the error state so we can show an error
-   * correctly.
-   * @param {Object} object
-   *  @param {String} body
-   *   Error message.
-   *  @param {Number} delay
-   *   The delay until the message is closed
-   *  @param {Boolean} showing.
-   *   State to check if the message is being
-   *   shown or not.
-   */
-  showError({ body, delay }) {
-    this.setState({
-      error: {
-        body,
-        delay: delay ? delay : ERROR_DELAY,
-        showing: true,
-      },
-    });
-  }
-  /**
-   * Resets the error state to the default.
-   */
-  hideError() {
-    this.setState({
-      error: {
-        body: '',
-        delay: ERROR_DELAY,
-        showing: false,
-      },
-    });
-  }
-
   constructor(props) {
     super(props);
 
@@ -48,31 +14,63 @@ export default class AppLayout extends React.Component {
         body: '',
         delay: ERROR_DELAY,
         showing: false,
-      }
+      },
     };
-    
-    this.showError = this.showError.bind(this);
-    this.hideError = this.hideError.bind(this);
+
+    this.error = this.error.bind(this);
+  }
+  /**
+  * Sets the error state so we can show an error
+  * correctly.
+  * @param {String} type
+  *  Used to say if we are hiding or showing
+  *  the error message.
+  * @param {Object} object
+  *  @param {String} body
+  *   Error message.
+  *  @param {Number} delay
+  *   The delay until the message is closed
+  *  @param {Boolean} showing.
+  *   State to check if the message is being
+  *   shown or not.
+  */
+  error(type, { body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
+    if (type === 'hide') {
+      this.setState({
+        error: {
+          body: '',
+          delay: ERROR_DELAY,
+          showing: false,
+        },
+      });
+    } else if (type === 'show') {
+      this.setState({
+        error: {
+          body,
+          delay: delay || ERROR_DELAY,
+          showing: true,
+        },
+      });
+    }
   }
 
   render() {
     return (
       <div>
         <NavbarLayout
-          path={ this.props.location.pathname }
-          user={ this.props.user }
+          path={this.props.location.pathname}
+          user={this.props.user}
         />
-        { 
-          React.cloneElement(this.props.children, { 
+        {
+          React.cloneElement(this.props.children, {
             ...this.props,
-            showError: this.showError,
-            hideError: this.hideError,
+            error: this.error,
           })
         }
         {
           this.state.error.showing ? (
             <ErrorMessage
-              hideError={this.hideError}
+              error={this.error}
               {...this.state.error}
             />
           ) : (null)
