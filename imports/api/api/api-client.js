@@ -154,11 +154,10 @@ export const generateApi = (moduleInstanceId) => {
       // Return and error handling
       let user = Meteor.users.findOne(userId);
 
-      if (!!user) {
+      if (user) {
         return user;
-      } else {
-        throw new console.error(`User ${userId} doesn't exist.`);
       }
+      throw new console.error(`User ${userId} doesn't exist.`);
     },
     change(callback) {
       return 'This feature is not done yet. Sorry! :/';

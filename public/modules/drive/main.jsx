@@ -696,70 +696,87 @@ class FileManagerPage extends React.Component {
     if (!diamondCloudDriveFolderId) {
       console.error('There was an error while creating the document. Please try again');
       // TODO: handle this error
-    } else {
-      let self = this;
-      self.setState({
-        loadingDocuments: true,
-      });
-      gapi.client.drive.files.create({
+      return;
+    }
+    let self = this;
+    self.setState({
+      loadingDocuments: true,
+    });
+    function createDocumentInDrive(isOwner) {
+      return gapi.client.drive.files.create({
         resource: {
           name,
           mimeType: fileType,
           // Create the document inside the parent folder if it exists
-          parents: [parentFolderId || diamondCloudDriveFolderId],
-        }
-      }).then((resp) => {
-        // Make the document editable to everyone with the link
-        gapi.client.drive.permissions.create({
-          fileId: resp.result.id,
-          role: 'writer',
-          type: 'anyone',
-        }).then(() => {
-          if (!parentFolderId) {
-            DiamondAPI.insert({
-              collection: 'rootFiles',
-              object: {
-                documentId: resp.result.id, // resp is the response to the create
-                                            // request, not to the permission one
-                boardId: DiamondAPI.getCurrentBoard()._id,
-              },
-              isGlobal: true,
-              callback(err, res) {
-                if (!!err) {
-                  console.error(err);
-                }
-              }
-            });
+          parents: (isOwner) ?
+                     ([parentFolderId || diamondCloudDriveFolderId])
+                     : [diamondCloudDriveFolderId],
+        },
+      });
+    }
+    function createDrivePermission(resp) {
+      // Make the document editable to everyone with the link
+      return gapi.client.drive.permissions.create({
+        fileId: resp.result.id,
+        role: 'writer',
+        type: 'anyone',
+      });
+    }
+    function insertDocumentInStorage(resp) {
+      if (!parentFolderId) {
+        DiamondAPI.insert({
+          collection: 'rootFiles',
+          object: {
+            documentId: resp.result.id, // resp is the response to the create
+                                        // request, not to the permission one
+            boardId: DiamondAPI.getCurrentBoard()._id,
+          },
+          isGlobal: true,
+          callback(err, res) {
+            if (!!err) {
+              console.error(err);
+            }
           }
+        });
+      }
 
-          DiamondAPI.insert({
-            collection: 'documents',
-            object: {
-              _id: resp.result.id,
-              parentFolderId,
-              name,
-              fileType,
-              isImported: false,
-            },
-            isGlobal: true,
-            callback(error, result){
-              self.setState({
-                loadingDocuments: false,
-              });
-              callback(error, result);
-            },
-          });
-        }, (reason) => {
+      DiamondAPI.insert({
+        collection: 'documents',
+        object: {
+          _id: resp.result.id,
+          parentFolderId,
+          name,
+          fileType,
+          isImported: false,
+        },
+        isGlobal: true,
+        callback(error, result){
           self.setState({
             loadingDocuments: false,
           });
-          callback(reason);
-        });
-      }, (reason) => {
-        self.setState({
-          loadingDocuments: false,
-        });
-        callback(reason);
+          callback(error, result);
+        },
+      });
+    }
+    if (parentFolderId) {
+      DiamondAPI.get({
+        collection: 'folders',
+        filter: {
+          _id: parentFolderId,
+        },
+        callback(error, result) {
+          if (error) {
+            callback(error);
+            return;
+          }
+          createDocumentInDrive(result[0].ownerId === DiamondAPI.getCurrentUser)
+            .then((response) => {
+              createDrivePermission(response)
+              .then(() => {
+                insertDocumentInStorage(response);
+              }, callback);
+            }, callback);
+        },
       });
     }
   }
@@ -827,9 +844,10 @@ class FileManagerPage extends React.Component {
       DiamondAPI.insert({
         collection: 'folders',
         object: {
-         _id: folderId,
-         parentFolderId,
-         name,
+          _id: folderId,
+          parentFolderId,
+          name,
+          ownerId: DiamondAPI.getCurrentUser()._id,
         },
         isGlobal: true,
         callback(error, result) {
