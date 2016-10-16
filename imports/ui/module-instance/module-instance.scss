@@ -27,4 +27,7 @@
     height: inherit;
     border: none;
   }
+  &:active, &:hover {
+    z-index: 100;
+  }
 }
