@@ -15,8 +15,8 @@ export default class DirectChat extends React.Component {
         <div className='col-xs-2 img-fixed-margin fixed-padding'>
           <img
             className='img-circle'
-            src='http://image.flaticon.com/icons/svg/60/60541.svg'
-            width='22px' />
+            src={ this.props.user.profile.picture }
+            width='28px' />
         </div>
         <div className={ columnClasses }>
           <h4 className='truncate'>{ this.props.user.profile.name }</h4>

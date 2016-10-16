@@ -41,7 +41,7 @@ export default class UsersList extends React.Component {
           <img
             className="contact-list-photo"
             alt="User"
-            src={this.props.user.profile.picture || '/img/user-shape.svg'}
+            src={this.props.user.profile.picture || '/img/user-shape.jpg'}
           />
         </div>
         <div className="col-xs-10">
