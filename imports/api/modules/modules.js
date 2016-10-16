@@ -33,8 +33,10 @@ let modules = [
   },
 ];
 
-modules.forEach((module) => {
-  if(!Modules.findOne(module._id)) {
-    Modules.insert(module);
-  }
-});
+if (Meteor.isServer) {
+  modules.forEach((module) => {
+    if(!Modules.findOne(module._id)) {
+      Modules.insert(module);
+    }
+  });
+}
