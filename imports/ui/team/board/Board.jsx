@@ -50,8 +50,6 @@ export default class Board extends React.Component {
                   type: 'show',
                   body: 'Hubo un error interno al crear el módulo',
                 });
-              } else {
-                console.log(result);
               }
             });
           } else {
@@ -77,8 +75,6 @@ export default class Board extends React.Component {
                   type: 'show',
                   body: 'Hubo un error interno al crear el módulo',
                 });
-              } else {
-                console.log(result);
               }
             });
           } else {
@@ -244,7 +240,7 @@ export default class Board extends React.Component {
           </div>
         </div>
         <div className="board">
-          { this.renderModules() }
+          {this.renderModules()}
         </div>
       </div>
     );

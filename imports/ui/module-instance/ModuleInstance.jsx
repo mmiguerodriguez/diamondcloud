@@ -1,6 +1,6 @@
-import { generateApi }    from '../../api/api/api-client.js';
+import React           from 'react';
 
-import React              from 'react';
+import { generateApi } from '../../api/api/api-client';
 
 export default class ModuleInstance extends React.Component {
   constructor(props) {
@@ -14,99 +14,52 @@ export default class ModuleInstance extends React.Component {
       minimized: this.props.moduleInstance.minimized,
       loading: true,
     };
-
-    this.refs = {
-      iframe: null,
-      module: null,
-    };
-  }
-  render() {
-    if (this.props.loading) {
-      return (
-        <div>Cargando modulo :)</div>
-      );
-    }
-
-    return (
-      <div className='module-container'
-           ref='module'
-           data-moduleinstance-id={ this.props.moduleInstance._id }
-           style={{
-             top: this.props.moduleInstance.x,
-             left: this.props.moduleInstance.y,
-             width: this.props.moduleInstance.width,
-             height: this.props.moduleInstance.height,
-           }}>
-        {
-          this.state.minimized ? (
-            <span className='minimized-module-name'>
-              { this.props.module.name }
-            </span>
-          ) : ( null )
-        }
-        {
-          !this.state.loading || this.state.minimized ? (
-            <div
-              className='module-pin'
-              role='button'
-              onClick={ this.toggleMinimize.bind(this) }
-              onContextMenu={ this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.refs.iframe) }></div>
-          ) : ( null )
-        }
-        <iframe className='module'
-                ref='iframe'
-                src={ '/modules/' + this.props.moduleInstance.moduleId + '/index.html' }
-                style={{
-                  display: this.state.minimized ? 'none' : 'block',
-                }}>
-        </iframe>
-      </div>
-    );
   }
 
   componentDidMount() {
-    let DiamondAPI = generateApi(this.props.moduleInstance._id);
+    const DiamondAPI = generateApi(this.props.moduleInstance._id);
 
-    this.refs.iframe.onload = this.iframeLoaded.bind(this);
-    this.refs.iframe.contentWindow.DiamondAPI = DiamondAPI;
-
-    this.props.moduleInstancesFrames.push(this.refs.iframe.contentWindow);
+    this.iframe.onload = this.iframeLoaded.bind(this);
+    this.iframe.contentWindow.DiamondAPI = DiamondAPI;
+    this.props.moduleInstancesFrames.push(this.iframe.contentWindow);
   }
+
   componentDidUpdate() {
     if (this.props.moduleInstance.archived) {
-      this.refs.iframe.contentWindow.DiamondAPI.unsubscribe();
+      this.iframe.contentWindow.DiamondAPI.unsubscribe();
     }
   }
 
   iframeLoaded() {
-    let self = this;
-    $(this.refs.module)
-      .draggable({
-        containment: 'parent',
-        handle: '.module-pin',
-        cursor: '-webkit-grabbing !important',
-        cursorAt: { top: -6 },
-        distance: 5,
-        iframeFix: true,
-      })
-      .resizable({
-        containment: 'parent',
-        disabled: this.state.minimized,
-        stop(event, ui) {
-          let moduleInstanceId = self.props.moduleInstance._id;
-          let { width, height } = ui.size;
+    const self = this;
 
-          Meteor.call('ModuleInstances.methods.edit', {
-            moduleInstanceId,
-            width,
-            height,
-          }, (error, result) => {
-            if (error) {
-              console.error(error);
-            }
-          });
-        }
-      });
+    $(this.module)
+    .draggable({
+      containment: 'parent',
+      handle: '.module-pin',
+      cursor: '-webkit-grabbing !important',
+      cursorAt: { top: -6 },
+      distance: 5,
+      iframeFix: true,
+    })
+    .resizable({
+      containment: 'parent',
+      disabled: this.state.minimized,
+      stop(event, ui) {
+        const moduleInstanceId = self.props.moduleInstance._id;
+        const { width, height } = ui.size;
+
+        Meteor.call('ModuleInstances.methods.edit', {
+          moduleInstanceId,
+          width,
+          height,
+        }, (error, result) => {
+          if (error) {
+            console.error(error);
+          }
+        });
+      },
+    });
 
     this.setState({
       loading: false,
@@ -114,13 +67,13 @@ export default class ModuleInstance extends React.Component {
   }
 
   toggleMinimize() {
-    let moduleInstanceId = this.props.moduleInstance._id;
-    let minimized = !this.props.moduleInstance.minimized;
+    const moduleInstanceId = this.props.moduleInstance._id;
+    const minimized = !this.props.moduleInstance.minimized;
 
     this.setState({
-      minimized: minimized
+      minimized,
     }, () => {
-      $(this.refs.module).resizable('option', 'disabled', minimized);
+      $(this.module).resizable('option', 'disabled', minimized);
     });
 
     Meteor.call('ModuleInstances.methods.edit', {
@@ -129,14 +82,59 @@ export default class ModuleInstance extends React.Component {
     }, (error, result) => {
       if (error) {
         this.setState({
-          minimized: !minimized
+          minimized: !minimized,
         }, () => {
           console.error(error);
         });
-      } else {
-        console.log(result);
       }
     });
+  }
+
+  render() {
+    return (
+      <div
+        className="module-container"
+        ref={(c) => { this.module = c; }}
+        data-moduleinstance-id={this.props.moduleInstance._id}
+        style={{
+          top: this.props.moduleInstance.x,
+          left: this.props.moduleInstance.y,
+          width: this.props.moduleInstance.width,
+          height: this.props.moduleInstance.height,
+        }}
+      >
+        {
+          this.state.loading ? (
+            <div>Cargando...</div>
+          ) : (null)
+        }
+        {
+          this.state.minimized ? (
+            <span className="minimized-module-name">
+              {this.props.module.name}
+            </span>
+          ) : (null)
+        }
+        {
+          !this.state.loading || this.state.minimized ? (
+            <div
+              className="module-pin"
+              role="button"
+              onClick={this.toggleMinimize.bind(this)}
+              onContextMenu={this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.iframe)}></div>
+          ) : (null)
+        }
+        <iframe
+          className="module"
+          ref={(c) => { this.iframe = c; }}
+          src={`/modules/${this.props.moduleInstance.moduleId}/index.html`}
+          style={{
+            display: this.state.minimized || this.state.loading ? 'none' : 'block',
+          }}
+        >
+        </iframe>
+      </div>
+    );
   }
 }
 
