@@ -947,7 +947,6 @@ class FileManagerPage extends React.Component {
           deleteFromDrive((error, result) => {
             if (!!error) {
               callback(error, result);
-              return false;
             }
             deleteFromStorage(callback);
           });
@@ -989,7 +988,7 @@ class FileManagerPage extends React.Component {
       }
 
       function deleteFromDrive(_callback) {
-        if (!!id && !isImported) {
+        if (id && !isImported) {
           gapi.client.drive.files.delete({
             fileId: id,
           }).then(_callback, _callback);
