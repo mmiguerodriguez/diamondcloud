@@ -401,7 +401,7 @@ class CreateTask extends React.Component {
     this.state = {
       title: this.props.taskTitle,
       boardId: this.props.selectedBoardId || this.props.boards[0]._id,
-      dueDate: '',
+      dueDate: new Date().getTime() + 1000 * 60 * 60 * 24,
     };
 
     this.createTask = this.createTask.bind(this);
@@ -450,6 +450,7 @@ class CreateTask extends React.Component {
               type='datetime-local'
               placeholder='Ingresá la fecha de vencimiento'
               onChange={(e) => this.handleChange('dueDate', e)}
+              defaultValue={$.format.date(this.state.dueDate, 'yyyy-MM-ddThh:mm')}
             />
           </div>
           <div className='form-group'>
@@ -1208,7 +1209,7 @@ class Task extends React.Component {
           {
             !this.state.editing ? (
               <div className='col-xs-12'>
-                <p className='col-xs-12 expiration'>Vencimiento: {new Date(this.props.task.dueDate).toLocaleDateString()}</p>
+                <p className='col-xs-12 expiration'>Vencimiento: {$.format.date(new Date(this.props.task.dueDate), 'MM/dd/yyyy')}</p>
               </div>
             ) : (null)
           }
