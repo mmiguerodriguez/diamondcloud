@@ -1,22 +1,17 @@
 import { Meteor }          from 'meteor/meteor';
-import { ReactiveVar }     from 'meteor/reactive-var'
-import { createContainer } from 'meteor/react-meteor-data';
+import { ReactiveVar }     from 'meteor/reactive-var';
 
 import React               from 'react';
 import { browserHistory }  from 'react-router';
 import isMobile            from 'ismobilejs';
 
-import { Teams }           from '../../api/teams/teams';
 import { Boards }          from '../../api/boards/boards';
-import { ModuleInstances } from '../../api/module-instances/module-instances';
-import { Modules }         from '../../api/modules/modules';
 import { DirectChats }     from '../../api/direct-chats/direct-chats';
-import { Messages }        from '../../api/messages/messages';
 
-import TeamLayout          from './TeamLayout';
 import NotificationSystem  from '../notifications/notificationSystem/NotificationSystem';
+import TeamLayout          from './TeamLayout';
 
-export class Team extends React.Component {
+export default class TeamPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -40,8 +35,8 @@ export class Team extends React.Component {
   }
 
   componentWillUnmount() {
-    if (Team.boardSubscription.get()) {
-      Team.boardSubscription.get().stop();
+    if (TeamPage.boardSubscription.get()) {
+      TeamPage.boardSubscription.get().stop();
     }
   }
   /**
@@ -170,21 +165,21 @@ export class Team extends React.Component {
   boardSubscribe(boardId) {
     const self = this;
 
-    if (Team.boardId.get() === boardId) {
+    if (TeamPage.boardId.get() === boardId) {
       return;
     }
 
-    if (Team.boardSubscription.get()) {
+    if (TeamPage.boardSubscription.get()) {
       this.state.moduleInstancesFrames.forEach((frame) => {
         frame.DiamondAPI.unsubscribe();
       });
 
-      Team.boardSubscription.get().stop();
+      TeamPage.boardSubscription.get().stop();
     }
 
     const subscription = Meteor.subscribe('boards.board', boardId, {
       onReady() {
-        Team.boardId.set(boardId);
+        TeamPage.boardId.set(boardId);
       },
       onError(error) {
         self.props.toggleError({
@@ -194,15 +189,15 @@ export class Team extends React.Component {
       },
     });
 
-    Team.boardSubscription.set(subscription);
+    TeamPage.boardSubscription.set(subscription);
   }
 
   render() {
-    if (!Team.boardId.get()) {
+    if (!TeamPage.boardId.get()) {
       return null;
     }
 
-    const board = Boards.findOne(Team.boardId.get());
+    const board = Boards.findOne(TeamPage.boardId.get());
 
     if (this.props.loading) {
       return null;
@@ -251,56 +246,17 @@ export class Team extends React.Component {
   }
 }
 
-Team.boardId = new ReactiveVar();
-Team.boardSubscription = new ReactiveVar();
-
-export default TeamPageContainer = createContainer(({ params }) => {
-  if (!Meteor.user()) {
-    browserHistory.push('/');
-  }
-
-  const { teamUrl } = params;
-
-  let messagesHandle;
-  const changesCallback = () => {
-    if (messagesHandle) {
-      messagesHandle.stop();
-    }
-
-    messagesHandle = Meteor.subscribe('messages.last', teamUrl);
-  };
-
-  const teamsHandle = Meteor.subscribe('teams.dashboard');
-  const teamHandle = Meteor.subscribe('teams.team', teamUrl, () => {
-    const firstBoard = Boards.findOne();
-    const boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
-      Team.boardId.set(Boards.findOne()._id);
-    });
-
-    Team.boardSubscription.set(boardHandle);
-    messagesHandle = Meteor.subscribe('messages.last', teamUrl);
-  });
-  const loading = !teamsHandle.ready() || !teamHandle.ready();
-
-  // Get the messages of newly created chats
-  DirectChats.find().observeChanges({
-    added: changesCallback,
-    removed: changesCallback,
-  });
-  Boards.find().observeChanges({
-    added: changesCallback,
-    removed: changesCallback,
-  });
-
-  return {
-    loading,
-    team: Teams.findOne({ url: teamUrl }),
-    teams: Teams.find({}, { sort: { name: -1 } }).fetch(),
-    users: Meteor.users.find({}).fetch(),
-    boards: Boards.find({}, { sort: { name: -1 } }).fetch(),
-    directChats: DirectChats.find().fetch(),
-    messages: Messages.find({}).fetch(),
-    moduleInstances: ModuleInstances.find({}).fetch(),
-    modules: Modules.find({}, { sort: { name: -1 } }).fetch(),
-  };
-}, Team);
+TeamPage.boardId = new ReactiveVar();
+TeamPage.boardSubscription = new ReactiveVar();
+TeamPage.propTypes = {
+  loading: React.PropTypes.bool.isRequired,
+  team: React.PropTypes.object,
+  teams: React.PropTypes.array.isRequired,
+  users: React.PropTypes.array.isRequired,
+  boards: React.PropTypes.array.isRequired,
+  directChats: React.PropTypes.array.isRequired,
+  messages: React.PropTypes.array.isRequired,
+  moduleInstances: React.PropTypes.array.isRequired,
+  modules: React.PropTypes.array.isRequired,
+  toggleError: React.PropTypes.func.isRequired,
+};
