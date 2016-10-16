@@ -7,9 +7,10 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  z-index: 100;
+  z-index: 0;
   &.auto {
     width: auto;
+    height: auto;
   }
   &.maximized {
     width: calc(100% - 64px);

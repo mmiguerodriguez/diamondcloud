@@ -38,11 +38,13 @@ export default class ModuleInstance extends React.Component {
              height: this.props.moduleInstance.height,
            }}>
         {
+          /*
           this.state.minimized ? (
             <span className='minimized-module-name'>
-              { this.props.module.name }
+              { this.props.module.img }
             </span>
           ) : ( null )
+          */
         }
         {
           !this.state.loading || this.state.minimized ? (
@@ -50,7 +52,9 @@ export default class ModuleInstance extends React.Component {
               className='module-pin'
               role='button'
               onClick={ this.toggleMinimize.bind(this) }
-              onContextMenu={ this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.refs.iframe) }></div>
+              onContextMenu={ this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.refs.iframe) }>
+                <img className='img' src={ this.props.module.img } />
+              </div>
           ) : ( null )
         }
         <iframe className='module'
