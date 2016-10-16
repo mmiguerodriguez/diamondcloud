@@ -139,7 +139,7 @@ export default class TeamLayout extends React.Component {
           <div className="col-xs-2">
             <img
               className="img-circle"
-              src={user.profile.picture}
+              src={`${user.profile.picture}?sz=60`}
               width="48px"
             />
           </div>
