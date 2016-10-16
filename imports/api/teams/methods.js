@@ -1,6 +1,7 @@
 import { Meteor }          from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
+import { printObject }     from '../helpers/print-objects.js';
 import  Future             from 'fibers/future';
 
 import { Teams }           from './teams.js';
@@ -47,7 +48,7 @@ export const createTeam = new ValidatedMethod({
           'You can\'t add yourself to a team',
           'user_adds_himself');
         }
-  
+
         team.users.push({ email, hierarchy });
       });
     }
@@ -193,13 +194,27 @@ export const shareTeam = new ValidatedMethod({
     Teams.addUser(teamId, user);
     // TODO: Add user to public Boards
 
-    if (Meteor.users.findByEmail(email, {})) {
+    let existingUser = Meteor.users.findByEmail(email, {});
+
+    printObject('existingUser:', existingUser);
+
+    if (existingUser) {
       //if user is not registered in Diamond Cloud
       Mail.sendMail({
         from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
         to: email,
         subject: 'Te invitaron a colaborar en Diamond Cloud',
         html: Mail.messages.sharedTeamRegistered(teamId),
+      });
+
+      printObject('team.boards:', team.boards);
+
+      team.boards.forEach((boardIdObj) => {
+        let board = Boards.findOne(boardIdObj._id);
+        printObject(board);
+        if (!board.isPrivate) {
+          Boards.addUser(board._id, existingUser._id);
+        }
       });
     } else {
       Mail.sendMail({
@@ -225,7 +240,7 @@ export const removeUserFromTeam = new ValidatedMethod({
       throw new Meteor.Error('Teams.methods.removeUser.notLoggedIn',
       'Must be logged in to edit a team.');
     }
-    
+
     if (Meteor.user().email() === email) {
       throw new Meteor.Error('Teams.methods.removeUser.cantRemoveYourself',
       'You can\'t remove yourself from a team.');

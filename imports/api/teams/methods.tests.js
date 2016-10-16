@@ -4,6 +4,7 @@ import { sinon }                from 'meteor/practicalmeteor:sinon';
 import { chai }                 from 'meteor/practicalmeteor:chai';
 import   faker                  from 'faker';
 import { Random }               from 'meteor/random';
+import { printObject }          from '../helpers/print-objects.js';
 import { Mail }                 from '../mails/mails.js';
 
 import { Teams }                from './teams.js';
@@ -41,8 +42,14 @@ if (Meteor.isServer) {
         team = Factory.create('team');
 
         board = Factory.create('privateBoard');
+
         board.users = [
           { email: users[2].emails[0].address, notifications: 0 },
+        ];
+
+        boards = [
+          Factory.create('publicBoard'),
+          Factory.create('privateBoard'),
         ];
 
         team.users[0].email = users[0].emails[0].address;
@@ -50,16 +57,25 @@ if (Meteor.isServer) {
         team.users.push({ email: users[2].emails[0].address, hierarchy: 'creativo' });
         team.boards = [
           { _id: board._id },
+          { _id: boards[0]._id },
+          { _id: boards[1]._id },
         ];
 
         resetDatabase();
 
-        sinon.stub(Meteor, 'user', () => users[0]);
         users.forEach((user) => {
           Meteor.users.insert(user);
         });
+
         Teams.insert(team);
+
         Boards.insert(board);
+
+        boards.forEach((board) => {
+          Boards.insert(board);
+        });
+
+        sinon.stub(Meteor, 'user', () => users[0]);
 
         sinon.stub(createBoard, 'call', (obj, callback) => {
           callback(null, { _id: generalBoardId });
@@ -73,6 +89,15 @@ if (Meteor.isServer) {
           callback(null, null);
         });
         sinon.stub(Mail, 'sendMail', () => true);
+
+        sinon.stub(Boards, 'addUser', (boardId, userId) => {
+          let newBoard = _.clone(boards[0]);
+          newBoard.users.push({
+            email: users[0].emails[0].address,
+            notifications: 0,
+          });
+          Boards.update({ _id: newBoard._id }, newBoard);
+        });
       });
 
       afterEach(function() {
@@ -81,6 +106,7 @@ if (Meteor.isServer) {
         Mail.sendMail.restore();
         createModuleInstance.call.restore();
         APIInsert.call.restore();
+        Boards.addUser.restore();
       });
 
       it('should create a team', function(done) {
@@ -190,6 +216,21 @@ if (Meteor.isServer) {
 
         shareTeam.call(args, (error, result) => {
           chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
+          boards[0].users.push({
+            email: users[0].emails[0].address,
+            notifications: 0,
+          });
+          printObject(
+            'res:',
+            Boards.findOne({ _id: boards[0]._id }),
+            'expected:',
+            boards[0]
+          );
+          // User doesn't exist
+          chai.assert.deepEqual(
+            Boards.findOne({ _id: boards[0]._id }),
+            boards[0],
+          );
           done();
         });
       });
