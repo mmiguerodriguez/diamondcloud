@@ -104,7 +104,7 @@ export default class ModuleInstance extends React.Component {
         }}
       >
         {
-          this.state.loading ? (
+          this.state.loading && !this.state.minimized ? (
             <div>Cargando...</div>
           ) : (null)
         }
@@ -121,8 +121,11 @@ export default class ModuleInstance extends React.Component {
               className="module-pin"
               role="button"
               onClick={this.toggleMinimize.bind(this)}
-              onContextMenu={this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.iframe)}>
-              <img className='img' src={this.props.module.img} />
+              onContextMenu={
+                this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.iframe)
+              }
+            >
+              <img className="img" src={this.props.module.img} />
             </div>
           ) : (null)
         }
@@ -133,8 +136,7 @@ export default class ModuleInstance extends React.Component {
           style={{
             display: this.state.minimized || this.state.loading ? 'none' : 'block',
           }}
-        >
-        </iframe>
+        />
       </div>
     );
   }
