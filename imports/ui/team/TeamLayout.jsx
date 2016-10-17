@@ -368,11 +368,13 @@ export default class TeamLayout extends React.Component {
                 addChat={this.props.addChat}
                 changeBoard={this.changeBoard}
                 toggleCollapsible={this.toggleCollapsible}
+                toggleError={this.props.toggleError}
               />
               <ConfigTeamModal
                 key={this.props.team._id}
                 team={this.props.team}
                 loadTeam={this.loadTeam}
+                toggleError={this.props.toggleError}
               />
               {
                 this.state['board-context-menu-id'] ? (
@@ -380,6 +382,7 @@ export default class TeamLayout extends React.Component {
                     team={this.props.team}
                     boards={this.props.boards}
                     boardId={this.state['board-context-menu-id']}
+                    toggleError={this.props.toggleError}
                   />
                 ) : (null)
               }
@@ -390,6 +393,7 @@ export default class TeamLayout extends React.Component {
           team={this.props.team}
           addChat={this.props.addChat}
           toggleCollapsible={this.toggleCollapsible}
+          toggleError={this.props.toggleError}
         />
       </div>
     );

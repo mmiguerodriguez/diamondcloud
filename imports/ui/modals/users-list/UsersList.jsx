@@ -54,9 +54,11 @@ export default class UsersList extends React.Component {
       users.forEach((user, index) => {
         if (user) {
           emails.push(user.email());
-          const hierarchy = this.props.team.users.find((element) => {
-            return element.email === user.email();
-          }).hierarchy;
+
+          const hierarchy = this.props.team.users.find(
+            element => element.email === user.email()
+          ).hierarchy;
+
           users[index].hierarchy = hierarchy;
         }
       });
@@ -95,7 +97,7 @@ export default class UsersList extends React.Component {
       });
     }
 
-    users.map((user) => {
+    users.forEach((user) => {
       arr.push(
         <User
           key={user._id}
@@ -117,7 +119,7 @@ export default class UsersList extends React.Component {
     return (
       <div>
         {
-          (isAdmin) ? (
+          isAdmin ? (
             <div className="row container-fluid">
               <div className="input-group col-xs-12">
                 <input
@@ -144,7 +146,11 @@ export default class UsersList extends React.Component {
                   <option value="administrador">Administrador</option>
                   <option value="medios">Medios</option>
                 </select>
-                <div className="input-group-addon search-input" onClick={this.handleSubmit}>
+                <div
+                  className="input-group-addon search-input"
+                  role="button"
+                  onClick={this.handleSubmit}
+                >
                   <img
                     src="/img/add-people-icon.svg"
                     width="24px"
