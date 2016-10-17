@@ -10,23 +10,25 @@ export default class DirectChat extends React.Component {
 
     return (
       <div
-        className='row row-fixed-margin'
-        onClick={ this.props.addChat.bind(null, { directChatId: this.props.directChat._id }) }>
-        <div className='col-xs-2 img-fixed-margin fixed-padding'>
+        className="row row-fixed-margin"
+        onClick={this.props.addChat.bind(null, { directChatId: this.props.directChat._id })}
+      >
+        <div className="col-xs-2 img-fixed-margin fixed-padding">
           <img
-            className='img-circle'
-            src={ this.props.user.profile.picture }
-            width='28px' />
+            className="img-circle"
+            src={`${this.props.user.profile.picture}?sz=60`}
+            width="28px"
+          />
         </div>
-        <div className={ columnClasses }>
-          <h4 className='truncate'>{ this.props.user.profile.name }</h4>
+        <div className={columnClasses}>
+          <h4 className="truncate">{this.props.user.profile.name}</h4>
         </div>
         {
           this.props.notifications > 0 ? (
-            <div className='col-xs-2 img-fixed-margin'>
-              <div className='messages-badge img-circle'>{ this.props.notifications }</div>
+            <div className="col-xs-2 img-fixed-margin">
+              <div className="messages-badge img-circle">{this.props.notifications}</div>
             </div>
-          ) : ( null )
+          ) : (null)
         }
       </div>
     );

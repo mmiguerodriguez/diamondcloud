@@ -84,16 +84,6 @@ export default class ConfigTeamModal extends React.Component {
               team={ this.props.team }
               addUser={ this.addUser }
               removeUser={ this.removeUser } />
-            <hr />
-            <h4 className='configuration-title'>Plan</h4>
-            <p className='explanation-text margin'>Visualize mas información de su proyecto</p>
-            <div className='row'>
-              <div className='col-xs-12'>
-                <p>Plan actual: { this.props.team.plan }</p>
-                <p>Personas: { this.props.team.users.length }</p>
-                <p>Boards: { this.props.team.boards.length }/12</p>
-              </div>
-            </div>
           </div>
         }
         footer={
