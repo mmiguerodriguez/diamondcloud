@@ -67,7 +67,7 @@ export default class TeamPage extends React.Component {
   addChat(obj) {
     const self = this;
 
-    const { chats } = this.state;
+    let { chats } = this.state;
 
     if (obj.boardId) {
       let found = false;
@@ -84,11 +84,11 @@ export default class TeamPage extends React.Component {
           onReady() {
             const messages = Boards.findOne(obj.boardId).getMessages().fetch();
 
-            chats.push({
+            chats = [{
               boardId: obj.boardId,
               messages,
               subscription: chatHandle,
-            });
+            }, ...chats];
 
             self.setState({
               chats,
@@ -111,11 +111,11 @@ export default class TeamPage extends React.Component {
           onReady() {
             const messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
 
-            chats.push({
+            chats = [{
               directChatId: obj.directChatId,
               messages,
               subscription: chatHandle,
-            });
+            }, ...chats];
 
             self.setState({
               chats,
