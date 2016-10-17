@@ -6,6 +6,7 @@ browserHistory.push('/folder'); // initialize the router
 // Google Drive API
 const CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
 const folderMimeType = 'application/vnd.google-apps.folder';
+let authObject;
 
 class Index extends React.Component {
   constructor(props) {
@@ -402,7 +403,7 @@ class FileManagerLayout extends React.Component {
                     onClick={() => {
                       this.props.uploadFile({
                         file: this.state.file,
-                        parentFolderId: this.folderId,
+                        parentFolderId: this.props.folderId,
                         diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
                         callback(error, result) {
                           if (error) {
@@ -1185,75 +1186,59 @@ class FileManagerPage extends React.Component {
    *   @param {Object} response
    */
   uploadFile({ file, parentFolderId = null, diamondCloudDriveFolderId, callback = () => {} }) {
-    let reader = new FileReader();
-    function uploadFileToDrive(name, data, contentType, _callback) {
-      const accessToken = 'ya29.nwI5Em6UnYGHvVzVx7lBk5tD-xzFl4_JG3_c-_t4FJ3owll_8i_rL5M17LFV6VlF7QE';
+    /**
+ * Insert new file.
+ *
+ * @param {File} fileData File object to read data from.
+ * @param {Function} callback Function to call when the request is complete.
+ */
+    function insertFileToDrive(fileData, _callback) {
       const boundary = '-------314159265358979323846';
-      const delimiter = `\r\n--${boundary}\r\n`;
-      const closeDelim = `\r\n--${boundary}--`;
-      const metadata = {
-        name: 'hola',
-        mimeType: contentType,
-        'Content-Type': contentType,
-        'Content-Length': file.size,
-      };
+      const delimiter = "\r\n--" + boundary + "\r\n";
+      const close_delim = "\r\n--" + boundary + "--";
 
-      const request = gapi.client.request({
-        path: 'upload/drive/v3/files',
-        method: 'POST',
-        params: { uploadType: 'resumable' },
-        headers: {
-          'X-Upload-Content-Type': contentType,
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: metadata,
-      });
-
-      request.execute((resp, rawResp) => {
-        var locationUrl =   JSON.parse(rawResp).gapiRequest.data.headers.location;
-        console.log(locationUrl);
-        uploadToLocationUrl(locationUrl);
-      });
-
-      function uploadToLocationUrl(locationUrl) {
-        var metadata = {
-          name: 'hola',
+      let reader = new FileReader();
+      reader.readAsBinaryString(fileData);
+      reader.onload = function (e) {
+        const contentType = fileData.type || 'application/octet-stream';
+        const metadata = {
+          title: fileData.name,
           mimeType: contentType,
-          'Content-Type': contentType,
-          'Content-Length': file.size
+          parents: [{ id: diamondCloudDriveFolderId }], // TODO: add parentFolderId
         };
+        console.log("metadata: ", metadata);
 
-        const base64Data = btoa(data);
-        let multipartRequestBody =
-           delimiter +
-           `Content-Type: ${contentType}\r\n\r\n` +
-           `Content-Length: ${file.size}` +
-           '\r\n' +
-           data +
-           closeDelim;
+        const base64Data = btoa(reader.result);
+        const multipartRequestBody =
+            delimiter +
+            'Content-Type: application/json\r\n\r\n' +
+            JSON.stringify(metadata) +
+            delimiter +
+            'Content-Type: ' + contentType + '\r\n' +
+            'Content-Transfer-Encoding: base64\r\n' +
+            '\r\n' +
+            base64Data +
+            close_delim;
 
-        const requestPost = gapi.client.request({
-           path: locationUrl,
-           method: 'PUT',
-           headers: {
-             'Content-Length': file.size,
-             'Content-Type': contentType,
-           },
-           body: data,
-         });
-        console.log(requestPost);
-
-        requestPost.execute((resp, raw_resp) => {
-          callback(resp);
+        const request = gapi.client.request({
+          path: '/upload/drive/v2/files',
+          method: 'POST',
+          params: { uploadType: 'multipart' },
+          headers: {
+            'Content-Type': `multipart/mixed; boundary="${boundary}"`,
+          },
+          body: multipartRequestBody
         });
+        if (!_callback) {
+          _callback = function(file) {
+            console.log(file)
+          };
+        }
+        request.execute(_callback);
       }
     }
-
-    reader.onloadend = () => {
-      console.log(file, reader);
-      uploadFileToDrive('hola', reader.result, 'image/jpeg', callback);
-    };
-    reader.readAsBinaryString(file);
+    insertFileToDrive(file, callback); // TODO: insert file to storage
+                                       // and create the functions to do it
   }
 
   initPicker(openButtonId, callback) {
@@ -1367,8 +1352,15 @@ function checkAuth(callback = () => {}, i = 0) {
         client_id: CLIENT_ID,
         scope: SCOPES.join(' '),
         immediate: true,
-      }, () => {
-        gapi.client.load('drive', 'v3', callback);
+      }, (authResult) => {
+        if (authResult) {
+          authObject = authResult;
+          gapi.client.load('drive', 'v3', callback);
+        } else {
+          setTimeout(() => {
+            checkAuth(callback, i + 1);
+          }, 100);
+        }
       });
     } else {
       setTimeout(() => {
