@@ -32,23 +32,13 @@ export default class AppLayout extends React.Component {
   *   The delay until the message is closed
   */
   error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
-    if (type === 'hide') {
-      this.setState({
-        error: {
-          body: '',
-          delay: ERROR_DELAY,
-          showing: false,
-        },
-      });
-    } else if (type === 'show') {
-      this.setState({
-        error: {
-          body,
-          delay: delay || ERROR_DELAY,
-          showing: true,
-        },
-      });
-    }
+    this.setState({
+      error: {
+        body,
+        delay: delay || ERROR_DELAY,
+        showing: type === 'show',
+      },
+    });
   }
 
   render() {
@@ -61,7 +51,7 @@ export default class AppLayout extends React.Component {
         {
           React.cloneElement(this.props.children, {
             ...this.props,
-            error: this.error,
+            toggleError: this.error,
           })
         }
         {

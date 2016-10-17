@@ -1,3 +1,6 @@
+#render-target {
+  overflow-x: hidden;
+}
 .user-video-container {
     position: absolute;
     height: 100vh;

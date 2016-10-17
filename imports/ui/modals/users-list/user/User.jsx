@@ -2,8 +2,8 @@ import React from 'react';
 
 export default class UsersList extends React.Component {
   handleChange(index, event) {
-    let self = this;
-    let value = event.target.value;
+    const self = this;
+    const value = event.target.value;
 
     if (index === 'hierarchy' && !!this.props.team) {
       Meteor.call('Teams.methods.changeUserHierarchy', {
@@ -24,6 +24,7 @@ export default class UsersList extends React.Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       hierarchy: this.props.user.hierarchy || 'sistemas',
     };
@@ -38,7 +39,7 @@ export default class UsersList extends React.Component {
           <img
             className="contact-list-photo"
             alt="User"
-            src={this.props.user.profile.picture || '/img/user-shape.svg'}
+            src={`${this.props.user.profile.picture}?sz=60` || '/img/user-shape.svg'}
           />
         </div>
         <div className="col-xs-10">
@@ -64,11 +65,11 @@ export default class UsersList extends React.Component {
             <div className="col-xs-1">
               <div
                 className="close"
-                onClick={ this.props.removeUser.bind(null, this.props.user.emails[0].address) }>
+                onClick={this.props.removeUser.bind(null, this.props.user.emails[0].address)}>
                 <img src="/img/close-icon.svg" width="16px" />
               </div>
             </div>
-          ) : null
+          ) : (null)
         }
 
       </div>

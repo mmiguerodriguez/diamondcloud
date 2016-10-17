@@ -1,64 +1,74 @@
 import React              from 'react';
 import classNames         from 'classnames';
 
-import ModulesCollapsible from './collapsible/modules/ModulesCollapsible.jsx';
-import BoardsCollapsible  from './collapsible/boards/BoardsCollapsible.jsx';
-import ChatsCollapsible   from './collapsible/chats/ChatsCollapsible.jsx';
+import ModulesCollapsible from './collapsible/modules/ModulesCollapsible';
+import BoardsCollapsible  from './collapsible/boards/BoardsCollapsible';
+import ChatsCollapsible   from './collapsible/chats/ChatsCollapsible';
 
 export default class SidebarLayout extends React.Component {
   render() {
-    let classes = classNames('sidebar', {
+    const classes = classNames('sidebar', {
       'permission-asker-opened': this.props.permissionAsker,
     });
 
     return (
-      <div className={ classes }>
-        <div  id='boards-item'
-              className='item no-margin'
-              onClick={ this.props.toggleCollapsible.bind(null, 'boards') }>
-          <img src='/img/sidebar/boards.svg' width='32px' />
-          <p className='text item-title'>Boards</p>
+      <div className={classes}>
+        <div
+          id="boards-item"
+          className="item no-margin"
+          onClick={this.props.toggleCollapsible.bind(null, 'boards')}
+        >
+          <img src="/img/sidebar/boards.svg" width="32px" />
+          <p className="text item-title">Boards</p>
         </div>
         <div
-          id='modules-item'
-          className='item'
-          onClick={ this.props.toggleCollapsible.bind(null, 'modules') }>
-          <img src='/img/sidebar/modules.svg' width='32px' />
-          <p className='text item-title'>Módulos</p>
+          id="modules-item"
+          className="item"
+          onClick={this.props.toggleCollapsible.bind(null, 'modules')}
+        >
+          <img src="/img/sidebar/modules.svg" width="32px" />
+          <p className="text item-title">Módulos</p>
         </div>
-        <div  id='chats-item'
-              className='item'
-              onClick={ this.props.toggleCollapsible.bind(null, 'chats') }>
-          <img src='/img/sidebar/messages.svg' width='32px' />
-          <p className='text item-title'>Mensajes</p>
+        <div
+          id="chats-item"
+          className="item"
+          onClick={this.props.toggleCollapsible.bind(null, 'chats')}
+        >
+          <img src="/img/sidebar/messages.svg" width="32px" />
+          <p className="text item-title">Mensajes</p>
         </div>
         {
           this.props.isAdmin ? (
-            <div  id='settings-item'
-                  className='item bottom'
-                  onClick={ this.props.openConfigTeamModal }>
-              <img src='/img/sidebar/config.svg' width='32px' />
+            <div
+              id="settings-item"
+              className="item bottom"
+              onClick={this.props.openConfigTeamModal}
+            >
+              <img src="/img/sidebar/config.svg" width="32px" />
             </div>
-          ) : ( null )
+          ) : (null)
         }
 
         <ModulesCollapsible
-          modules={ this.props.modules }
-          toggleCollapsible={ this.props.toggleCollapsible } />
+          modules={this.props.modules}
+          toggleCollapsible={this.props.toggleCollapsible}
+        />
         <BoardsCollapsible
-          boards={ this.props.boards }
-          team={ this.props.team }
-          isAdmin={ this.props.isAdmin }
-          toggleCollapsible={ this.props.toggleCollapsible }
-          changeBoard={ this.props.changeBoard }
-          openCreateBoardModal={ this.props.openCreateBoardModal }
-          openBoardContextMenu={ this.props.openBoardContextMenu } />
+          boards={this.props.boards}
+          team={this.props.team}
+          isAdmin={this.props.isAdmin}
+          toggleCollapsible={this.props.toggleCollapsible}
+          changeBoard={this.props.changeBoard}
+          openCreateBoardModal={this.props.openCreateBoardModal}
+          openBoardContextMenu={this.props.openBoardContextMenu}
+        />
         <ChatsCollapsible
-          boards={ this.props.boards }
-          directChats={ this.props.directChats }
-          toggleCollapsible={ this.props.toggleCollapsible }
-          addChat={ this.props.addChat }
-          openCreateChatModal={ this.props.openCreateChatModal } />
+          boards={this.props.boards}
+          directChats={this.props.directChats}
+          toggleCollapsible={this.props.toggleCollapsible}
+          addChat={this.props.addChat}
+          openCreateChatModal={this.props.openCreateChatModal}
+        />
       </div>
     );
   }

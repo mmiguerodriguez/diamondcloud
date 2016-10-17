@@ -14,7 +14,7 @@ export default class Popover extends React.Component {
       <div>
         <div className='row popover-data'>
           <div className='col-xs-3'>
-            <img alt='User' src={ this.props.user.profile.picture } className='popover-user-photo' />
+            <img alt='User' src={ `${this.props.user.profile.picture}?sz=60` } className='popover-user-photo' />
           </div>
           <div className='col-xs-9'>
             <b className='user-info'>{ this.props.user.profile.name }</b>
