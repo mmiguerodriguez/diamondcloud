@@ -1,5 +1,6 @@
 import React           from 'react';
 import Select          from 'react-select';
+import classNames      from 'classnames';
 
 import Modal           from '../Modal.jsx';
 import {
@@ -71,8 +72,6 @@ export default class ConfigBoardModal extends React.Component {
 
     users = users.join(',');
 
-    console.log(board);
-
     this.setState({
       board,
       name: board.name,
@@ -122,6 +121,14 @@ export default class ConfigBoardModal extends React.Component {
       [index]: val,
     });
   }
+  
+  handleRadio(isPrivate, event) {
+    if (this.state.isPrivate !== isPrivate) {
+      this.setState({
+        isPrivate,
+      });
+    }
+  }
 
   handleSelectChange(value) {
     this.setState({
@@ -153,6 +160,13 @@ export default class ConfigBoardModal extends React.Component {
   }
 
   render() {
+    const publicBoard = classNames({
+      'active': !this.state.isPrivate,
+    }, 'radio');
+    const privateBoard = classNames({
+      'active': this.state.isPrivate,
+    }, 'radio');
+    
     return (
       <Modal
         id={'configBoardModal'}
@@ -209,27 +223,25 @@ export default class ConfigBoardModal extends React.Component {
                 className='control-label'>
                 Privacidad
               </label>
-              <div className='col-xs-12 privacy'>
-                <label className='radio-inline'>
-                  <input
-                    name='board-private-radio'
-                    type='radio'
-                    value={false}
-                    onChange={(e) => this.handleChange('isPrivate', e)}
-                    checked={!this.state.isPrivate ? true : false}
-                  />
-                  Publico
-                </label>
-                <label className='radio-inline'>
-                  <input
-                    name='board-private-radio'
-                    type='radio'
-                    value={true}
-                    onChange={(e) => this.handleChange('isPrivate', e)}
-                    checked={this.state.isPrivate ? true : false}
-                  />
-                  Privado
-                </label>
+              <div className='radio-container'>
+                <div 
+                  className='option-container'
+                  role='button'
+                  onClick={(e) => this.handleRadio(false, e)}>
+                  <div className={publicBoard}>
+                    <div className='check'></div>
+                  </div>
+                  <p className='text'>Publico</p>
+                </div>
+                <div 
+                  className='option-container'
+                  role='button'
+                  onClick={(e) => this.handleRadio(true, e)}>
+                  <div className={privateBoard}>
+                    <div className='check'></div>
+                  </div>
+                  <p className='text'>Privado</p>
+                </div>
               </div>
             </div>
             {
@@ -243,8 +255,9 @@ export default class ConfigBoardModal extends React.Component {
                   <Select
                     name='form-field-name'
                     className='col-xs-12'
-                    placeholder='Ingrese nombre o mail...'
+                    placeholder='Ingrese nombre o mail'
                     noResultsText='No se encontraron usuarios en el equipo'
+                    backspaceToRemoveMessage="Borrá para eliminar a '{label}'"
                     multi={true}
                     simpleValue={true}
                     disabled={false}

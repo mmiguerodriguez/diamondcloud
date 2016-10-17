@@ -129,7 +129,7 @@ export default class Board extends React.Component {
           <img
             key={user._id || _user.email}
             className="img-circle shared-people"
-            src={user.profile ? `${user.profile.picture}?sz=60` : '/img/user-shape.svg'}
+            src={user.profile ? `${user.profile.picture}?sz=60` : '/img/user-shape.jpg'}
             title={user.profile ? user.profile.name : _user.email}
             width="32px"
           />
@@ -143,7 +143,7 @@ export default class Board extends React.Component {
           <img
             key={user._id || _user.email}
             className="img-circle shared-people"
-            src={user.profile ? `${user.profile.picture}?sz=60` : '/img/user-shape.svg'}
+            src={user.profile ? `${user.profile.picture}?sz=60` : '/img/user-shape.jpg'}
             title={user.profile ? user.profile.name : user.email}
             width="32px"
           />
