@@ -21,7 +21,7 @@ Boards.helpers({
   getModuleInstances(fields) {
     const moduleInstances = [];
 
-    this.moduleInstances.map((moduleInstance) => {
+    this.moduleInstances.forEach((moduleInstance) => {
       moduleInstances.push(moduleInstance._id);
     });
 
@@ -109,7 +109,7 @@ Boards.moduleInstancesFields = {
 
 Boards.getBoards = (boardsIds, userId, fields = {}) => {
   if (Object.prototype.toString.call(boardsIds[0]) === '[object Object]'){
-    boardsIds = boardsIds.map((board) => board._id);
+    boardsIds = boardsIds.map(board => board._id);
   }
 
   // Se asume que todos los boardsIds pertenecen al mismo Team
@@ -253,7 +253,7 @@ Boards.resetNotifications = (boardId, userId) => {
 
   users.forEach((_user, index) => {
     if (_user.email !== user.email()) {
-			users[index].notifications = 0;
+      users[index].notifications = 0;
     }
   });
 

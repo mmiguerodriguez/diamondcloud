@@ -1,13 +1,12 @@
 import { Meteor }          from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
-import { printObject }     from '../helpers/print-objects.js';
 import  Future             from 'fibers/future';
 
-import { Teams }           from './teams.js';
-import { Mail }            from '../mails/mails.js';
-import { Boards }          from '../boards/boards.js';
-import { createBoard }     from '../boards/methods.js';
+import { Teams }           from './teams';
+import { Mail }            from '../mails/mails';
+import { Boards }          from '../boards/boards';
+import { createBoard }     from '../boards/methods';
 
 export const createTeam = new ValidatedMethod({
   name: 'Teams.methods.create',
