@@ -17,12 +17,120 @@ export default class ChatLayout extends React.Component {
       chatType: {},
     };
 
-    this.refs = {
-      chat_body: null,
-    };
-
     this.handleKey = this.handleKey.bind(this);
     this.handleChange = this.handleChange.bind(this);
+  }
+
+  componentWillMount() {
+    let type;
+    if (this.props.chat.boardId) {
+      type = { boardId: this.props.chat.boardId };
+    } else if (this.props.chat.directChatId) {
+      type = { directChatId: this.props.chat.directChatId };
+    }
+
+    this.setState({
+      chatType: type,
+    });
+  }
+
+  componentDidMount() {
+    this.scrollDown();
+    this.input.focus();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.position === 'medium') {
+      this.input.focus();
+    }
+  }
+
+  getName() {
+    if (this.props.chat.boardId) {
+      const boardId = this.props.chat.boardId;
+
+      return Boards.findOne(boardId).name;
+    } else if (this.props.chat.directChatId) {
+      const directChatId = this.props.chat.directChatId;
+      const directChat = DirectChats.findOne(directChatId);
+
+      return directChat.getUser().profile.name;
+    }
+  }
+
+  sendMessage() {
+    const self = this;
+
+    let text = this.state.message;
+    text = text.trim();
+
+    const obj = {
+      type: 'text',
+      content: text,
+      createdAt: new Date().getTime(),
+    };
+
+    if (this.props.chat.directChatId) {
+      obj.directChatId = this.props.chat.directChatId;
+    } else if (this.props.chat.boardId) {
+      obj.boardId = this.props.chat.boardId;
+    }
+
+    if (text !== '' && /\S/.test(text)) {
+      Meteor.call('Messages.methods.send', obj, (error, result) => {
+        if (error) {
+          self.props.toggleError({
+            type: 'show',
+            body: 'Hubo un error interno al crear el módulo',
+          });
+        }
+      });
+    }
+
+    this.setState({
+      message: '',
+    });
+  }
+
+  scrollDown() {
+    const chatBody = this.chatBody;
+    if (chatBody !== null && chatBody !== undefined) {
+      let e = $(chatBody);
+      e.scrollTop(e.prop('scrollHeight'));
+    }
+  }
+
+  handleKey(event) {
+    if (event.which === 13) {
+      this.sendMessage();
+    } else if (event.which === 27) {
+      this.props.removeChat(this.state.chatType);
+      // this.props.togglePosition('minimized');
+    }
+  }
+
+  handleChange(event) {
+    this.setState({
+      message: event.target.value,
+    });
+  }
+
+  renderMessages() {
+    const scrollDown = this.scrollDown.bind(this);
+
+    return this.props.chat.messages.map((message) => {
+      const isSender = message.senderId === Meteor.userId();
+      return (
+        <Message
+          key={message._id}
+          message={message}
+          isSender={isSender}
+          scrollDown={scrollDown}
+          position={this.state.position}
+          toggleError={this.props.toggleError}
+        />
+      );
+    });
   }
 
   render() {
@@ -59,11 +167,12 @@ export default class ChatLayout extends React.Component {
             </p>
             { /* <div className="col-xs-2 chat-image" onClick={this.props.togglePosition.bind(null, this, this.state.position, 'maximized')}> <div className="maximize-image chat-back-image" /> </div> */ }
           </div>
-          <div className="chat-body" ref="chat_body">
+          <div className="chat-body" ref={(c) => { this.chatBody = c; }}>
             {this.renderMessages()}
           </div>
           <div className="chat-footer col-xs-12">
             <input
+              ref={(c) => { this.input = c; }}
               value={this.state.message}
               className="form-control message-input"
               type="text"
@@ -105,11 +214,12 @@ export default class ChatLayout extends React.Component {
               />
             </div>
           </div>
-          <div className="chat-body container-fluid" ref="chat_body">
+          <div className="chat-body container-fluid" ref={(c) => { this.chatBody = c; }}>
             {this.renderMessages()}
           </div>
           <div className="chat-footer">
             <input
+              ref={(c) => { this.input = c; }}
               value={this.state.message}
               className="form-control"
               type="text"
@@ -134,11 +244,12 @@ export default class ChatLayout extends React.Component {
               <b>{this.getName()}</b>
             </div>
           </div>
-          <div className="chat-body" ref="chat_body">
+          <div className="chat-body" ref={(c) => { this.chatBody = c; }}>
             {this.renderMessages()}
           </div>
           <div className="chat-footer col-xs-12">
             <input
+              ref={(c) => { this.input = c; }}
               value={this.state.message}
               className="form-control message-input"
               type="text"
@@ -152,111 +263,6 @@ export default class ChatLayout extends React.Component {
     }
 
     return (null);
-  }
-
-  componentWillMount() {
-    let type;
-    if (this.props.chat.boardId) {
-      type = { boardId: this.props.chat.boardId };
-    } else if (this.props.chat.directChatId) {
-      type = { directChatId: this.props.chat.directChatId };
-    }
-
-    this.setState({
-      chatType: type,
-    });
-  }
-
-  componentDidMount() {
-    this.scrollDown();
-  }
-
-  sendMessage() {
-    const self = this;
-
-    let text = this.state.message;
-    text = text.trim();
-
-    const obj = {
-      type: 'text',
-      content: text,
-      createdAt: new Date().getTime(),
-    };
-
-    if (this.props.chat.directChatId) {
-      obj.directChatId = this.props.chat.directChatId;
-    } else if (this.props.chat.boardId) {
-      obj.boardId = this.props.chat.boardId;
-    }
-
-    if (text !== '' && /\S/.test(text)) {
-      Meteor.call('Messages.methods.send', obj, (error, result) => {
-        if (error) {
-          self.props.toggleError({
-            type: 'show',
-            body: 'Hubo un error interno al crear el módulo',
-          });
-        }
-      });
-    }
-
-    this.setState({
-      message: '',
-    });
-  }
-
-  renderMessages() {
-    const scrollDown = this.scrollDown.bind(this);
-
-    return this.props.chat.messages.map((message) => {
-      const isSender = message.senderId === Meteor.userId();
-      return (
-        <Message
-          key={message._id}
-          message={message}
-          isSender={isSender}
-          scrollDown={scrollDown}
-          position={this.state.position}
-          toggleError={this.props.toggleError}
-        />
-      );
-    });
-  }
-
-  getName() {
-    if (this.props.chat.boardId) {
-      const boardId = this.props.chat.boardId;
-
-      return Boards.findOne(boardId).name;
-    } else if (this.props.chat.directChatId) {
-      const directChatId = this.props.chat.directChatId;
-      const directChat = DirectChats.findOne(directChatId);
-
-      return directChat.getUser().profile.name;
-    }
-  }
-
-  scrollDown() {
-    const chatBody = this.refs.chat_body;
-    if (chatBody !== null && chatBody !== undefined) {
-      let e = $(chatBody);
-      e.scrollTop(e.prop("scrollHeight"));
-    }
-  }
-
-  handleKey(event) {
-    if (event.which === 13) {
-      this.sendMessage();
-    } else if (event.which === 27) {
-      this.props.removeChat(this.state.chatType);
-      // this.props.togglePosition('minimized');
-    }
-  }
-
-  handleChange(event) {
-    this.setState({
-      message: event.target.value,
-    });
   }
 }
 
