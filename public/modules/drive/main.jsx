@@ -83,6 +83,7 @@ class FileManagerLayout extends React.Component {
       name: '',
       fileType: 'application/vnd.google-apps.document',
       initializedFilePickerCard: false,
+      fileToUpload: null,
     };
   }
 
@@ -240,14 +241,19 @@ class FileManagerLayout extends React.Component {
   }
 
   render() {
-    console.log(this.props.loadingDocuments);
     return (
       <div>
         <div className='file-manager ui-widget-content'>
           {
             // Create document modal
           }
-          <div className="modal fade" id="create-document" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div
+            className="modal fade"
+            id="create-document"
+            tabIndex="-1"
+            role="dialog"
+            aria-labelledby="myModalLabel"
+          >
             <div className="modal-dialog" role="document">
               <div className="modal-content">
                 <div className="modal-header">
@@ -349,6 +355,70 @@ class FileManagerLayout extends React.Component {
               </div>
             </div>
           </div>
+          {
+            // Upload photos and videos modal
+          }
+          <div
+            className="modal fade"
+            id="upload-files"
+            tabIndex="-1"
+            role="dialog"
+            aria-labelledby="myModalLabel"
+          >
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 className="modal-title" id="myModalLabel">Subir foto o video</h4>
+                </div>
+                <div className="modal-body">
+                  <div className="form-group name">
+                    <label htmlFor="file">Seleccionar imagen o video para subir</label>
+                    <input
+                      type="file"
+                      accept="image/*,video/*"
+                      className="form-control"
+                      id="file"
+                      placeholder="Seleccionar imagen o video"
+                      onChange={(e) => {
+                        this.setState({
+                          file: e.target.files[0],
+                        });
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-default"
+                    data-dismiss="modal"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => {
+                      this.props.uploadFile({
+                        file: this.state.file,
+                        parentFolderId: this.folderId,
+                        diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
+                        callback(error, result) {
+                          if (error) {
+                            console.error(error); // TODO: handle error
+                          }
+                          $('#upload-files').modal('hide');
+                        },
+                      });
+                    }}
+                  >
+                    Subir
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div className='folder-navbar'>
             {
               (this.props.folderId) ?
@@ -406,22 +476,29 @@ class FileManagerLayout extends React.Component {
           <div className="create">
             <div className="options">
               <div
+                className="option upload"
+                id="upload-file"
+                title="Subir foto o video"
+                data-toggle="modal"
+                data-target="#upload-files"
+                />
+              <div
                 className="option drive"
                 id="import-file"
-                title='Importar de drive'
-              ></div>
+                title="Importar de drive"
+              />
               <div
                 className="option folder"
                 data-toggle="modal"
                 data-target="#create-folder"
-                title='Crear carpeta'>
-              </div>
+                title='Crear carpeta'
+              />
               <div
                 className="option doc"
                 data-toggle="modal"
                 data-target="#create-document"
-                title='Crear documento'>
-              </div>
+                title="Crear documento"
+              />
             </div>
           </div>
         </div>
@@ -447,6 +524,7 @@ FileManagerLayout.propTypes = {
   createFolder: React.PropTypes.func.isRequired,
   importDocument: React.PropTypes.func.isRequired,
   deleteDocument: React.PropTypes.func.isRequired,
+  uploadFile: React.PropTypes.func.isRequired,
   initPicker: React.PropTypes.func.isRequired,
   diamondCloudDriveFolderId: React.PropTypes.string.isRequired,
   openedDocumentId: React.PropTypes.string.isRequired,
@@ -512,6 +590,7 @@ class FileManagerPage extends React.Component {
         createFolder={this.createFolder}
         importDocument={this.importDocument}
         deleteDocument={this.deleteDocument}
+        uploadFile={this.uploadFile}
         initPicker={this.initPicker}
         diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
         openedDocumentId={this.props.openedDocumentId}
@@ -1096,17 +1175,98 @@ class FileManagerPage extends React.Component {
     recursiveDeleteDocument(params);
   }
 
+  /**
+   * uploadFile: Uploades a file to drive
+   * @param {File} file
+   * @param {String} parentFolderId (optional)
+   * @param {String} diamondCloudDriveFolderId
+   * @param {Function} callback (optional)
+   *   @param {String} error
+   *   @param {Object} response
+   */
+  uploadFile({ file, parentFolderId = null, diamondCloudDriveFolderId, callback = () => {} }) {
+    let reader = new FileReader();
+    function uploadFileToDrive(name, data, contentType, _callback) {
+      const accessToken = 'ya29.nwI5Em6UnYGHvVzVx7lBk5tD-xzFl4_JG3_c-_t4FJ3owll_8i_rL5M17LFV6VlF7QE';
+      const boundary = '-------314159265358979323846';
+      const delimiter = `\r\n--${boundary}\r\n`;
+      const closeDelim = `\r\n--${boundary}--`;
+      const metadata = {
+        name: 'hola',
+        mimeType: contentType,
+        'Content-Type': contentType,
+        'Content-Length': file.size,
+      };
+
+      const request = gapi.client.request({
+        path: 'upload/drive/v3/files',
+        method: 'POST',
+        params: { uploadType: 'resumable' },
+        headers: {
+          'X-Upload-Content-Type': contentType,
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: metadata,
+      });
+
+      request.execute((resp, rawResp) => {
+        var locationUrl =   JSON.parse(rawResp).gapiRequest.data.headers.location;
+        console.log(locationUrl);
+        uploadToLocationUrl(locationUrl);
+      });
+
+      function uploadToLocationUrl(locationUrl) {
+        var metadata = {
+          name: 'hola',
+          mimeType: contentType,
+          'Content-Type': contentType,
+          'Content-Length': file.size
+        };
+
+        const base64Data = btoa(data);
+        let multipartRequestBody =
+           delimiter +
+           `Content-Type: ${contentType}\r\n\r\n` +
+           `Content-Length: ${file.size}` +
+           '\r\n' +
+           data +
+           closeDelim;
+
+        const requestPost = gapi.client.request({
+           path: locationUrl,
+           method: 'PUT',
+           headers: {
+             'Content-Length': file.size,
+             'Content-Type': contentType,
+           },
+           body: data,
+         });
+        console.log(requestPost);
+
+        requestPost.execute((resp, raw_resp) => {
+          callback(resp);
+        });
+      }
+    }
+
+    reader.onloadend = () => {
+      console.log(file, reader);
+      uploadFileToDrive('hola', reader.result, 'image/jpeg', callback);
+    };
+    reader.readAsBinaryString(file);
+  }
+
   initPicker(openButtonId, callback) {
     /**
      * openButtonId is the button that is used to open the file picker
      * callback(file)
      */
-  	let picker = new FilePicker({
-  		apiKey: 'AIzaSyCb04iiO8_pvdHsuf3XCNbdGw8SIbR9CxQ',
-  		clientId: CLIENT_ID,
-  		buttonEl: document.getElementById(openButtonId),
-  		onSelect: callback,
-  		gapi
+     let picker = new FilePicker({
+       apiKey: 'AIzaSyCb04iiO8_pvdHsuf3XCNbdGw8SIbR9CxQ',
+       clientId: CLIENT_ID,
+       buttonEl: document.getElementById(openButtonId),
+       onSelect: callback,
+       gapi
   	});
   }
 }
