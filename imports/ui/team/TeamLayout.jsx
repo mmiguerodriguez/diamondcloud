@@ -22,17 +22,16 @@ export default class TeamLayout extends React.Component {
     super(props);
 
     this.state = {
-      'board-context-menu-id': null,
-      'moduleinstance-context-menu-id': null,
-      'moduleinstance-iframe': null,
-      'has-maximized-chats': false,
+      boardIdContextMenu: null,
+      moduleInstanceIdContextMenu: null,
+      moduleinstanceIframe: null,
+      hasMaximizedChats: false,
       permissionAsker: !isMobile.any ? Notification.permission === 'default' : false,
       togglingCollapsible: false,
     };
 
     this.refs = {
       'board-context-menu': null,
-      'moduleinstance-context-menu': null,
     };
 
     this.removeBoard = this.removeBoard.bind(this);
@@ -62,30 +61,13 @@ export default class TeamLayout extends React.Component {
 
     $(document).bind('mousedown', (e) => {
       if (!$(e.target).parents('.moduleinstance-context-menu').length > 0) {
-        self.closeContextMenu(this.refs['moduleinstance-context-menu']);
+        self.closeContextMenu(this.moduleInstanceContextMenu);
       }
     });
 
     if (this.props.team.users.length === 1) {
       this.openConfigTeamModal();
     }
-  }
-  // chats
-  renderChats() {
-    return this.props.chats.map((chat) =>
-      <ChatLayout
-        key={chat.directChatId || chat.boardId}
-        chat={chat}
-        users={this.props.team.users}
-        boards={this.props.boards}
-        directChats={this.props.directChats}
-        position={isMobile.any ? 'mobile' : 'medium'}
-        togglePosition={this.togglePosition}
-        removeChat={this.props.removeChat}
-        hasMaximizedChats={this.state['has-maximized-chats']}
-        toggleError={this.props.toggleError}
-      />
-    );
   }
 
   togglePosition(chat, oldPosition, newPosition) {
@@ -94,7 +76,7 @@ export default class TeamLayout extends React.Component {
     }, () => {
       if (newPosition === 'maximized' || oldPosition === 'maximized') {
         this.setState({
-          'has-maximized-chats': !this.state['has-maximized-chats'],
+          hasMaximizedChats: !this.state.hasMaximizedChats,
         });
       }
     });
@@ -213,8 +195,8 @@ export default class TeamLayout extends React.Component {
 
   render() {
     const chatsContainer = classNames({
-      auto: !this.state['has-maximized-chats'],
-      maximized: this.state['has-maximized-chats'],
+      auto: !this.state.hasMaximizedChats,
+      maximized: this.state.hasMaximizedChats,
       mobile: isMobile.any,
       hidden: this.props.chats.length === 0,
     }, 'chats-container');
@@ -333,11 +315,20 @@ export default class TeamLayout extends React.Component {
           )
         }
 
-        <div className={chatsContainer}>
-          {this.renderChats()}
-        </div>
+        <ChatLayout
+          class={chatsContainer}
+          chats={this.props.chats}
+          team={this.props.team}
+          boards={this.props.boards}
+          directChats={this.props.directChats}
+          position={isMobile.any ? 'mobile' : 'medium'}
+          togglePosition={this.togglePosition}
+          toggleError={this.props.toggleError}
+          removeChat={this.props.removeChat}
+          hasMaximizedChats={this.state.hasMaximizedChats}
+        />
 
-        <div className="moduleinstance-context-menu context-menu" ref="moduleinstance-context-menu">
+        <div className="moduleinstance-context-menu context-menu" ref={c => { this.moduleInstanceContextMenu = c; }}>
           <div className="row" onClick={this.removeModuleInstance}>
             <div className="col-xs-4">
               <img src="http://image0.flaticon.com/icons/svg/60/60761.svg" width="20px" />
@@ -375,11 +366,11 @@ export default class TeamLayout extends React.Component {
                 loadTeam={this.loadTeam}
               />
               {
-                this.state['board-context-menu-id'] ? (
+                this.state.boardIdContextMenu ? (
                   <ConfigBoardModal
                     team={this.props.team}
                     boards={this.props.boards}
-                    boardId={this.state['board-context-menu-id']}
+                    boardId={this.state.boardIdContextMenu}
                   />
                 ) : (null)
               }
@@ -401,7 +392,7 @@ export default class TeamLayout extends React.Component {
 
   removeBoard() {
     if (this.props.isAdmin) {
-      const boardId = this.state['board-context-menu-id'];
+      const boardId = this.state.boardIdContextMenu;
 
       Meteor.call('Boards.methods.archiveBoard', { _id: boardId }, (error, result) => {
         if (error) {
@@ -438,7 +429,7 @@ export default class TeamLayout extends React.Component {
         });
 
       this.setState({
-        'board-context-menu-id': boardId,
+        boardIdContextMenu: boardId,
       });
     }
   }
@@ -446,9 +437,9 @@ export default class TeamLayout extends React.Component {
   removeModuleInstance() {
     const self = this;
 
-    const moduleInstanceId = this.state['moduleinstance-context-menu-id'];
-    const contextMenu = this.refs['moduleinstance-context-menu'];
-    const iframe = this.state['moduleinstance-iframe'];
+    const moduleInstanceId = this.state.moduleInstanceIdContextMenu;
+    const contextMenu = this.moduleInstanceContextMenu;
+    const iframe = this.state.moduleinstanceIframe;
 
     Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
       if (error) {
@@ -466,7 +457,7 @@ export default class TeamLayout extends React.Component {
   openModuleInstanceContextMenu(moduleInstanceId, iframe, event) {
     event.preventDefault(); // Prevent normal contextMenu from showing up
 
-    $(this.refs['moduleinstance-context-menu'])
+    $(this.moduleInstanceContextMenu)
       .finish()
       .toggle(100)
       .css({
@@ -475,8 +466,8 @@ export default class TeamLayout extends React.Component {
       });
 
     this.setState({
-      'moduleinstance-context-menu-id': moduleInstanceId,
-      'moduleinstance-iframe': iframe,
+      moduleInstanceIdContextMenu: moduleInstanceId,
+      moduleinstanceIframe: iframe,
     });
   }
 

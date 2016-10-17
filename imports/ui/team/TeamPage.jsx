@@ -26,9 +26,11 @@ export default class TeamPage extends React.Component {
   }
 
   componentDidUpdate() {
-    // If it already loaded and team doesn't exist then we
-    // should return the user to a NotFound Layout or
-    // error route...
+    /**
+     * If it already loaded and team doesn't exist then we
+     * should return the user to a NotFound Layout or
+     * error route...
+     */
     if (!this.props.loading && !this.props.team) {
       browserHistory.push('/404');
     }
@@ -42,6 +44,8 @@ export default class TeamPage extends React.Component {
   /**
    * Iterates through all the chats, grabs its messages and
    * returns them as props for TeamLayout.
+   *
+   * @returns {Object} chats
    */
   getChats() {
     let chats = this.state.chats;
@@ -60,6 +64,7 @@ export default class TeamPage extends React.Component {
   /**
    * Adds a chat to the chats array, gets the messages and
    * updates the chats state.
+   *
    * @param {Object} obj
    *  @param {String} boardId (optional)
    *  @param {String} directChatId (optional)
@@ -129,6 +134,7 @@ export default class TeamPage extends React.Component {
    * Removes the chat with boardId || directChatId from
    * the chats array that is in the state and stops
    * its subscription.
+   *
    * @param {Object} obj
    *  @param {String} boardId (optional)
    *  @param {String} directChatId (optional)
@@ -160,6 +166,7 @@ export default class TeamPage extends React.Component {
    * Subscribes to the whole data of a board.
    * If we are already subscribed, then we
    * unsubscribe.
+   *
    * @param {String} boardId
    */
   boardSubscribe(boardId) {

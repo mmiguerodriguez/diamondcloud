@@ -50,9 +50,11 @@
         width: 16px;
         height: 16px;
         background-size: 16px;
-        background-image: url(/img/chat/maximize.svg);
+        opacity: 0.3;
+        background-image: url(/img/close-icon.svg);
+        filter: invert(1);
       }
-      .maximize-image {
+      .maximize-image,.close-image {
         opacity: 0.5;
         &:hover {
           opacity: 1;
