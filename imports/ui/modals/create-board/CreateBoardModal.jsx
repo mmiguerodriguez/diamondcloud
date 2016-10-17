@@ -1,5 +1,6 @@
 import React       from 'react';
 import Select      from 'react-select';
+import classNames  from 'classnames';
 
 import Modal       from '../Modal.jsx';
 import {
@@ -91,8 +92,7 @@ export default class CreateBoardModal extends React.Component {
   }
 
   onClose() {
-    $('#createBoardModal').modal('hide'); // hide modal
-    // reset state
+    $('#createBoardModal').modal('hide');
     this.setState({
       name: '',
       // isPrivate: false,
@@ -103,13 +103,18 @@ export default class CreateBoardModal extends React.Component {
 
   handleChange(index, event) {
     let val = event.target.value;
-    if (index === 'isPrivate')  {
-      val = val === 'true' ? true : false;
-    }
 
     this.setState({
       [index]: val,
     });
+  }
+  
+  handleRadio(isPrivate, event) {
+    if (this.state.isPrivate !== isPrivate) {
+      this.setState({
+        isPrivate,
+      });
+    }
   }
 
   handleSelectChange(value) {
@@ -131,10 +136,18 @@ export default class CreateBoardModal extends React.Component {
     this.onClose = this.onClose.bind(this);
     this.createBoard = this.createBoard.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleRadio = this.handleRadio.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
   }
 
   render() {
+    const publicBoard = classNames({
+      'active': !this.state.isPrivate,
+    }, 'radio');
+    const privateBoard = classNames({
+      'active': this.state.isPrivate,
+    }, 'radio');
+
     return (
       <Modal
         id={'createBoardModal'}
@@ -191,41 +204,41 @@ export default class CreateBoardModal extends React.Component {
                 className='control-label'>
                 Privacidad
               </label>
-              <div className='col-xs-12 privacy'>
-                <label className='radio-inline'>
-                  <input
-                    name='board-private-radio'
-                    type='radio'
-                    value={false}
-                    onChange={(e) => this.handleChange('isPrivate', e)}
-                    defaultChecked
-                  />
-                  Publico
-                </label>
-                <label className='radio-inline'>
-                  <input
-                    name='board-private-radio'
-                    type='radio'
-                    value={true}
-                    onChange={(e) => this.handleChange('isPrivate', e)}
-                  />
-                  Privado
-                </label>
+              <div className='radio-container'>
+                <div 
+                  className='option-container'
+                  role='button'
+                  onClick={(e) => this.handleRadio(false, e)}>
+                  <div className={publicBoard}>
+                    <div className='check'></div>
+                  </div>
+                  <p className='text'>Publico</p>
+                </div>
+                <div 
+                  className='option-container'
+                  role='button'
+                  onClick={(e) => this.handleRadio(true, e)}>
+                  <div className={privateBoard}>
+                    <div className='check'></div>
+                  </div>
+                  <p className='text'>Privado</p>
+                </div>
               </div>
             </div>
             {
               this.state.isPrivate ? (
-                <div className='share-board'>
+                <div className="share-board">
                   <label
-                    htmlFor='form-field-name'
-                    className='control-label'>
+                    htmlFor="form-field-name"
+                    className="control-label">
                     Compartir con otros
                   </label>
                   <Select
-                    name='form-field-name'
-                    className='col-xs-12'
-                    placeholder='Ingrese nombre o mail...'
-                    noResultsText='No se encontraron usuarios en el equipo'
+                    name="form-field-name"
+                    className="col-xs-12"
+                    placeholder="Ingrese nombre o mail"
+                    noResultsText="No se encontraron usuarios en el equipo"
+                    backspaceToRemoveMessage="Borrá para eliminar a '{label}'"
                     multi={true}
                     simpleValue={true}
                     disabled={false}

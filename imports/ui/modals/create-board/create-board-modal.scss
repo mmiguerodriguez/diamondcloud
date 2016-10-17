@@ -17,3 +17,37 @@
 .privacy, .type {
   margin-bottom: 15px;
 }
+.radio-container {
+  .option-container {
+    display: inline-block;
+    margin-left: 15px;
+    .radio {
+      display: inline-block;
+      height: 22px;
+      width: 22px;
+      transition: 0.3s all ease;
+      box-shadow: 0px 0px 0px 2px rgba(94, 94, 94, 0.5) inset;
+      border-radius: 50%;
+      &.active {
+        box-shadow: 0px 0px 0px 12px #3498db inset !important;
+        .check {
+          opacity: 1 !important;
+        }
+      }
+      .check {
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        background: url(http://frolovoleg.ru/images/checkmark.svg) center no-repeat;
+        background-size: 22px;
+        opacity: 0;
+        transition: 0.5s all ease;
+      }    
+    }
+    .text {
+      display: inline-block;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+  }
+}
