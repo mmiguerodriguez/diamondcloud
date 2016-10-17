@@ -37,4 +37,7 @@
   &.ui-resizable-disabled {
     height: auto !important;
   }
+  .ui-resizable-handle {
+    z-index: 0;
+  }
 }
