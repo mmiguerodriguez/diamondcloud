@@ -26,7 +26,7 @@ import '../factories/factories.js';
 if (Meteor.isServer) {
   describe('Teams', function() {
     describe('Methods', function() {
-      let users, team, board, generalBoardId = Random.id(),
+      let users, team, board, boards, generalBoardId = Random.id(),
           createModuleInstanceArgs,
           apiInsertArgs;
 
@@ -55,6 +55,7 @@ if (Meteor.isServer) {
         team.users[0].email = users[0].emails[0].address;
         team.users.push({ email: users[1].emails[0].address, hierarchy: 'creativo' });
         team.users.push({ email: users[2].emails[0].address, hierarchy: 'creativo' });
+
         team.boards = [
           { _id: board._id },
           { _id: boards[0]._id },
@@ -71,8 +72,8 @@ if (Meteor.isServer) {
 
         Boards.insert(board);
 
-        boards.forEach((board) => {
-          Boards.insert(board);
+        boards.forEach((boardOfBoards) => {
+          Boards.insert(boardOfBoards);
         });
 
         sinon.stub(Meteor, 'user', () => users[0]);
@@ -201,41 +202,40 @@ if (Meteor.isServer) {
         });
       });
 
-      it('should share a team', function(done) {
+      it('should share a team', (done) => {
         let result,
             expect,
             args;
 
         expect = team;
         expect.users.push({ email: 'test@test.com', hierarchy: 'creativo' });
-        args = {
-          email: 'test@test.com',
-          hierarchy: 'creativo',
-          teamId: team._id,
-        };
-
-        shareTeam.call(args, (error, result) => {
-          chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
-          boards[0].users.push({
+        args = [
+          {
+            email: 'test@test.com',
+            hierarchy: 'creativo',
+            teamId: team._id,
+          },
+          {
             email: users[0].emails[0].address,
-            notifications: 0,
+            hierarchy: 'creativo',
+            teamId: team._id,
+          }
+        ];
+
+        shareTeam.call(args[0], (error, result) => {
+          chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
+          let expected = _.clone(boards[0]);
+          shareTeam.call(args[1], (err, res) => {
+            chai.assert.deepEqual(
+              Boards.findOne({ _id: expected._id }).users,
+              boards[0].users,
+            );
+            done();
           });
-          printObject(
-            'res:',
-            Boards.findOne({ _id: boards[0]._id }),
-            'expected:',
-            boards[0]
-          );
-          // User doesn't exist
-          chai.assert.deepEqual(
-            Boards.findOne({ _id: boards[0]._id }),
-            boards[0],
-          );
-          done();
         });
       });
 
-      it('should remove a user from a team', function(done) {
+      it('should remove a user from a team', (done) => {
         let result,
             expect,
             args;
@@ -293,3 +293,5 @@ if (Meteor.isServer) {
     });
   });
 }
+
+/* global _ */

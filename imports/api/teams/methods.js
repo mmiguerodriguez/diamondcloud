@@ -36,7 +36,7 @@ export const createTeam = new ValidatedMethod({
       archived: false,
     };
 
-    if (!!users) {
+    if (users) {
       team.users.push({
         email: Meteor.user().email(),
         hierarchy: 'sistemas',
@@ -66,6 +66,7 @@ export const createTeam = new ValidatedMethod({
         type: 'default',
         isPrivate: false,
         visibleForDirectors: false,
+        //users: team.users,
       }, (err, res) => {
         if (!!err) {
           future.throw(err);
@@ -196,8 +197,6 @@ export const shareTeam = new ValidatedMethod({
 
     let existingUser = Meteor.users.findByEmail(email, {});
 
-    printObject('existingUser:', existingUser);
-
     if (existingUser) {
       //if user is not registered in Diamond Cloud
       Mail.sendMail({
@@ -207,11 +206,8 @@ export const shareTeam = new ValidatedMethod({
         html: Mail.messages.sharedTeamRegistered(teamId),
       });
 
-      printObject('team.boards:', team.boards);
-
       team.boards.forEach((boardIdObj) => {
-        let board = Boards.findOne(boardIdObj._id);
-        printObject(board);
+        const board = Boards.findOne(boardIdObj._id);
         if (!board.isPrivate) {
           Boards.addUser(board._id, existingUser._id);
         }
