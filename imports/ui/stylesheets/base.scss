@@ -47,3 +47,14 @@ input:focus, select:focus, textarea:focus, button:focus {
 .ui-icon-gripsmall-diagonal-se {
   background-position: -78px -222px !important;
 }
+
+/* not-found */
+.not-found {
+  width: 100vw;
+  height: 100vh;
+  background-image: url(http://www.404notfound.fr/assets/images/pages/img/androiddev101.jpg);
+  background-size: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #fff;
+}
