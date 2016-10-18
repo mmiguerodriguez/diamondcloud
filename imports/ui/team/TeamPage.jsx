@@ -181,7 +181,7 @@ export default class TeamPage extends React.Component {
       onReady() {
         TeamPage.boardId.set(boardId);
       },
-      onError(error) {
+      onError() {
         self.props.toggleError({
           type: 'show',
           body: 'Hubo un error interno al entrar al board',
@@ -197,7 +197,7 @@ export default class TeamPage extends React.Component {
       return null;
     }
 
-    const board = Boards.findOne(TeamPage.boardId.get());
+    let board = Boards.findOne(TeamPage.boardId.get());
 
     if (this.props.loading) {
       return null;
@@ -208,7 +208,22 @@ export default class TeamPage extends React.Component {
     }
 
     if (!board) {
-      return null;
+      return (
+        <div>
+          Ryan, este es el mensaje
+          que dice que el pibe
+          no puede ver board.
+
+          No entiendo mucho de Frontend
+          pero me parece que habría que
+          cargar el TeamLayout con algún
+          tipo de error porque ahora no
+          aparece ni el sidebar ni el
+          subheader.
+
+          Nada, eso, chau, buenas noches.
+        </div>
+      );
     }
 
     return (
