@@ -8,13 +8,13 @@ import { browserHistory } from 'react-router';
 
  * drive: View and manage the files in Google Drive.
  * drive.metadata: View and manage metadata of files in your Google Drive.
- * drive.appdata: View and manage its own configuration data in your 
+ * drive.appdata: View and manage its own configuration data in your
  *                Google Drive.
- * drive.file: View and manage Google Drive files and folders that 
+ * drive.file: View and manage Google Drive files and folders that
  *             you have opened or created with this app.
  * userinfo.email: View user email.
  * userinfo.profile: View user basic profile.
- * 
+ *
  * forceApprovalPrompt: User can't deny from providing the information.
  */
 Accounts.ui.config({
@@ -25,7 +25,7 @@ Accounts.ui.config({
       'https://www.googleapis.com/auth/drive.appdata',
       'https://www.googleapis.com/auth/drive.file',
       'https://www.googleapis.com/auth/userinfo.email',
-			'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/userinfo.profile',
     ],
   },
   forceApprovalPrompt: {
@@ -54,7 +54,7 @@ Accounts.onLogin(() => {
         throw new Meteor.Error(error);
       } else {
         browserHistory.push(`/team/${path}`);
-      }     
+      }
     });
   }
 });

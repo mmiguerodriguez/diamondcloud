@@ -30,5 +30,7 @@ export const insertFirstUser = new ValidatedMethod({
         });
       });
     }
+
+    return;
   },
 });
