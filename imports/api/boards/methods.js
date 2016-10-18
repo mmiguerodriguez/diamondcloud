@@ -186,22 +186,46 @@ export const editBoard = new ValidatedMethod({
     }
 
     let board = Boards.findOne(boardId);
-    let team = board.team();
+    const team = board.team();
 
     name = name || board.name;
     type = type || board.type;
 
-    /**
-     * If the board wasn't private but now it is, then we need
-     * to change the users variable to fit with a private
-     * board.
-     *
-     * TODO: Fix this implementation since users will always
-     * be sent with email and without notifications.
-     */
+    if (board.isPrivate && !isPrivate) {
+      users = [];
+      team.users.forEach((user) => {
+        let found = false;
+        board.users.forEach((_user) => {
+          if (_user.email === user.email) {
+            users.push({ email: user.email, notifications: _user.notifications });
+            found = true;
+          }
+        });
 
-    users = board.users;
-    isPrivate = isPrivate || board.isPrivate;
+        if (!found) {
+          users.push({ email: user.email, notifications: 0 });
+        }
+      });
+    } else if ((!board.isPrivate && isPrivate) || (board.isPrivate && isPrivate)) {
+      users.forEach((user, index) => {
+        if (!team.hasUser({ email: user.email })) {
+          throw new Meteor.Error('Boards.methods.createBoard.userNotInTeam',
+          'You cannot add people to a board that are not part of the team.');
+        }
+
+        let found = false;
+        board.users.forEach((_user) => {
+          if (_user.email === user.email) {
+            users[index].notifications = _user.notifications;
+            found = true;
+          }
+        });
+
+        if (!found) {
+          users[index].notifications = 0;
+        }
+      });
+    }
 
     Boards.update(boardId, {
       $set: {
@@ -209,12 +233,12 @@ export const editBoard = new ValidatedMethod({
         type,
         isPrivate,
         users,
-      }
+      },
     });
 
     board = Boards.findOne(boardId);
     return board;
-  }
+  },
 });
 /**
  * Archives a board

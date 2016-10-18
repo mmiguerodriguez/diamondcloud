@@ -579,8 +579,7 @@ export default class TeamLayout extends React.Component {
                 this.state.boardIdContextMenu ? (
                   <ConfigBoardModal
                     team={this.props.team}
-                    boards={this.props.boards}
-                    boardId={this.state.boardIdContextMenu}
+                    board={Boards.findOne(this.state.boardIdContextMenu)}
                     toggleError={this.props.toggleError}
                   />
                 ) : (null)

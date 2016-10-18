@@ -15,11 +15,20 @@ export default class ConfigBoardModal extends React.Component {
   constructor(props) {
     super(props);
 
+    let users = [];
+    this.props.board.users.forEach((user) => {
+      if (user.email !== Meteor.user().email()) {
+        users.push(user.email);
+      }
+    });
+    users = users.join(',');
+
     this.state = {
-      name: '',
-      type: '',
-      isPrivate: '',
-      users: '',
+      name: this.props.board.name,
+      type: this.props.board.type,
+      isPrivate: this.props.board.isPrivate,
+      users: this.props.board.users,
+      usersValues: users,
     };
 
     this.close = this.close.bind(this);
@@ -28,12 +37,24 @@ export default class ConfigBoardModal extends React.Component {
     this.handleSelectChange = this.handleSelectChange.bind(this);
   }
 
-  componentWillMount() {
-    this.startup();
-  }
-
   componentWillReceiveProps(nextProps) {
-    this.startup(nextProps);
+    if (nextProps.board._id !== this.props.board._id) {
+      let users = [];
+      nextProps.board.users.forEach((user) => {
+        if (user.email !== Meteor.user().email()) {
+          users.push(user.email);
+        }
+      });
+      users = users.join(',');
+
+      this.setState({
+        name: nextProps.board.name,
+        type: nextProps.board.type,
+        isPrivate: nextProps.board.isPrivate,
+        users: nextProps.board.users,
+        usersValues: users,
+      });
+    }
   }
 
   close() {
@@ -41,12 +62,12 @@ export default class ConfigBoardModal extends React.Component {
   }
 
   editBoard() {
-    const boardId = this.state.board._id;
+    const boardId = this.props.board._id;
     const board = {
       name: this.state.name,
       type: this.state.type,
       isPrivate: this.state.isPrivate,
-      users: this.state.users,
+      users: this.state.usersValues,
     };
 
     if (board.isPrivate) {
@@ -107,40 +128,6 @@ export default class ConfigBoardModal extends React.Component {
     }
   }
 
-  startup(nextProps) {
-    const props = nextProps || this.props;
-    let board;
-    let users = [];
-
-    /**
-     * Get the real board
-     */
-    props.boards.forEach((_board) => {
-      if (_board._id === props.boardId) {
-        board = _board;
-      }
-    });
-
-    /**
-     * Set board users
-     */
-    board.users.forEach((user) => {
-      if (user.email !== Meteor.user().email()) {
-        users.push(user.email);
-      }
-    });
-
-    users = users.join(',');
-
-    this.setState({
-      board,
-      name: board.name,
-      type: board.type,
-      isPrivate: board.isPrivate,
-      users,
-    });
-  }
-
   handleChange(index, event) {
     const val = event.target.value;
 
@@ -159,14 +146,14 @@ export default class ConfigBoardModal extends React.Component {
 
   handleSelectChange(value) {
     this.setState({
-      users: value,
+      usersValues: value,
     });
   }
 
   renderTeamUsers() {
     const arr = [];
 
-    this.props.team.users.map((_user) => {
+    this.props.team.users.forEach((_user) => {
       const user = Meteor.users.findByEmail(_user.email, {});
       if (user) {
         if (user._id !== Meteor.userId()) {
@@ -271,7 +258,7 @@ export default class ConfigBoardModal extends React.Component {
                   onClick={e => this.handleRadio(false, e)}
                 >
                   <div className={publicBoard}>
-                    <div className="check"></div>
+                    <div className="check" />
                   </div>
                   <p className="text">Publico</p>
                 </div>
@@ -300,14 +287,14 @@ export default class ConfigBoardModal extends React.Component {
                     name="form-field-name"
                     className="col-xs-12"
                     placeholder="Ingrese nombre o mail"
+                    value={this.state.usersValues}
+                    onChange={this.handleSelectChange}
+                    disabled={false}
+                    options={this.renderTeamUsers()}
                     noResultsText="No se encontraron usuarios en el equipo"
                     backspaceToRemoveMessage="Borrá para eliminar a '{label}'"
-                    multi={true}
-                    simpleValue={true}
-                    disabled={false}
-                    value={this.state.users}
-                    options={this.renderTeamUsers()}
-                    onChange={this.handleSelectChange}
+                    simpleValue
+                    multi
                   />
                 </div>
               ) : (null)
@@ -339,7 +326,6 @@ export default class ConfigBoardModal extends React.Component {
 
 ConfigBoardModal.propTypes = {
   team: React.PropTypes.object,
-  boards: React.PropTypes.array.isRequired,
-  boardId: React.PropTypes.string.isRequired,
+  board: React.PropTypes.object.isRequired,
   toggleError: React.PropTypes.func.isRequired,
 };
