@@ -321,7 +321,6 @@ export default class TeamLayout extends React.Component {
           team={this.props.team}
           boards={this.props.boards}
           directChats={this.props.directChats}
-          position={isMobile.any ? 'mobile' : 'medium'}
           togglePosition={this.togglePosition}
           toggleError={this.props.toggleError}
           removeChat={this.props.removeChat}

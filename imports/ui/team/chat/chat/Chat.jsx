@@ -17,6 +17,7 @@ export default class Chat extends React.Component {
       chatType: {},
     };
 
+    this.scrollDown = this.scrollDown.bind(this);
     this.handleKey = this.handleKey.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
@@ -49,31 +50,20 @@ export default class Chat extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.position === 'medium') {
-      if (this.props.index === 0) {
-        this.input.focus();
-      }
-    }
-  }
-
   getName() {
-    if (this.props.chat.boardId) {
-      const boardId = this.props.chat.boardId;
-
+    const { boardId, directChatId } = this.props.chat;
+    if (boardId) {
       return Boards.findOne(boardId).name;
-    } else if (this.props.chat.directChatId) {
-      const directChatId = this.props.chat.directChatId;
-      const directChat = DirectChats.findOne(directChatId);
-
-      return directChat.getUser().profile.name;
     }
+
+    const directChat = DirectChats.findOne(directChatId);
+    return directChat.getUser().profile.name;
   }
 
   sendMessage() {
     const self = this;
 
-    let text = this.state.message;
+    let text = self.state.message;
     text = text.trim();
 
     const obj = {
@@ -82,10 +72,10 @@ export default class Chat extends React.Component {
       createdAt: new Date().getTime(),
     };
 
-    if (this.props.chat.directChatId) {
-      obj.directChatId = this.props.chat.directChatId;
-    } else if (this.props.chat.boardId) {
-      obj.boardId = this.props.chat.boardId;
+    if (self.props.chat.directChatId) {
+      obj.directChatId = self.props.chat.directChatId;
+    } else if (self.props.chat.boardId) {
+      obj.boardId = self.props.chat.boardId;
     }
 
     if (text !== '' && /\S/.test(text)) {
@@ -99,15 +89,17 @@ export default class Chat extends React.Component {
       });
     }
 
-    this.setState({
+    self.setState({
       message: '',
+    }, () => {
+      self.input.focus();
     });
   }
 
   scrollDown() {
     const chatBody = this.chatBody;
     if (chatBody !== null && chatBody !== undefined) {
-      let e = $(chatBody);
+      const e = $(chatBody);
       e.scrollTop(e.prop('scrollHeight'));
     }
   }
@@ -128,8 +120,6 @@ export default class Chat extends React.Component {
   }
 
   renderMessages() {
-    const scrollDown = this.scrollDown.bind(this);
-
     return this.props.chat.messages.map((message) => {
       const isSender = message.senderId === Meteor.userId();
       return (
@@ -137,7 +127,7 @@ export default class Chat extends React.Component {
           key={message._id}
           message={message}
           isSender={isSender}
-          scrollDown={scrollDown}
+          scrollDown={this.scrollDown}
           position={this.state.position}
           toggleError={this.props.toggleError}
         />
@@ -278,10 +268,10 @@ export default class Chat extends React.Component {
           </div>
         </div>
       );
-    
+
     } else if (this.state.position === 'hidden') {
       return (
-        <img 
+        <img
           className="user"
           title={this.getName()}
           src={this.props.chat.directChatId ? (
@@ -297,12 +287,13 @@ export default class Chat extends React.Component {
 
 Chat.propTypes = {
   chat: React.PropTypes.object.isRequired,
-  users: React.PropTypes.array.isRequired,
+  index: React.PropTypes.number.isRequired,
   position: React.PropTypes.string.isRequired,
-  hasMaximizedChats: React.PropTypes.bool.isRequired,
+  chats: React.PropTypes.array.isRequired,
+  users: React.PropTypes.array.isRequired,
   boards: React.PropTypes.array.isRequired,
   directChats: React.PropTypes.array.isRequired,
-  index: React.PropTypes.number.isRequired,
+  hasMaximizedChats: React.PropTypes.bool.isRequired,
   removeChat: React.PropTypes.func.isRequired,
   togglePosition: React.PropTypes.func.isRequired,
   toggleError: React.PropTypes.func.isRequired,
