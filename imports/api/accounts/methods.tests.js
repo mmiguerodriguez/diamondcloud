@@ -3,25 +3,30 @@ import { resetDatabase }   from 'meteor/xolvio:cleaner';
 import { sinon }           from 'meteor/practicalmeteor:sinon';
 import { chai }            from 'meteor/practicalmeteor:chai';
 
-import { insertFirstUser } from './methods.js';
-import { Teams }           from '../teams/teams.js';
+import { insertFirstUser } from './methods';
+import { Teams }           from '../teams/teams';
+import { Boards }          from '../boards/boards';
 
-import '../factories/factories.js';
+import '../factories/factories';
 
 if (Meteor.isServer) {
   describe('Accounts', () => {
     describe('Methods', () => {
-      let user, team;
+      let user;
+      let board;
+      let team;
 
       beforeEach(() => {
         resetDatabase();
 
         user = Factory.create('user');
-        team = Factory.create('team', { users: [] });
+        board = Factory.create('publicBoard');
+        team = Factory.create('team', { boards: [{ _id: board._id }], users: [] });
 
         resetDatabase();
 
         Meteor.users.insert(user);
+        Boards.insert(board);
         Teams.insert(team);
 
         sinon.stub(Meteor, 'user', () => user);
@@ -36,9 +41,11 @@ if (Meteor.isServer) {
           if (error) {
             throw new Meteor.Error(error);
           } else {
-            let _team = Teams.findOne({ _id: team._id });
+            const _team = Teams.findOne({ _id: team._id });
+            const _board = Boards.findOne({ _id: _team.boards[0]._id });
 
             chai.assert.equal(_team.users.length, 1);
+            chai.assert.equal(_board.users[0].email, user.emails[0].address);
             chai.assert.deepEqual(_team.users, [{ email: user.emails[0].address, hierarchy: 'sistemas' }]);
 
             done();
