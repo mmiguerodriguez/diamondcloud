@@ -165,7 +165,7 @@ export default class TeamLayout extends React.Component {
           <div className="col-xs-2">
             <img
               className="img-circle"
-              src="http://image.flaticon.com/icons/svg/60/60541.svg"
+              src="/img/board-chat.svg"
               width="48px"
             />
           </div>
@@ -331,7 +331,7 @@ export default class TeamLayout extends React.Component {
         <div className="moduleinstance-context-menu context-menu" ref={c => { this.moduleInstanceContextMenu = c; }}>
           <div className="row" onClick={this.removeModuleInstance}>
             <div className="col-xs-4">
-              <img src="http://image0.flaticon.com/icons/svg/60/60761.svg" width="20px" />
+              <img src="trash.svg" width="20px" />
             </div>
             <p className="col-xs-8">Eliminar</p>
           </div>
@@ -349,7 +349,7 @@ export default class TeamLayout extends React.Component {
                 </div>
                 <div className="row" onClick={this.removeBoard}>
                   <div className="col-xs-4">
-                    <img src="http://image0.flaticon.com/icons/svg/60/60761.svg" width="20px" />
+                    <img src="trash.svg" width="20px" />
                   </div>
                   <p className="col-xs-8">Eliminar</p>
                 </div>
