@@ -710,10 +710,24 @@ class Task extends React.Component {
    * timer.
    */
   finishTask() {
-    let self = this;
+    const self = this;
 
     self.stopTimer(() => {
-      let index = self.getLastTaskEndTimeIndex();
+      /**
+       * Used to stop all the durations from the users
+       * that have started the task.
+       * TODO: Fix issue when there is an error
+       * updating and set the durations as
+       * undefined again.
+       */
+      const durations = [];
+      this.props.task.durations.forEach((duration) => {
+        const _duration = duration;
+        if (!_duration.endTime) {
+          _duration.endTime = new Date().getTime();
+        }
+        durations.push(_duration);
+      });
 
       DiamondAPI.update({
         collection: 'tasks',
@@ -722,7 +736,7 @@ class Task extends React.Component {
         },
         updateQuery: {
           $set: {
-            [`durations.${index}.endTime`]: new Date().getTime(),
+            durations,
           },
         },
         callback(error, result) {
