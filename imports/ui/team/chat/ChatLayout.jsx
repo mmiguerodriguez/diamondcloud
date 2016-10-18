@@ -9,18 +9,17 @@ const CHAT_WIDTH = 250 + 24;
 export default class ChatLayout extends React.Component {
   renderChats() {
     const width = $('.board-container').width();
+    const chats = [];
     let chatsWidth = 0;
 
-    return this.props.chats.map((chat, index) => {
+    this.props.chats.forEach((chat, index) => {
       chatsWidth += CHAT_WIDTH;
 
       if (chatsWidth > width) {
         chatsWidth -= CHAT_WIDTH;
-
-        return (null);
       }
 
-      return (
+      chats.push(
         <Chat
           key={chat.directChatId || chat.boardId}
           chat={chat}
@@ -29,9 +28,8 @@ export default class ChatLayout extends React.Component {
           users={this.props.team.users}
           boards={this.props.boards}
           directChats={this.props.directChats}
-          position={
-            isMobile.any ? 'mobile' : 'medium'
-          }
+          position={isMobile.any ? 'mobile' : 'medium'}
+          openHiddenChat={this.props.openHiddenChat}
           togglePosition={this.props.togglePosition}
           toggleError={this.props.toggleError}
           removeChat={this.props.removeChat}
@@ -39,18 +37,21 @@ export default class ChatLayout extends React.Component {
         />
       );
     });
+    
+    return chats;
   }
 
   renderHiddenChats() {
     const width = $('.board-container').width();
+    const chats = [];
     let chatsWidth = 0;
 
-    return this.props.chats.map((chat, index) => {
+    this.props.chats.forEach((chat, index) => {
       chatsWidth += CHAT_WIDTH;
 
       if (chatsWidth > width) {
         chatsWidth -= CHAT_WIDTH;
-        return (
+        chats.push(
           <Chat
             key={chat.directChatId || chat.boardId}
             chat={chat}
@@ -59,23 +60,21 @@ export default class ChatLayout extends React.Component {
             users={this.props.team.users}
             boards={this.props.boards}
             directChats={this.props.directChats}
-            position={
-              isMobile.any ? 'mobile' : 'hidden'
-            }
+            position={isMobile.any ? 'mobile' : 'hidden'}
             togglePosition={this.props.togglePosition}
             toggleError={this.props.toggleError}
+            openHiddenChat={this.props.openHiddenChat}
             removeChat={this.props.removeChat}
             hasMaximizedChats={this.props.hasMaximizedChats}
           />
         );
       }
-
-      return (null);
     });
+    
+    return chats;
   }
 
   render() {
-    const width = $('.board-container').width();
     const chats = this.renderChats();
     const hiddenChats = this.renderHiddenChats();
 
@@ -83,7 +82,7 @@ export default class ChatLayout extends React.Component {
       <div className={this.props.class}>
         {chats}
         {
-          hiddenChats.length > 0 && chats.length > Math.floor(width / CHAT_WIDTH) ? (
+          hiddenChats.length > 0 ? (
             <div className="users-hidden">
               <div className="users">
                 {hiddenChats}
@@ -105,5 +104,6 @@ ChatLayout.propTypes = {
   hasMaximizedChats: React.PropTypes.bool.isRequired,
   toggleError: React.PropTypes.func.isRequired,
   togglePosition: React.PropTypes.func.isRequired,
+  openHiddenChat: React.PropTypes.func.isRequired,
   removeChat: React.PropTypes.func.isRequired,
 };

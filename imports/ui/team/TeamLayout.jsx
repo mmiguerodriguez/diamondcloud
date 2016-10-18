@@ -323,6 +323,7 @@ export default class TeamLayout extends React.Component {
           directChats={this.props.directChats}
           togglePosition={this.togglePosition}
           toggleError={this.props.toggleError}
+          openHiddenChat={this.props.openHiddenChat}
           removeChat={this.props.removeChat}
           hasMaximizedChats={this.state.hasMaximizedChats}
         />
@@ -621,6 +622,7 @@ TeamLayout.propTypes = {
   chats: React.PropTypes.array.isRequired,
 
   addChat: React.PropTypes.func.isRequired,
+  openHiddenChat: React.PropTypes.func.isRequired,
   removeChat: React.PropTypes.func.isRequired,
   boardSubscribe: React.PropTypes.func.isRequired,
   toggleError: React.PropTypes.func.isRequired,

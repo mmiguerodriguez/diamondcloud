@@ -20,6 +20,7 @@ export default class TeamPage extends React.Component {
       moduleInstancesFrames: [],
     };
 
+    this.openHiddenChat = this.openHiddenChat.bind(this);
     this.addChat = this.addChat.bind(this);
     this.removeChat = this.removeChat.bind(this);
     this.boardSubscribe = this.boardSubscribe.bind(this);
@@ -48,7 +49,7 @@ export default class TeamPage extends React.Component {
    * @returns {Object} chats
    */
   getChats() {
-    let chats = this.state.chats;
+    let { chats } = this.state;
 
     chats = chats.map((chat) => {
       if (chat.boardId) {
@@ -129,6 +130,52 @@ export default class TeamPage extends React.Component {
         });
       }
     }
+  }
+  /**
+   * Moves the chat with the passed index to the
+   * first position of the chats array.
+   * 
+   * @param {Number} index
+   *   The actual index of the chat in the
+   *   chats array.
+   */
+  openHiddenChat(index) {
+    /**
+     * Moves the passed array index from one place
+     * to another.
+     * 
+     * @param {Array} array
+     * @param {Number} oldIndex
+     * @param {Number} newIndex
+     */
+    const move = (array, oldIndex, newIndex) => {
+      while (oldIndex < 0) {
+        oldIndex += array.length;
+      }
+
+      while (newIndex < 0) {
+        newIndex += array.length;
+      }
+
+      if (newIndex >= array.length) {
+        let k = newIndex - array.length;
+        while ((k--) + 1) {
+          array.push(undefined);
+        }
+      }
+
+      array.splice(newIndex, 0, array.splice(oldIndex, 1)[0]);
+      return array;
+    };
+    const NEW_INDEX = 0;
+
+    let { chats } = this.state;
+    
+    chats = move(chats, index, NEW_INDEX);
+    
+    this.setState({
+      chats,
+    });
   }
   /**
    * Removes the chat with boardId || directChatId from
@@ -237,6 +284,7 @@ export default class TeamPage extends React.Component {
           chats={this.getChats()}
 
           addChat={this.addChat}
+          openHiddenChat={this.openHiddenChat}
           removeChat={this.removeChat}
           boardSubscribe={this.boardSubscribe}
           toggleError={this.props.toggleError}

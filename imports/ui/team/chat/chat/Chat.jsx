@@ -277,6 +277,7 @@ export default class Chat extends React.Component {
           src={this.props.chat.directChatId ? (
             `${DirectChats.findOne(this.props.chat.directChatId).getUser().profile.picture}?sz=60`
           ) : 'http://image.flaticon.com/icons/svg/60/60541.svg'}
+          onClick={this.props.openHiddenChat.bind(null, this.props.index)}
         />
       );
     }
@@ -294,6 +295,7 @@ Chat.propTypes = {
   boards: React.PropTypes.array.isRequired,
   directChats: React.PropTypes.array.isRequired,
   hasMaximizedChats: React.PropTypes.bool.isRequired,
+  openHiddenChat: React.PropTypes.func.isRequired,
   removeChat: React.PropTypes.func.isRequired,
   togglePosition: React.PropTypes.func.isRequired,
   toggleError: React.PropTypes.func.isRequired,
