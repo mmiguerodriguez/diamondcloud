@@ -24,6 +24,7 @@ export default class TeamPage extends React.Component {
     this.addChat = this.addChat.bind(this);
     this.removeChat = this.removeChat.bind(this);
     this.boardSubscribe = this.boardSubscribe.bind(this);
+    this.togglePosition = this.togglePosition.bind(this);
   }
 
   componentDidUpdate() {
@@ -49,14 +50,17 @@ export default class TeamPage extends React.Component {
    * @returns {Object} chats
    */
   getChats() {
-    let { chats } = this.state;
+    const { chats } = this.state;
 
-    chats = chats.map((chat) => {
+    chats.map((chat, index) => {
       if (chat.boardId) {
-        chat.messages = Boards.findOne(chat.boardId).getMessages().fetch();
+        chats[index].messages = Boards.findOne(chat.boardId).getMessages().fetch();
       } else {
-        chat.messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
+        chats[index].messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
       }
+
+      chats[index].position = chat.position || (isMobile.any ? 'mobile' : 'medium');
+
       return chat;
     });
 
@@ -93,6 +97,7 @@ export default class TeamPage extends React.Component {
             chats = [{
               boardId: obj.boardId,
               messages,
+              position: isMobile.any ? 'mobile' : 'medium',
               subscription: chatHandle,
             }, ...chats];
 
@@ -120,6 +125,7 @@ export default class TeamPage extends React.Component {
             chats = [{
               directChatId: obj.directChatId,
               messages,
+              position: isMobile.any ? 'mobile' : 'medium',
               subscription: chatHandle,
             }, ...chats];
 
@@ -134,7 +140,7 @@ export default class TeamPage extends React.Component {
   /**
    * Moves the chat with the passed index to the
    * first position of the chats array.
-   * 
+   *
    * @param {Number} index
    *   The actual index of the chat in the
    *   chats array.
@@ -143,7 +149,7 @@ export default class TeamPage extends React.Component {
     /**
      * Moves the passed array index from one place
      * to another.
-     * 
+     *
      * @param {Array} array
      * @param {Number} oldIndex
      * @param {Number} newIndex
@@ -170,9 +176,9 @@ export default class TeamPage extends React.Component {
     const NEW_INDEX = 0;
 
     let { chats } = this.state;
-    
+
     chats = move(chats, index, NEW_INDEX);
-    
+
     this.setState({
       chats,
     });
@@ -187,7 +193,7 @@ export default class TeamPage extends React.Component {
    *  @param {String} directChatId (optional)
    */
   removeChat(obj) {
-    let { chats } = this.state;
+    const { chats } = this.state;
 
     if (obj.boardId) {
       chats.forEach((chat, index) => {
@@ -212,7 +218,8 @@ export default class TeamPage extends React.Component {
   /**
    * Subscribes to the whole data of a board.
    * If we are already subscribed, then we
-   * unsubscribe.
+   * unsubscribe and subscribe to the
+   * new board.
    *
    * @param {String} boardId
    */
@@ -244,6 +251,24 @@ export default class TeamPage extends React.Component {
     });
 
     TeamPage.boardSubscription.set(subscription);
+  }
+  /**
+   * Toggles the position of the chat.
+   * @param {Number} index
+   *   The index of the chat in the chats
+   *   array.
+   * @param {String} position
+   *   The position we want to set to the
+   *   chat.
+   */
+  togglePosition(index, position) {
+    const { chats } = this.state;
+
+    chats[index].position = position;
+
+    this.setState({
+      chats,
+    });
   }
 
   render() {
@@ -287,6 +312,8 @@ export default class TeamPage extends React.Component {
           openHiddenChat={this.openHiddenChat}
           removeChat={this.removeChat}
           boardSubscribe={this.boardSubscribe}
+          togglePosition={this.togglePosition}
+
           toggleError={this.props.toggleError}
         />
         {

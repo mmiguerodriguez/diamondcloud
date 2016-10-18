@@ -1,12 +1,13 @@
 import { Meteor }                   from 'meteor/meteor';
-import { Teams }                    from '../../api/teams/teams';
-import { Boards }                   from '../../api/boards/boards';
-import { DirectChats }              from '../../api/direct-chats/direct-chats';
 
 import React                        from 'react';
 import { Link }                     from 'react-router';
 import classNames                   from 'classnames';
 import isMobile                     from 'ismobilejs';
+
+import { Teams }                    from '../../api/teams/teams';
+import { Boards }                   from '../../api/boards/boards';
+import { DirectChats }              from '../../api/direct-chats/direct-chats';
 
 import Board                        from './board/Board';
 import ChatLayout                   from './chat/ChatLayout';
@@ -69,19 +70,226 @@ export default class TeamLayout extends React.Component {
       this.openConfigTeamModal();
     }
   }
+  // boards
+  changeBoard(boardId) {
+    this.props.boardSubscribe(boardId);
+  }
 
-  togglePosition(chat, oldPosition, newPosition) {
-    chat.setState({
-      position: newPosition,
-    }, () => {
-      if (newPosition === 'maximized' || oldPosition === 'maximized') {
-        this.setState({
-          hasMaximizedChats: !this.state.hasMaximizedChats,
+  removeBoard() {
+    if (this.props.isAdmin) {
+      const boardId = this.state.boardIdContextMenu;
+
+      Meteor.call('Boards.methods.archiveBoard', { _id: boardId }, (error, result) => {
+        if (error) {
+          this.props.toggleError({
+            type: 'show',
+            body: 'Hubo un error al eliminar el board',
+          });
+        } else {
+          let newBoardId;
+          this.props.boards.forEach((board) => {
+            if (board._id !== boardId) {
+              newBoardId = board._id;
+            }
+          });
+
+          this.closeContextMenu(this.refs['board-context-menu']); // Close menu
+          this.changeBoard(newBoardId); // Change to another board which isn't this one
+          this.props.removeChat({ boardId }); // Remove board chats with this boardId
+        }
+      });
+    }
+  }
+
+  openBoardContextMenu(boardId, event) {
+    if (this.props.isAdmin) {
+      event.persist();
+
+      $(this.refs['board-context-menu'])
+        .finish()
+        .toggle(100)
+        .css({
+          top: event.pageY + 'px',
+          left: event.pageX + 10 + 'px',
         });
+
+      this.setState({
+        boardIdContextMenu: boardId,
+      });
+    }
+  }
+  // module-instances
+  removeModuleInstance() {
+    const self = this;
+
+    const moduleInstanceId = this.state.moduleInstanceIdContextMenu;
+    const contextMenu = this.moduleInstanceContextMenu;
+    const iframe = this.state.moduleinstanceIframe;
+
+    Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
+      if (error) {
+        self.props.toggleError({
+          type: 'show',
+          body: 'Hubo un error al eliminar el módulo',
+        });
+      } else {
+        iframe.contentWindow.DiamondAPI.unsubscribe();
+        self.closeContextMenu(contextMenu);
       }
     });
   }
-  // minimized
+
+  openModuleInstanceContextMenu(moduleInstanceId, iframe, event) {
+    event.preventDefault();
+
+    $(this.moduleInstanceContextMenu)
+      .finish()
+      .toggle(100)
+      .css({
+        top: `${event.pageY}px`,
+        left: `${event.pageX}px`,
+      });
+
+    this.setState({
+      moduleInstanceIdContextMenu: moduleInstanceId,
+      moduleinstanceIframe: iframe,
+    });
+  }
+
+  closeContextMenu(menu) {
+    $(menu).hide(100);
+  }
+
+  closePermissionAsker() {
+    this.setState({
+      permissionAsker: false,
+    });
+  }
+  // collapsibles
+  toggleCollapsible(name) {
+    if (!this.state.togglingCollapsible) {
+      this.setState({
+        togglingCollapsible: true,
+      }, () => {
+        const elem = `${name}-collapsible`;
+        const active = this.checkActive(elem);
+
+        this.hideAllActiveBackgrounds();
+
+        if (active) {
+          this.toggleSubHeader();
+          this.hideActive(() => {
+            this.setState({ togglingCollapsible: false });
+          });
+        } else {
+          this.hideActive(() => {
+            const collapsible = $(`#${elem}`);
+            const item = $(`#${name}-item`);
+
+            this.effect(collapsible, 'slide', 'left', 'show', 350, () => {
+              this.setState({ togglingCollapsible: false });
+            });
+            this.showBackground(item);
+          });
+        }
+      });
+    }
+  }
+
+  checkActive(name) {
+    let result;
+    $('.collapsible').each((index, item) => {
+      const elem = $(item);
+
+      if (elem.css('display') === 'block') {
+        const id = elem.attr('id');
+        if (name === id) {
+          result = true;
+        }
+      }
+    });
+    return result || false;
+  }
+
+  hideActive(callback) {
+    let activeElement;
+    $('.collapsible').each((index, item) => {
+      const elem = $(item);
+
+      if (elem.css('display') === 'block') {
+        activeElement = elem;
+      }
+    });
+
+    if (activeElement) {
+      this.effect(activeElement, 'slide', 'left', 'hide', 350, callback);
+    } else {
+      callback();
+      this.toggleSubHeader();
+    }
+  }
+  // items
+  showBackground(elem) {
+    const img = elem.children('img');
+
+    img.addClass('filter');
+    elem.addClass('active');
+  }
+
+  hideBackground(elem) {
+    const img = elem.children('img');
+
+    img.removeClass('filter');
+    elem.removeClass('active');
+  }
+
+  hideAllActiveBackgrounds() {
+    $('.item').each((index, item) => {
+      const elem = $(item);
+
+      if (!elem.hasClass('bottom')) {
+        if (elem.css('backgroundColor') === 'rgb(255, 255, 255)') {
+          this.hideBackground(elem);
+        }
+      }
+    });
+  }
+  // helpers
+  effect(element, type, direction, mode, time, callback) {
+    element.effect(type, {
+      direction,
+      mode,
+    }, time, callback);
+  }
+
+  toggleSubHeader() {
+    $('.sub-header').toggleClass('sub-header-collapsed');
+  }
+
+  openCreateBoardModal() {
+    $('#createBoardModal').modal('show');
+  }
+
+  openCreateChatModal() {
+    $('#createChatModal').modal('show');
+  }
+
+  openConfigTeamModal() {
+    this.loadTeam(this.props.team._id, () => {
+      $('#configTeamModal').modal('show');//show modal once state is updated
+    });
+  }
+
+  openConfigBoardModal() {
+    $('#configBoardModal').modal('show');
+  }
+
+  loadTeam(id, callback) {
+    this.setState({
+      team: Teams.findOne(id),
+    }, callback);
+  }
+
   renderTeams() {
     const arr = [];
 
@@ -321,14 +529,14 @@ export default class TeamLayout extends React.Component {
           team={this.props.team}
           boards={this.props.boards}
           directChats={this.props.directChats}
-          togglePosition={this.togglePosition}
+          togglePosition={this.props.togglePosition}
           toggleError={this.props.toggleError}
           openHiddenChat={this.props.openHiddenChat}
           removeChat={this.props.removeChat}
           hasMaximizedChats={this.state.hasMaximizedChats}
         />
 
-        <div className="moduleinstance-context-menu context-menu" ref={c => { this.moduleInstanceContextMenu = c; }}>
+      <div className="moduleinstance-context-menu context-menu" ref={(c) => { this.moduleInstanceContextMenu = c; }}>
           <div className="row" onClick={this.removeModuleInstance}>
             <div className="col-xs-4">
               <img src="http://image0.flaticon.com/icons/svg/60/60761.svg" width="20px" />
@@ -389,225 +597,6 @@ export default class TeamLayout extends React.Component {
       </div>
     );
   }
-  // boards
-  changeBoard(boardId) {
-    this.props.boardSubscribe(boardId);
-  }
-
-  removeBoard() {
-    if (this.props.isAdmin) {
-      const boardId = this.state.boardIdContextMenu;
-
-      Meteor.call('Boards.methods.archiveBoard', { _id: boardId }, (error, result) => {
-        if (error) {
-          this.props.toggleError({
-            type: 'show',
-            body: 'Hubo un error al eliminar el board',
-          });
-        } else {
-          let newBoardId;
-          this.props.boards.forEach((board) => {
-            if (board._id !== boardId) {
-              newBoardId = board._id;
-            }
-          });
-
-          this.closeContextMenu(this.refs['board-context-menu']); // Close menu
-          this.changeBoard(newBoardId); // Change to another board which isn't this one
-          this.props.removeChat({ boardId }); // Remove board chats with this boardId
-        }
-      });
-    }
-  }
-
-  openBoardContextMenu(boardId, event) {
-    if (this.props.isAdmin) {
-      event.persist();
-
-      $(this.refs['board-context-menu'])
-        .finish()
-        .toggle(100)
-        .css({
-          top: event.pageY + 'px',
-          left: event.pageX + 10 + 'px',
-        });
-
-      this.setState({
-        boardIdContextMenu: boardId,
-      });
-    }
-  }
-  // module-instances
-  removeModuleInstance() {
-    const self = this;
-
-    const moduleInstanceId = this.state.moduleInstanceIdContextMenu;
-    const contextMenu = this.moduleInstanceContextMenu;
-    const iframe = this.state.moduleinstanceIframe;
-
-    Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
-      if (error) {
-        self.props.toggleError({
-          type: 'show',
-          body: 'Hubo un error al eliminar el módulo',
-        });
-      } else {
-        iframe.contentWindow.DiamondAPI.unsubscribe();
-        self.closeContextMenu(contextMenu);
-      }
-    });
-  }
-
-  openModuleInstanceContextMenu(moduleInstanceId, iframe, event) {
-    event.preventDefault(); // Prevent normal contextMenu from showing up
-
-    $(this.moduleInstanceContextMenu)
-      .finish()
-      .toggle(100)
-      .css({
-        top: event.pageY + 'px',
-        left: event.pageX + 'px',
-      });
-
-    this.setState({
-      moduleInstanceIdContextMenu: moduleInstanceId,
-      moduleinstanceIframe: iframe,
-    });
-  }
-
-  closeContextMenu(menu) {
-    $(menu).hide(100);
-  }
-
-  closePermissionAsker() {
-    this.setState({
-      permissionAsker: false,
-    });
-  }
-  // collapsibles
-  toggleCollapsible(name) {
-    if (!this.state.togglingCollapsible) {
-      this.setState({
-        togglingCollapsible: true,
-      }, () => {
-        const elem = `${name}-collapsible`;
-        const active = this.checkActive(elem);
-
-        this.hideAllActiveBackgrounds();
-
-        if (active) {
-          this.toggleSubHeader();
-          this.hideActive(() => {
-            this.setState({ togglingCollapsible: false });
-          });
-        } else {
-          this.hideActive(() => {
-            const collapsible = $(`#${elem}`);
-            const item = $(`#${name}-item`);
-
-            this.effect(collapsible, 'slide', 'left', 'show', 350, () => {
-              this.setState({ togglingCollapsible: false });
-            });
-            this.showBackground(item);
-          });
-        }
-      });
-    }
-  }
-
-  checkActive(name) {
-    let result;
-    $('.collapsible').each((index, item) => {
-      const elem = $(item);
-
-      if (elem.css('display') === 'block') {
-        const id = elem.attr('id');
-        if (name === id) {
-          result = true;
-        }
-      }
-    });
-    return result || false;
-  }
-
-  hideActive(callback) {
-    let activeElement;
-    $('.collapsible').each((index, item) => {
-      const elem = $(item);
-
-      if (elem.css('display') === 'block') {
-        activeElement = elem;
-      }
-    });
-
-    if (activeElement) {
-      this.effect(activeElement, 'slide', 'left', 'hide', 350, callback);
-    } else {
-      callback();
-      this.toggleSubHeader();
-    }
-  }
-  // items
-  showBackground(elem) {
-    const img = elem.children('img');
-
-    img.addClass('filter');
-    elem.addClass('active');
-  }
-
-  hideBackground(elem) {
-    const img = elem.children('img');
-
-    img.removeClass('filter');
-    elem.removeClass('active');
-  }
-
-  hideAllActiveBackgrounds() {
-    $('.item').each((index, item) => {
-      const elem = $(item);
-
-      if (!elem.hasClass('bottom')) {
-        if (elem.css('backgroundColor') === 'rgb(255, 255, 255)') {
-          this.hideBackground(elem);
-        }
-      }
-    });
-  }
-  // helpers
-  effect(element, type, direction, mode, time, callback) {
-    element.effect(type, {
-      direction,
-      mode,
-    }, time, callback);
-  }
-
-  toggleSubHeader() {
-    $('.sub-header').toggleClass('sub-header-collapsed');
-  }
-
-  openCreateBoardModal() {
-    $('#createBoardModal').modal('show');
-  }
-
-  openCreateChatModal() {
-    $('#createChatModal').modal('show');
-  }
-
-  openConfigTeamModal() {
-    this.loadTeam(this.props.team._id, () => {
-      $('#configTeamModal').modal('show');//show modal once state is updated
-    });
-  }
-
-  openConfigBoardModal() {
-    $('#configBoardModal').modal('show');
-  }
-
-  loadTeam(id, callback) {
-    this.setState({
-      team: Teams.findOne(id),
-    }, callback);
-  }
 }
 
 TeamLayout.propTypes = {
@@ -629,5 +618,6 @@ TeamLayout.propTypes = {
   openHiddenChat: React.PropTypes.func.isRequired,
   removeChat: React.PropTypes.func.isRequired,
   boardSubscribe: React.PropTypes.func.isRequired,
+  togglePosition: React.PropTypes.func.isRequired,
   toggleError: React.PropTypes.func.isRequired,
 };

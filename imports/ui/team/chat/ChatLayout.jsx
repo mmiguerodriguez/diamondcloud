@@ -22,13 +22,13 @@ export default class ChatLayout extends React.Component {
       chats.push(
         <Chat
           key={chat.directChatId || chat.boardId}
-          chat={chat}
           index={index}
+          chat={chat}
+          position={chat.position}
           chats={this.props.chats}
           users={this.props.team.users}
           boards={this.props.boards}
           directChats={this.props.directChats}
-          position={isMobile.any ? 'mobile' : 'medium'}
           openHiddenChat={this.props.openHiddenChat}
           togglePosition={this.props.togglePosition}
           toggleError={this.props.toggleError}
@@ -37,7 +37,7 @@ export default class ChatLayout extends React.Component {
         />
       );
     });
-    
+
     return chats;
   }
 
@@ -54,13 +54,13 @@ export default class ChatLayout extends React.Component {
         chats.push(
           <Chat
             key={chat.directChatId || chat.boardId}
-            chat={chat}
             index={index}
+            chat={chat}
+            position={'hidden'}
             chats={this.props.chats}
             users={this.props.team.users}
             boards={this.props.boards}
             directChats={this.props.directChats}
-            position={isMobile.any ? 'mobile' : 'hidden'}
             togglePosition={this.props.togglePosition}
             toggleError={this.props.toggleError}
             openHiddenChat={this.props.openHiddenChat}
@@ -70,7 +70,7 @@ export default class ChatLayout extends React.Component {
         );
       }
     });
-    
+
     return chats;
   }
 

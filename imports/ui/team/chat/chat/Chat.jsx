@@ -145,7 +145,7 @@ export default class Chat extends React.Component {
         <div className={classes}>
           <p
             className="col-xs-10 chat-text truncate"
-            onClick={this.props.togglePosition.bind(null, this, this.state.position, 'medium')}
+            onClick={this.props.togglePosition.bind(null, this.props.index, 'medium')}
           >
             <b>{this.getName()}</b>
           </p>
@@ -163,7 +163,7 @@ export default class Chat extends React.Component {
           <div className="chat-header">
             <p
               className="col-xs-10 chat-text truncate"
-              onClick={this.props.togglePosition.bind(null, this, this.state.position, 'minimized')}
+              onClick={this.props.togglePosition.bind(null, this.props.index, 'minimized')}
             >
               <b>{this.getName()}</b>
             </p>
@@ -199,7 +199,7 @@ export default class Chat extends React.Component {
               <div className="tab">
                 <p
                   className="col-xs-10 chat-text truncate"
-                  onClick={this.props.togglePosition.bind(null, this, this.state.position, 'minimized')}
+                  onClick={this.props.togglePosition.bind(null, this.props.index, 'minimized')}
                 >
                   <b>{this.getName()}</b>
                 </p>
@@ -213,7 +213,7 @@ export default class Chat extends React.Component {
             </div>
             <div
               className="col-xs-2 chat-image"
-              onClick={this.props.togglePosition.bind(null, this, this.state.position, 'medium')}
+              onClick={this.props.togglePosition.bind(null, this.props.index, 'medium')}
             >
               <img
                 className="exit-maximize-image"
