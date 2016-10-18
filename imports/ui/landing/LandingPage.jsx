@@ -1,8 +1,8 @@
 import React         from 'react';
 
-import LandingLayout from './LandingLayout.jsx';
+import LandingLayout from './LandingLayout';
 
-export default class Landing extends React.Component {
+export default class LandingPage extends React.Component {
   render() {
     return (
       <LandingLayout />

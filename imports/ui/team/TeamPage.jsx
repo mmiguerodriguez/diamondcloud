@@ -1,21 +1,17 @@
 import { Meteor }          from 'meteor/meteor';
-import { createContainer } from 'meteor/react-meteor-data';
+import { ReactiveVar }     from 'meteor/reactive-var';
 
 import React               from 'react';
 import { browserHistory }  from 'react-router';
 import isMobile            from 'ismobilejs';
 
-import { Teams }           from '../../api/teams/teams.js';
-import { Boards }          from '../../api/boards/boards.js';
-import { ModuleInstances } from '../../api/module-instances/module-instances.js';
-import { Modules }         from '../../api/modules/modules.js';
-import { DirectChats }     from '../../api/direct-chats/direct-chats.js';
-import { Messages }        from '../../api/messages/messages.js';
+import { Boards }          from '../../api/boards/boards';
+import { DirectChats }     from '../../api/direct-chats/direct-chats';
 
-import TeamLayout          from './TeamLayout.jsx';
-import NotificationSystem  from '../notifications/notificationSystem/NotificationSystem.jsx';
+import NotificationSystem  from '../notifications/notificationSystem/NotificationSystem';
+import TeamLayout          from './TeamLayout';
 
-export default class Team extends React.Component {
+export default class TeamPage extends React.Component {
   constructor(props) {
     super(props);
 
@@ -28,55 +24,6 @@ export default class Team extends React.Component {
     this.removeChat = this.removeChat.bind(this);
     this.boardSubscribe = this.boardSubscribe.bind(this);
   }
-  render() {
-    if (!Team.boardId.get()) {
-      return null;
-    }
-
-    const board = Boards.findOne(Team.boardId.get());
-
-    if (this.props.loading) {
-      return null;
-    }
-
-    if (this.props.team === undefined) {
-      return null;
-    }
-
-    if (!board) {
-      return null;
-    }
-
-    return (
-      <div>
-        <TeamLayout
-          teams={ this.props.teams }
-          team={ this.props.team }
-          users={ this.props.users }
-          isAdmin={ this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas') }
-
-          boards={ this.props.boards }
-          board={ board }
-
-          modules={ this.props.modules }
-          moduleInstances={ this.props.moduleInstances }
-          moduleInstancesFrames={ this.state.moduleInstancesFrames }
-
-          directChats={ this.props.directChats }
-          chats={ this.getChats() }
-
-          addChat={ this.addChat }
-          removeChat={ this.removeChat }
-          boardSubscribe={ this.boardSubscribe } />
-        {
-          !isMobile.any ? (
-            <NotificationSystem
-              messages={ this.props.messages } />
-          ) : ( null )
-        }
-      </div>
-    );
-  }
 
   componentDidUpdate() {
     // If it already loaded and team doesn't exist then we
@@ -86,17 +33,21 @@ export default class Team extends React.Component {
       browserHistory.push('/404');
     }
   }
+
   componentWillUnmount() {
-    if (Team.boardSubscription.get()) {
-      Team.boardSubscription.get().stop();
+    if (TeamPage.boardSubscription.get()) {
+      TeamPage.boardSubscription.get().stop();
     }
   }
-
+  /**
+   * Iterates through all the chats, grabs its messages and
+   * returns them as props for TeamLayout.
+   */
   getChats() {
     let chats = this.state.chats;
 
     chats = chats.map((chat) => {
-      if (!!chat.boardId) {
+      if (chat.boardId) {
         chat.messages = Boards.findOne(chat.boardId).getMessages().fetch();
       } else {
         chat.messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
@@ -106,11 +57,19 @@ export default class Team extends React.Component {
 
     return chats;
   }
+  /**
+   * Adds a chat to the chats array, gets the messages and
+   * updates the chats state.
+   * @param {Object} obj
+   *  @param {String} boardId (optional)
+   *  @param {String} directChatId (optional)
+   */
   addChat(obj) {
-    let self = this;
+    const self = this;
+
     let { chats } = this.state;
 
-    if (!!obj.boardId) {
+    if (obj.boardId) {
       let found = false;
       chats.forEach((chat) => {
         if (chat.boardId === obj.boardId) {
@@ -123,18 +82,18 @@ export default class Team extends React.Component {
           boardId: obj.boardId,
         }, {
           onReady() {
-            let messages = Boards.findOne(obj.boardId).getMessages().fetch();
+            const messages = Boards.findOne(obj.boardId).getMessages().fetch();
 
-            chats.push({
+            chats = [{
               boardId: obj.boardId,
               messages,
               subscription: chatHandle,
-            });
+            }, ...chats];
 
             self.setState({
               chats,
             });
-          }
+          },
         });
       }
     } else {
@@ -150,31 +109,29 @@ export default class Team extends React.Component {
           directChatId: obj.directChatId,
         }, {
           onReady() {
-            let messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
+            const messages = DirectChats.findOne(obj.directChatId).getMessages().fetch();
 
-            chats.push({
+            chats = [{
               directChatId: obj.directChatId,
               messages,
               subscription: chatHandle,
-            });
+            }, ...chats];
 
             self.setState({
               chats,
             });
-          }
+          },
         });
       }
     }
   }
   /**
-   * removeChat(obj)
-   * @param {Object} obj
-   *  @param {String} boardId
-   *  @param {String} directChatId
-   *
    * Removes the chat with boardId || directChatId from
    * the chats array that is in the state and stops
    * its subscription.
+   * @param {Object} obj
+   *  @param {String} boardId (optional)
+   *  @param {String} directChatId (optional)
    */
   removeChat(obj) {
     let { chats } = this.state;
@@ -199,81 +156,107 @@ export default class Team extends React.Component {
       chats,
     });
   }
-
+  /**
+   * Subscribes to the whole data of a board.
+   * If we are already subscribed, then we
+   * unsubscribe.
+   * @param {String} boardId
+   */
   boardSubscribe(boardId) {
-    if (Team.boardId.get() === boardId) {
+    const self = this;
+
+    if (TeamPage.boardId.get() === boardId) {
       return;
     }
 
-    if (Team.boardSubscription.get()) {
-      this.state.moduleInstancesFrames.map((frame) => {
+    if (TeamPage.boardSubscription.get()) {
+      this.state.moduleInstancesFrames.forEach((frame) => {
         frame.DiamondAPI.unsubscribe();
       });
-      Team.boardSubscription.get().stop(); // Unsubscribe from actual board
+
+      TeamPage.boardSubscription.get().stop();
     }
 
-    let subscription = Meteor.subscribe('boards.board', boardId, {
+    const subscription = Meteor.subscribe('boards.board', boardId, {
       onReady() {
-        Team.boardId.set(boardId);
+        TeamPage.boardId.set(boardId);
       },
       onError(error) {
-        console.error(error);
-      }
+        self.props.toggleError({
+          type: 'show',
+          body: 'Hubo un error interno al entrar al board',
+        });
+      },
     });
 
-    Team.boardSubscription.set(subscription);
+    TeamPage.boardSubscription.set(subscription);
+  }
+
+  render() {
+    if (!TeamPage.boardId.get()) {
+      return null;
+    }
+
+    const board = Boards.findOne(TeamPage.boardId.get());
+
+    if (this.props.loading) {
+      return null;
+    }
+
+    if (this.props.team === undefined) {
+      return null;
+    }
+
+    if (!board) {
+      return null;
+    }
+
+    return (
+      <div>
+        <TeamLayout
+          teams={this.props.teams}
+          team={this.props.team}
+          users={this.props.users}
+          isAdmin={this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')}
+
+          boards={this.props.boards}
+          board={board}
+
+          modules={this.props.modules}
+          moduleInstances={this.props.moduleInstances}
+          moduleInstancesFrames={this.state.moduleInstancesFrames}
+
+          directChats={this.props.directChats}
+          chats={this.getChats()}
+
+          addChat={this.addChat}
+          removeChat={this.removeChat}
+          boardSubscribe={this.boardSubscribe}
+          toggleError={this.props.toggleError}
+        />
+        {
+          !isMobile.any ? (
+            <NotificationSystem
+              messages={this.props.messages}
+            />
+          ) : (null)
+        }
+      </div>
+    );
   }
 }
 
-Team.boardId = new ReactiveVar();
-Team.boardSubscription = new ReactiveVar();
-
-export default TeamPageContainer = createContainer(({ params }) => {
-  if (!Meteor.user()) {
-    browserHistory.push('/');
-  }
-
-  const { teamUrl } = params;
-
-  let messagesHandle;
-  let changesCallback = () => {
-    if (messagesHandle) {
-      messagesHandle.stop();
-    }
-
-    messagesHandle = Meteor.subscribe('messages.last', teamUrl);
-  };
-
-  const teamsHandle = Meteor.subscribe('teams.dashboard');
-  const teamHandle = Meteor.subscribe('teams.team', teamUrl, () => {
-    let firstBoard = Boards.findOne();
-    let boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
-      Team.boardId.set(Boards.findOne()._id);
-    });
-    Team.boardSubscription.set(boardHandle);
-    messagesHandle = Meteor.subscribe('messages.last', teamUrl);
-  });
-  const loading = !teamsHandle.ready() || !teamHandle.ready();
-
-  // Get the messages of newly created chats
-  DirectChats.find().observeChanges({
-    added: changesCallback,
-    removed: changesCallback,
-  });
-  Boards.find().observeChanges({
-    added: changesCallback,
-    removed: changesCallback,
-  });
-
-  return {
-    loading,
-    team: Teams.findOne({ url: teamUrl }),
-    teams: Teams.find({}, { sort: { name: - 1 } }).fetch(),
-    users: Meteor.users.find({}).fetch(),
-    boards: Boards.find({}, { sort: { name: -1 } }).fetch(),
-    directChats: DirectChats.find().fetch(),
-    messages: Messages.find({}).fetch(),
-    moduleInstances: ModuleInstances.find({}).fetch(),
-    modules: Modules.find({}, { sort: { name: -1 } }).fetch(),
-  };
-}, Team);
+TeamPage.boardId = new ReactiveVar();
+TeamPage.boardSubscription = new ReactiveVar();
+TeamPage.propTypes = {
+  loading: React.PropTypes.bool.isRequired,
+  team: React.PropTypes.object,
+  teams: React.PropTypes.array.isRequired,
+  users: React.PropTypes.array.isRequired,
+  boards: React.PropTypes.array.isRequired,
+  directChats: React.PropTypes.array.isRequired,
+  messages: React.PropTypes.array.isRequired,
+  moduleInstances: React.PropTypes.array.isRequired,
+  modules: React.PropTypes.array.isRequired,
+  toggleError: React.PropTypes.func.isRequired,
+};

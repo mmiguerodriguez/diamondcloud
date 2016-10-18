@@ -23,24 +23,24 @@ const {
  */
 const ERROR_DELAY = 5000;
 
-/** 
+/**
  * Checks if a board is a coordination board
  * by checking its type.
- * 
+ *
  * @param {Object} board
  * @returns {Boolean} isCoordination
  */
 const isCoordination = (board) => {
   if (
-    board.type === 'coordinadores' || 
-    board.type === 'directores creativos' || 
-    board.type === 'directores de cuentas' || 
+    board.type === 'coordinadores' ||
+    board.type === 'directores creativos' ||
+    board.type === 'directores de cuentas' ||
     board.type === 'administradores'
   ) {
     return true;
-  } else {
-    return false;
   }
+
+  return false;
 };
 
 /**
@@ -91,12 +91,12 @@ class TaskManagerPage extends React.Component {
   }
 
   componentDidMount() {
-    let self = this;
-    let currentBoard, currentUser, coordination;
+    const self = this;
 
-    currentBoard = DiamondAPI.getCurrentBoard();
-    currentUser = DiamondAPI.getCurrentUser();
-    
+    const currentBoard = DiamondAPI.getCurrentBoard();
+    const currentUser = DiamondAPI.getCurrentUser();
+    let coordination;
+
     if (isCoordination(currentBoard)) {
       coordination = true;
     } else {
@@ -118,7 +118,7 @@ class TaskManagerPage extends React.Component {
        * If not, fetch the ones that are from the
        * currentBoard and that are not finished.
        */
-      let filter = coordination ? {
+      const filter = coordination ? {
         archived: false,
       } : {
         boardId: currentBoard._id,
@@ -137,17 +137,17 @@ class TaskManagerPage extends React.Component {
           if (error) {
             console.error(error);
           } else {
-            console.log('Subscribe callback', result ? result : []);
+            console.log('Subscribe callback', result || []);
             self.setState({
-              tasks: result ? result : [],
+              tasks: result || [],
               loading: false,
             });
           }
-        }
+        },
       });
 
       self.setState({
-        boards: DiamondAPI.getBoards(),
+        boards: DiamondAPI.getBoards().fetch(),
         users: DiamondAPI.getUsers(),
       });
     });
@@ -156,8 +156,8 @@ class TaskManagerPage extends React.Component {
   render() {
     if (this.state.loading || this.state.loading === undefined) {
       return (
-        <div className='loading'>
-          <div className='loader'></div>
+        <div className="loading">
+          <div className="loader" />
         </div>
       );
     }
@@ -189,7 +189,7 @@ class TaskManagerLayout extends React.Component {
     this.setState({
       error: {
         body,
-        delay: delay ? delay : ERROR_DELAY,
+        delay: delay || ERROR_DELAY,
         showing: true,
       },
     });
@@ -228,7 +228,7 @@ class TaskManagerLayout extends React.Component {
         body: '',
         delay: ERROR_DELAY,
         showing: false,
-      }
+      },
     };
 
     this.showError = this.showError.bind(this);
@@ -239,13 +239,13 @@ class TaskManagerLayout extends React.Component {
 
   render() {
     return (
-      <div className='col-xs-12 task-manager'>
+      <div className="col-xs-12 task-manager">
         <div
-          role='button'
-          className='col-xs-12 text-center board-list-title'
+          role="button"
+          className="col-xs-12 text-center board-list-title"
           onClick={() => this.setLocation('tasks/show')}>
-            <b>Lista de tareas</b>
-            <hr className='hr-fix' />
+          <b>Lista de tareas</b>
+          <hr className="hr-fix" />
         </div>
 
         {
@@ -282,10 +282,10 @@ class CreateTask extends React.Component {
    * correct.
    */
   createTask() {
-    let self = this;
+    const self = this;
 
-    let position = self.getBiggestTaskPosition();
-    let dueDate = Number(self.state.dueDate);
+    const position = self.getBiggestTaskPosition();
+    const dueDate = Number(self.state.dueDate);
 
     if (self.state.title.length > 0 && self.state.title !== '') {
       if (self.state.boardId !== '') {
@@ -311,7 +311,7 @@ class CreateTask extends React.Component {
                     console.log('Inserted task correctly');
                     browserHistory.push('/tasks/show');
                   }
-                }
+                },
               });
             } else {
               console.error('There was an error inserting task position', position);
@@ -361,9 +361,9 @@ class CreateTask extends React.Component {
 
     if (positions.length > 0) {
       return Math.max(...positions) + 1;
-    } else {
-      return 0;
     }
+
+    return 0;
   }
   /**
    * Renders the <option> elements of the boards, except
@@ -380,6 +380,8 @@ class CreateTask extends React.Component {
           </option>
         );
       }
+
+      return (null);
     });
   }
 
@@ -401,7 +403,7 @@ class CreateTask extends React.Component {
     this.state = {
       title: this.props.taskTitle,
       boardId: this.props.selectedBoardId || this.props.boards[0]._id,
-      dueDate: '',
+      dueDate: new Date().getTime() + (1000 * 60 * 60 * 24),
     };
 
     this.createTask = this.createTask.bind(this);
@@ -422,41 +424,42 @@ class CreateTask extends React.Component {
 
   render() {
     return (
-      <div className='row create-task-form'>
+      <div className="row create-task-form">
         <div
-          className='go-back go-back-task'
+          className="go-back go-back-task"
           onClick={() => this.props.setLocation('tasks/show')}>
         </div>
-        <div className='col-xs-12'>
-          <h4 className='visible-xs-inline-block'>Crear una tarea</h4>
+        <div className="col-xs-12">
+          <h4 className="visible-xs-inline-block">Crear una tarea</h4>
         </div>
-        <div className='col-xs-12 create-task-inputs'>
-          <div className='form-group'>
-            <label className='control-label' htmlFor='create-task-title'>Título</label>
+        <div className="col-xs-12 create-task-inputs">
+          <div className="form-group">
+            <label className="control-label" htmlFor="create-task-title">Título</label>
             <input
-              id='create-task-title'
-              className='form-control'
+              id="create-task-title"
+              className="form-control"
               value={this.state.title}
               onChange={this.props.handleChange.bind(null, 'taskTitle', undefined)}
-              type='text'
-              placeholder='Ingresá el título'
+              type="text"
+              placeholder="Ingresá el título"
             />
           </div>
-          <div className='form-group'>
-            <label className='control-label' htmlFor='create-task-duedate'>Fecha de vencimiento</label>
+          <div className="form-group">
+            <label className="control-label" htmlFor="create-task-duedate">Fecha de vencimiento</label>
             <input
-              id='create-task-duedate'
-              className='form-control'
-              type='datetime-local'
-              placeholder='Ingresá la fecha de vencimiento'
+              id="create-task-duedate"
+              className="form-control"
+              type="datetime-local"
+              placeholder="Ingresá la fecha de vencimiento"
               onChange={(e) => this.handleChange('dueDate', e)}
+              defaultValue={$.format.date(this.state.dueDate, 'yyyy-MM-ddThh:mm')}
             />
           </div>
-          <div className='form-group'>
-            <label className='control-label' htmlFor='create-task-board'>Board</label>
+          <div className="form-group">
+            <label className="control-label" htmlFor="create-task-board">Board</label>
             <select
-              id='create-task-board'
-              className='form-control'
+              id="create-task-board"
+              className="form-control"
               value={this.state.boardId}
               onChange={(e) => this.handleChange('boardId', e)}>
               {this.renderOptions()}
@@ -464,8 +467,11 @@ class CreateTask extends React.Component {
           </div>
           <button
             onClick={this.createTask}
-            type='submit'
-            className='btn btn-primary'>Crear tarea</button>
+            type="submit"
+            className="btn btn-primary"
+          >
+            Crear tarea
+          </button>
         </div>
       </div>
     );
@@ -1208,7 +1214,7 @@ class Task extends React.Component {
           {
             !this.state.editing ? (
               <div className='col-xs-12'>
-                <p className='col-xs-12 expiration'>Vencimiento: {new Date(this.props.task.dueDate).toLocaleDateString()}</p>
+                <p className='col-xs-12 expiration'>Vencimiento: {$.format.date(new Date(this.props.task.dueDate), 'MM/dd/yyyy')}</p>
               </div>
             ) : (null)
           }
@@ -1403,10 +1409,10 @@ class ErrorMessage extends React.Component {
  */
 ReactDOM.render(
   <Router history={browserHistory}>
-    <Route path='/' component={TaskManagerPage}>
-      <Route path='/tasks/show' component={BoardsList} />
-      <Route path='/tasks/create' component={CreateTask} />
-      <Route path='/tasks/:taskId' component={TaskInformation} />
+    <Route path="/" component={TaskManagerPage}>
+      <Route path="/tasks/show" component={BoardsList} />
+      <Route path="/tasks/create" component={CreateTask} />
+      <Route path="/tasks/:taskId" component={TaskInformation} />
     </Route>
   </Router>,
   document.getElementById('render-target')

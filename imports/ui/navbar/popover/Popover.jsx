@@ -14,11 +14,15 @@ export default class Popover extends React.Component {
       <div>
         <div className='row popover-data'>
           <div className='col-xs-3'>
-            <img alt='User' src={ this.props.user.profile.picture } className='popover-user-photo' />
+            <img alt='User' src={ `${this.props.user.profile.picture}?sz=60` } className='popover-user-photo' />
           </div>
           <div className='col-xs-9'>
             <b className='user-info'>{ this.props.user.profile.name }</b>
             <p className='user-mail text-muted truncate'>{ this.props.user.email() }</p>
+            <p className='user-mail text-muted truncate'>
+              { 
+                /* this.props.user.getHierarchy(teamId) Aca va a aparecer la jerarquia del usuario. Saludos, Ryan del pasado. */ 
+              }</p>
           </div>
         </div>
         <hr />

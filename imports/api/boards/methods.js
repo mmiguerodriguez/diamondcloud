@@ -92,18 +92,18 @@ export const createBoard = new ValidatedMethod({
       let moduleInstances;
       if (board.type === 'creativos') {
         moduleInstances = [
-          { moduleId: 'task-manager', x: 50, y: 20, width: 300, height: 400, archived: false, minimized: false },
-          { moduleId: 'drive', x: 50, y: 340, width: 482, height: 400, archived: false, minimized: false },
-          { moduleId: 'videocall', x: 50, y: 842, width: 270, height: 290, archived: false, minimized: false },
+          { moduleId: 'task-manager', x: 50, y: 20, width: 312, height: 400, archived: false, minimized: false },
+          { moduleId: 'drive', x: 50, y: 352, width: 400, height: 400, archived: false, minimized: false },
+          { moduleId: 'videocall', x: 50, y: 772, width: 270, height: 290, archived: false, minimized: false },
         ];
       } else if (board.type === 'coordinadores') {
         moduleInstances = [
-          { moduleId: 'task-manager', x: 50, y: 20, width: 300, height: 400, archived: false, minimized: false },
+          { moduleId: 'task-manager', x: 50, y: 20, width: 312, height: 400, archived: false, minimized: false },
         ];
       } else if (board.type === 'directores creativos' || board.type === 'directores de cuentas' || board.type === 'administradores' ||  board.type === 'medios') {
         moduleInstances = [
-          { moduleId: 'task-manager', x: 50, y: 20, width: 300, height: 400, archived: false, minimized: false },
-          { moduleId: 'drive', x: 50, y: 340, width: 482, height: 400, archived: false, minimized: false },
+          { moduleId: 'task-manager', x: 50, y: 20, width: 312, height: 400, archived: false, minimized: false },
+          { moduleId: 'drive', x: 50, y: 352, width: 400, height: 400, archived: false, minimized: false },
         ];
       }
 

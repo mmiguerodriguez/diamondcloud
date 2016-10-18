@@ -1,19 +1,48 @@
 import React           from 'react';
 import Select          from 'react-select';
+import classNames      from 'classnames';
 
-import Modal           from '../Modal.jsx';
+import Modal           from '../Modal';
 import {
   InputError,
   TextInput,
   SelectInput
-}                      from '../../validation/inputs.jsx';
+}                      from '../../validation/inputs';
 
-import { BOARD_TYPES } from '../board-types.js';
+import { BOARD_TYPES } from '../board-types';
 
 export default class ConfigBoardModal extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      name: '',
+      type: '',
+      isPrivate: '',
+      users: '',
+    };
+
+    this.close = this.close.bind(this);
+    this.editBoard = this.editBoard.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
+  }
+
+  componentWillMount() {
+    this.startup();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.startup(nextProps);
+  }
+
+  close() {
+    $('#configBoardModal').modal('hide');
+  }
+
   editBoard() {
-    let boardId = this.state.board._id;
-    let board = {
+    const boardId = this.state.board._id;
+    const board = {
       name: this.state.name,
       type: this.state.type,
       isPrivate: this.state.isPrivate,
@@ -22,7 +51,7 @@ export default class ConfigBoardModal extends React.Component {
 
     if (board.isPrivate) {
       if (board.users !== '') {
-        let arr = [];
+        const arr = [];
 
         board.users.split(',').map((email) => {
           arr.push({ email });
@@ -38,18 +67,50 @@ export default class ConfigBoardModal extends React.Component {
       board.users = [];
     }
 
-    Meteor.call('Boards.methods.editBoard', { boardId, ...board }, (error, result) => {
-      if (error) {
-        console.error(error);
+    if (board.name !== '') {
+      if (board.name.length >= 3) {
+        if (board.type !== '') {
+          if (board.type.length >= 3) {
+            Meteor.call('Boards.methods.editBoard', { boardId, ...board }, (error, result) => {
+              if (error) {
+                this.props.toggleError({
+                  type: 'show',
+                  body: 'Hubo un error interno al editar el board',
+                });
+              } else {
+                this.close();
+              }
+            });
+          } else {
+            this.props.toggleError({
+              type: 'show',
+              body: 'El tipo del board debe tener 3 o más caracteres',
+            });
+          }
+        } else {
+          this.props.toggleError({
+            type: 'show',
+            body: 'El tipo del board no puede estar vacío',
+          });
+        }
       } else {
-        console.log('Success editing board data');
+        this.props.toggleError({
+          type: 'show',
+          body: 'El nombre del board debe tener 3 o más caracteres',
+        });
       }
-    });
+    } else {
+      this.props.toggleError({
+        type: 'show',
+        body: 'El nombre del board no puede estar vacío',
+      });
+    }
   }
 
   startup(nextProps) {
-    let board, users = [];
-    let props = nextProps || this.props;
+    const props = nextProps || this.props;
+    let board;
+    let users = [];
 
     /**
      * Get the real board
@@ -71,8 +132,6 @@ export default class ConfigBoardModal extends React.Component {
 
     users = users.join(',');
 
-    console.log(board);
-
     this.setState({
       board,
       name: board.name,
@@ -82,11 +141,33 @@ export default class ConfigBoardModal extends React.Component {
     });
   }
 
+  handleChange(index, event) {
+    const val = event.target.value;
+
+    this.setState({
+      [index]: val,
+    });
+  }
+
+  handleRadio(isPrivate, event) {
+    if (this.state.isPrivate !== isPrivate) {
+      this.setState({
+        isPrivate,
+      });
+    }
+  }
+
+  handleSelectChange(value) {
+    this.setState({
+      users: value,
+    });
+  }
+
   renderTeamUsers() {
-    let arr = [];
+    const arr = [];
 
     this.props.team.users.map((_user) => {
-      let user = Meteor.users.findByEmail(_user.email, {});
+      const user = Meteor.users.findByEmail(_user.email, {});
       if (user) {
         if (user._id !== Meteor.userId()) {
           arr.push({
@@ -105,146 +186,122 @@ export default class ConfigBoardModal extends React.Component {
       return (
         <option
           key={index}
-          value={type.value}>
+          value={type.value}
+        >
           {type.name}
         </option>
       );
     });
   }
 
-  handleChange(index, event) {
-    let val = event.target.value;
-    if (index === 'isPrivate')  {
-      val = val === 'true' ? true : false;
-    }
-
-    this.setState({
-      [index]: val,
-    });
-  }
-
-  handleSelectChange(value) {
-    this.setState({
-      users: value,
-    });
-  }
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      name: '',
-      type: '',
-      isPrivate: '',
-      users: '',
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSelectChange = this.handleSelectChange.bind(this);
-    this.editBoard = this.editBoard.bind(this);
-  }
-
-  componentWillMount() {
-    this.startup();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.startup(nextProps);
-  }
-
   render() {
+    const publicBoard = classNames({
+      active: !this.state.isPrivate,
+    }, 'radio');
+    const privateBoard = classNames({
+      active: this.state.isPrivate,
+    }, 'radio');
+
     return (
       <Modal
         id={'configBoardModal'}
         header={
           <div>
-            <button type='button' className='close' data-dismiss='modal' aria-label='Close'>
-              <img src='/img/close-icon.svg' width='18px' />
+            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+              <img src="/img/close-icon.svg" width="18px" />
             </button>
-            <h4 className='modal-title'>Editar un board</h4>
+            <h4 className="modal-title">Editar un board</h4>
           </div>
         }
         body={
-          <div className='modal-body-fixed container-fluid'>
-            <p className='explanation-text'>Modificá el nombre del board y decidí quienes lo van a poder ver.</p>
-            <div className='form-group name-input'>
+          <div className="modal-body-fixed container-fluid">
+            <p className="explanation-text">
+              Modificá el nombre del board y decidí quienes lo van a poder ver.
+            </p>
+            <div className="form-group name-input">
               <label
-                htmlFor='boardName'
-                className='control-label'>
+                htmlFor="boardName"
+                className="control-label"
+              >
                 Nombre
               </label>
-              <div className='col-xs-12'>
+              <div className="col-xs-12">
                 <TextInput
-                  id='boardName'
-                  class='form-control'
-                  placeholder='Nombre del board'
-                  required={true}
+                  id="boardName"
+                  class="form-control"
+                  placeholder="Nombre del board"
                   minCharacters={3}
                   value={this.state.name}
-                  onChange={(e) => this.handleChange('name', e)}
-                  errorMessage='El nombre no es válido'
-                  emptyMessage='Es obligatorio poner un nombre'
-                  minCharactersMessage='El nombre debe tener 3 o más caracteres'
+                  onChange={e => this.handleChange('name', e)}
+                  errorMessage="El nombre no es válido"
+                  emptyMessage="Es obligatorio poner un nombre"
+                  minCharactersMessage="El nombre debe tener 3 o más caracteres"
+                  required
                 />
               </div>
             </div>
-            <div className='form-group type-input'>
+            <div className="form-group type-input">
               <label
-                htmlFor='boardType'
-                className='control-label'>
+                htmlFor="boardType"
+                className="control-label"
+              >
                 Tipo
               </label>
-              <div className='col-xs-12 type'>
+              <div className="col-xs-12 type">
                 <select
-                  className='form-control'
+                  className="form-control"
                   value={this.state.type}
-                  onChange={(e) => this.handleChange('type', e)}>
+                  onChange={e => this.handleChange('type', e)}
+                >
                   {this.renderBoardTypes()}
                 </select>
               </div>
             </div>
-            <div className='form-group privacy-input'>
+            <div className="form-group privacy-input">
               <label
-                htmlFor='privateBoard'
-                className='control-label'>
+                htmlFor="privateBoard"
+                className="control-label"
+              >
                 Privacidad
               </label>
-              <div className='col-xs-12 privacy'>
-                <label className='radio-inline'>
-                  <input
-                    name='board-private-radio'
-                    type='radio'
-                    value={false}
-                    onChange={(e) => this.handleChange('isPrivate', e)}
-                    checked={!this.state.isPrivate ? true : false}
-                  />
-                  Publico
-                </label>
-                <label className='radio-inline'>
-                  <input
-                    name='board-private-radio'
-                    type='radio'
-                    value={true}
-                    onChange={(e) => this.handleChange('isPrivate', e)}
-                    checked={this.state.isPrivate ? true : false}
-                  />
-                  Privado
-                </label>
+              <div className="radio-container">
+                <div
+                  className="option-container"
+                  role="button"
+                  onClick={e => this.handleRadio(false, e)}
+                >
+                  <div className={publicBoard}>
+                    <div className="check"></div>
+                  </div>
+                  <p className="text">Publico</p>
+                </div>
+                <div
+                  className="option-container"
+                  role="button"
+                  onClick={e => this.handleRadio(true, e)}
+                >
+                  <div className={privateBoard}>
+                    <div className="check" />
+                  </div>
+                  <p className="text">Privado</p>
+                </div>
               </div>
             </div>
             {
               this.state.isPrivate ? (
-                <div className='share-board'>
+                <div className="share-board">
                   <label
-                    htmlFor='form-field-name'
-                    className='control-label'>
+                    htmlFor="form-field-name"
+                    className="control-label"
+                  >
                     Compartir con otros
                   </label>
                   <Select
-                    name='form-field-name'
-                    className='col-xs-12'
-                    placeholder='Ingrese nombre o mail...'
-                    noResultsText='No se encontraron usuarios en el equipo'
+                    name="form-field-name"
+                    className="col-xs-12"
+                    placeholder="Ingrese nombre o mail"
+                    noResultsText="No se encontraron usuarios en el equipo"
+                    backspaceToRemoveMessage="Borrá para eliminar a '{label}'"
                     multi={true}
                     simpleValue={true}
                     disabled={false}
@@ -258,18 +315,19 @@ export default class ConfigBoardModal extends React.Component {
           </div>
         }
         footer={
-          <div className='row'>
+          <div className="row">
             <button
-              type='button'
-              className='btn btn-cancel btn-hover'
-              data-dismiss='modal'>
+              type="button"
+              className="btn btn-cancel btn-hover"
+              data-dismiss="modal"
+            >
               Cancelar
             </button>
             <button
-              type='button'
-              className='btn btn-accept btn-hover'
-              data-dismiss='modal'
-              onClick={this.editBoard}>
+              type="button"
+              className="btn btn-accept btn-hover"
+              onClick={this.editBoard}
+            >
               Guardar
             </button>
           </div>
@@ -283,4 +341,5 @@ ConfigBoardModal.propTypes = {
   team: React.PropTypes.object,
   boards: React.PropTypes.array.isRequired,
   boardId: React.PropTypes.string.isRequired,
+  toggleError: React.PropTypes.func.isRequired,
 };

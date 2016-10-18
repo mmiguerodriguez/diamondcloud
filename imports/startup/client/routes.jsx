@@ -1,32 +1,32 @@
-import React     from 'react';
-import { 
-  Router, 
-  Route, 
-  IndexRoute, 
-  Redirect, 
-  browserHistory
-}                from 'react-router';
+import React             from 'react';
+import {
+  Router,
+  Route,
+  IndexRoute,
+  Redirect,
+  browserHistory,
+}                        from 'react-router';
 
 // Route components
-import App       from '../../ui/app/AppContainer.jsx';
-import Landing   from '../../ui/landing/LandingPage.jsx';
-import Team      from '../../ui/team/TeamPage.jsx';
-import NotFound  from '../../ui/not-found/NotFoundPage.jsx';
+import AppPageContainer  from '../../ui/app/AppPageContainer';
+import TeamPageContainer from '../../ui/team/TeamPageContainer';
+import LandingPage       from '../../ui/landing/LandingPage';
+import NotFound          from '../../ui/not-found/NotFoundPage';
 
 // Override accounts templates
-import '../../ui/accounts/accounts-templates.js';
+import '../../ui/accounts/accounts-templates';
 
 export const renderRoutes = () => (
   <Router history={browserHistory}>
     <Redirect from="/" to="carlosydario" />
-    <Route path="/carlosydario" component={App}>
-      <IndexRoute component={Landing} />
-      <Route path="/team/:teamUrl" component={Team} />
+    <Route path="/carlosydario" component={AppPageContainer}>
+      <IndexRoute component={LandingPage} />
+      <Route path="/team/:teamUrl" component={TeamPageContainer} />
       <Route path="*" component={NotFound} />
     </Route>
-    <Route path="/diamond" component={App}>
-      <IndexRoute component={Landing} />
-      <Route path="/team/:teamUrl" component={Team} />
+    <Route path="/diamond" component={AppPageContainer}>
+      <IndexRoute component={LandingPage} />
+      <Route path="/team/:teamUrl" component={TeamPageContainer} />
       <Route path="*" component={NotFound} />
     </Route>
     <Route path="*" component={NotFound} />

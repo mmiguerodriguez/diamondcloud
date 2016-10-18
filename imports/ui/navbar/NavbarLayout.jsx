@@ -87,7 +87,7 @@ export default class NavbarLayout extends React.Component {
               this.props.user ? (
                 <div>
                   <a className='user-collapsible-photo col-xs-1'>
-                    <Profile picture={this.props.user.profile.picture} />
+                    <Profile picture={`${this.props.user.profile.picture}?sz=60`} />
                   </a>
                   <div className="col-xs-7 user-data">
                     <b className='user-info'>{this.props.user.profile.name}</b>
@@ -125,7 +125,7 @@ export default class NavbarLayout extends React.Component {
                   data-toggle='popover'
                   data-placement='bottom'
                   data-content=''>
-                  <Profile picture={this.props.user.profile.picture} />
+                  <Profile picture={`${this.props.user.profile.picture}?sz=60`} />
                 </a>
               ) : (null)
             }
