@@ -163,8 +163,15 @@ Boards.getBoards = (boardsIds, userId, fields) => {
 };
 
 Boards.isValid = (boardId, userId) => {
-  let user = Meteor.users.findOne(userId);
-  let board = Boards.findOne({
+  const team = Boards.findOne(boardId).team();
+  const user = Meteor.users.findOne(userId);
+
+  const isDirector =
+    team.userIsCertainHierarchy(user.email(), 'director creativo') ||
+    team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
+    team.userIsCertainHierarchy(user.email(), 'coordinadores');
+
+  const board = Boards.findOne({
     _id: boardId,
     $or: [
       { isPrivate: false },
@@ -172,17 +179,27 @@ Boards.isValid = (boardId, userId) => {
         users: {
           $elemMatch: {
             email: user.email(),
-          }
-        }
-      }
+          },
+        },
+      },
+      {
+        $and: [
+          {
+            visibleForDirectors: true,
+          },
+          {
+            _id: isDirector ? boardId : undefined,
+          },
+        ],
+      },
     ],
   });
 
   if (!board) {
     return false;
-  } else {
-    return board.team().hasUser({ _id: userId });
   }
+
+  return board.team().hasUser({ _id: userId });
 };
 
 Boards.addModuleInstance = (boardId, moduleInstanceId) => {
@@ -238,22 +255,29 @@ Boards.addNotification = (boardId, userId) => {
   Boards.update(boardId, {
     $set: {
       users,
-    }
+    },
   });
 };
 Boards.resetNotifications = (boardId, userId) => {
-  let user = Meteor.users.findOne(userId);
-	let users = Boards.findOne(boardId).users;
+  const user = Meteor.users.findOne(userId);
+  let users = Boards.findOne(boardId).users;
 
-	users.forEach((_user, index, array) => {
-		if (_user.email !== user.email()) {
-			array[index].notifications = 0;
-		}
-	});
+  users = users.map((e) => {
+    if (e.email !== user.email()) {
+      return {
+        ...e,
+        notifications: 0,
+      };
+    }
 
-	Boards.update(boardId, {
-		$set: {
-			users,
-		}
-	});
+    return undefined;
+  }).filter(e => e !== undefined);
+
+  Boards.update(boardId, {
+    $set: {
+      users,
+    },
+  });
 };
+
+/* global Meteor */
