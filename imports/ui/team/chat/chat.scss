@@ -189,3 +189,52 @@
     bottom: 0px;
   }
 }
+
+.users-hidden {
+  position: fixed;
+  bottom: 15px;
+  left: 80px;
+  width: 55.5px;
+  height: 55.5px;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: #f44336;
+  background-image: url(modules/drive/img/menu-button.svg);
+  background-position: center;
+  background-size: 21px;
+  background-repeat: no-repeat;
+  box-shadow: 0px 0px 2px 1px rgba(0,0,0, 0.3);
+  transition: all 0.3s ease;
+  &:hover {
+    box-shadow: 0px 0px 10px 1px rgba(0,0,0, 0.3);
+  }
+  .users {
+    height: auto;
+    width: 55.5px;
+    position: absolute;
+    bottom: 55.5px;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    .user {
+      width: 37px;
+      height: 37px;
+      margin: 5px 0 15px 10px;
+      border-radius: 50%;
+      box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 18px;
+      opacity: 0;
+      transition: all 0.3s ease;
+      &:hover {
+        box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
+      }
+    }
+  }
+  &:hover .users .user {
+    opacity: 1;
+  }
+  &:hover .users {
+    visibility: visible;
+  }
+}

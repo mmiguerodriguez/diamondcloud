@@ -278,6 +278,17 @@ export default class Chat extends React.Component {
           </div>
         </div>
       );
+    
+    } else if (this.state.position === 'hidden') {
+      return (
+        <img 
+          className="user"
+          title={this.getName()}
+          src={this.props.chat.directChatId ? (
+            `${DirectChats.findOne(this.props.chat.directChatId).getUser().profile.picture}?sz=60`
+          ) : 'http://image.flaticon.com/icons/svg/60/60541.svg'}
+        />
+      );
     }
 
     return (null);

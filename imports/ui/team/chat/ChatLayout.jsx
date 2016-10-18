@@ -18,40 +18,80 @@ export default class ChatLayout extends React.Component {
     let chatsWidth = 0;
 
     return this.props.chats.map((chat, index) => {
-      let isHidden = false;
       chatsWidth += CHAT_WIDTH;
 
       if (chatsWidth > width) {
         chatsWidth -= CHAT_WIDTH;
-        isHidden = true;
+        
+        return (null);
+      } else {
+        return (
+          <Chat
+            key={chat.directChatId || chat.boardId}
+            chat={chat}
+            index={index}
+            users={this.props.team.users}
+            boards={this.props.boards}
+            directChats={this.props.directChats}
+            position={
+              isMobile.any ? 'mobile' : 'medium'
+            }
+            togglePosition={this.props.togglePosition}
+            toggleError={this.props.toggleError}
+            removeChat={this.props.removeChat}
+            hasMaximizedChats={this.props.hasMaximizedChats}
+          />
+        );
       }
+    });
+  }
+  
+  renderHiddenChats() {
+    const width = $('.board-container').width();
+    let chatsWidth = 0;
 
-      return (
-        <Chat
-          key={chat.directChatId || chat.boardId}
-          chat={chat}
-          index={index}
-          users={this.props.team.users}
-          boards={this.props.boards}
-          directChats={this.props.directChats}
-          position={
-            isMobile.any ? 'mobile' : (
-              isHidden ? 'hidden' : 'medium'
-            )
-          }
-          togglePosition={this.props.togglePosition}
-          toggleError={this.props.toggleError}
-          removeChat={this.props.removeChat}
-          hasMaximizedChats={this.props.hasMaximizedChats}
-        />
-      );
+    return this.props.chats.map((chat, index) => {
+      chatsWidth += CHAT_WIDTH;
+
+      if (chatsWidth > width) {
+        chatsWidth -= CHAT_WIDTH;
+        return (
+          <Chat
+            key={chat.directChatId || chat.boardId}
+            chat={chat}
+            index={index}
+            users={this.props.team.users}
+            boards={this.props.boards}
+            directChats={this.props.directChats}
+            position={
+              isMobile.any ? 'mobile' : 'hidden'
+            }
+            togglePosition={this.props.togglePosition}
+            toggleError={this.props.toggleError}
+            removeChat={this.props.removeChat}
+            hasMaximizedChats={this.props.hasMaximizedChats}
+          />
+        );
+      }
+      
+      return (null);
     });
   }
 
   render() {
+    const width = $('.board-container').width();
     return (
       <div className={this.props.class}>
         {this.renderChats()}
+        {
+          this.renderHiddenChats().length > 0 && this.renderChats().length > Math.floor(width / CHAT_WIDTH) ? (
+            <div className="users-hidden">
+              <div className="users">
+                {this.renderHiddenChats()}
+              </div>
+            </div>
+          ) : (null)
+        }
       </div>
     );
   }
