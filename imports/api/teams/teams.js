@@ -9,14 +9,23 @@ Teams.helpers({
    * @param {String} hierarchy
    * @returns {Boolean} isCertainHierarchy
    */
+  userHierarchy(email) {
+    for (const user of this.users) {
+      if (user.email === email) {
+        return user.hierarchy;
+      }
+    }
+
+    return 'ghost';
+  },
   userIsCertainHierarchy(email, hierarchy) {
     for (let i = 0; i < this.users.length; i++) {
       if (email === this.users[i].email) {
         if (hierarchy === this.users[i].hierarchy) {
           return true;
-        } else {
-          return false;
         }
+
+        return false;
       }
     }
     return false;

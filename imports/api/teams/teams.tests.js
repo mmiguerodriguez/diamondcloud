@@ -41,6 +41,12 @@ if (Meteor.isServer) {
         //Meteor.users.findByEmail.restore();
       });
 
+      it("should return a user's hierarchy", (done) => {
+        let result = Teams.findOne(team._id).userHierarchy(user.emails[0].address);
+        chai.assert.equal('creativo', result);
+        done();
+      });
+
       it('should return if the user has a given hierarchy', function() {
         let result = Teams.findOne(team._id).userIsCertainHierarchy(user.emails[0].address, 'creativo');
         chai.assert.isTrue(result);
