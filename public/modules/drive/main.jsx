@@ -409,6 +409,7 @@ class FileManagerLayout extends React.Component {
                           if (error) {
                             console.error(error); // TODO: handle error
                           }
+                          console.log(result);
                           $('#upload-files').modal('hide');
                         },
                       });
@@ -532,7 +533,71 @@ FileManagerLayout.propTypes = {
 };
 
 class FileManagerPage extends React.Component {
-
+  /**
+   * Inserts a file in module storage, and in rootFiles if necessary
+   * @param {String} id
+   * @param {String} name
+   * @param {String} fileType
+   * @param {String} parentFolderId (optional)
+   * @param {String} isImported (optional)
+   * @return {Promise} promise
+   */
+  static insertFileInStorage({ id, name, fileType, parentFolderId = null, isImported = false }) {
+    function insertDocumentInStorage() {
+      return new Promise((fulfill, reject) => {
+        DiamondAPI.insert({
+          // Depending on the type of file, insert it in folders or documents
+          collection: (fileType === folderMimeType) ? 'folders' : 'documents',
+          object: {
+            _id: id,
+            parentFolderId,
+            name,
+            fileType,
+            isImported,
+          },
+          isGlobal: true,
+          callback(error, result) {
+            if (error) {
+              reject(error);
+            } else {
+              fulfill(result);
+            }
+          },
+        });
+      });
+    }
+    function insertDocumentInRootFiles() {
+      return new Promise((fulfill, reject) => {
+        DiamondAPI.insert({
+          collection: 'rootFiles',
+          object: {
+            documentId: id, // resp is the response to the create
+                                        // request, not to the permission one
+            boardId: DiamondAPI.getCurrentBoard()._id,
+          },
+          isGlobal: true,
+          callback(error, result) {
+            if (error) {
+              reject(error);
+            } else {
+              fulfill(result);
+            }
+          },
+        });
+      });
+    }
+    if (!parentFolderId) {
+      return new Promise((fulfill, reject) => {
+        insertDocumentInRootFiles()
+          .then(() => insertDocumentInStorage(), reject)
+          .then(fulfill, reject);
+      });
+    }
+    return new Promise((fulfill, reject) => {
+      insertDocumentInStorage()
+      .then(fulfill, reject);
+    });
+  }
   /**
    * Returns if the current user is the drive owner of certain folder
    * @param {String} folderId
@@ -662,8 +727,6 @@ class FileManagerPage extends React.Component {
   }
 
   getDriveData(folderId) {
-    // TODO show only the documents and folders of the current folder
-    // TODO dessuscribe from the old folders
     const self = this;
     let subscriptions = [];
 
@@ -826,84 +889,49 @@ class FileManagerPage extends React.Component {
         type: 'anyone',
       });
     }
-    function insertDocumentInStorage(resp) {
-      if (!parentFolderId) {
-        DiamondAPI.insert({
-          collection: 'rootFiles',
-          object: {
-            documentId: resp.result.id, // resp is the response to the create
-                                        // request, not to the permission one
-            boardId: DiamondAPI.getCurrentBoard()._id,
-          },
-          isGlobal: true,
-          callback(err, res) {
-            if (!!err) {
-              console.error(err);
-            }
-          }
-        });
-      }
-
-      DiamondAPI.insert({
-        collection: 'documents',
-        object: {
-          _id: resp.result.id,
-          parentFolderId,
-          name,
-          fileType,
-          isImported: false,
-        },
-        isGlobal: true,
-        callback(error, result){
-          self.setState({
-            loadingDocuments: false,
-          });
-          callback(error, result);
-        },
-      });
-    }
     if (parentFolderId) {
       // Check if user is owner of current folder
-      DiamondAPI.get({
-        collection: 'folders',
-        filter: {
-          _id: parentFolderId,
-        },
-        callback(error, result) {
-          if (error) {
-            callback(error);
-            return;
-          }
-          createDocumentInDrive(result[0].ownerId === DiamondAPI.getCurrentUser)
-            .then((response) => {
-              createDrivePermission(response)
-              .then(() => {
-                insertDocumentInStorage(response);
-              }, callback);
-            }, callback);
-        },
-      });
       FileManagerPage.isUserOwnerOfFolder(parentFolderId, (error, result) => {
         if (error) {
           callback(error);
           return;
         }
+        let id;
         createDocumentInDrive(result)
           .then((response) => {
-            createDrivePermission(response)
-            .then(() => {
-              insertDocumentInStorage(response);
-            }, callback);
-          }, callback);
+            id = response.result.id;
+            return createDrivePermission(response);
+          }, callback)
+          .then(() => FileManagerPage.insertFileInStorage({
+            id,
+            name,
+            fileType,
+            parentFolderId,
+          }), callback)
+          .then((_result) => {
+            callback(null, _result);
+          }, (_error) => {
+            callback(_error);
+          });
       });
     } else {
+      let id;
       createDocumentInDrive()
         .then((response) => {
-          createDrivePermission(response)
-          .then(() => {
-            insertDocumentInStorage(response);
-          }, callback);
-        }, callback);
+          id = response.result.id;
+          return createDrivePermission(response);
+        }, callback)
+        .then(() => FileManagerPage.insertFileInStorage({
+          id,
+          name,
+          fileType,
+          parentFolderId,
+        }), callback)
+        .then((_result) => {
+          callback(null, _result);
+        }, (_error) => {
+          callback(_error);
+        });
     }
   }
 
@@ -1192,7 +1220,7 @@ class FileManagerPage extends React.Component {
  * @param {File} fileData File object to read data from.
  * @param {Function} callback Function to call when the request is complete.
  */
-    function insertFileToDrive(fileData, _callback) {
+    function insertFileToDrive(fileData, _callback = () => {}) {
       const boundary = '-------314159265358979323846';
       const delimiter = "\r\n--" + boundary + "\r\n";
       const close_delim = "\r\n--" + boundary + "--";
@@ -1229,16 +1257,20 @@ class FileManagerPage extends React.Component {
           },
           body: multipartRequestBody
         });
-        if (!_callback) {
-          _callback = function(file) {
-            console.log(file)
-          };
-        }
         request.execute(_callback);
-      }
+      };
     }
-    insertFileToDrive(file, callback); // TODO: insert file to storage
-                                       // and create the functions to do it
+    insertFileToDrive(file, (result) => {
+      FileManagerPage.insertFileInStorage({
+        id: result.id,
+        name: file.name,
+        fileType: file.type,
+        parentFolderId,
+      })
+        .then((_result) => {
+          callback(null, _result);
+        }, callback);
+    });
   }
 
   initPicker(openButtonId, callback) {
