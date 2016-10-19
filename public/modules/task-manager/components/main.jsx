@@ -702,7 +702,6 @@ class Task extends React.Component {
         }
       });
     });
-
   }
   /**
    * Stops the task for the user setting his last
@@ -780,11 +779,6 @@ class Task extends React.Component {
    */
   setTaskStatus(status) {
     const self = this;
-
-    if (self.props.doing) {
-      this.stopTask();
-    }
-
     /**
      * Used to stop all the durations from the users
      * that have started the task.
