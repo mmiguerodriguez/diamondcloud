@@ -240,7 +240,6 @@ class FileManagerLayout extends React.Component {
   }
 
   render() {
-    console.log(this.props.loadingDocuments);
     return (
       <div>
         <div className='file-manager ui-widget-content'>

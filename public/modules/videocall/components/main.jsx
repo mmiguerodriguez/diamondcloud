@@ -398,7 +398,6 @@ class UserVideo extends React.Component {
 class Video extends React.Component {
   mute() {
     this.video.volume = 0;
-    console.log('Muted...', this.video.volume, this.state.startVolume);
   }
 
   unmute() {
