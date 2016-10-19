@@ -4,6 +4,8 @@ import classNames     from 'classnames';
 import { Modules }    from '../../../api/modules/modules';
 import ModuleInstance from '../../module-instance/ModuleInstance';
 
+const MAX_MODULE_INSTANCES = 8;
+
 export default class Board extends React.Component {
   constructor(props) {
     super(props);
@@ -18,7 +20,7 @@ export default class Board extends React.Component {
   componentDidMount() {
     const self = this;
 
-    $('.board').droppable({
+    $(this.board).droppable({
       accept(e) {
         const validClasses = ['module-item', 'module-container'];
         let valid = false;
@@ -37,26 +39,33 @@ export default class Board extends React.Component {
           const x = ui.position.top - 40;
           const y = ui.position.left;
 
-          if (x >= 0 && y >= 0) {
-            Meteor.call('ModuleInstances.methods.create', {
-              boardId,
-              moduleId,
-              x,
-              y,
-              width: Modules.findOne(moduleId).settings.width,
-              height: Modules.findOne(moduleId).settings.height,
-            }, (error, result) => {
-              if (error) {
-                self.props.toggleError({
-                  type: 'show',
-                  body: 'Hubo un error interno al crear el módulo',
-                });
-              }
-            });
+          if (self.props.board.moduleInstances.length < MAX_MODULE_INSTANCES) {
+            if (x >= 0 && y >= 0) {
+              Meteor.call('ModuleInstances.methods.create', {
+                boardId,
+                moduleId,
+                x,
+                y,
+                width: Modules.findOne(moduleId).settings.width,
+                height: Modules.findOne(moduleId).settings.height,
+              }, (error, result) => {
+                if (error) {
+                  self.props.toggleError({
+                    type: 'show',
+                    body: 'Hubo un error interno al crear el módulo',
+                  });
+                }
+              });
+            } else {
+              self.props.toggleError({
+                type: 'show',
+                body: 'No se puede crear un módulo en esas coordenadas',
+              });
+            }
           } else {
             self.props.toggleError({
               type: 'show',
-              body: 'No se puede crear un módulo en esas coordenadas',
+              body: `No se pueden crear más módulos (máximo ${MAX_MODULE_INSTANCES})`,
             });
           }
         } else if (container) {
@@ -240,7 +249,7 @@ export default class Board extends React.Component {
             </span>
           </div>
         </div>
-        <div className="board">
+        <div className="board" ref={(c) => { this.board = c; }}>
           {this.renderModules()}
         </div>
       </div>
