@@ -279,7 +279,11 @@ export default class TeamPage extends React.Component {
     const board = Boards.findOne(TeamPage.boardId.get());
 
     if (this.props.loading) {
-      return null;
+      return (
+        <div className='loading'>
+          <div className='loader'></div>
+        </div>
+      );
     }
 
     if (this.props.team === undefined) {

@@ -698,6 +698,10 @@ class Task extends React.Component {
             self.stopTimer();
           } else {
             console.log('Started task correctly');
+            
+            self.props.showError({
+              body: 'Tarea iniciada',
+            });
           }
         }
       });
@@ -735,6 +739,10 @@ class Task extends React.Component {
             self.startTimer();
           } else {
             console.log('Paused task correctly');
+            
+            self.props.showError({
+              body: 'Tarea pausada',
+            });
           }
         }
       });
@@ -768,6 +776,10 @@ class Task extends React.Component {
             });
           } else {
             console.log('Archived task correctly');
+            
+            self.props.showError({
+              body: 'Tarea archivada',
+            });
           }
         }
       });
@@ -828,6 +840,10 @@ class Task extends React.Component {
           });
         } else {
           console.log('Updated task status correctly');
+          
+          this.props.showError({
+            body: 'Estado de la tarea actualizado',
+          });
         }
       }
     });
@@ -1118,7 +1134,8 @@ class Task extends React.Component {
     const containerClass = classNames({
       'col-xs-12': this.state.editing,
       'col-xs-10': !this.state.editing && this.props.task.status === 'finished',
-      'col-xs-8': !this.state.editing && this.props.task.status === 'not_finished',
+      'col-xs-12': !this.state.editing && !this.props.coordination && this.props.task.status === 'not_finished',
+      'col-xs-8': !this.state.editing && this.props.coordination && this.props.task.status === 'not_finished',
     });
     const archiveClass = classNames({
       'col-xs-2 archive-task': this.props.coordination && !this.state.editing,
@@ -1375,7 +1392,8 @@ class UserTaskInformation extends React.Component {
           </div>
           <div id={'collapse_' + user._id} className="panel-collapse collapse" role="tabpanel" aria-labelledby={'heading_' + user._id}>
             <div className="panel-body text-fixed">
-              Tiempo trabajado: {time} {working ? '|| Trabajando actualmente' : '' }
+              <p>Tiempo trabajado: {time}</p>
+              <p>{working ? 'Trabajando actualmente' : '' }</p>
             </div>
           </div>
         </div>

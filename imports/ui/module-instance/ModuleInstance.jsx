@@ -108,7 +108,9 @@ export default class ModuleInstance extends React.Component {
       >
         {
           this.state.loading && !this.state.minimized ? (
-            <div>Cargando...</div>
+            <div className='loading'>
+              <div className='loader'></div>
+            </div>
           ) : (null)
         }
         {

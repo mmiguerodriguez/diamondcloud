@@ -217,7 +217,7 @@ export default class Chat extends React.Component {
             >
               <img
                 className="exit-maximize-image"
-                src='http://image.flaticon.com/icons/svg/60/60801.svg'
+                src='maximize.svg'
                 width="16px"
               />
             </div>
@@ -276,7 +276,7 @@ export default class Chat extends React.Component {
           title={this.getName()}
           src={this.props.chat.directChatId ? (
             `${DirectChats.findOne(this.props.chat.directChatId).getUser().profile.picture}?sz=60`
-          ) : 'http://image.flaticon.com/icons/svg/60/60541.svg'}
+          ) : '/img/board-chat.svg'}
           onClick={this.props.openHiddenChat.bind(null, this.props.index)}
         />
       );

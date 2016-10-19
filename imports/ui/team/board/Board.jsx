@@ -197,7 +197,7 @@ export default class Board extends React.Component {
             </ol>
             { /* <h4 className='title truncate'>{ this.props.board.name }</h4> */ }
           </div>
-          <div className="col-xs-6 right-data">
+          <div className="col-xs-6 right-data truncate">
             <h4 className="members truncate">
               {this.renderUsers()}
             </h4>

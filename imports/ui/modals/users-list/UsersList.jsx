@@ -138,7 +138,7 @@ export default class UsersList extends React.Component {
                   value={this.state.hierarchy}
                   onChange={e => this.handleChange('hierarchy', e)}
                 >
-                  <option hidden value="-1">Tipo de trabajador</option>
+                  <option hidden value="-1">Jerarquía</option>
                   <option value="sistemas">Sistemas</option>
                   <option value="creativo">Creativo</option>
                   <option value="director creativo">Director creativo</option>
