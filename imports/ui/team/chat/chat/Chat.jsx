@@ -48,7 +48,9 @@ export default class Chat extends React.Component {
         position: nextProps.position,
       });
     }
+  }
 
+  componentDidUpdate() {
     this.scrollDown();
   }
 
