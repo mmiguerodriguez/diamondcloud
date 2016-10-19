@@ -218,6 +218,8 @@ export const editBoard = new ValidatedMethod({
           if (_user.email === user.email) {
             users[index].notifications = _user.notifications;
             found = true;
+          } else if (_user.email === Meteor.user().email()) {
+            users.push({ email: Meteor.user().email(), notifications: _user.notifications });
           }
         });
 

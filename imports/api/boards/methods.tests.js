@@ -3,22 +3,23 @@ import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
 import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
-import { printObject }   from '../helpers/print-objects.js';
 import   faker           from 'faker';
 
-import { Teams }         from '../teams/teams.js';
-import { Boards }        from './boards.js';
+import { Teams }         from '../teams/teams';
+import { Boards }        from './boards';
 import { createBoard,
          editBoard,
          archiveBoard,
          dearchiveBoard,
          unlockBoard,
          lockBoard,
-}                        from './methods.js';
+}                        from './methods';
 
 if (Meteor.isServer) {
   describe('Boards', () => {
-    let users, team, boards;
+    let users;
+    let team;
+    let boards;
 
     beforeEach(() => {
       resetDatabase();
@@ -28,32 +29,61 @@ if (Meteor.isServer) {
         Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
         Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
       ];
+      boards = [
+        Factory.create('publicBoard'),
+        Factory.create('publicBoard'),
+        Factory.create('privateBoard', {
+          users: [
+            {
+              email: users[0].emails[0].address,
+              notifications: faker.random.number({ min: 0, max: 20 }),
+            },
+            {
+              email: users[1].emails[0].address,
+              notifications: faker.random.number({ min: 0, max: 20 }),
+            },
+            {
+              email: users[2].emails[0].address,
+              notifications: faker.random.number({ min: 0, max: 20 }),
+            },
+          ]
+        }),
+        Factory.create('publicBoard'),
+        Factory.create('publicBoard', {
+          users: [
+            {
+              email: users[0].emails[0].address,
+              notifications: faker.random.number({ min: 0, max: 20 }),
+            },
+            {
+              email: users[1].emails[0].address,
+              notifications: faker.random.number({ min: 0, max: 20 }),
+            },
+            {
+              email: users[2].emails[0].address,
+              notifications: faker.random.number({ min: 0, max: 20 }),
+            },
+          ],
+        }),
+      ];
       team = Factory.create('team', {
         users: [
           { email: users[0].emails[0].address, hierarchy: 'sistemas' },
           { email: users[1].emails[0].address, hierarchy: 'creativo' },
           { email: users[2].emails[0].address, hierarchy: 'creativo' },
         ],
+        boards: [
+          { _id: boards[3]._id },
+          { _id: boards[4]._id },
+        ],
       });
-      boards = [
-        Factory.create('publicBoard'),
-        Factory.create('publicBoard'),
-        Factory.create('privateBoard', {
-          users: [
-            { email: users[0].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
-            { email: users[1].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
-            { email: users[2].emails[0].address, notifications: faker.random.number({ min: 0, max: 20 }) },
-          ]
-        }),
-        Factory.create('publicBoard'),
-      ];
 
       resetDatabase();
 
       sinon.stub(Meteor, 'user', () => users[0]);
       sinon.stub(Meteor, 'userId', () => users[0]._id);
 
-      users.forEach((user) => Meteor.users.insert(user));
+      users.forEach(user => Meteor.users.insert(user));
       Teams.insert(team);
       boards.forEach((board) => {
         Boards.insert(board);
@@ -112,25 +142,72 @@ if (Meteor.isServer) {
     });
 
     it('should edit a board', (done) => {
-      //TODO: Test when board isPrivate changes
-      let args = {
+      const args1 = {
         boardId: boards[3]._id,
         name: faker.lorem.word(),
         type: Random.choice(['creativos', 'sistemas', 'directores creativos', 'directores de cuentas', 'administradores', 'coordinadores', 'medios']),
         isPrivate: boards[3].isPrivate,
+        users: [],
       };
+      const args2 = {
+        boardId: boards[4]._id,
+        name: faker.lorem.word(),
+        type: Random.choice(['creativos', 'sistemas', 'directores creativos', 'directores de cuentas', 'administradores', 'coordinadores', 'medios']),
+        isPrivate: true,
+        users: [
+          {
+            email: users[1].emails[0].address,
+          },
+        ],
+      };
+      const expect1 = boards[3];
+      const expect2 = boards[4];
 
-      let expect = boards[3];
-      expect.name = args.name;
-      expect.type = args.type;
+      expect1.name = args1.name;
+      expect1.type = args1.type;
+      expect1.users = [
+        {
+          email: users[0].emails[0].address,
+          notifications: 0,
+        },
+        {
+          email: users[1].emails[0].address,
+          notifications: 0,
+        },
+        {
+          email: users[2].emails[0].address,
+          notifications: 0,
+        },
+      ];
 
-      editBoard.call(args, (error, result) => {
+      expect2.name = args2.name;
+      expect2.type = args2.type;
+      expect2.isPrivate = args2.isPrivate;
+      expect2.users = [
+        {
+          email: users[1].emails[0].address,
+          notifications: boards[4].users[1].notifications,
+        },
+        {
+          email: users[0].emails[0].address,
+          notifications: boards[4].users[0].notifications,
+        },
+      ];
+
+      editBoard.call(args1, (error, result1) => {
         if (error) {
           throw new Meteor.Error(error);
         } else {
-          chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
+          editBoard.call(args2, (error, result2) => {
+            if (error) {
+              throw new Meteor.Error(error);
+            } else {
+              chai.assert.equal(JSON.stringify(expect1), JSON.stringify(result1));
+              chai.assert.equal(JSON.stringify(expect2), JSON.stringify(result2));
 
-          done();
+              done();
+            }
+          });
         }
       });
     });
