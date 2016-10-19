@@ -1129,22 +1129,22 @@ class Task extends React.Component {
 
   render() {
     const role = classNames({
-      'button': this.props.coordination,
+      button: this.props.coordination,
     });
     const containerClass = classNames({
-      'col-xs-12': this.state.editing,
+      'col-xs-12': this.state.editing || (!this.props.coordination && this.props.task.status === 'not_finished'),
       'col-xs-10': !this.state.editing && this.props.task.status === 'finished',
-      'col-xs-12': !this.state.editing && !this.props.coordination && this.props.task.status === 'not_finished',
       'col-xs-8': !this.state.editing && this.props.coordination && this.props.task.status === 'not_finished',
+      'fixed-title': !this.props.coordination || !this.state.editing,
     });
     const archiveClass = classNames({
-      'col-xs-2 archive-task': this.props.coordination && !this.state.editing,
-      'col-xs-2 archive-task icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
-    });
+      'col-xs-2': this.props.coordination && !this.state.editing,
+      'col-xs-2 icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
+    }, 'archive-task');
     const editClass = classNames({
-      'col-xs-2 edit-task': this.props.coordination && !this.state.editing && this.props.task.status !== 'not_finished',
-      'col-xs-2 edit-task icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
-    });
+      'col-xs-2': this.props.coordination && !this.state.editing && this.props.task.status !== 'not_finished',
+      'col-xs-2 icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
+    }, 'edit-task');
     const clickHandle = this.props.coordination ? this.openTask : () => {};
 
     return (

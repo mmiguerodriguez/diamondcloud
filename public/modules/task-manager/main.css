@@ -90,6 +90,9 @@
   margin: 15px 0 5px;
   font-weight: bold;
 }
+.fixed-title {
+  padding: 0px;
+}
 .tasks-list {
   background-color: #e2e4e6;
   border-radius: 10px;
@@ -184,6 +187,7 @@
   -webkit-filter: invert(1);
 }
 .expiration {
+  padding: 0px;
   margin: 0 0 15px;
   font-size: 13px !important;
 }
