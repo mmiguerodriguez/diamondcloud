@@ -191,7 +191,7 @@ export const editBoard = new ValidatedMethod({
     name = name || board.name;
     type = type || board.type;
 
-    if (board.isPrivate && !isPrivate) {
+    if (!isPrivate) {
       users = [];
       team.users.forEach((user) => {
         let found = false;
