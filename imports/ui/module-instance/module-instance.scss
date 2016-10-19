@@ -19,12 +19,25 @@
     position: absolute;
     top: -16px;
     left: calc(50% - 16px);
-    z-index: 2;
+    z-index: 102;
+    .img {
+      width: 12px;
+      margin: 4px 5px;
+    }
   }
 
   .module {
     width: inherit;
     height: inherit;
     border: none;
+  }
+  &:active, &:hover {
+    z-index: 100;
+  }
+  &.ui-resizable-disabled {
+    height: auto !important;
+  }
+  .ui-resizable-handle {
+    z-index: 0 !important;
   }
 }

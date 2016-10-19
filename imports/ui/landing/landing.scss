@@ -1,0 +1,23 @@
+.landing {
+  height: calc(100vh - 50px);
+  .background {
+    position: absolute;
+    height: calc(100vh - 50px);
+    width: 100%;
+    background-image: url(http://www.staffcreativa.pe/blog/wp-content/uploads/creativos-trabajando.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    filter: blur(3px);
+    z-index: -1;
+  }
+  .items-container {
+    padding-top: 50px;
+    .title {
+      display: block;
+      max-height: 40vh;
+      margin: 0 auto 50px;
+      border-radius: 30px;
+      opacity: 0.85;
+    }
+  }
+}

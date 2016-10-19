@@ -45,8 +45,6 @@ window.onload = () => {
         console.error(error);
       }
 
-      console.log('New data:', result);
-
       if (!!result && result.length > 0) {
         handleNewData(result[0]);
       }

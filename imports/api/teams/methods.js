@@ -1,14 +1,12 @@
-import { Meteor }               from 'meteor/meteor';
-import { ValidatedMethod }      from 'meteor/mdg:validated-method';
-import { SimpleSchema }         from 'meteor/aldeed:simple-schema';
-import  Future                  from 'fibers/future';
-import { Mail }                 from '../mails/mails.js';
+import { Meteor }          from 'meteor/meteor';
+import { ValidatedMethod } from 'meteor/mdg:validated-method';
+import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
+import  Future             from 'fibers/future';
 
-import { Teams }                from './teams.js';
-import { Boards }               from '../boards/boards.js';
-import { createBoard }          from '../boards/methods.js';
-import { createModuleInstance } from '../module-instances/methods.js';
-import { APIInsert }            from '../api/methods.js';
+import { Teams }           from './teams';
+import { Mail }            from '../mails/mails';
+import { Boards }          from '../boards/boards';
+import { createBoard }     from '../boards/methods';
 
 export const createTeam = new ValidatedMethod({
   name: 'Teams.methods.create',
@@ -16,37 +14,45 @@ export const createTeam = new ValidatedMethod({
     name: { type: String },
     plan: { type: String, allowedValues: ['free', 'premium'] },
     type: { type: String, min: 0, max: 200 },
-    users: { type: [Object], blackbox: true, }, // [{ email, hierarchy }]
+    users: { type: [Object], blackbox: true, optional: true }, // [{ email, hierarchy }]
+    url: { type: String },
   }).validator(),
-  run({ name, plan, type, users }) {
-    if (!Meteor.user()) {
-      throw new Meteor.Error('Teams.methods.create.notLoggedIn',
-      'Must be logged in to make a team.');
+  run({ name, plan, type, users, url }) {
+    if (!!users) {
+      if (!Meteor.user()) {
+        throw new Meteor.Error('Teams.methods.create.notLoggedIn',
+        'Must be logged in to make a team.');
+      }
     }
-
     let team, teamId;
     team = {
       name,
       plan,
       type,
       boards: [],
-      users: [
-        { email: Meteor.user().email(), hierarchy: 'sistemas' }
-      ],
+      users: [],
+      url,
       archived: false,
     };
 
-    users.forEach(({ email, hierarchy }) => {
-      if (email === Meteor.user().email()) {
-        throw new Meteor.Error('Teams.methods.create.emailIsActualUser',
-        'You can\'t add yourself to a team',
-        'user_adds_himself');
-      }
+    if (users) {
+      team.users.push({
+        email: Meteor.user().email(),
+        hierarchy: 'sistemas',
+      });
 
-      team.users.push({ email, hierarchy });
-    });
+      users.forEach(({ email, hierarchy }) => {
+        if (email === Meteor.user().email()) {
+          throw new Meteor.Error('Teams.methods.create.emailIsActualUser',
+          'You can\'t add yourself to a team',
+          'user_adds_himself');
+        }
 
-    let future = new Future(); // Needed to make asynchronous call to db
+        team.users.push({ email, hierarchy });
+      });
+    }
+
+    let future = new Future();
     Teams.insert(team, (err, res) => {
       if (err) throw new Meteor.Error(err);
 
@@ -58,30 +64,36 @@ export const createTeam = new ValidatedMethod({
         name: 'General',
         type: 'default',
         isPrivate: false,
+        visibleForDirectors: false,
+        //users: team.users,
       }, (err, res) => {
         if (!!err) {
           future.throw(err);
         }
 
         team.boards.push({ _id: res._id });
-        users.forEach(({ email }) => {
-          if (Meteor.users.findByEmail(email, {})) {
-            // If user is not registered in Diamond Cloud
-            Mail.sendMail({
-              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
-              to: email,
-              subject: 'Te invitaron a colaborar en Diamond Cloud',
-              html: Mail.messages.sharedTeamRegistered(teamId),
-            });
-          } else {
-            Mail.sendMail({
-              from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
-              to: email,
-              subject: 'Te invitaron a colaborar en Diamond Cloud',
-              html: Mail.messages.sharedTeamNotRegistered(teamId),
-            });
-          }
-        });
+
+        if (!!users) {
+          users.forEach(({ email }) => {
+            if (Meteor.users.findByEmail(email, {})) {
+              // If user is not registered in Diamond Cloud
+              Mail.sendMail({
+                from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+                to: email,
+                subject: 'Te invitaron a colaborar en Diamond Cloud',
+                html: Mail.messages.sharedTeamRegistered(teamId),
+              });
+            } else {
+              Mail.sendMail({
+                from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
+                to: email,
+                subject: 'Te invitaron a colaborar en Diamond Cloud',
+                html: Mail.messages.sharedTeamNotRegistered(teamId),
+              });
+            }
+          });
+        }
+
         future.return(team);
       });
     });
@@ -170,21 +182,34 @@ export const shareTeam = new ValidatedMethod({
       throw new Meteor.Error('Teams.methods.share.notLoggedIn',
       'Must be logged in to edit a team.');
     }
+
     let team = Teams.findOne(teamId);
     if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
       throw new Meteor.Error('Teams.methods.share.notAllowed',
       "The user is not allowed to share the team");
     }
+
     let user = { email, hierarchy };
 
     Teams.addUser(teamId, user);
-    if (Meteor.users.findByEmail(email, {})) {
+    // TODO: Add user to public Boards
+
+    let existingUser = Meteor.users.findByEmail(email, {});
+
+    if (existingUser) {
       //if user is not registered in Diamond Cloud
       Mail.sendMail({
         from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
         to: email,
         subject: 'Te invitaron a colaborar en Diamond Cloud',
         html: Mail.messages.sharedTeamRegistered(teamId),
+      });
+
+      team.boards.forEach((boardIdObj) => {
+        const board = Boards.findOne(boardIdObj._id);
+        if (!board.isPrivate) {
+          Boards.addUser(board._id, existingUser._id);
+        }
       });
     } else {
       Mail.sendMail({
@@ -194,6 +219,7 @@ export const shareTeam = new ValidatedMethod({
         html: Mail.messages.sharedTeamNotRegistered(teamId),
       });
     }
+
     return Teams.findOne(teamId);
   }
 });
@@ -210,18 +236,28 @@ export const removeUserFromTeam = new ValidatedMethod({
       'Must be logged in to edit a team.');
     }
 
+    if (Meteor.user().email() === email) {
+      throw new Meteor.Error('Teams.methods.removeUser.cantRemoveYourself',
+      'You can\'t remove yourself from a team.');
+    }
+
     let team = Teams.findOne(teamId);
     let user = Meteor.users.findByEmail(email, {});
+
     if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
       throw new Meteor.Error('Teams.methods.removeUser.notAllowed',
       "The user is not allowed to remove a user from the team");
     }
 
-    //remove user from boards
-    let boards = user.boards(teamId).fetch();
-    boards.forEach((board) => {
-      Boards.removeUser(board._id, user._id);
-    });
+    // Remove user from boards if user exists on the database
+    if (user) {
+      let boards = user.boards(teamId).fetch();
+
+      boards.forEach((board) => {
+        Boards.removeUser(board._id, user._id);
+      });
+    }
+
     Teams.removeUser(teamId, email);
 
     return Teams.findOne(teamId);

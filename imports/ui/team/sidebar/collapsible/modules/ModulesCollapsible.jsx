@@ -23,9 +23,7 @@ export default class ModulesCollapsible extends React.Component {
           this.renderModules()
         }
         footer={
-          <a className='btn btn-default footer-btn' role='button'>
-            <img src='/img/sidebar/shop-cart.svg' width='32px' />
-          </a>
+          <div></div>
         }
       />
     );

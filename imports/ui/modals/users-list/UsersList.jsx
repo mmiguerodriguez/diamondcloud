@@ -1,11 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { Teams }  from '../../../api/teams/teams';
+import  '../../../api/users/users';
 
 import React      from 'react';
-
-import User       from './user/User.jsx';
-
-import { Teams }  from '../../../api/teams/teams.js';
-import  '../../../api/users/users.js';
+import User       from './user/User';
 
 export default class UsersList extends React.Component {
   constructor(props) {
@@ -17,10 +15,33 @@ export default class UsersList extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  handleChange(index, event) {
+    this.setState({
+      [index]: event.target.value,
+    });
+  }
+
+  handleKey(event) {
+    if (event.which === 13) {
+      this.handleSubmit();
+    }
+  }
+
+  handleSubmit() {
+    this.props.addUser({
+      email: this.state.email,
+      hierarchy: this.state.hierarchy,
+    });
+    this.setState({
+      email: '',
+    });
+  }
+
   renderUsers() {
-    let arr = [],
-        isAdmin = false,
-        users;
+    const arr = [];
+    let isAdmin = false;
+    let users;
 
     if (this.props.team) {
       users = this.props.team.getUsers(Teams.dashboardUsersFields).fetch();
@@ -28,26 +49,26 @@ export default class UsersList extends React.Component {
 
       // Unregistered users will be undefined,
       // so we have to replace them with the email
-      let emails = [];
+      const emails = [];
 
       users.forEach((user, index) => {
         if (user) {
           emails.push(user.email());
-          let hierarchy = this.props.team.users.find((element) => {
-            return element.email === user.email();
-          }).hierarchy;
+
+          const hierarchy = this.props.team.users.find(
+            element => element.email === user.email()
+          ).hierarchy;
+
           users[index].hierarchy = hierarchy;
         }
       });
 
       this.props.team.users.forEach((user) => {
-        if (emails.indexOf(user.email) === -1){
+        if (emails.indexOf(user.email) === -1) {
           users.push({
             _id: user.email,
             emails: [
-              {
-                address: user.email,
-              }
+              { address: user.email },
             ],
             profile: {
               name: user.email,
@@ -61,24 +82,22 @@ export default class UsersList extends React.Component {
       users = JSON.parse(JSON.stringify(this.props.users));
 
       users.forEach((user, index) => {
-        let _user = Meteor.users.findByEmail(user.email, Teams.dashboardUsersFields);
+        const _user = Meteor.users.findByEmail(user.email, Teams.dashboardUsersFields);
 
         users[index] = _user ? { ..._user, hierarchy: user.hierarchy } : {
           _id: index,
           emails: [
-            {
-              address: user.email,
-            }
+            { address: user.email },
           ],
           profile: {
             name: user.email,
           },
-          hierarchy: user.hierarchy
+          hierarchy: user.hierarchy,
         };
       });
     }
 
-    users.map((user) => {
+    users.forEach((user) => {
       arr.push(
         <User
           key={user._id}
@@ -89,79 +108,70 @@ export default class UsersList extends React.Component {
         />
       );
     });
+
     return arr;
   }
+
   render() {
-    let email = this.state.email;
-    let isAdmin = this.props.team ? this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas') : true;
+    const email = this.state.email;
+    const isAdmin = this.props.team ? this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas') : true;
+    const users = this.renderUsers();
 
     return (
       <div>
         {
-          (isAdmin) ? (
-            <div className='row container-fluid'>
-              <div className='input-group col-xs-12'>
+          isAdmin ? (
+            <div className="row container-fluid">
+              <div className="input-group col-xs-12">
                 <input
-                  id='searchUsers'
-                  className='form-control'
-                  placeholder='Compartir equipo'
-                  type='text'
+                  id="searchUsers"
+                  className="form-control"
+                  placeholder="Compartir equipo"
+                  type="text"
                   value={email}
-                  onChange={(e) => this.handleChange('email', e)}
+                  onChange={e => this.handleChange('email', e)}
                   onKeyDown={this.handleKey}
                 />
                 <select
                   className="form-control user-type"
                   id="user-type"
                   value={this.state.hierarchy}
-                  onChange={(e) => this.handleChange('hierarchy', e)}>
-                  <option hidden value='-1'>Tipo de trabajador</option>
-                  <option value='sistemas'>Sistemas</option>
-                  <option value='creativo'>Creativo</option>
-                  <option value='director creativo'>Director creativo</option>
-                  <option value='director de cuentas'>Director de cuentas</option>
-                  <option value='coordinador'>Coordinador</option>
-                  <option value='administrador'>Administrador</option>
-                  <option value='medios'>Medios</option>
+                  onChange={e => this.handleChange('hierarchy', e)}
+                >
+                  <option hidden value="-1">Jerarquía</option>
+                  <option value="sistemas">Sistemas</option>
+                  <option value="creativo">Creativo</option>
+                  <option value="director creativo">Director creativo</option>
+                  <option value="director de cuentas">Director de cuentas</option>
+                  <option value="coordinador">Coordinador</option>
+                  <option value="administrador">Administrador</option>
+                  <option value="medios">Medios</option>
                 </select>
-                <div className='input-group-addon search-input' onClick={this.handleSubmit}>
-                  <img src='/img/add-people-icon.svg'
-                       width='24px' />
+                <div
+                  className="input-group-addon search-input"
+                  role="button"
+                  onClick={this.handleSubmit}
+                >
+                  <img
+                    src="/img/add-people-icon.svg"
+                    width="24px"
+                  />
                 </div>
               </div>
             </div>
           ) : (null)
         }
         {
-          this.renderUsers().length > 0 ? (
-            <div className='row container-fluid contacts-list-row'>
-              <div className='contacts-list col-xs-12'>
-                {this.renderUsers()}
+          users.length > 0 ? (
+            <div className="row container-fluid contacts-list-row">
+              <div className="contacts-list col-xs-12">
+                {users}
               </div>
             </div>
           ) : (null)
         }
       </div>
     );
-  }
-  handleChange(index, event) {
-    this.setState({
-      [index]: event.target.value,
-    });
-  }
-  handleKey(event) {
-    if (event.which == 13) {
-      this.handleSubmit();
-    }
-  }
-  handleSubmit() {
-    this.props.addUser({
-      email: this.state.email,
-      hierarchy: this.state.hierarchy,
-    });
-    this.setState({
-      email: '',
-    });
   }
 }
 

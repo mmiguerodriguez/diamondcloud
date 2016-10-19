@@ -22,6 +22,15 @@
       -webkit-filter: invert(0.855);
       filter: invert(0.855);
     }
+    .notification-badge {
+      width: 15px;
+      height: 15px;
+      position: absolute;
+      right: 28px;
+      margin-top: 1px;
+      background-image: url(/img/sidebar/notification-badge.svg);
+      background-size: 100%;
+    }
   }
   .active {
     background-color: #fff;

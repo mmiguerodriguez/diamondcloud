@@ -1,29 +1,27 @@
-export let Notifications = {
+const Notifications = {
   askPermission() {
     Notification.requestPermission((permission) => {
       // If the user accepts, let's create a notification
-      if (permission === "granted") {
-        let notification = Notifications.sendNotification({
-          title: 'Genial!'
+      if (permission === 'granted') {
+        Notifications.sendNotification({
+          title: 'Genial!',
         });
       }
-      this.props.close();//close notifications permission asker
+      this.props.close();
     });
   },
-  sendNotification({ body, icon, title, timeout, onclick }) {
-    if (Notification.permission === "granted") {
-      icon = icon || 'http://diamondcloud.tk/img/logo.ico';
-      timeout = timeout || 5000;
-      onclick = onclick || (() => {
-        window.focus();
-      });
-
-      let notification = new Notification(title, { body, icon });
+  sendNotification({ body, icon = 'http://diamondcloud.tk/img/logo.ico', title, timeout = 5000, onclick = () => { window.focus(); } }) {
+    if (Notification.permission === 'granted') {
+      const notification = new Notification(title, { body, icon });
 
       notification.onclick = onclick;
       setTimeout(notification.close.bind(notification), timeout);
 
       return notification;
     }
+
+    return false;
   },
 };
+
+export default Notifications;

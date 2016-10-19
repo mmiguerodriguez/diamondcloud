@@ -11,10 +11,13 @@ body {
 }
 
 .loading {
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.3);
-  
+  z-index: 1051;
 }
 
 .loader {
@@ -33,19 +36,19 @@ body {
   0% {
     transform: rotate(0deg);
   }
-  
+
   25% {
     border-top-color: #1abc9c;
   }
-  
+
   50% {
     border-top-color: #f1c40f;
   }
-  
+
   75% {
     border-top-color: #e74c3c;
   }
-  
+
   100% {
     transform: rotate(720deg);
     border-top-color: #3498db;
@@ -66,6 +69,9 @@ body {
 
 .documents-container {
   margin-bottom: 70px;
+}
+.document-container {
+  transition: 0.3s all ease;
 }
 .divider {
   margin: 5px 0 !important;
@@ -155,15 +161,16 @@ body {
   transition: all 0.3s ease;
 }
 .doc:hover {
-  box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
+  box-shadow: 0 5px 11px 0 rgba(255,255,255,0.18),0 4px 15px 0 rgba(255,255,255,0.15);
 }
 .folder {
-  background-color: #f1c40f;
-  /* background-image: url('img/google-drive-logo.svg'); */
+  background-color: #1c43e2;
+  background-image: url('img/folder.svg');
+  filter: invert(1);
   transition: all 0.6s ease;
 }
 .folder:hover {
-  box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
+  box-shadow: 0 5px 11px 0 rgba(255,255,255,0.18),0 4px 15px 0 rgba(255,255,255,0.15);
 }
 .folder .icon {
   position: absolute;
@@ -208,12 +215,16 @@ img.icon-type.import-drive {
 .document-title {
   padding: 10px 15px 10px 5px;
   margin: 0;
+  transition: 0.3s all ease;
+}
+.document-container:hover .document-title {
+  background-color: #d3d3d3;
 }
 
 .drive-navbar {
   height: 42px;
   width: 100%;
-  background-color: #4285f4;
+  background-color: #3498db;
 }
 .back-icon {
   padding: 4px 8px;
@@ -226,6 +237,7 @@ img.icon-type.import-drive {
 }
 .folder-navbar {
   width: 100%;
+  height: 42px;
   background-color: #3498db;
 }
 .go-back {
@@ -248,4 +260,24 @@ img.icon-type.import-drive {
 .go-back:hover {
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
   opacity: 0.9;
+}
+.folder-name {
+  display: inline;
+  color: #fff;
+  font-size: 18px;
+  vertical-align: middle;
+}
+.go-back-to-document {
+  float: right;
+  font-size: 19px;
+  margin-top: 6px;
+  margin-right: 5px;
+  color: #ecf0f1;
+  padding: 3px;
+  background-color: rgba(236, 240, 241, 0.23);
+  border-radius: 5px;
+  cursor: pointer;
+}
+.go-back-to-document:hover {
+  background-color: rgba(127, 140, 141, 0.83);
 }

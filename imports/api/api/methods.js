@@ -1,5 +1,4 @@
 import { Meteor }                                from 'meteor/meteor';
-import { Random }                                from 'meteor/random';
 import { ValidatedMethod }                       from 'meteor/mdg:validated-method';
 import { SimpleSchema }                          from 'meteor/aldeed:simple-schema';
 import Future                                    from 'fibers/future';
@@ -58,7 +57,6 @@ export const APIUpdate = new ValidatedMethod({
       throw new Meteor.Error('API.methods.APIUpdate.notLoggedIn',
       'Must be logged in to use a module.');
     }
-
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
     let teamId = moduleInstance.board().team()._id;
 
@@ -90,9 +88,9 @@ export const APIUpdate = new ValidatedMethod({
     },
     updateQuery,
     (err, res) => {
-      if (!!err) {
+      if (err) {
         throw new Meteor.Error('API.methods.APIUpdate.failedUpdating',
-        'Could not update the APICollection.');
+        `Could not update the APICollection. Reason: ${err}`);
       } else {
         future.return(res);
       }

@@ -2,6 +2,7 @@ import { Meteor }        from 'meteor/meteor';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
 import { chai }          from 'meteor/practicalmeteor:chai';
+import { printObject }   from '../helpers/print-objects.js';
 import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
@@ -15,7 +16,7 @@ import '../factories/factories.js';
 if (Meteor.isServer) {
   describe('Boards', function() {
     describe('Helpers', function() {
-      let teams, boards, users, messages, moduleInstances;
+      let teams, boards, users, messages, moduleInstances, findRequest;
       function getNotifications(boardId, userId) {
         let user = Meteor.users.findOne(userId);
         return Boards.findOne(boardId).users.find((_user) => {
@@ -29,21 +30,30 @@ if (Meteor.isServer) {
         users = [
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }]}),
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }]}),
+          Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }]}),
+          Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }]}),
         ];
+        
         teams = [
           Factory.create('team'),
           Factory.create('team'),
+          Factory.create('team'),
         ];
+        
         boards = [
           Factory.create('board'),
           Factory.create('board'),
           Factory.create('board'),
+          Factory.create('board'),
+          Factory.create('board', { visibleForDirectors: true }),
         ];
+        
         messages = [];
-        for(let i = 0; i < 3; i++) {
+        for (let i = 0; i < 3; i++) {
           messages.push(Factory.create('boardMessage'));
           messages[i].boardId = boards[0]._id;
         }
+        
         moduleInstances = [
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
@@ -56,21 +66,34 @@ if (Meteor.isServer) {
         boards[0].users.push({ email: users[0].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[0].users.push({ email: users[1].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[2].moduleInstances.push({ _id: moduleInstances[0]._id });
-
+        
+        teams[2].boards.push({ _id: boards[3]._id });
+        teams[2].boards.push({ _id: boards[4]._id });
+        
+        teams[2].users = [];
+        teams[2].users.push({ email: users[2].emails[0].address, hierarchy: 'creativos' });
+        teams[2].users.push({ email: users[3].emails[0].address, hierarchy: 'director creativo' });
+        
+        boards[3].users.push({ email: users[2].emails[0].address });
+        
         resetDatabase();
 
         users.forEach((user) => {
           Meteor.users.insert(user);
         });
+
         boards.forEach((board) => {
           Boards.insert(board);
         });
+
         teams.forEach((team) => {
           Teams.insert(team);
         });
+
         moduleInstances.forEach((moduleInstance) => {
           ModuleInstances.insert(moduleInstance);
         });
+
         messages.forEach((message) => {
           Messages.insert(message);
         });
@@ -87,14 +110,12 @@ if (Meteor.isServer) {
       it('should return the team of a board', function() {
         let board = Boards.findOne(boards[0]._id);
         let team = board.team();
-
         chai.assert.equal(team._id, teams[0]._id);
       });
 
       it('should not return the team of a board', function() {
         let board = Boards.findOne(boards[1]._id);
         let team = board.team();
-
         chai.assert.isUndefined(team);
       });
 
@@ -119,6 +140,7 @@ if (Meteor.isServer) {
         chai.assert.equal(expect.archived, result.archived);
         chai.assert.isUndefined(result.data);
       });
+
       it('should return the last message from a board', function() {
         let board = Boards.findOne(boards[0]._id);
         let lastMessage = board.getLastMessage();
@@ -145,19 +167,15 @@ if (Meteor.isServer) {
 
       it('should add a user to a board', function() {
         let expect = boards[0];
-
         expect.users.push({ email: users[1].emails[0].address, notifications: 0 });
         Boards.addUser(boards[0]._id, users[1]._id);
-
         chai.assert.deepEqual(Boards.findOne(boards[0]._id), expect);
       });
 
       it('should remove a user from a board', function() {
         let expect = boards[0];
-
         expect.users = [boards[0].users[1]];
         Boards.removeUser(boards[0]._id, users[0]._id);
-
         chai.assert.deepEqual(Boards.findOne(boards[0]._id), expect);
       });
 
@@ -182,6 +200,17 @@ if (Meteor.isServer) {
         chai.assert.notEqual(startNotifications, endNotifications);
         chai.assert.equal(endNotifications, 0);
       });
+      
+      it('should correctly get all requested boards', (done) => {
+        let boardsIds = boards.map((board) => board._id);
+        let result1 = Boards.getBoards([boards[3]._id, boards[4]._id], users[2]._id); // Creativo
+        let result2 = Boards.getBoards([boards[3]._id, boards[4]._id], users[3]._id); // Director
+        chai.assert.deepEqual(result1.fetch(), [boards[3]]);
+        chai.assert.deepEqual(result2.fetch(), [boards[4]]);
+        done();
+      });
     });
   });
 }
+
+/* global Factory */
