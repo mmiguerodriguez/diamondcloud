@@ -40,7 +40,7 @@ export default class Board extends React.Component {
           const x = ui.position.top - 40;
           const y = ui.position.left;
 
-          if (self.props.board.moduleInstances.length < MAX_MODULE_INSTANCES) {
+          if (self.props.moduleInstances.length < MAX_MODULE_INSTANCES) {
             if (x >= 0 && y >= 0) {
               Meteor.call('ModuleInstances.methods.create', {
                 boardId,
@@ -166,12 +166,7 @@ export default class Board extends React.Component {
   renderModules() {
     if (this.props.moduleInstances) {
       return this.props.moduleInstances.map((moduleInstance) => {
-        let module;
-        this.props.modules.forEach((_module) => {
-          if (_module._id === moduleInstance.moduleId) {
-            module = _module;
-          }
-        });
+        const module = Modules.findOne(moduleInstance.moduleId);
 
         return (
           <ModuleInstance
