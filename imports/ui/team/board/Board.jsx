@@ -1,6 +1,7 @@
 import React          from 'react';
 import classNames     from 'classnames';
 
+import { Modules }    from '../../../api/modules/modules';
 import ModuleInstance from '../../module-instance/ModuleInstance';
 
 export default class Board extends React.Component {
@@ -22,7 +23,7 @@ export default class Board extends React.Component {
         const validClasses = ['module-item', 'module-container'];
         let valid = false;
 
-        validClasses.forEach((c) => (valid = e.hasClass(c) ? true : valid));
+        validClasses.forEach(c => (valid = e.hasClass(c) ? true : valid));
         return valid;
       },
       drop(event, ui) {
@@ -42,8 +43,8 @@ export default class Board extends React.Component {
               moduleId,
               x,
               y,
-              width: 350, // must change to fixed
-              height: 400, // must change to fixed
+              width: Modules.findOne(moduleId).settings.width,
+              height: Modules.findOne(moduleId).settings.height,
             }, (error, result) => {
               if (error) {
                 self.props.toggleError({

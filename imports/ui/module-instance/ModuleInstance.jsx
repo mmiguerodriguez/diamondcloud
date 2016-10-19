@@ -1,6 +1,7 @@
 import React           from 'react';
 
 import { generateApi } from '../../api/api/api-client';
+import { Modules }     from '../../api/modules/modules';
 
 export default class ModuleInstance extends React.Component {
   constructor(props) {
@@ -45,6 +46,8 @@ export default class ModuleInstance extends React.Component {
     .resizable({
       containment: 'parent',
       disabled: this.state.minimized,
+      minWidth: Modules.findOne(this.props.moduleInstance.moduleId).settings.minWidth,
+      minHeight: Modules.findOne(this.props.moduleInstance.moduleId).settings.minHeight,
       stop(event, ui) {
         const moduleInstanceId = self.props.moduleInstance._id;
         const { width, height } = ui.size;
