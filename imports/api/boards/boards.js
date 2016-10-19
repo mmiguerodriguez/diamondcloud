@@ -108,7 +108,7 @@ Boards.moduleInstancesFields = {
 };
 
 Boards.getBoards = (boardsIds, userId, fields = {}) => {
-  if (Object.prototype.toString.call(boardsIds[0]) === '[object Object]'){
+  if (Object.prototype.toString.call(boardsIds[0]) === '[object Object]') {
     boardsIds = boardsIds.map(board => board._id);
   }
 
@@ -120,7 +120,7 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
   const isDirector =
     team.userIsCertainHierarchy(user.email(), 'director creativo') ||
     team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
-    team.userIsCertainHierarchy(user.email(), 'coordinadores');
+    team.userIsCertainHierarchy(user.email(), 'coordinador');
 
   const result = Boards.find({
     $and: [

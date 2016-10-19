@@ -6,7 +6,7 @@ if (Meteor.isClient) {
   /**
    * Sets the startup config for the accounts-ui package
    * Config so we request Google Drive data to the user
-  
+   *
    * drive: View and manage the files in Google Drive.
    * drive.metadata: View and manage metadata of files in your Google Drive.
    * drive.appdata: View and manage its own configuration data in your
@@ -30,7 +30,7 @@ if (Meteor.isClient) {
       ],
     },
     requestOfflineToken: {
-      google: true
+      google: true,
     },
     forceApprovalPrompt: {
       google: true,
@@ -49,10 +49,10 @@ if (Meteor.isClient) {
     browserHistory.listen((e) => {
       path = e.pathname;
     });
-  
+
     if (path === '/carlosydario' || path === '/diamond') {
       path = path.substr(1, path.length - 1);
-  
+
       Meteor.call('Accounts.methods.insertFirstUser', { url: path }, (error, result) => {
         if (error) {
           throw new Meteor.Error(error);

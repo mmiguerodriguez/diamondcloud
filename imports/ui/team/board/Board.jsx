@@ -1,3 +1,4 @@
+import { Meteor }     from 'meteor/meteor';
 import React          from 'react';
 import classNames     from 'classnames';
 
@@ -193,6 +194,7 @@ export default class Board extends React.Component {
     const classes = classNames('board-container', {
       'permission-asker-opened': this.props.permissionAsker,
     });
+    const email = Meteor.user().email();
 
     return (
       <div className={classes}>
@@ -210,34 +212,39 @@ export default class Board extends React.Component {
             <h4 className="members truncate">
               {this.renderUsers()}
             </h4>
-            <div className="visibility">
-              {
-                this.state.visibleForDirectors ? (
-                  <img
-                    role="button"
-                    onClick={() => this.toggleBoardToDirectors('lockBoard')}
-                    src="/img/visibility-off.svg"
-                    className="visibility-img"
-                    title="Hacer no visible para directores"
-                    alt="Hacer no visible para directores"
-                  />
-                ) : (
-                  <img
-                    role="button"
-                    onClick={() => this.toggleBoardToDirectors('unlockBoard')}
-                    src="/img/visibility-on.svg"
-                    className="visibility-img"
-                    title="Hacer visible para directores"
-                    alt="Hacer visible para directores"
-                  />
-                )
-              }
-            </div>
+            {
+              this.props.board.isPrivate &&
+              !this.props.team.userIsCertainHierarchy(email, 'director creativo') &&
+              !this.props.team.userIsCertainHierarchy(email, 'director de cuentas') &&
+              !this.props.team.userIsCertainHierarchy(email, 'coordinador') ? (
+                <div className="visibility">
+                  {
+                    this.state.visibleForDirectors ? (
+                      <img
+                        role="button"
+                        onClick={() => this.toggleBoardToDirectors('lockBoard')}
+                        src="/img/visibility-off.svg"
+                        className="visibility-img"
+                        title="Hacer no visible para directores"
+                        alt="Hacer no visible para directores"
+                      />
+                    ) : (
+                      <img
+                        role="button"
+                        onClick={() => this.toggleBoardToDirectors('unlockBoard')}
+                        src="/img/visibility-on.svg"
+                        className="visibility-img"
+                        title="Hacer visible para directores"
+                        alt="Hacer visible para directores"
+                      />
+                    )
+                  }
+                </div>
+              ) : (null)
+            }
             <span
               className="message-icon-span"
-              onClick={this.props.addChat.bind(null, {
-                boardId: this.props.board._id
-              })}
+              onClick={this.props.addChat.bind(null, { boardId: this.props.board._id })}
             >
               { /* <h4 className='message-text'>Chat del board</h4> */ }
               <img
