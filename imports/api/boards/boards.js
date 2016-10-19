@@ -116,7 +116,7 @@ Boards.getBoards = (boardsIds, userId, fields) => {
   let isDirector =
     team.userIsCertainHierarchy(user.email(), 'director creativo') ||
     team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
-    team.userIsCertainHierarchy(user.email(), 'coordinadores');
+    team.userIsCertainHierarchy(user.email(), 'coordinador');
 
   let result = Boards.find({
     $and: [
@@ -169,7 +169,7 @@ Boards.isValid = (boardId, userId) => {
   const isDirector =
     team.userIsCertainHierarchy(user.email(), 'director creativo') ||
     team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
-    team.userIsCertainHierarchy(user.email(), 'coordinadores');
+    team.userIsCertainHierarchy(user.email(), 'coordinador');
 
   const board = Boards.findOne({
     _id: boardId,
