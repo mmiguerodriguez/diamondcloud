@@ -1,7 +1,10 @@
 import React           from 'react';
 
 import { generateApi } from '../../api/api/api-client';
-import { Modules }     from '../../api/modules/modules';
+
+const PIN_HEIGHT = 16;
+const TEXT_HEIGHT = 20;
+const MARGIN = 8;
 
 export default class ModuleInstance extends React.Component {
   constructor(props) {
@@ -46,8 +49,8 @@ export default class ModuleInstance extends React.Component {
     .resizable({
       containment: 'parent',
       disabled: this.state.minimized,
-      minWidth: Modules.findOne(this.props.moduleInstance.moduleId).settings.minWidth,
-      minHeight: Modules.findOne(this.props.moduleInstance.moduleId).settings.minHeight,
+      minWidth: this.props.module.settings.minWidth,
+      minHeight: this.props.module.settings.minHeight,
       stop(event, ui) {
         const moduleInstanceId = self.props.moduleInstance._id;
         const { width, height } = ui.size;
@@ -94,17 +97,20 @@ export default class ModuleInstance extends React.Component {
   }
 
   render() {
+    const moduleStyle = {
+      top: this.props.moduleInstance.x,
+      left: this.props.moduleInstance.y,
+      width: this.props.moduleInstance.width,
+      height: this.props.moduleInstance.height,
+      marginTop: this.state.minimized ? PIN_HEIGHT + TEXT_HEIGHT + PIN_HEIGHT/2 : PIN_HEIGHT,
+    };
+    
     return (
       <div
         className="module-container"
+        style={moduleStyle}
         ref={(c) => { this.module = c; }}
         data-moduleinstance-id={this.props.moduleInstance._id}
-        style={{
-          top: this.props.moduleInstance.x,
-          left: this.props.moduleInstance.y,
-          width: this.props.moduleInstance.width,
-          height: this.props.moduleInstance.height,
-        }}
       >
         {
           this.state.loading && !this.state.minimized ? (
