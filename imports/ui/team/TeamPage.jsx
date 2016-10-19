@@ -208,22 +208,28 @@ export default class TeamPage extends React.Component {
     }
 
     if (!board) {
-      return (
-        <div>
-          Ryan, este es el mensaje
-          que dice que el pibe
-          no puede ver board.
-
-          No entiendo mucho de Frontend
-          pero me parece que habría que
-          cargar el TeamLayout con algún
-          tipo de error porque ahora no
-          aparece ni el sidebar ni el
-          subheader.
-
-          Nada, eso, chau, buenas noches.
-        </div>
-      );
+      let tmpBoard = Boards.findOne();
+      if (tmpBoard) {
+        TeamPage.boardId.set(tmpBoard._id);
+        let boardSubscription = Meteor.subscribe('boards.board', tmpBoard._id, {
+          onReady() {
+            TeamPage.boardSubscription.get().stop();
+            TeamPage.boardSubscription.set(boardSubscription);
+          }
+        });
+        this.props.toggleError({
+          type: 'show',
+          body: 'No se puede acceder al board',
+        });
+      } else {
+        return (
+          <div>
+            <p>
+              <a href="#shikaka">No hay ningun board, apreta aca...</a>
+            </p>
+          </div>
+        );
+      }
     }
 
     return (
