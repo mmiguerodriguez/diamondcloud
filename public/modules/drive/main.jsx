@@ -6,6 +6,7 @@ browserHistory.push('/folder'); // initialize the router
 // Google Drive API
 const CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
 const folderMimeType = 'application/vnd.google-apps.folder';
+const ERROR_DELAY = 5000;
 let authObject;
 
 class Index extends React.Component {
@@ -122,7 +123,13 @@ class FileManagerLayout extends React.Component {
       parentFolderId: this.props.folderId,
       callback(error) {
         if (error) {
-          console.error(error); // TODO: handle error
+          this.props.toggleError({
+            type: 'show',
+            body: 'Error al importar el documento',
+          });
+          self.setState({
+            loadingDocuments: false,
+          });
         }
       },
     });
@@ -248,7 +255,17 @@ class FileManagerLayout extends React.Component {
             parentFolderId: this.props.folderId,
             mimeType: document.fileType,
             isImported: document.isImported,
-            callback: () => {}, // TODO: handle loading and error
+            callback: (error, result) => {
+              if(error) {
+                this.props.toggleError({
+                  type: 'show',
+                  body: 'Error al borrar el documento',
+                });
+                self.setState({
+                  loadingDocuments: false,
+                });
+              }
+            },
           })}
         >
           delete
@@ -256,7 +273,6 @@ class FileManagerLayout extends React.Component {
       </div>
     ));
   }
-
 
   componentDidMount() {
     this.props.initPicker('import-file', this.handleImport.bind(this));
@@ -276,6 +292,13 @@ class FileManagerLayout extends React.Component {
   render() {
     return (
       <div>
+        {
+          (this.state.loadingDocuments || this.state.loadingFolders) ? (
+            <div className="loading">
+              <div className="loader"></div>
+            </div>
+          ) : (null)
+        }
         <div className='file-manager ui-widget-content'>
           {
             // Create document modal
@@ -327,8 +350,12 @@ class FileManagerLayout extends React.Component {
                       fileType: this.state.fileType,
                       parentFolderId: this.props.folderId,
                       diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
-                      callback: () => {
-                        $('#create-document').modal('hide');
+                      callback: (error, result) => {
+                        if (error) {
+                        
+                        } else {
+                          $('#create-document').modal('hide');
+                        }
                       },
                     })}>
                       Crear
@@ -432,20 +459,22 @@ class FileManagerLayout extends React.Component {
                   <button
                     type="button"
                     className="btn btn-primary"
-                    onClick={() => {
-                      this.props.uploadFile({
+                    onClick={this.props.uploadFile.bind(this, {
                         file: this.state.file,
                         parentFolderId: this.props.folderId,
                         diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
                         callback(error, result) {
-                          if (error) {
-                            console.error(error); // TODO: handle error
-                          }
-                          console.log(result);
+                        if(error) {
+                          this.props.toggleError({
+                            type: 'show',
+                            body: 'Error al subir la imagen/video',
+                          });
+                        } else {
                           $('#upload-files').modal('hide');
+                        }
                         },
-                      });
-                    }}
+                      })
+                    }
                   >
                     Subir
                   </button>
@@ -479,40 +508,38 @@ class FileManagerLayout extends React.Component {
                 ) : (null)
             }
           </div>
-          <div className="container-fluid files-container">
-            <p className="folders-title-container">
-              Carpetas
-            </p>
-            <hr className="divider" />
-            <div className="folders-container">
-              {
-                (this.props.loadingFolders) ?
-                  (
-                    <p>Cargando...</p>
-                  ) : (
-                    this.renderFolders()
-                  )
-              }
-            </div>
-            <p className="documents-title-container">
-              Archivos
-            </p>
-            <hr className="divider" />
-            <div className="documents-container">
-              {
-                (this.props.loadingDocuments) ?
-                  (
-                    <p>Cargando...</p>
-                  ) : (
-                    this.renderDocuments()
-                  )
-              }
-            </div>
-          </div>
+          {
+            (this.props.loadingDocuments || this.props.loadingFolders) ?
+              (
+                <div className="loading">
+                  <div className="loader"></div>
+                </div>
+              ) : (
+                <div className="container-fluid files-container">
+                  <p className="folders-title-container">
+                    Carpetas
+                  </p>
+                  <hr className="divider" />
+                  <div className="folders-container">
+                    {
+                      this.renderFolders()
+                    }
+                  </div>
+                  <p className="documents-title-container">
+                    Archivos
+                  </p>
+                  <hr className="divider" />
+                  <div className="documents-container">
+                    {
+                      this.renderDocuments()
+                    }
+                  </div>
+                </div>
+              )
+          }
           <div className="create">
-            <img 
-              className="img" 
-              src="/modules/drive/img/google-docs.svg"
+            <div 
+              className="img"
               data-toggle="modal"
               data-target="#create-document"
               title='Crear documento'
@@ -657,7 +684,7 @@ class FileManagerPage extends React.Component {
       },
     });
   }
-
+  
   constructor(props) {
     super(props);
 
@@ -677,29 +704,58 @@ class FileManagerPage extends React.Component {
       subscriptions: [], /** Array that stores the rootFiles,
                           *  folders and documents subscriptions
                           */
+      error: {
+        type: '',
+        body: '',
+        delay: '',
+        showing: false,
+      }
     };
+    
+    this.error = this.error.bind(this);
   }
 
+  error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
+    console.log(type, body);
+    this.setState({
+      error: {
+        body,
+        delay: delay || ERROR_DELAY,
+        showing: type === 'show',
+      },
+    });
+  }
+  
   render() {
     return (
-      <FileManagerLayout
-        folderId={this.props.params.folderId}
-        loadingFolders={this.state.loadingFolders}
-        folders={this.state.folders}
-        loadingDocuments={this.state.loadingDocuments}
-        documents={this.state.documents}
-        createDocument={this.createDocument}
-        createFolder={this.createFolder}
-        importDocument={this.importDocument}
-        deleteDocument={this.deleteDocument}
-        uploadFile={this.uploadFile}
-        initPicker={this.initPicker}
-        diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
-        openedDocumentId={this.props.openedDocumentId}
-      />
+      <div>
+        <FileManagerLayout
+          folderId={this.props.params.folderId}
+          loadingFolders={this.state.loadingFolders}
+          folders={this.state.folders}
+          loadingDocuments={this.state.loadingDocuments}
+          documents={this.state.documents}
+          createDocument={this.createDocument}
+          createFolder={this.createFolder}
+          importDocument={this.importDocument}
+          deleteDocument={this.deleteDocument}
+          uploadFile={this.uploadFile}
+          initPicker={this.initPicker}
+          diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
+          openedDocumentId={this.props.openedDocumentId}
+          toggleError={this.error}
+        />
+        {
+          this.state.error.showing ? (
+            <ErrorMessage
+              error={this.error}
+              {...this.state.error}
+            />
+          ) : (null)
+        }
+      </div>
     );
   }
-
 
   componentDidMount() {
 
@@ -896,15 +952,32 @@ class FileManagerPage extends React.Component {
    */
   createDocument({ name, parentFolderId = null, fileType, diamondCloudDriveFolderId, callback = () => {} }) {
     // Check if there is a Diamond Cloud drive folder
-    if (!diamondCloudDriveFolderId) {
-      console.error('There was an error while creating the document. Please try again');
-      // TODO: handle this error
-      return;
-    }
-    let self = this;
+    const self = this;
     self.setState({
       loadingDocuments: true,
     });
+    if (!diamondCloudDriveFolderId) {
+      this.props.toggleError({
+        type: 'show',
+        body: 'Error al crear el documento',
+      });
+      self.setState({
+        loadingDocuments: false,
+      });
+      callback('diamondCloudDriveFolderId is not defined');
+      return;
+    }
+    if(name === '') {
+      this.props.toggleError({
+        type: 'show',
+        body: 'No se puede crear un documento sin titulo',
+      });
+      self.setState({
+        loadingDocuments: false,
+      });
+      callback('name is empty');
+      return;
+    }
     function createDocumentInDrive(isOwner) {
       return gapi.client.drive.files.create({
         resource: {
@@ -964,8 +1037,14 @@ class FileManagerPage extends React.Component {
           parentFolderId,
         }), callback)
         .then((_result) => {
+          self.setState({
+            loadingDocuments: false,
+          });
           callback(null, _result);
         }, (_error) => {
+          self.setState({
+            loadingDocuments: false,
+          });
           callback(_error);
         });
     }
@@ -980,16 +1059,33 @@ class FileManagerPage extends React.Component {
      *   @param {Object} response
      */
   createFolder({ name, parentFolderId = null, diamondCloudDriveFolderId, callback = () => {} }) {
+    const self = this;
     // Check if there is a Diamond Cloud drive folder
     if (!diamondCloudDriveFolderId) {
-      callback('There was an error while creating the document. Please try again');
+      this.props.toggleError({
+        type: 'show',
+        body: 'Error al crear la carpeta',
+      });
+      self.setState({
+        loadingDocuments: false,
+      });
+      callback('diamondCloudDriveFolderId is not defined');
       return false;
-      // TODO: handle this error
     }
-    let self = this;
     self.setState({
       loadingFolders: true,
     });
+    if(name === "") {
+      this.props.toggleError({
+        type: 'show',
+        body: 'No se puede crear una carpeta sin titulo',
+      });
+      self.setState({
+        loadingDocuments: false,
+      });
+      callback('name is empty');
+      return;
+    }
     function createFolderInDrive(isOwner) {
       // Create the folder in Drive
       gapi.client.drive.files.create({
@@ -1020,7 +1116,7 @@ class FileManagerPage extends React.Component {
             callback(err, res) {
               if (err) {
                 self.setState({
-                  loadingFolders
+                  loadingFolders: false,
                 });
                 callback(err, null);
               } else {
@@ -1123,6 +1219,10 @@ class FileManagerPage extends React.Component {
    *   @param {Object} response
    */
   deleteDocument(params) {
+    const self = this;
+    self.setState({
+      loadingFolders: true,
+    });
     // We need to redeclare the function to have a reference to it.
     // Otherwise, we would not be able to call it recursivaly,
     // as we don't know in which context it is going to run.
@@ -1250,12 +1350,26 @@ class FileManagerPage extends React.Component {
    *   @param {Object} response
    */
   uploadFile({ file, parentFolderId = null, diamondCloudDriveFolderId, callback = () => {} }) {
+    const self = this;
+    self.setState({
+      loadingFolders: true,
+    });
+    if(!file) {
+      this.props.toggleError({
+        type: 'show',
+        body: 'No se ha elegido la imagen/video',
+      });
+      self.setState({
+        loadingFolders: false,
+      });
+      return;
+    }
     /**
- * Insert new file.
- *
- * @param {File} fileData File object to read data from.
- * @param {Function} callback Function to call when the request is complete.
- */
+   * Insert new file.
+   *
+   * @param {File} fileData File object to read data from.
+   * @param {Function} callback Function to call when the request is complete.
+   */
     function insertFileToDrive(fileData, _callback = () => {}) {
       const boundary = '-------314159265358979323846';
       const delimiter = "\r\n--" + boundary + "\r\n";
@@ -1304,8 +1418,16 @@ class FileManagerPage extends React.Component {
         parentFolderId,
       })
         .then((_result) => {
+          self.setState({
+            loadingFolders: false,
+          });
           callback(null, _result);
-        }, callback);
+        }, (_error) => {
+          self.setState({
+            loadingFolders: false,
+          });
+          callback(_error);
+        });
     });
   }
 
@@ -1383,7 +1505,7 @@ class FileViewerLayout extends React.Component {
           style={
             {
               width: '100%',
-              height: 'calc(100% - 32px)'
+              height: 'calc(100% - 42px)'
             }
           }
         />
@@ -1396,9 +1518,50 @@ FileViewerLayout.propTypes = {
                                   url: React.PropTypes.string.isRequired,
 };
 
+/**
+ * In case of error show this component.
+ */
+class ErrorMessage extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {};
+
+    this.close = this.close.bind(this);
+  }
+
+  componentDidMount() {
+    setTimeout(this.close.bind(null), this.props.delay);
+  }
+
+  close() {
+    const self = this;
+
+    $('.error-message').removeClass('show-error');
+    $('.error-message').addClass('hide-error', () => {
+      setTimeout(self.props.error.bind(null, { type: 'hide' }), 700);
+    });
+  }
+
+  render() {
+    return (
+      <div className="error-message show-error">
+        <div className="error-body">{this.props.body}</div>
+        <div className="error-close" onClick={this.close}>Cerrar</div>
+      </div>
+    );
+  }
+}
+
+ErrorMessage.propTypes = {
+  body: React.PropTypes.string.isRequired,
+  delay: React.PropTypes.number.isRequired,
+  showing: React.PropTypes.bool.isRequired,
+};
+
 ReactDOM.render(
   <Router history={browserHistory}>
-    <Route path='/' component={Index} >
+    <Route path='/' component={Index}>
       <Route path='/folder' component={FileManagerPage} />
       <Route path='/folder/:folderId' component={FileManagerPage} />
       <Route path='/document/:documentId' component={FileViewerPage} />
@@ -1406,6 +1569,8 @@ ReactDOM.render(
   </Router>,
   document.getElementById('render-target')
 );
+
+
 
 /**
  * Check if current user has authorized this application.
