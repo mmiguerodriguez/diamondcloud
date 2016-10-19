@@ -134,7 +134,7 @@ class VideoChatPage extends React.Component {
     webrtc.on('localMediaError', (error) => {
       self.error({
         type: 'show',
-        body: 'Hubo un error al acceder a la cámara/micrófono',
+        body: 'Error en la cámara/micrófono',
       });
     });
 

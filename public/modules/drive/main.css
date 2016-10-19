@@ -19,7 +19,6 @@ body {
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 1051;
 }
-
 .loader {
   position: absolute;
   left: calc(50% - 25px);
@@ -31,7 +30,6 @@ body {
   height: 50px;
   animation: spin 2s linear infinite;
 }
-
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -107,18 +105,22 @@ body {
   width: 55.5px;
   height: 55.5px;
   border-radius: 50%;
-  cursor: pointer;
   background-color: #f44336;
-  background-image: url(img/menu-button.svg);
-  background-position: center;
-  background-size: 21px;
-  background-repeat: no-repeat;
   box-shadow: 0px 0px 2px 1px rgba(0,0,0, 0.3);
+  cursor: pointer;
+}
+.create .img {
+  width: 24px;
+  margin: 16px;
+  -webkit-filter: invert(1);
 }
 .create:hover {
   box-shadow: 0px 0px 10px 1px rgba(0,0,0, 0.3);
 }
-.create:hover .options .doc, .create:hover .options .drive , .create:hover .options .folder {
+.create:hover .options .doc, 
+.create:hover .options .drive , 
+.create:hover .options .folder, 
+.create:hover .options .upload {
   opacity: 1;
 }
 .options {
@@ -141,8 +143,20 @@ body {
   background-repeat: no-repeat;
   background-size: 18px;
 }
-.doc, .folder, .drive {
+.doc, 
+.folder, 
+.drive, 
+.upload {
   opacity: 0;
+}
+.upload {
+  background-color: #2196f3;
+  cursor: pointer;
+  background-image: url('img/photo.svg');
+  transition: all 0.3s ease;
+}
+.upload:hover {
+  box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
 }
 .drive {
   background-color: #4caf50;
@@ -153,20 +167,10 @@ body {
 .drive:hover {
   box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
 }
-.doc {
-  background-color: #de690c;
-  cursor: pointer;
-  background-image: url('img/google-docs.svg');
-  -webkit-filter: invert(1);
-  transition: all 0.3s ease;
-}
-.doc:hover {
-  box-shadow: 0 5px 11px 0 rgba(255,255,255,0.18),0 4px 15px 0 rgba(255,255,255,0.15);
-}
 .folder {
   background-color: #1c43e2;
   background-image: url('img/folder.svg');
-  filter: invert(1);
+  -webkit-filter: invert(1);
   transition: all 0.6s ease;
 }
 .folder:hover {
@@ -270,14 +274,17 @@ img.icon-type.import-drive {
 .go-back-to-document {
   float: right;
   font-size: 19px;
-  margin-top: 6px;
+  margin-top: 5px;
   margin-right: 5px;
-  color: #ecf0f1;
+  color: #000;
   padding: 3px;
-  background-color: rgba(236, 240, 241, 0.23);
+  background-color: #fff;
   border-radius: 5px;
   cursor: pointer;
+  opacity: 0.5; 
+  transition: 0.3s all ease;
 }
 .go-back-to-document:hover {
-  background-color: rgba(127, 140, 141, 0.83);
+  opacity: 0.9;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
