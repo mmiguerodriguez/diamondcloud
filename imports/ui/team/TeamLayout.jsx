@@ -331,7 +331,7 @@ export default class TeamLayout extends React.Component {
         <div className="moduleinstance-context-menu context-menu" ref={c => { this.moduleInstanceContextMenu = c; }}>
           <div className="row" onClick={this.removeModuleInstance}>
             <div className="col-xs-4">
-              <img src="trash.svg" width="20px" />
+              <img src="/img/trash.svg" width="20px" />
             </div>
             <p className="col-xs-8">Eliminar</p>
           </div>
@@ -349,7 +349,7 @@ export default class TeamLayout extends React.Component {
                 </div>
                 <div className="row" onClick={this.removeBoard}>
                   <div className="col-xs-4">
-                    <img src="trash.svg" width="20px" />
+                    <img src="/img/trash.svg" width="20px" />
                   </div>
                   <p className="col-xs-8">Eliminar</p>
                 </div>
