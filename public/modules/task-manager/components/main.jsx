@@ -670,7 +670,7 @@ class Task extends React.Component {
    * interval.
    */
   startTask() {
-    let self = this;
+    const self = this;
 
     self.startTimer(() => {
       DiamondAPI.update({
@@ -705,29 +705,15 @@ class Task extends React.Component {
 
   }
   /**
-   * Finishes the task for the user setting his last
-   * task endTime to the actual date and stops the
-   * timer.
+   * Stops the task for the user setting his last
+   * task endTime to the actual date and stops
+   * the timer.
    */
-  finishTask() {
+  stopTask() {
     const self = this;
 
     self.stopTimer(() => {
-      /**
-       * Used to stop all the durations from the users
-       * that have started the task.
-       * TODO: Fix issue when there is an error
-       * updating and set the durations as
-       * undefined again.
-       */
-      const durations = [];
-      this.props.task.durations.forEach((duration) => {
-        const _duration = duration;
-        if (!_duration.endTime) {
-          _duration.endTime = new Date().getTime();
-        }
-        durations.push(_duration);
-      });
+      const index = self.getLastTaskEndTimeIndex();
 
       DiamondAPI.update({
         collection: 'tasks',
@@ -736,7 +722,7 @@ class Task extends React.Component {
         },
         updateQuery: {
           $set: {
-            durations,
+            [`durations.${index}.endTime`]: new Date().getTime(),
           },
         },
         callback(error, result) {
@@ -761,7 +747,7 @@ class Task extends React.Component {
    * coordination board.
    */
   archiveTask() {
-    let self = this;
+    const self = this;
 
     if (self.props.coordination) {
       DiamondAPI.update({
@@ -793,10 +779,44 @@ class Task extends React.Component {
    * @param {String} status
    */
   setTaskStatus(status) {
-    let self = this;
+    const self = this;
 
     if (self.props.doing) {
-      this.finishTask();
+      this.stopTask();
+    }
+
+    /**
+     * Used to stop all the durations from the users
+     * that have started the task.
+     * TODO: Fix issue when there is an error
+     * updating and set the durations as
+     * undefined again.
+     */
+    const durations = [];
+    let updateQuery;
+
+    if (status === 'finished') {
+      const date = new Date().getTime();
+      this.props.task.durations.forEach((duration) => {
+        const _duration = duration;
+        if (!_duration.endTime) {
+          _duration.endTime = date;
+        }
+        durations.push(_duration);
+      });
+
+      updateQuery = {
+        $set: {
+          durations,
+          status,
+        },
+      };
+    } else {
+      updateQuery = {
+        $set: {
+          status,
+        },
+      };
     }
 
     DiamondAPI.update({
@@ -804,11 +824,7 @@ class Task extends React.Component {
       filter: {
         _id: self.props.task._id,
       },
-      updateQuery: {
-        $set: {
-          status,
-        },
-      },
+      updateQuery,
       callback(error, result) {
         if (error) {
           console.error(error);
@@ -827,7 +843,7 @@ class Task extends React.Component {
    * state variable.
    */
   setTaskTitle() {
-    let self = this;
+    const self = this;
 
     if (self.props.coordination) {
       if (self.state.task_title !== '') {
@@ -1069,7 +1085,7 @@ class Task extends React.Component {
     };
 
     this.startTask = this.startTask.bind(this);
-    this.finishTask = this.finishTask.bind(this);
+    this.stopTask = this.stopTask.bind(this);
     this.startEditing = this.startEditing.bind(this);
     this.stopEditing = this.stopEditing.bind(this);
     this.archiveTask = this.archiveTask.bind(this);
@@ -1084,6 +1100,14 @@ class Task extends React.Component {
       if (this.props.doing) {
         this.startTimer();
       }
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.task.title !== this.state.task_title) {
+      this.setState({
+        task_title: nextProps.task.title,
+      });
     }
   }
 
@@ -1188,7 +1212,7 @@ class Task extends React.Component {
                   className='pause'
                   title='Marcar como pausado'
                   role='button'
-                  onClick={this.finishTask}>
+                  onClick={this.stopTask}>
                     <img
                       src='/modules/task-manager/img/pause-button.svg'
                       width='15px'
