@@ -1,13 +1,29 @@
 import { Meteor }          from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
-import { printObject }     from '../helpers/print-objects.js';
 import Future              from 'fibers/future';
 
-import { Boards }          from './boards.js';
-import { Teams }           from '../teams/teams.js';
-import { ModuleInstances } from '../module-instances/module-instances.js';
+import { Boards }          from './boards';
+import { Teams }           from '../teams/teams';
+import { ModuleInstances } from '../module-instances/module-instances';
 
+/**
+ * Creates a board
+ * If the board is private, it pushes as users the
+ * parameter users, but when it isn't, it pushes
+ * the team users.
+ *
+ * @type {ValidatedMethod}
+ * @param {String} teamId
+ * @param {String} name
+ * @param {String} type
+ * @param {Boolean} isPrivate
+ * @param {Object} users (optional)
+ *   @param {String} email (optional)
+ * @param {Boolean} visibleForDirectors (optional)
+ * @returns {Object} board
+ *   The created board
+ */
 export const createBoard = new ValidatedMethod({
   name: 'Boards.methods.create',
   validate: new SimpleSchema({
@@ -39,7 +55,7 @@ export const createBoard = new ValidatedMethod({
       }
     }
 
-    let team = Teams.findOne(teamId);
+    const team = Teams.findOne(teamId);
     users = users || [];
     visibleForDirectors = !!visibleForDirectors;
 
@@ -60,7 +76,7 @@ export const createBoard = new ValidatedMethod({
       });
     }
 
-    let board = {
+    const board = {
       name,
       users,
       type,
@@ -70,12 +86,14 @@ export const createBoard = new ValidatedMethod({
       visibleForDirectors,
     };
 
-    let future = new Future();
-    Boards.insert(board, (err, res) => {
-      if (!!err) future.throw(err);
+    const future = new Future();
+    Boards.insert(board, (error, result) => {
+      if (error) {
+        future.throw(error);
+      }
 
-      let boardId = res;
-      let _board = Boards.findOne(boardId);
+      const boardId = result;
+      const _board = Boards.findOne(boardId);
 
       Teams.update(teamId, {
         $push: {
@@ -107,7 +125,7 @@ export const createBoard = new ValidatedMethod({
         ];
       }
 
-      if (!!moduleInstances) {
+      if (moduleInstances) {
         ModuleInstances.insertManyInstances(moduleInstances, boardId, (error, result) => {
           if (error) {
             throw new Meteor.Error(error);
@@ -120,11 +138,11 @@ export const createBoard = new ValidatedMethod({
       future.return(_board);
     });
     return future.wait();
-  }
+  },
 });
-
 /**
  * Edits a board information
+ *
  * @type {ValidatedMethod}
  * @param {String} boardId
  * @param {String} name (optional)
@@ -158,7 +176,7 @@ export const editBoard = new ValidatedMethod({
     'users.$.email': {
       type: String,
       regEx: SimpleSchema.RegEx.Email,
-      optional: true
+      optional: true,
     },
   }).validator(),
   run({ boardId, name, type, isPrivate, users }) {
@@ -168,22 +186,46 @@ export const editBoard = new ValidatedMethod({
     }
 
     let board = Boards.findOne(boardId);
-    let team = board.team();
+    const team = board.team();
 
     name = name || board.name;
     type = type || board.type;
 
-    /**
-     * If the board wasn't private but now it is, then we need
-     * to change the users variable to fit with a private
-     * board.
-     *
-     * TODO: Fix this implementation since users will always
-     * be sent with email and without notifications.
-     */
+    if (board.isPrivate && !isPrivate) {
+      users = [];
+      team.users.forEach((user) => {
+        let found = false;
+        board.users.forEach((_user) => {
+          if (_user.email === user.email) {
+            users.push({ email: user.email, notifications: _user.notifications });
+            found = true;
+          }
+        });
 
-    users = board.users;
-    isPrivate = isPrivate || board.isPrivate;
+        if (!found) {
+          users.push({ email: user.email, notifications: 0 });
+        }
+      });
+    } else if ((!board.isPrivate && isPrivate) || (board.isPrivate && isPrivate)) {
+      users.forEach((user, index) => {
+        if (!team.hasUser({ email: user.email })) {
+          throw new Meteor.Error('Boards.methods.createBoard.userNotInTeam',
+          'You cannot add people to a board that are not part of the team.');
+        }
+
+        let found = false;
+        board.users.forEach((_user) => {
+          if (_user.email === user.email) {
+            users[index].notifications = _user.notifications;
+            found = true;
+          }
+        });
+
+        if (!found) {
+          users[index].notifications = 0;
+        }
+      });
+    }
 
     Boards.update(boardId, {
       $set: {
@@ -191,110 +233,124 @@ export const editBoard = new ValidatedMethod({
         type,
         isPrivate,
         users,
-      }
+      },
     });
 
     board = Boards.findOne(boardId);
     return board;
-  }
+  },
 });
-
+/**
+ * Archives a board
+ *
+ * @type {ValidatedMethod}
+ * @param {String} _id
+ * @returns {Object} board
+ *  The updated board
+ */
 export const archiveBoard = new ValidatedMethod({
   name: 'Boards.methods.archiveBoard',
   validate: new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
   }).validator(),
-  run({ _id }){
+  run({ _id }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('Boards.methods.archiveBoard.notLoggedIn',
       'Must be logged in to archive a board.');
     }
 
-    let board;
-
     Boards.update(_id, {
       $set: {
         archived: true,
-      }
+      },
     });
 
-    board = Boards.findOne(_id);
-    return board;
+    return Boards.findOne(_id);
   },
 });
-
+/**
+ * Dearchives a board
+ *
+ * @type {ValidatedMethod}
+ * @param {String} _id
+ * @returns {Object} board
+ *  The updated board
+ */
 export const dearchiveBoard = new ValidatedMethod({
   name: 'Boards.methods.dearchiveBoard',
   validate: new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
   }).validator(),
-  run({ _id }){
+  run({ _id }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('Boards.methods.dearchiveBoard.notLoggedIn',
       'Must be logged in to dearchive a board.');
     }
 
-    let board;
-
     Boards.update(_id, {
       $set: {
         archived: false,
-      }
+      },
     });
 
-    board = Boards.findOne(_id);
-    return board;
+    return Boards.findOne(_id);
   },
 });
-
-/*
- * @summary Make board visible for directors
- */
-
+ /**
+  * Unlocks the board and makes it visible for
+  * directors
+  *
+  * @type {ValidatedMethod}
+  * @param {String} _id
+  * @returns {Object} board
+  *  The updated board
+  */
 export const unlockBoard = new ValidatedMethod({
   name: 'Boards.methods.unlockBoard',
   validate: new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
   }).validator(),
-  run({ _id }){
+  run({ _id }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('Boards.methods.unlockBoard.notLoggedIn',
       'Must be logged in to unlock a board.');
     }
 
-    let board;
-
     Boards.update(_id, {
       $set: {
         visibleForDirectors: true,
-      }
+      },
     });
 
-    board = Boards.findOne(_id);
-    return board;
+    return Boards.findOne(_id);
   },
 });
-
+/**
+ * Unlocks the board and makes it
+ * invisible for directors
+ *
+ * @type {ValidatedMethod}
+ * @param {String} _id
+ * @returns {Object} board
+ *  The updated board
+ */
 export const lockBoard = new ValidatedMethod({
   name: 'Boards.methods.lockBoard',
   validate: new SimpleSchema({
     _id: { type: String, regEx: SimpleSchema.RegEx.Id },
   }).validator(),
-  run({ _id }){
+  run({ _id }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('Boards.methods.lockBoard.notLoggedIn',
       'Must be logged in to lock a board.');
     }
 
-    let board;
-
     Boards.update(_id, {
       $set: {
         visibleForDirectors: false,
-      }
+      },
     });
 
-    board = Boards.findOne(_id);
-    return board;
+    return Boards.findOne(_id);
   },
 });

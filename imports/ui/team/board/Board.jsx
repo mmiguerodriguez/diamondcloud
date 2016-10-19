@@ -1,6 +1,7 @@
 import React          from 'react';
 import classNames     from 'classnames';
 
+import { Modules }    from '../../../api/modules/modules';
 import ModuleInstance from '../../module-instance/ModuleInstance';
 
 export default class Board extends React.Component {
@@ -22,7 +23,7 @@ export default class Board extends React.Component {
         const validClasses = ['module-item', 'module-container'];
         let valid = false;
 
-        validClasses.forEach((c) => (valid = e.hasClass(c) ? true : valid));
+        validClasses.forEach(c => (valid = e.hasClass(c) ? true : valid));
         return valid;
       },
       drop(event, ui) {
@@ -42,8 +43,8 @@ export default class Board extends React.Component {
               moduleId,
               x,
               y,
-              width: 350, // must change to fixed
-              height: 400, // must change to fixed
+              width: Modules.findOne(moduleId).settings.width,
+              height: Modules.findOne(moduleId).settings.height,
             }, (error, result) => {
               if (error) {
                 self.props.toggleError({
@@ -129,7 +130,7 @@ export default class Board extends React.Component {
           <img
             key={user._id || _user.email}
             className="img-circle shared-people"
-            src={user.profile ? `${user.profile.picture}?sz=60` : '/img/user-shape.svg'}
+            src={user.profile ? `${user.profile.picture}?sz=60` : '/img/user-shape.jpg'}
             title={user.profile ? user.profile.name : _user.email}
             width="32px"
           />
@@ -143,7 +144,7 @@ export default class Board extends React.Component {
           <img
             key={user._id || _user.email}
             className="img-circle shared-people"
-            src={user.profile ? `${user.profile.picture}?sz=60` : '/img/user-shape.svg'}
+            src={user.profile ? `${user.profile.picture}?sz=60` : '/img/user-shape.jpg'}
             title={user.profile ? user.profile.name : user.email}
             width="32px"
           />
@@ -196,7 +197,7 @@ export default class Board extends React.Component {
             </ol>
             { /* <h4 className='title truncate'>{ this.props.board.name }</h4> */ }
           </div>
-          <div className="col-xs-6 right-data">
+          <div className="col-xs-6 right-data truncate">
             <h4 className="members truncate">
               {this.renderUsers()}
             </h4>

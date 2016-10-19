@@ -1,6 +1,7 @@
 import React           from 'react';
 
 import { generateApi } from '../../api/api/api-client';
+import { Modules }     from '../../api/modules/modules';
 
 export default class ModuleInstance extends React.Component {
   constructor(props) {
@@ -45,6 +46,8 @@ export default class ModuleInstance extends React.Component {
     .resizable({
       containment: 'parent',
       disabled: this.state.minimized,
+      minWidth: Modules.findOne(this.props.moduleInstance.moduleId).settings.minWidth,
+      minHeight: Modules.findOne(this.props.moduleInstance.moduleId).settings.minHeight,
       stop(event, ui) {
         const moduleInstanceId = self.props.moduleInstance._id;
         const { width, height } = ui.size;
@@ -104,8 +107,10 @@ export default class ModuleInstance extends React.Component {
         }}
       >
         {
-          this.state.loading ? (
-            <div>Cargando...</div>
+          this.state.loading && !this.state.minimized ? (
+            <div className='loading'>
+              <div className='loader'></div>
+            </div>
           ) : (null)
         }
         {
@@ -121,8 +126,11 @@ export default class ModuleInstance extends React.Component {
               className="module-pin"
               role="button"
               onClick={this.toggleMinimize.bind(this)}
-              onContextMenu={this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.iframe)}>
-              <img className='img' src={this.props.module.img} />
+              onContextMenu={
+                this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.iframe)
+              }
+            >
+              <img className="img" src={this.props.module.img} />
             </div>
           ) : (null)
         }
@@ -133,8 +141,7 @@ export default class ModuleInstance extends React.Component {
           style={{
             display: this.state.minimized || this.state.loading ? 'none' : 'block',
           }}
-        >
-        </iframe>
+        />
       </div>
     );
   }

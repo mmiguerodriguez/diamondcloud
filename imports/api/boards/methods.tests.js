@@ -112,6 +112,7 @@ if (Meteor.isServer) {
     });
 
     it('should edit a board', (done) => {
+      //TODO: Test when board isPrivate changes
       let args = {
         boardId: boards[3]._id,
         name: faker.lorem.word(),

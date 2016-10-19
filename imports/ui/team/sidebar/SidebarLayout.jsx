@@ -6,6 +6,23 @@ import BoardsCollapsible  from './collapsible/boards/BoardsCollapsible';
 import ChatsCollapsible   from './collapsible/chats/ChatsCollapsible';
 
 export default class SidebarLayout extends React.Component {
+  hasNotifications() {
+    let hasNotifications = false;
+
+    this.props.directChats.forEach((directChat) => {
+      if (directChat.getNotifications() > 0) {
+        hasNotifications = true;
+      }
+    });
+    this.props.boards.forEach((board) => {
+      if (board.getNotifications() > 0) {
+        hasNotifications = true;
+      }
+    });
+    
+    return hasNotifications;
+  }
+  
   render() {
     const classes = classNames('sidebar', {
       'permission-asker-opened': this.props.permissionAsker,
@@ -34,6 +51,11 @@ export default class SidebarLayout extends React.Component {
           className="item"
           onClick={this.props.toggleCollapsible.bind(null, 'chats')}
         >
+          { 
+            this.hasNotifications() ? (
+              <div className="notification-badge"></div>
+            ) : (null)
+          }
           <img src="/img/sidebar/messages.svg" width="32px" />
           <p className="text item-title">Mensajes</p>
         </div>

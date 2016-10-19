@@ -670,7 +670,7 @@ class Task extends React.Component {
    * interval.
    */
   startTask() {
-    let self = this;
+    const self = this;
 
     self.startTimer(() => {
       DiamondAPI.update({
@@ -698,22 +698,25 @@ class Task extends React.Component {
             self.stopTimer();
           } else {
             console.log('Started task correctly');
+            
+            self.props.showError({
+              body: 'Tarea iniciada',
+            });
           }
         }
       });
     });
-
   }
   /**
-   * Finishes the task for the user setting his last
-   * task endTime to the actual date and stops the
-   * timer.
+   * Stops the task for the user setting his last
+   * task endTime to the actual date and stops
+   * the timer.
    */
-  finishTask() {
-    let self = this;
+  stopTask() {
+    const self = this;
 
     self.stopTimer(() => {
-      let index = self.getLastTaskEndTimeIndex();
+      const index = self.getLastTaskEndTimeIndex();
 
       DiamondAPI.update({
         collection: 'tasks',
@@ -736,6 +739,10 @@ class Task extends React.Component {
             self.startTimer();
           } else {
             console.log('Paused task correctly');
+            
+            self.props.showError({
+              body: 'Tarea pausada',
+            });
           }
         }
       });
@@ -747,7 +754,7 @@ class Task extends React.Component {
    * coordination board.
    */
   archiveTask() {
-    let self = this;
+    const self = this;
 
     if (self.props.coordination) {
       DiamondAPI.update({
@@ -769,6 +776,10 @@ class Task extends React.Component {
             });
           } else {
             console.log('Archived task correctly');
+            
+            self.props.showError({
+              body: 'Tarea archivada',
+            });
           }
         }
       });
@@ -779,10 +790,39 @@ class Task extends React.Component {
    * @param {String} status
    */
   setTaskStatus(status) {
-    let self = this;
+    const self = this;
+    /**
+     * Used to stop all the durations from the users
+     * that have started the task.
+     * TODO: Fix issue when there is an error
+     * updating and set the durations as
+     * undefined again.
+     */
+    const durations = [];
+    let updateQuery;
 
-    if (self.props.doing) {
-      this.finishTask();
+    if (status === 'finished') {
+      const date = new Date().getTime();
+      this.props.task.durations.forEach((duration) => {
+        const _duration = duration;
+        if (!_duration.endTime) {
+          _duration.endTime = date;
+        }
+        durations.push(_duration);
+      });
+
+      updateQuery = {
+        $set: {
+          durations,
+          status,
+        },
+      };
+    } else {
+      updateQuery = {
+        $set: {
+          status,
+        },
+      };
     }
 
     DiamondAPI.update({
@@ -790,11 +830,7 @@ class Task extends React.Component {
       filter: {
         _id: self.props.task._id,
       },
-      updateQuery: {
-        $set: {
-          status,
-        },
-      },
+      updateQuery,
       callback(error, result) {
         if (error) {
           console.error(error);
@@ -804,6 +840,10 @@ class Task extends React.Component {
           });
         } else {
           console.log('Updated task status correctly');
+          
+          this.props.showError({
+            body: 'Estado de la tarea actualizado',
+          });
         }
       }
     });
@@ -813,7 +853,7 @@ class Task extends React.Component {
    * state variable.
    */
   setTaskTitle() {
-    let self = this;
+    const self = this;
 
     if (self.props.coordination) {
       if (self.state.task_title !== '') {
@@ -1055,7 +1095,7 @@ class Task extends React.Component {
     };
 
     this.startTask = this.startTask.bind(this);
-    this.finishTask = this.finishTask.bind(this);
+    this.stopTask = this.stopTask.bind(this);
     this.startEditing = this.startEditing.bind(this);
     this.stopEditing = this.stopEditing.bind(this);
     this.archiveTask = this.archiveTask.bind(this);
@@ -1073,6 +1113,14 @@ class Task extends React.Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.task.title !== this.state.task_title) {
+      this.setState({
+        task_title: nextProps.task.title,
+      });
+    }
+  }
+
   componentWillUnmount() {
     if (this.state.intervalId) {
       this.stopTimer();
@@ -1086,7 +1134,8 @@ class Task extends React.Component {
     const containerClass = classNames({
       'col-xs-12': this.state.editing,
       'col-xs-10': !this.state.editing && this.props.task.status === 'finished',
-      'col-xs-8': !this.state.editing && this.props.task.status === 'not_finished',
+      'col-xs-12': !this.state.editing && !this.props.coordination && this.props.task.status === 'not_finished',
+      'col-xs-8': !this.state.editing && this.props.coordination && this.props.task.status === 'not_finished',
     });
     const archiveClass = classNames({
       'col-xs-2 archive-task': this.props.coordination && !this.state.editing,
@@ -1174,7 +1223,7 @@ class Task extends React.Component {
                   className='pause'
                   title='Marcar como pausado'
                   role='button'
-                  onClick={this.finishTask}>
+                  onClick={this.stopTask}>
                     <img
                       src='/modules/task-manager/img/pause-button.svg'
                       width='15px'
@@ -1343,7 +1392,8 @@ class UserTaskInformation extends React.Component {
           </div>
           <div id={'collapse_' + user._id} className="panel-collapse collapse" role="tabpanel" aria-labelledby={'heading_' + user._id}>
             <div className="panel-body text-fixed">
-              Tiempo trabajado: {time} {working ? '|| Trabajando actualmente' : '' }
+              <p>Tiempo trabajado: {time}</p>
+              <p>{working ? 'Trabajando actualmente' : '' }</p>
             </div>
           </div>
         </div>

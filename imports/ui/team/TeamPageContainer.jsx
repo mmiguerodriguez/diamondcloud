@@ -32,23 +32,27 @@ const TeamPageContainer = createContainer(({ params }) => {
   const teamHandle = Meteor.subscribe('teams.team', teamUrl, () => {
     const firstBoard = Boards.findOne();
     const boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
-      TeamPage.boardId.set(Boards.findOne()._id);
+      TeamPage.boardId.set(firstBoard._id);
     });
 
     TeamPage.boardSubscription.set(boardHandle);
     messagesHandle = Meteor.subscribe('messages.last', teamUrl);
+
+    /**
+     * Subscribe again to the messages.last collection since
+     * new DirectChats or Boards where found on the
+     * database.
+     */
+    DirectChats.find().observeChanges({
+      added: changesCallback,
+      removed: changesCallback,
+    });
+    Boards.find().observeChanges({
+      added: changesCallback,
+      removed: changesCallback,
+    });
   });
   const loading = !teamsHandle.ready() || !teamHandle.ready();
-
-  // Get the messages of newly created chats
-  DirectChats.find().observeChanges({
-    added: changesCallback,
-    removed: changesCallback,
-  });
-  Boards.find().observeChanges({
-    added: changesCallback,
-    removed: changesCallback,
-  });
 
   return {
     loading,
