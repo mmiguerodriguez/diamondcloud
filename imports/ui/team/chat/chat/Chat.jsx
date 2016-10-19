@@ -48,6 +48,8 @@ export default class Chat extends React.Component {
         position: nextProps.position,
       });
     }
+
+    this.scrollDown();
   }
 
   getName() {
