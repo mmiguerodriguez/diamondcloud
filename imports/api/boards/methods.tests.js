@@ -117,8 +117,7 @@ if (Meteor.isServer) {
         boardId: boards[3]._id,
         name: faker.lorem.word(),
         type: Random.choice(['creativos', 'sistemas', 'directores creativos', 'directores de cuentas', 'administradores', 'coordinadores', 'medios']),
-        // isPrivate: true,
-        // users: [],
+        isPrivate: boards[3].isPrivate,
       };
 
       let expect = boards[3];

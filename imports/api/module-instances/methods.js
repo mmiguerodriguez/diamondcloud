@@ -1,17 +1,17 @@
-import { Meteor }                              from 'meteor/meteor';
-import { Random }                              from 'meteor/random';
-import { ValidatedMethod }                     from 'meteor/mdg:validated-method';
-import { SimpleSchema }                        from 'meteor/aldeed:simple-schema';
-import Future                                  from 'fibers/future';
+import { Meteor }          from 'meteor/meteor';
+import { Random }          from 'meteor/random';
+import { ValidatedMethod } from 'meteor/mdg:validated-method';
+import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
+import Future              from 'fibers/future';
 
-import { ModuleInstances }                     from './module-instances.js';
-import { Boards }                              from '../boards/boards.js';
+import { ModuleInstances } from './module-instances';
+import { Boards }          from '../boards/boards';
 
 export const createModuleInstance = new ValidatedMethod({
   name: 'ModuleInstances.methods.create',
   validate: new SimpleSchema({
     boardId: { type: String, regEx: SimpleSchema.RegEx.Id },
-    moduleId: { type: String/*, regEx: SimpleSchema.RegEx.Id*/ },
+    moduleId: { type: String /*, regEx: SimpleSchema.RegEx.Id*/ },
     x: { type: Number, min: 0 },
     y: { type: Number, min: 0 },
     width: { type: Number },
@@ -22,6 +22,11 @@ export const createModuleInstance = new ValidatedMethod({
     if (!Meteor.user()) {
       throw new Meteor.Error('ModuleInstances.methods.create.notLoggedIn',
       'Must be logged in to make a module instance.');
+    }
+    let board = Boards.findOne(boardId);
+    if (board.getModuleInstances().count() === 8) {
+      throw new Meteor.Error('ModuleInstances.methods.create.limitExceeded',
+      'The board already has reached the module limit.');
     }
 
     let moduleInstance = {

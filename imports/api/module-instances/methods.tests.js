@@ -20,7 +20,7 @@ import                             '../factories/factories.js';
 if (Meteor.isServer){
   describe('Module Instances', function() {
     describe('Methods', function() {
-      let module, user, board, team;
+      let module, user, board, fullBoard, modules, team;
 
       beforeEach(function() {
         resetDatabase();
@@ -29,6 +29,13 @@ if (Meteor.isServer){
         board = Factory.create('publicBoard');
         module = Factory.create('moduleInstance');
         module._id = Random.id();
+        fullBoard = Factory.create('publicBoard'); // board with 8 modules
+        modules = [];
+        for (let i = 0; i < 8; i += 1) {
+          modules.push(Factory.create('moduleInstance'));
+          modules[i]._id = Random.id();
+          fullBoard.moduleInstances.push({ _id: modules[i]._id });
+        }
         team.boards.push({ _id: board._id });
         team.users[0].email = user.emails[0].address;
         board.moduleInstances.push({ _id: module._id });
@@ -37,7 +44,11 @@ if (Meteor.isServer){
         resetDatabase();
         Teams.insert(team);
         Boards.insert(board);
+        Boards.insert(fullBoard);
         ModuleInstances.insert(module);
+        modules.forEach((module) => {
+          ModuleInstances.insert(module);
+        });
         Meteor.users.insert(user);
 
         sinon.stub(Meteor, 'user', () => user);
@@ -63,7 +74,9 @@ if (Meteor.isServer){
         };
 
         createModuleInstance.call(args, (err, result) => {
-          if (err) throw new Meteor.Error(err);
+          if (err) {
+            throw new Meteor.Error(err);
+          }
 
           expect = {
             _id: result._id,
@@ -85,8 +98,25 @@ if (Meteor.isServer){
           done();
         });
       });
+      
+      it('should not create a module instance when the limit is reached', (done) => {
+        let args, expect, result;
+        args = {
+          boardId: fullBoard._id,
+          moduleId: module.moduleId,
+          x: module.x,
+          y: module.y,
+          width: module.width,
+          height: module.height
+        };
 
-      it('should edit a module instance', function() {
+        createModuleInstance.call(args, (error, result) => {
+          chai.assert.equal(error.error, 'ModuleInstances.methods.create.limitExceeded');
+          done();
+        });
+      })
+
+      it('should edit a module instance', function(done) {
         let args, expect, result;
         args = {
           moduleInstanceId: module._id,
@@ -100,20 +130,20 @@ if (Meteor.isServer){
           if (err) throw new Meteor.Error(err);
           result = res;
           delete result.boardId;
+          expect = {
+            _id: result._id,
+            moduleId: module.moduleId,
+            x: args.x,
+            y: args.y,
+            width: args.width,
+            height: args.height,
+            archived: false,
+            minimized: false
+          };
+  
+          chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
+          done();
         });
-
-        expect = {
-          _id: result._id,
-          moduleId: module.moduleId,
-          x: args.x,
-          y: args.y,
-          width: args.width,
-          height: args.height,
-          archived: false,
-          minimized: false
-        };
-
-        chai.assert.equal(JSON.stringify(expect), JSON.stringify(result));
       });
 
       it('should archive a module instance', function() {
