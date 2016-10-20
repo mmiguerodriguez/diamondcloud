@@ -4,6 +4,7 @@ import { Boards } from '../boards';
 
 Meteor.publishComposite('boards.board', function (boardId) {
   if (!this.userId) {
+    this.stop();
     throw new Meteor.Error('Boards.publication.board.notLoggedIn',
     'Must be logged in to view boards.');
   }

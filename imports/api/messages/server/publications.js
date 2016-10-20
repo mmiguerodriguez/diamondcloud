@@ -9,8 +9,9 @@ import { DirectChats } from '../../direct-chats/direct-chats.js';
  * TODO: Pass MESSAGES_LIMIT from client side,
  *       and make pagination work.
  */
-Meteor.publish('messages.chat', function({ directChatId, boardId }) {
+Meteor.publish('messages.chat', function ({ directChatId, boardId }) {
   if (!this.userId) {
+    this.stop();
     throw new Meteor.Error('Messages.chat.notLoggedIn',
     'Must be logged in to view chats.');
   }
@@ -20,7 +21,7 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
     'There are errors in the passed parameters.');
   }
 
-  if (!!directChatId){
+  if (!!directChatId) {
     if (!DirectChats.isValid(directChatId, this.userId)) {
       throw new Meteor.Error('Messages.chat.wrongParameters',
       'There are errors in the passed parameters.');
@@ -35,7 +36,7 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
       directChatId = '';
     }
   }
-  
+
   const MESSAGES_LIMIT = 100;
 
   return Messages.find({
@@ -51,8 +52,9 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
   });
 });
 
-Meteor.publish('messages.last', function(teamUrl) {
+Meteor.publish('messages.last', function (teamUrl) {
   if (!this.userId) {
+    this.stop();
     throw new Meteor.Error('Messages.last.notLoggedIn',
     'Must be logged in to view chats.');
   }

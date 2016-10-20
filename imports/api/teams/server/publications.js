@@ -1,12 +1,13 @@
 import { Meteor }      from 'meteor/meteor';
 
-import { Teams }       from '../teams.js';
-import { Boards }      from '../../boards/boards.js';
-import { Modules }     from '../../modules/modules.js';
-import { DirectChats } from '../../direct-chats/direct-chats.js';
+import { Teams }       from '../teams';
+import { Boards }      from '../../boards/boards';
+import { Modules }     from '../../modules/modules';
+import { DirectChats } from '../../direct-chats/direct-chats';
 
-Meteor.publishComposite('teams.dashboard', function() {
+Meteor.publishComposite('teams.dashboard', function () {
   if (!this.userId) {
+    this.stop();
     throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn',
     'Must be logged in to view teams.');
   }
@@ -28,8 +29,9 @@ Meteor.publishComposite('teams.dashboard', function() {
   };
 });
 
-Meteor.publishComposite('teams.team', function(teamUrl) {
+Meteor.publishComposite('teams.team', function (teamUrl) {
   if (!this.userId) {
+    this.stop();
     throw new Meteor.Error('Teams.publication.team.notLoggedIn',
     'Must be logged in to view teams.');
   }

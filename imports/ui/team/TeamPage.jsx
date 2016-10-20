@@ -37,12 +37,6 @@ export default class TeamPage extends React.Component {
       browserHistory.push('/404');
     }
   }
-
-  componentWillUnmount() {
-    if (TeamPage.boardSubscription.get()) {
-      TeamPage.boardSubscription.get().stop();
-    }
-  }
   /**
    * Iterates through all the chats, grabs its messages and
    * returns them as props for TeamLayout.

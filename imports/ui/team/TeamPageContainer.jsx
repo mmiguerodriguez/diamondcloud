@@ -63,6 +63,8 @@ const TeamPageContainer = createContainer(({ params }) => {
   });
   const loading = !teamHandle.ready();
 
+  console.log('TeamPage check', TeamPage);
+
   return {
     loading,
     team: Teams.findOne({ url: teamUrl }),
