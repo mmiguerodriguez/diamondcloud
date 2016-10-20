@@ -200,29 +200,33 @@ export default class Board extends React.Component {
             <h4 className="members truncate">
               {this.renderUsers()}
             </h4>
-            <div className="visibility">
-              {
-                this.state.visibleForDirectors ? (
-                  <img
-                    role="button"
-                    onClick={() => this.toggleBoardToDirectors('lockBoard')}
-                    src="/img/visibility-off.svg"
-                    className="visibility-img"
-                    title="Hacer no visible para directores"
-                    alt="Hacer no visible para directores"
-                  />
-                ) : (
-                  <img
-                    role="button"
-                    onClick={() => this.toggleBoardToDirectors('unlockBoard')}
-                    src="/img/visibility-on.svg"
-                    className="visibility-img"
-                    title="Hacer visible para directores"
-                    alt="Hacer visible para directores"
-                  />
-                )
-              }
-            </div>
+            {
+              this.props.board.isPrivate ?
+              <div className="visibility">
+                {
+                  this.state.visibleForDirectors ? (
+                    <img
+                      role="button"
+                      onClick={() => this.toggleBoardToDirectors('lockBoard')}
+                      src="/img/visibility-off.svg"
+                      className="visibility-img"
+                      title="Hacer no visible para directores"
+                      alt="Hacer no visible para directores"
+                    />
+                  ) : (
+                    <img
+                      role="button"
+                      onClick={() => this.toggleBoardToDirectors('unlockBoard')}
+                      src="/img/visibility-on.svg"
+                      className="visibility-img"
+                      title="Hacer visible para directores"
+                      alt="Hacer visible para directores"
+                    />
+                  )
+                }
+              </div>
+              : null
+            }
             <span
               className="message-icon-span"
               onClick={this.props.addChat.bind(null, {
