@@ -15,12 +15,48 @@ class Index extends React.Component {
 
     this.state = {
       openedDocumentId: '',
+      
+      error: {
+        type: '',
+        body: '',
+        delay: '',
+        showing: false,
+      }
     };
+    
+    this.error = this.error.bind(this);
   }
-  render() {
-    return React.cloneElement(this.props.children, {
-      openedDocumentId: this.state.openedDocumentId,
+  
+  error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
+    console.log(type, body);
+    this.setState({
+      error: {
+        body,
+        delay: delay || ERROR_DELAY,
+        showing: type === 'show',
+      },
     });
+  }
+  
+  render() {
+    return (
+      <div>
+        {
+          React.cloneElement(this.props.children, {
+            openedDocumentId: this.state.openedDocumentId,
+            error: this.error,
+          })
+        }
+        {
+          this.state.error.showing ? (
+            <ErrorMessage
+              error={this.error}
+              {...this.state.error}
+            />
+          ) : (null)
+        }
+      </div>
+    );
   }
 
   componentDidMount() {
@@ -230,15 +266,9 @@ class FileManagerLayout extends React.Component {
           className="document fixed"
           title={document.name}
           onClick={
-            document.fileType.indexOf('application/vnd.google-apps.') !== -1 ? ( 
-              () => {
-                browserHistory.push(`/document/${document._id}`);
-              }
-            ) : (
-              () => {
-                window.open(`https://drive.google.com/open?id=${document._id}`, '_blank')
-              }
-            )
+            () => {
+              browserHistory.push(`/document/${document._id}`);
+            }
           }
         >
           {
@@ -498,9 +528,9 @@ class FileManagerLayout extends React.Component {
                   <div
                     className="go-back-to-document"
                     onClick={
-                        () => {
-                          browserHistory.push(`/document/${this.props.openedDocumentId}`);
-                        }
+                      () => {
+                        browserHistory.push(`/document/${this.props.openedDocumentId}`);
+                      }
                     }
                   >
                     Volver al documento
@@ -704,56 +734,27 @@ class FileManagerPage extends React.Component {
       subscriptions: [], /** Array that stores the rootFiles,
                           *  folders and documents subscriptions
                           */
-      error: {
-        type: '',
-        body: '',
-        delay: '',
-        showing: false,
-      }
     };
-    
-    this.error = this.error.bind(this);
-  }
-
-  error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
-    console.log(type, body);
-    this.setState({
-      error: {
-        body,
-        delay: delay || ERROR_DELAY,
-        showing: type === 'show',
-      },
-    });
   }
   
   render() {
     return (
-      <div>
-        <FileManagerLayout
-          folderId={this.props.params.folderId}
-          loadingFolders={this.state.loadingFolders}
-          folders={this.state.folders}
-          loadingDocuments={this.state.loadingDocuments}
-          documents={this.state.documents}
-          createDocument={this.createDocument}
-          createFolder={this.createFolder}
-          importDocument={this.importDocument}
-          deleteDocument={this.deleteDocument}
-          uploadFile={this.uploadFile}
-          initPicker={this.initPicker}
-          diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
-          openedDocumentId={this.props.openedDocumentId}
-          toggleError={this.error}
-        />
-        {
-          this.state.error.showing ? (
-            <ErrorMessage
-              error={this.error}
-              {...this.state.error}
-            />
-          ) : (null)
-        }
-      </div>
+      <FileManagerLayout
+        folderId={this.props.params.folderId}
+        loadingFolders={this.state.loadingFolders}
+        folders={this.state.folders}
+        loadingDocuments={this.state.loadingDocuments}
+        documents={this.state.documents}
+        createDocument={this.createDocument}
+        createFolder={this.createFolder}
+        importDocument={this.importDocument}
+        deleteDocument={this.deleteDocument}
+        uploadFile={this.uploadFile}
+        initPicker={this.initPicker}
+        diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
+        openedDocumentId={this.props.openedDocumentId}
+        toggleError={this.props.error}
+      />
     );
   }
 
@@ -1448,12 +1449,21 @@ class FileManagerPage extends React.Component {
 
 class FileViewerPage extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+      fileType: null,
+    };
+  }
   render() {
     let url = 'https://drive.google.com/open?id=' + this.props.params.documentId;
     return (
       <FileViewerLayout
         url={url}
-        />
+        fileType={this.state.fileType}
+        loading={this.state.loading}
+      />
     );
   }
 
@@ -1487,11 +1497,43 @@ class FileViewerPage extends React.Component {
         }
       });
     }
+    const self = this;
+    // Set the fileType
+    DiamondAPI.get({
+      collection: 'documents',
+      filter: {
+        _id: this.props.params.documentId,
+      },
+      callback(error, result) {
+        if (error) {
+          self.setState({
+            loading: false,
+          })
+          self.props.toggleError({
+            type: 'show',
+            body: 'Error al abrir el documento',
+          });
+        } else {
+          self.setState({
+            loading: false,
+            fileType: result[0].fileType,
+          });
+        }
+      }
+    });
   }
 }
 
 class FileViewerLayout extends React.Component {
   render() {
+    if (this.props.loading) {
+      return (
+        <div className="loading">
+          <div className="loader"></div>
+        </div>
+      );
+    }
+    
     return (
       <div>
         <div className='drive-navbar'>
@@ -1500,22 +1542,38 @@ class FileViewerLayout extends React.Component {
             onClick={ () => { browserHistory.push('/folder') } }>
           </i>
         </div>
-        <iframe
-          src={this.props.url}
-          style={
-            {
-              width: '100%',
-              height: 'calc(100% - 42px)'
-            }
-          }
-        />
+        {
+          this.props.fileType.indexOf('image') !== 1 || this.props.fileType.indexOf('video') !== 1 ?
+          (
+          <div className="content-container">
+            <div className="image-container">
+              <div className="photo" />
+              <p className="image-text">
+                Para poder acceder a la imagen/video hace click <a href={this.props.url} target="_blank">acá</a>
+              </p>
+          </div>
+        </div>
+          ) : (
+            <iframe
+              src={this.props.url}
+              style={
+                {
+                  width: '100%',
+                  height: 'calc(100% - 42px)'
+                }
+              }
+            />
+          )
+        }
       </div>
     );
   }
 }
 
 FileViewerLayout.propTypes = {
-                                  url: React.PropTypes.string.isRequired,
+  url: React.PropTypes.string.isRequired,
+  fileType: React.PropTypes.string.isRequired,
+  loading: React.PropTypes.string.isRequired,
 };
 
 /**
