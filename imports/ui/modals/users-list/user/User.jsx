@@ -1,9 +1,19 @@
 import React from 'react';
 
 export default class UsersList extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      hierarchy: this.props.user.hierarchy || 'sistemas',
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+  }
+
   handleChange(index, event) {
-    let self = this;
-    let value = event.target.value;
+    const self = this;
+    const value = event.target.value;
 
     if (index === 'hierarchy' && !!this.props.team) {
       Meteor.call('Teams.methods.changeUserHierarchy', {
@@ -12,9 +22,7 @@ export default class UsersList extends React.Component {
         hierarchy: value,
       }, (error, result) => {
         if (error) {
-          console.error(error);
-        } else {
-          console.log('Changed user hierarchy', result);
+          // console.error(error);
         }
       });
     }
@@ -24,16 +32,6 @@ export default class UsersList extends React.Component {
     });
   }
 
-  constructor(props) {
-    super(props);
-    console.log('props: ', this.props);
-    this.state = {
-      hierarchy: this.props.user.hierarchy || 'sistemas',
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-  }
-
   render() {
     return (
       <div className="row">
@@ -41,37 +39,43 @@ export default class UsersList extends React.Component {
           <img
             className="contact-list-photo"
             alt="User"
-            src={this.props.user.profile.picture || '/img/user-shape.svg'}
+            src={this.props.user.profile.picture ? `${this.props.user.profile.picture}?sz=60` : '/img/user-shape.jpg'}
           />
         </div>
         <div className="col-xs-10">
-          <p className="contact-list-name truncate">
+          <p className="contact-list-name truncate col-xs-6">
             {this.props.user.profile.name}
-            <select
-              id="user-type-edit"
-              className="form-control user-type edit"
-              value={this.state.hierarchy}
-              onChange={(e) => this.handleChange('hierarchy', e)}>
-              <option value='sistemas'>Sistemas</option>
-              <option value='creativo'>Creativo</option>
-              <option value='director creativo'>Director creativo</option>
-              <option value='director de cuentas'>Director de cuentas</option>
-              <option value='coordinador'>Coordinador</option>
-              <option value='administrador'>Administrador</option>
-              <option value='medios'>Medios</option>
-            </select>
           </p>
+          {
+            this.props.isAdmin && Meteor.user().email() !== this.props.user.emails[0].address ? (
+              <select
+                id="user-type-edit"
+                className="form-control user-type edit"
+                value={this.state.hierarchy}
+                onChange={e => this.handleChange('hierarchy', e)}
+              >
+                <option value="sistemas">Sistemas</option>
+                <option value="creativo">Creativo</option>
+                <option value="director creativo">Director creativo</option>
+                <option value="director de cuentas">Director de cuentas</option>
+                <option value="coordinador">Coordinador</option>
+                <option value="administrador">Administrador</option>
+                <option value="medios">Medios</option>
+              </select>
+            ) : (null)
+          }
         </div>
         {
-          this.props.isAdmin ? (
+          this.props.isAdmin && Meteor.user().email() !== this.props.user.emails[0].address ? (
             <div className="col-xs-1">
               <div
                 className="close"
-                onClick={ this.props.removeUser.bind(null, this.props.user.emails[0].address) }>
+                onClick={this.props.removeUser.bind(null, this.props.user.emails[0].address)}
+              >
                 <img src="/img/close-icon.svg" width="16px" />
               </div>
             </div>
-          ) : null
+          ) : (null)
         }
 
       </div>

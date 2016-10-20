@@ -57,6 +57,7 @@
 }
 .board-list-title {
   margin-top: 15px;
+  padding: 0px;
   color: #fff;
 }
 .board {
@@ -89,6 +90,9 @@
   margin: 15px 0 5px;
   font-weight: bold;
 }
+.fixed-title {
+  padding: 0px;
+}
 .tasks-list {
   background-color: #e2e4e6;
   border-radius: 10px;
@@ -97,7 +101,10 @@
   margin-bottom: 10px;
 }
 .task-info {
-  text-align: justify;
+  text-align: left;
+}
+.no-task {
+  padding-bottom: 5px;
 }
 .edit-task,
 .archive-task {
@@ -138,6 +145,7 @@
 .task:hover .pause,
 .task:hover .done {
   opacity: 1;
+  z-index: 1;
 }
 .task:hover {
   background-color: #eee;
@@ -179,6 +187,7 @@
   -webkit-filter: invert(1);
 }
 .expiration {
+  padding: 0px;
   margin: 0 0 15px;
   font-size: 13px !important;
 }
@@ -224,6 +233,11 @@
 	}
 }
 
+.go-back-task {
+  position: absolute;
+  top: 1.5px;
+  left: 5px;
+}
 .go-back {
   display: inline-block;
   width: 32px;
@@ -239,6 +253,7 @@
   border-radius: 50%;
   margin: 5px;
   transition: 0.3s all ease;
+  cursor: pointer;
 }
 .go-back:hover {
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
@@ -247,6 +262,7 @@
 .task-info {
   background-color: #e2e4e6;
   margin-top: 15px;
+  margin-bottom: 10px;
   border-radius: 5px;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
@@ -261,9 +277,12 @@
   margin-bottom: 10px;
 }
 .text-fixed {
-  /* padding: 10px; */
   font-size: 14px;
   text-align: left;
+}
+.panel-body.text-fixed {
+  padding: 10px;
+  font-size: 12px;
 }
 .panel-heading.fixed {
   padding: 10px;

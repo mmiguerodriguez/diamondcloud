@@ -29,9 +29,8 @@ if (Meteor.isClient) {
             'profile.name': 'Another name',
           }
         });
-        let result = Meteor.users.findOne(user._id);
 
-        console.log(result);
+        let result = Meteor.users.findOne(user._id);
         chai.assert.isTrue(result.profile.name === user.profile.name);
       });
     });

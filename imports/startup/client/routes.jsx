@@ -1,28 +1,45 @@
-import React from 'react';
-import { Router, Route, IndexRoute, browserHistory } from 'react-router';
+import React             from 'react';
+import {
+  Router,
+  Route,
+  IndexRoute,
+  Redirect,
+  browserHistory,
+}                        from 'react-router';
 
 // Route components
-import App       from '../../ui/app/AppContainer.jsx';
-import Landing   from '../../ui/landing/LandingPage.jsx';
-import Dashboard from '../../ui/dashboard/DashboardPage.jsx';
-import Team      from '../../ui/team/TeamPage.jsx';
-import Pricing   from '../../ui/pricing/PricingPage.jsx';
-import Help      from '../../ui/help/HelpPage.jsx';
-import About     from '../../ui/about-us/AboutPage.jsx';
-import NotFound  from '../../ui/not-found/NotFoundPage.jsx';
+import AppPageContainer  from '../../ui/app/AppPageContainer';
+import TeamPageContainer from '../../ui/team/TeamPageContainer';
+import LandingPage       from '../../ui/landing/LandingPage';
+import NotFound          from '../../ui/not-found/NotFoundPage';
+
+// Override accounts templates
+import '../../ui/accounts/accounts-templates';
 
 export const renderRoutes = () => (
-  <Router history={ browserHistory }>
-    <Route path="/" component={ App }>
-      <IndexRoute component={ Landing }/>
-
-      <Route path="/dashboard" component={ Dashboard } />
-      <Route path="/team/:teamId" component={ Team } />
-      <Route path="/pricing" component={ Pricing } />
-      <Route path="/help" component={ Help } />
-      <Route path="/about" component={ About } />
-
-      <Route path="*" component={ NotFound } />
+  <Router history={browserHistory}>
+    <Redirect from="/" to="carlosydario" />
+    <Route path="/carlosydario" component={AppPageContainer}>
+      <IndexRoute component={LandingPage} />
+      <Route path="/team/:teamUrl" component={TeamPageContainer} />
+      <Route path="*" component={NotFound} />
     </Route>
+    <Route path="/diamond" component={AppPageContainer}>
+      <IndexRoute component={LandingPage} />
+      <Route path="/team/:teamUrl" component={TeamPageContainer} />
+      <Route path="*" component={NotFound} />
+    </Route>
+    <Route path="*" component={NotFound} />
   </Router>
 );
+
+/*
+  import Dashboard from '../../ui/dashboard/DashboardPage.jsx';
+  import Pricing   from '../../ui/pricing/PricingPage.jsx';
+  import Help      from '../../ui/help/HelpPage.jsx';
+  import About     from '../../ui/about-us/AboutPage.jsx';
+  <Route path="/dashboard" component={Dashboard} />
+  <Route path="/pricing" component={Pricing} />
+  <Route path="/help" component={Help} />
+  <Route path="/about" component={About} />
+*/

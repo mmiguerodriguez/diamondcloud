@@ -14,3 +14,6 @@ import './accounts.js';
 
 // Push configuration for server-side
 import './push-configuration.js';
+
+// Insert the first team for Carlos y Dario
+import './insert-team.js';

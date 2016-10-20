@@ -25,6 +25,7 @@ Factory.define('board', Boards, {
 	isPrivate: null,
 	moduleInstances: [],
 	archived: false,
+	visibleForDirectors: false,
 });
 
 Factory.define('publicBoard', Boards, Factory.extend('board', {
@@ -43,6 +44,7 @@ Factory.define('team', Teams, {
 	name: faker.company.companyName(),
 	plan: Random.choice(['free', 'premium']),
 	type: Random.choice(['web', 'android', 'ios', 'marketing']),
+	url: 'random_url',
 	boards: [],
 	users: [
 		{ email: faker.internet.email(), hierarchy: 'sistemas' }

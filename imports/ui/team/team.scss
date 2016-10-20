@@ -7,9 +7,14 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  z-index: 100;
+  z-index: 0;
   &.auto {
     width: auto;
+    max-width: calc(100vw - 64px);
+    height: auto;
+    max-height: 268px;
+    padding-left: 90px;
+    overflow-y: hidden;
   }
   &.maximized {
     width: calc(100% - 64px);
@@ -210,4 +215,8 @@
       display: block !important;
     }
   }
+}
+
+.board-error {
+  position: absolute;
 }

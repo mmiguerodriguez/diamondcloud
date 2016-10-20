@@ -1,40 +1,32 @@
 import { Meteor }   from 'meteor/meteor';
-import { Boards }   from '/imports/api/boards/boards.js';
-
 import React        from 'react';
-import Notification from './Notification.jsx';
+
+import { Boards }   from '../../../../imports/api/boards/boards';
+import Notification from './Notification';
 
 export default class NotificationSystem extends React.Component {
-  render() {
-    return (
-      <div>
-        { this.renderNotifications() }
-      </div>
-    );
-  }
   renderNotifications() {
-    let arr = [];
+    const arr = [];
 
     this.props.messages.forEach((message) => {
-      let isSender = message.senderId === Meteor.userId();
+      const isSender = message.senderId === Meteor.userId();
       let seenMessage;
 
       if (message.seers) {
-        seenMessage = message.seers.find((seer) => {
-          return seer === Meteor.userId();
-        });
+        seenMessage = message.seers.find(seer => seer === Meteor.userId());
       } else {
         seenMessage = message.seen;
       }
 
       if (!isSender && !seenMessage) {
-        let title, body;
+        let title;
+        let body;
 
-        if (!!message.boardId) {
-          let sender = Meteor.users.findOne(message.senderId).profile.name;
+        if (message.boardId) {
+          const sender = Meteor.users.findOne(message.senderId).profile.name;
 
           title = Boards.findOne(message.boardId).name;
-          body = sender + ': ' + message.content
+          body = `${sender}: ${message.content}`;
         } else {
           title = Meteor.users.findOne(message.senderId).profile.name;
           body = message.content;
@@ -42,14 +34,23 @@ export default class NotificationSystem extends React.Component {
 
         arr.push(
           <Notification
-            key={ message._id }
-            title={ title }
-            body={ body } />
+            key={message._id}
+            title={title}
+            body={body}
+          />
         );
       }
     });
 
     return arr;
+  }
+
+  render() {
+    return (
+      <div>
+        {this.renderNotifications()}
+      </div>
+    );
   }
 }
 

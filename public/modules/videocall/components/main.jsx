@@ -18,6 +18,8 @@ const {
   browserHistory,
 } = ReactRouter;
 
+const ERROR_DELAY = 5000;
+
 /**
  * Start the module with the following route.
  */
@@ -37,13 +39,20 @@ class VideoChatPage extends React.Component {
       videos: [],
       peers: [],
       webrtc: {},
+      error: {
+        body: '',
+        delay: ERROR_DELAY,
+        showing: false,
+      },
     };
+
+    this.error = this.error.bind(this);
   }
 
   componentWillMount() {
-    let self = this;
+    const self = this;
 
-    let webrtc = new SimpleWebRTC({
+    const webrtc = new SimpleWebRTC({
       localVideoEl: self.state.localVideoId,
       remoteVideosEl: '',
       autoRequestMedia: true,
@@ -59,13 +68,11 @@ class VideoChatPage extends React.Component {
   }
 
   componentDidMount() {
-    let self = this;
-    let webrtc = self.state.webrtc;
+    const self = this;
 
-    const VIDEO_WIDTH = 250,
-          VIDEO_HEIGHT = 250,
-          VIDEO_START = 'playing',
-          AUDIO_START = 'unmuted';
+    const webrtc = self.state.webrtc;
+    const VIDEO_START = 'playing';
+    const AUDIO_START = 'unmuted';
 
     // RTC ready event
     webrtc.on('readyToCall', () => {
@@ -81,7 +88,7 @@ class VideoChatPage extends React.Component {
 
     // New/Removed videos events
     webrtc.on('videoAdded', (video, peer) => {
-      let { videos, peers } = self.state;
+      const { videos, peers } = self.state;
 
       videos.push({
         id: peer.id,
@@ -99,8 +106,8 @@ class VideoChatPage extends React.Component {
       });
     });
     webrtc.on('videoRemoved', (video, peer) => {
-      let { videos, peers } = self.state;
-      let videoDomId =  webrtc.getDomId(peer);
+      const { videos, peers } = self.state;
+      const videoDomId = webrtc.getDomId(peer);
 
       videos.forEach((video, index) => {
         if (video.domId === videoDomId) {
@@ -122,10 +129,13 @@ class VideoChatPage extends React.Component {
 
     // Access to media stream events
     webrtc.on('localStream', (stream) => {
-      console.log('Access to media stream', stream);
+
     });
     webrtc.on('localMediaError', (error) => {
-      console.log('Failed access to media stream', error);
+      self.error({
+        type: 'show',
+        body: 'Error en la cámara/micrófono',
+      });
     });
 
     // Local video/audio events
@@ -145,21 +155,58 @@ class VideoChatPage extends React.Component {
     // Failure events
     webrtc.on('iceFailed', (peer) => {
       // Local p2p/ice failure
-      let pc = peer.pc;
-      console.log('Had local relay candidate', pc.hadLocalRelayCandidate);
-      console.log('Had remote relay candidate', pc.hadRemoteRelayCandidate);
+      const pc = peer.pc;
+      self.error({
+        type: 'show',
+        body: 'Hubo un error con la conexión local',
+      });
     });
     webrtc.on('connectivityError', (peer) => {
       // Remote p2p/ice failure
-      let pc = peer.pc;
-      console.log('Had local relay candidate', pc.hadLocalRelayCandidate);
-      console.log('Had remote relay candidate', pc.hadRemoteRelayCandidate);
+      const pc = peer.pc;
+      self.error({
+        type: 'show',
+        body: 'Hubo un error con la conexión remota',
+      });
     });
+  }
+
+  error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
+    if (type === 'hide') {
+      this.setState({
+        error: {
+          body: '',
+          delay: ERROR_DELAY,
+          showing: false,
+        },
+      });
+    } else if (type === 'show') {
+      this.setState({
+        error: {
+          body,
+          delay: delay || ERROR_DELAY,
+          showing: true,
+        },
+      });
+    }
   }
 
   render() {
     return (
-      <VideoChatLayout { ...this.state } />
+      <div>
+        <VideoChatLayout
+          error={this.error}
+          {...this.state}
+        />
+        {
+          this.state.error.showing ? (
+            <ErrorMessage
+              error={this.error}
+              {...this.state.error}
+            />
+          ) : (null)
+        }
+      </div>
     );
   }
 }
@@ -183,11 +230,29 @@ class VideoChatLayout extends React.Component {
     this.changeMaximizedVideo = this.changeMaximizedVideo.bind(this);
   }
 
+  connect() {
+    if (this.props.readyToCall) {
+      const board = DiamondAPI.getCurrentBoard();
+
+      this.props.webrtc.joinRoom(board._id);
+
+      this.setState({
+        connected: true,
+      });
+    }
+  }
+
+  changeMaximizedVideo(id) {
+    this.setState({
+      maximizedVideo: id,
+    });
+  }
+
   renderVideos() {
     return this.props.videos.map((video) => {
       return (
         <Video
-          key={video.id }
+          key={video.id}
           position={
             (this.state.maximizedVideo === video.id) ?
               ('maximized-video') :
@@ -195,57 +260,42 @@ class VideoChatLayout extends React.Component {
           }
           onClick={this.changeMaximizedVideo}
           webrtc={this.props.webrtc}
-          { ...video } />
+          {...video}
+        />
       );
     });
   }
 
-  connect() {
-    if (this.props.readyToCall) {
-      let board = DiamondAPI.getCurrentBoard();
-
-      this.props.webrtc.joinRoom(board._id);
-      this.setState({
-        connected: true,
-      });
-    }
-  }
-
   render() {
+    const remoteVideos = this.renderVideos();
     return (
       <div>
         <UserVideo
           id={this.props.localVideoId}
           position={
-            (this.state.maximizedVideo === this.props.localVideoId) ?
-              ('maximized-video') :
-              ('minimized-video')
+            (this.state.maximizedVideo === this.props.localVideoId) || (remoteVideos.length === 0)  ?
+              ('maximized-video') : ('minimized-video')
           }
           onClick={this.changeMaximizedVideo}
           webrtc={this.props.webrtc}
-          connected={this.state.connected} />
+          connected={this.state.connected}
+        />
         {
           this.state.connected ? (
             <div>
-              {this.renderVideos()}
+              {remoteVideos}
             </div>
           ) : (
-            <div className='join-background'>
+            <div className="join-background">
               <button
-                className='btn btn-primary join'
-                onClick={this.connect}>
-              </button>
+                className="btn btn-primary join"
+                onClick={this.connect}
+              />
             </div>
           )
         }
       </div>
     );
-  }
-
-  changeMaximizedVideo(id) {
-    this.setState({
-      maximizedVideo: id,
-    });
   }
 }
 
@@ -254,6 +304,17 @@ class VideoChatLayout extends React.Component {
  * 100% width and height.
  */
 class UserVideo extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { video: 'playing', audio: 'unmuted' };
+
+    this.pause = this.pause.bind(this);
+    this.resume = this.resume.bind(this);
+    this.mute = this.mute.bind(this);
+    this.unmute = this.unmute.bind(this);
+  }
+
   pause() {
     this.props.webrtc.pauseVideo();
     this.setState({
@@ -280,17 +341,6 @@ class UserVideo extends React.Component {
     this.setState({
       audio: 'unmuted',
     });
-  }
-
-  constructor(props) {
-    super(props);
-
-    this.state = { video: 'playing', audio: 'unmuted' };
-
-    this.pause = this.pause.bind(this);
-    this.resume = this.resume.bind(this);
-    this.mute = this.mute.bind(this);
-    this.unmute = this.unmute.bind(this);
   }
 
   render() {
@@ -347,15 +397,6 @@ class UserVideo extends React.Component {
  * videos.
  */
 class Video extends React.Component {
-  mute() {
-    this.video.volume = 0;
-    console.log('Muted...', this.video.volume, this.state.startVolume);
-  }
-
-  unmute() {
-    this.video.volume = this.state.startVolume;
-  }
-
   constructor(props) {
     super(props);
 
@@ -369,6 +410,14 @@ class Video extends React.Component {
     this.setState({
       startVolume: this.video.volume,
     });
+  }
+
+  mute() {
+    this.video.volume = 0;
+  }
+
+  unmute() {
+    this.video.volume = this.state.startVolume;
   }
 
   render() {
@@ -461,12 +510,48 @@ class VideoStatus extends React.Component {
 }
 
 /**
+ * Renders error messages to tell user something
+ * is wrong with their inputs, etc.
+ */
+class ErrorMessage extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {};
+
+    this.close = this.close.bind(this);
+  }
+
+  componentDidMount() {
+    setTimeout(this.close.bind(null), this.props.delay);
+  }
+
+  close() {
+    const self = this;
+
+    $('.error-message').removeClass('show-error');
+    $('.error-message').addClass('hide-error', () => {
+      setTimeout(self.props.error.bind(null, { type: 'hide' }), 700);
+    });
+  }
+
+  render() {
+    return (
+      <div className="error-message show-error">
+        <div className="error-body">{this.props.body}</div>
+        <div className="error-close" onClick={this.close}>Cerrar</div>
+      </div>
+    );
+  }
+}
+
+/**
  * Router setup.
  */
 ReactDOM.render(
-  <Router history={browserHistory }>
-    <Route path='/' component={VideoChatPage }>
-      <IndexRoute component={VideoChatPage } />
+  <Router history={browserHistory}>
+    <Route path="/" component={VideoChatPage}>
+      <IndexRoute component={VideoChatPage} />
     </Route>
   </Router>,
   document.getElementById('render-target')

@@ -1,12 +1,13 @@
 import { Meteor }      from 'meteor/meteor';
 
-import { Teams }       from '../teams.js';
-import { Boards }      from '../../boards/boards.js';
-import { Modules }     from '../../modules/modules.js';
-import { DirectChats } from '../../direct-chats/direct-chats.js';
+import { Teams }       from '../teams';
+import { Boards }      from '../../boards/boards';
+import { Modules }     from '../../modules/modules';
+import { DirectChats } from '../../direct-chats/direct-chats';
 
-Meteor.publishComposite('teams.dashboard', function() {
+Meteor.publishComposite('teams.dashboard', function () {
   if (!this.userId) {
+    this.stop();
     throw new Meteor.Error('Teams.publication.dashboard.notLoggedIn',
     'Must be logged in to view teams.');
   }
@@ -28,16 +29,19 @@ Meteor.publishComposite('teams.dashboard', function() {
   };
 });
 
-Meteor.publishComposite('teams.team', function(teamId) {
+Meteor.publishComposite('teams.team', function (teamUrl) {
   if (!this.userId) {
+    this.stop();
     throw new Meteor.Error('Teams.publication.team.notLoggedIn',
     'Must be logged in to view teams.');
   }
 
   let user = Meteor.users.findOne(this.userId);
+  let teamId = Teams.findOne({ url: teamUrl })._id;
+
   return {
     find: function() {
-      return Teams.getTeam(teamId, user.emails[0].address, Teams.teamFields);
+      return Teams.getTeam(teamId, user.email(), Teams.teamFields);
     },
     children: [
       {
@@ -48,12 +52,13 @@ Meteor.publishComposite('teams.team', function(teamId) {
             type: 1,
             users: 1,
             isPrivate: 1,
+            visibleForDirectors: 1,
           });
         },
       },
       {
         find: function(team) {
-          return DirectChats.getUserDirectChats(this.userId, teamId);
+          return DirectChats.getUserDirectChats(this.userId, team._id);
         }
       },
       {
@@ -63,7 +68,7 @@ Meteor.publishComposite('teams.team', function(teamId) {
       },
       {
         find: function(team) {
-          return Modules.find({ validated: true }); // publish all modules
+          return Modules.find({ validated: true });
         }
       }
     ]

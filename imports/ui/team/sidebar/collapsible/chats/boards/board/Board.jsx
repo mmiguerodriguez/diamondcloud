@@ -9,7 +9,7 @@ export default class Board extends React.Component {
         <div className='col-xs-2 img-fixed-margin fixed-padding'>
           <img
             className='img-circle'
-            src='http://image.flaticon.com/icons/svg/60/60541.svg'
+            src='/img/board-chat.svg'
             width='22px' />
         </div>
         <div className='col-xs-8'>

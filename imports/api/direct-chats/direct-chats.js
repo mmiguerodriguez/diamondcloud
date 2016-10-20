@@ -1,25 +1,27 @@
 import { Meteor }   from 'meteor/meteor';
-import { Mongo }		from 'meteor/mongo';
+import { Mongo }    from 'meteor/mongo';
 
-import { Teams }		from '../teams/teams.js';
-import { Messages } from '../messages/messages.js';
+import { Teams }    from '../teams/teams';
+import { Messages } from '../messages/messages';
 
-export let DirectChats = new Mongo.Collection('DirectChats');
+export const DirectChats = new Mongo.Collection('DirectChats');
 
 DirectChats.helpers({
-	getMessages() {
+  getMessages() {
     return Messages.find({
       directChatId: this._id,
     }, {
       sort: {
         createdAt: 1,
-      }
+      },
     });
   },
+
   getLastMessage() {
-    let messages = this.getMessages().fetch();
+    const messages = this.getMessages().fetch();
     return messages[messages.length - 1] || { content: '' };
   },
+
   getUser() {
     let user;
 
@@ -31,6 +33,7 @@ DirectChats.helpers({
 
     return user;
   },
+
   getNotifications() {
     let notifications;
 
@@ -41,62 +44,64 @@ DirectChats.helpers({
     });
 
     return notifications || 0;
-  }
+  },
 });
 
 DirectChats.getUserDirectChats = (userId, teamId) => {
-	return DirectChats.find({
+  return DirectChats.find({
     teamId,
     users: {
       $elemMatch: {
         _id: userId,
-      }
-    }
+      },
+    },
   });
 };
+
 DirectChats.isValid = (directChatId, userId) => {
-	let directChat = DirectChats.findOne({
+  const directChat = DirectChats.findOne({
     _id: directChatId,
     users: {
       $elemMatch: {
         _id: userId,
-      }
-    }
+      },
+    },
   });
 
-  if (!directChat){
+  if (!directChat) {
     return false;
-  } else {
-    let team = Teams.findOne(directChat.teamId);
-    return team.hasUser({ _id: userId });
   }
+
+  const team = Teams.findOne(directChat.teamId);
+  return team.hasUser({ _id: userId });
 };
 
 DirectChats.addNotification = (directChatId, userId) => {
-	let users = DirectChats.findOne(directChatId).users;
-	users.forEach((user, index, array) => {
-		if (user._id !== userId) {
-			array[index].notifications = user.notifications + 1;
-		}
-	});
+  const users = DirectChats.findOne(directChatId).users;
+  users.forEach((user, index) => {
+    if (user._id !== userId) {
+      users[index].notifications = user.notifications + 1;
+    }
+  });
 
-	DirectChats.update(directChatId, {
-		$set: {
-			users,
-		}
-	});
+  DirectChats.update(directChatId, {
+    $set: {
+      users,
+    },
+  });
 };
-DirectChats.resetNotifications = (directChatId, userId) => {
-	let users = DirectChats.findOne(directChatId).users;
-	users.forEach((user, index, array) => {
-		if (user._id !== userId) {
-			array[index].notifications = 0;
-		}
-	});
 
-	DirectChats.update(directChatId, {
-		$set: {
-			users,
-		}
-	});
+DirectChats.resetNotifications = (directChatId, userId) => {
+  const users = DirectChats.findOne(directChatId).users;
+  users.forEach((user, index) => {
+    if (user._id !== userId) {
+      users[index].notifications = 0;
+    }
+  });
+
+  DirectChats.update(directChatId, {
+    $set: {
+      users,
+    },
+  });
 };

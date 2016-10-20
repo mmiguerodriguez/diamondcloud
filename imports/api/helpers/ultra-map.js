@@ -1,14 +1,9 @@
 // Ultra Map function
 
-_.ultraMap = (arr, func) => {
-  let result;
-  arr = arr.map(func);
+// Commented beacuse it doesn't work
 
-  arr.forEach((e) => {
-    if (e !== undefined) {
-      result.push(e);
-    }
-  });
-
-  return result;
+/*
+Array.prototype.ultraMap = (func) => {
+  return this.map(func).filter(e => e !== undefined);
 };
+*/

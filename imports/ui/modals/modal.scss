@@ -15,13 +15,9 @@
   .modal-body-fixed {
     overflow-y: hidden;
     overflow-x: hidden;
-    min-height: 300px;
   }
   .explanation-text {
-    text-align: center;
-    &.margin {
-      margin: 10px !important;
-    }
+    text-align: left;
   }
 }
 .modal-content {
