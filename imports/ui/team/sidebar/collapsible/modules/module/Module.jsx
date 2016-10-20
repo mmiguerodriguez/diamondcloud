@@ -10,7 +10,7 @@ export default class Module extends React.Component {
       helper(event) {
         return $(`
           <img
-            src="${self.props.module.img}"
+            src="${self.props.module.path}/preview.png"
             width="${self.props.module.settings.width}"
             height="${self.props.module.settings.height}"
           />
@@ -29,7 +29,7 @@ export default class Module extends React.Component {
       >
         <div className="col-xs-2">
           <img
-            src={this.props.module.img}
+            src={`${this.props.module.path}/image.png`}
             className="img module-preview"
             width="32px"
           />

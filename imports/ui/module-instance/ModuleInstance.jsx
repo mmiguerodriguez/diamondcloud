@@ -102,7 +102,7 @@ export default class ModuleInstance extends React.Component {
       left: this.props.moduleInstance.y,
       width: this.props.moduleInstance.width,
       height: this.props.moduleInstance.height,
-      marginTop: this.state.minimized ? PIN_HEIGHT + TEXT_HEIGHT + PIN_HEIGHT/2 : PIN_HEIGHT,
+      marginTop: this.state.minimized ? PIN_HEIGHT /* + TEXT_HEIGHT */ + PIN_HEIGHT/2 : PIN_HEIGHT,
     };
     
     return (
@@ -114,18 +114,18 @@ export default class ModuleInstance extends React.Component {
       >
         {
           this.state.loading && !this.state.minimized ? (
-            <div className='loading'>
-              <div className='loader'></div>
+            <div className="loading">
+              <div className="loader" />
             </div>
           ) : (null)
         }
-        {
+        {/*
           this.state.minimized ? (
             <span className="minimized-module-name">
               {this.props.module.name}
             </span>
           ) : (null)
-        }
+        */}
         {
           !this.state.loading || this.state.minimized ? (
             <div
@@ -136,7 +136,7 @@ export default class ModuleInstance extends React.Component {
                 this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.iframe)
               }
             >
-              <img className="img" src={this.props.module.img} />
+              <img className="img" src={`${this.props.module.path}/image.png`} />
             </div>
           ) : (null)
         }

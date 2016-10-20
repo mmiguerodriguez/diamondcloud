@@ -7,7 +7,7 @@ const modules = [
   {
     _id: 'post-it',
     name: 'Post it',
-    img: '/modules/post-it/image.png',
+    path: '/modules/post-it',
     description: 'I\'m a post it',
     settings: {
       width: 270,
@@ -20,7 +20,7 @@ const modules = [
   {
     _id: 'task-manager',
     name: 'Organizador de tareas',
-    img: '/modules/task-manager/image.png',
+    path: '/modules/task-manager',
     description: 'Organizador de tareas',
     settings: {
       width: 312,
@@ -33,7 +33,7 @@ const modules = [
   {
     _id: 'drive',
     name: 'Google Drive',
-    img: '/modules/drive/image.png',
+    path: '/modules/drive',
     description: 'This is a File Manager',
     settings: {
       width: 400,
@@ -46,7 +46,7 @@ const modules = [
   {
     _id: 'videocall',
     name: 'Videollamada',
-    img: '/modules/videocall/image.png',
+    path: '/modules/videocall',
     description: 'This is a Web RTC module',
     settings: {
       width: 270,
