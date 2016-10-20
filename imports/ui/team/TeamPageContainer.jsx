@@ -1,4 +1,5 @@
 import { Meteor }          from 'meteor/meteor';
+import { ReactiveVar }     from 'meteor/reactive-var';
 import { createContainer } from 'meteor/react-meteor-data';
 
 import { browserHistory }  from 'react-router';
@@ -11,6 +12,12 @@ import { DirectChats }     from '../../api/direct-chats/direct-chats';
 import { Messages }        from '../../api/messages/messages';
 
 import TeamPage            from './TeamPage';
+
+const boardId = new ReactiveVar('');
+const boardSubscription = new ReactiveVar({});
+
+const setBoardId = value => boardId.set(value);
+const setBoardSubscription = value => boardSubscription.set(value);
 
 const TeamPageContainer = createContainer(({ params }) => {
   if (!Meteor.user()) {
@@ -43,15 +50,15 @@ const TeamPageContainer = createContainer(({ params }) => {
       const boardHandle = Meteor.subscribe('boards.board', firstBoard._id, {
         onReady() {
           console.log('Setting boardId, ', firstBoard._id);
-          TeamPage.boardId.set(firstBoard._id);
-          console.log('boardId set is', TeamPage.boardId.get())
+          setBoardId(firstBoard._id);
+          console.log('boardId set is', boardId.get())
         },
         onError(error) {
           console.log('Error en la subscription de boards.board', error);
         },
       });
 
-      TeamPage.boardSubscription.set(boardHandle);
+      setBoardSubscription(boardHandle);
       messagesHandle = Meteor.subscribe('messages.last', teamUrl);
 
       /**
@@ -84,7 +91,12 @@ const TeamPageContainer = createContainer(({ params }) => {
     messages: !loading ? Messages.find({}).fetch() : [],
     moduleInstances: !loading ? ModuleInstances.find({}).fetch() : [],
     modules: !loading ? Modules.find({}, { sort: { name: -1 } }).fetch() : [],
+    boardId: boardId.get(),
+    boardSubscription: boardSubscription.get(),
+    setBoardId,
+    setBoardSubscription,
   };
 }, TeamPage);
+
 
 export default TeamPageContainer;
