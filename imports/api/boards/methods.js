@@ -47,7 +47,7 @@ export const createBoard = new ValidatedMethod({
     'users.$.email': { type: String, regEx: SimpleSchema.RegEx.Email, optional: true },
     visibleForDirectors: { type: Boolean, optional: true },
   }).validator(),
-  run({ teamId, name, type, isPrivate, users, visibleForDirectors }) {
+  run({ teamId, name, type, isPrivate, users = [], visibleForDirectors = false }) {
     if (name !== 'General' && type !== 'default') {
       if (!Meteor.user()) {
         throw new Meteor.Error('Boards.methods.createBoard.notLoggedIn',
@@ -56,8 +56,6 @@ export const createBoard = new ValidatedMethod({
     }
 
     const team = Teams.findOne(teamId);
-    users = users || [];
-    visibleForDirectors = !!visibleForDirectors;
 
     if (isPrivate) {
       users.forEach((user, index, array) => {

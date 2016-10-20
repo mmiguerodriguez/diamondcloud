@@ -58,7 +58,9 @@ export default class CreateBoardModal extends React.Component {
         board.users = [];
       }
 
-      board.users.push({ email: Meteor.user().email() });
+      if (this.state.type === 'sistemas') {
+        board.users.push({ email: Meteor.user().email() });
+      }
     } else {
       board.users = [];
     }
@@ -73,10 +75,6 @@ export default class CreateBoardModal extends React.Component {
             });
           } else {
             this.close();
-
-            this.props.toggleCollapsible('boards');
-            this.props.changeBoard(result._id);
-            this.props.addChat({ boardId: result._id });
           }
         });
       } else {

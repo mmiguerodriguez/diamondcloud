@@ -25,7 +25,10 @@ if (Meteor.isServer) {
           Factory.create('privateBoard')
         ];
         team = Factory.create('team');
-        team.users[0].email = user.emails[0].address;
+        team.users[0] = {
+          email: user.emails[0].address,
+          hierarchy: 'creativo',
+        };
         boards.forEach((board) => {
           team.boards.push({ _id: board._id });
         });

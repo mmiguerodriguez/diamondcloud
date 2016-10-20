@@ -121,6 +121,7 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
     team.userIsCertainHierarchy(user.email(), 'director creativo') ||
     team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
     team.userIsCertainHierarchy(user.email(), 'coordinador');
+  const isSistemas = team.userIsCertainHierarchy(user.email(), 'sistemas');
 
   const result = Boards.find({
     $and: [
@@ -147,11 +148,18 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
                 visibleForDirectors: true,
               },
               {
+                // Check that isDirector is true
                 _id: {
                   $in: isDirector ? boardsIds : [],
                 },
               },
             ],
+          },
+          {
+            // Check that isSistemas is true
+            _id: {
+              $in: isSistemas ? boardsIds : [],
+            },
           },
         ],
       },
