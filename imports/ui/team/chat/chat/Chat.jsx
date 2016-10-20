@@ -50,6 +50,10 @@ export default class Chat extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    this.scrollDown();
+  }
+
   getName() {
     const { boardId, directChatId } = this.props.chat;
     if (boardId) {

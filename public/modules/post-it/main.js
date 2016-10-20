@@ -60,7 +60,6 @@ window.onload = () => {
  * TODO: Deprecate this.
  */
 function insertStartupData(callback) {
-  console.log('Due to the lack of data, inserting empty document');
   DiamondAPI.insert({
     collection: 'postIt',
     object: {
@@ -86,7 +85,6 @@ function updatePostIt(e, key) {
   clearTimeout(TIMEOUT);
 
   TIMEOUT = setTimeout(() => {
-    console.log('Updating data to match local data');
     DiamondAPI.update({
       collection: 'postIt',
       filter: {},
@@ -98,8 +96,6 @@ function updatePostIt(e, key) {
       callback(error, result) {
         if (error) {
           console.error(error);
-        } else {
-          console.log('Successfuly updated the data');
         }
       }
     });

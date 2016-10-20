@@ -28,31 +28,42 @@ const TeamPageContainer = createContainer(({ params }) => {
     messagesHandle = Meteor.subscribe('messages.last', teamUrl);
   };
 
-  const teamsHandle = Meteor.subscribe('teams.dashboard');
-  const teamHandle = Meteor.subscribe('teams.team', teamUrl, () => {
-    const firstBoard = Boards.findOne();
-    const boardHandle = Meteor.subscribe('boards.board', firstBoard._id, () => {
-      TeamPage.boardId.set(firstBoard._id);
-    });
+  const teamHandle = Meteor.subscribe('teams.team', teamUrl, {
+    onReady() {
+      const firstBoard = Boards.findOne();
+      const boardHandle = Meteor.subscribe('boards.board', firstBoard._id, {
+        onReady() {
+          TeamPage.boardId.set(firstBoard._id);
+        },
+        onError(error) {
+          console.log('Error en la subscription de boards.board', error);
+        },
+      });
 
-    TeamPage.boardSubscription.set(boardHandle);
-    messagesHandle = Meteor.subscribe('messages.last', teamUrl);
+      TeamPage.boardSubscription.set(boardHandle);
+      messagesHandle = Meteor.subscribe('messages.last', teamUrl);
 
-    /**
-     * Subscribe again to the messages.last collection since
-     * new DirectChats or Boards where found on the
-     * database.
-     */
-    DirectChats.find().observeChanges({
-      added: changesCallback,
-      removed: changesCallback,
-    });
-    Boards.find().observeChanges({
-      added: changesCallback,
-      removed: changesCallback,
-    });
+      /**
+       * Subscribe again to the messages.last collection since
+       * new DirectChats or Boards where found on the
+       * database.
+       */
+      DirectChats.find().observeChanges({
+        added: changesCallback,
+        removed: changesCallback,
+      });
+      Boards.find().observeChanges({
+        added: changesCallback,
+        removed: changesCallback,
+      });
+    },
+    onError(error) {
+      console.log('Error en la subscription de teams.team', error);
+    },
   });
-  const loading = !teamsHandle.ready() || !teamHandle.ready();
+  const loading = !teamHandle.ready();
+
+  console.log('TeamPage check', TeamPage);
 
   return {
     loading,

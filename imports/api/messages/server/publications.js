@@ -9,8 +9,9 @@ import { DirectChats } from '../../direct-chats/direct-chats.js';
  * TODO: Pass MESSAGES_LIMIT from client side,
  *       and make pagination work.
  */
-Meteor.publish('messages.chat', function({ directChatId, boardId }) {
+Meteor.publish('messages.chat', function ({ directChatId, boardId }) {
   if (!this.userId) {
+    this.stop();
     throw new Meteor.Error('Messages.chat.notLoggedIn',
     'Must be logged in to view chats.');
   }
@@ -20,7 +21,7 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
     'There are errors in the passed parameters.');
   }
 
-  if (!!directChatId){
+  if (!!directChatId) {
     if (!DirectChats.isValid(directChatId, this.userId)) {
       throw new Meteor.Error('Messages.chat.wrongParameters',
       'There are errors in the passed parameters.');
@@ -35,7 +36,7 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
       directChatId = '';
     }
   }
-  
+
   const MESSAGES_LIMIT = 100;
 
   return Messages.find({
@@ -51,39 +52,35 @@ Meteor.publish('messages.chat', function({ directChatId, boardId }) {
   });
 });
 
-Meteor.publish('messages.last', function(teamUrl) {
+Meteor.publish('messages.last', function (teamUrl) {
   if (!this.userId) {
+    this.stop();
     throw new Meteor.Error('Messages.last.notLoggedIn',
     'Must be logged in to view chats.');
   }
 
   const MESSAGES_LIMIT = 1;
-  let user = Meteor.users.findOne(this.userId);
-  let teamId = Teams.findOne({ url: teamUrl })._id;
+  const user = Meteor.users.findOne(this.userId);
+  const teamId = Teams.findOne({ url: teamUrl })._id;
 
   let directChats = DirectChats.getUserDirectChats(this.userId, teamId).fetch();
-  directChats = directChats.map((directChat) => {
-    return directChat._id;
-  });
+  directChats = directChats.map(directChat => directChat._id);
 
-  let boards = user.boards(teamId).fetch();
-  boards = boards.map((board) => {
-    return board._id;
-  });
+  const boards = user.boards(teamId).fetch().map(board => board._id);
 
   return Messages.find({
     $or: [
       {
         directChatId: {
-          $in: directChats
+          $in: directChats,
         },
       },
       {
         boardId: {
-          $in: boards
-        }
-      }
-    ]
+          $in: boards,
+        },
+      },
+    ],
   }, {
     sort: {
       createdAt: -1,

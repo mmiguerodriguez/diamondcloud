@@ -73,8 +73,36 @@ class FileManagerLayout extends React.Component {
             className="col-xs-3 icon-type create-doc"
             src="/modules/drive/img/google-slides.svg"
           />);
+          
       default:
-        return null;
+        // Check if the file is an image
+        if(fileType.indexOf("image/") !== -1) {
+          return (
+            <img
+              alt="Imagen"
+              className="col-xs-3 icon-type create-doc"
+              src="/modules/drive/img/image.svg"
+            />
+          );
+        // Check if the file is a video
+        } else if (fileType.indexOf("video/") !== -1) {
+          return (
+            <img
+              alt="Video"
+              className="col-xs-3 icon-type create-doc"
+              src="/modules/drive/img/video.svg"
+            />
+          );
+        // Return the default image
+        } else {
+          return (
+            <img
+              alt="Documento"
+              className="col-xs-3 icon-type create-doc"
+              src="/modules/drive/img/google-docs.svg"
+            />
+          );
+        }
     }
   }
   constructor(props) {
@@ -194,18 +222,22 @@ class FileManagerLayout extends React.Component {
         <div
           className="document fixed"
           title={document.name}
+          onClick={
+            document.fileType.indexOf('application/vnd.google-apps.') !== -1 ? ( 
+              () => {
+                browserHistory.push(`/document/${document._id}`);
+              }
+            ) : (
+              () => {
+                window.open(`https://drive.google.com/open?id=${document._id}`, '_blank')
+              }
+            )
+          }
         >
           {
             FileManagerLayout.renderDocumentTypeImg(document.fileType)
           }
-          <p
-            className="col-xs-9 document-title truncate"
-            onClick={
-              () => {
-                browserHistory.push(`/document/${document._id}`);
-              }
-            }
-          >
+          <p className="col-xs-9 document-title truncate">
             {document.name}
           </p>
         </div>
@@ -436,9 +468,11 @@ class FileManagerLayout extends React.Component {
                 (
                   <div
                     className="go-back-to-document"
-                    onClick={() => {
-                      browserHistory.push(`/document/${this.props.openedDocumentId}`);
-                    }}
+                    onClick={
+                        () => {
+                          browserHistory.push(`/document/${this.props.openedDocumentId}`);
+                        }
+                    }
                   >
                     Volver al documento
                   </div>
@@ -476,14 +510,14 @@ class FileManagerLayout extends React.Component {
             </div>
           </div>
           <div className="create">
+            <img 
+              className="img" 
+              src="/modules/drive/img/google-docs.svg"
+              data-toggle="modal"
+              data-target="#create-document"
+              title='Crear documento'
+            />
             <div className="options">
-              <div
-                className="option upload"
-                id="upload-file"
-                title="Subir foto o video"
-                data-toggle="modal"
-                data-target="#upload-files"
-                />
               <div
                 className="option drive"
                 id="import-file"
@@ -494,12 +528,14 @@ class FileManagerLayout extends React.Component {
                 data-toggle="modal"
                 data-target="#create-folder"
                 title='Crear carpeta'
-              />
+                >
+              </div>
               <div
-                className="option doc"
+                className="option upload"
+                id="upload-files"
                 data-toggle="modal"
-                data-target="#create-document"
-                title="Crear documento"
+                data-target="#upload-files"
+                title="Subir foto o video"
               />
             </div>
           </div>

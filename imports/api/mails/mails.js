@@ -12,9 +12,7 @@ export let Mail = {
       html,
     };
 
-    mailgun.messages().send(data, function (error, body) {
-      console.log(error, body);
-    });
+    mailgun.messages().send(data);
   },
   messages: {
     sharedTeamRegistered: (teamId) => `

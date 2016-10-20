@@ -191,7 +191,7 @@ export const editBoard = new ValidatedMethod({
     name = name || board.name;
     type = type || board.type;
 
-    if (board.isPrivate && !isPrivate) {
+    if (!isPrivate) {
       users = [];
       team.users.forEach((user) => {
         let found = false;
@@ -218,6 +218,8 @@ export const editBoard = new ValidatedMethod({
           if (_user.email === user.email) {
             users[index].notifications = _user.notifications;
             found = true;
+          } else if (_user.email === Meteor.user().email()) {
+            users.push({ email: Meteor.user().email(), notifications: _user.notifications });
           }
         });
 

@@ -134,7 +134,7 @@ class VideoChatPage extends React.Component {
     webrtc.on('localMediaError', (error) => {
       self.error({
         type: 'show',
-        body: 'Hubo un error al acceder a la cámara/micrófono',
+        body: 'Error en la cámara/micrófono',
       });
     });
 
@@ -414,7 +414,6 @@ class Video extends React.Component {
 
   mute() {
     this.video.volume = 0;
-    console.log('Muted...', this.video.volume, this.state.startVolume);
   }
 
   unmute() {

@@ -1,21 +1,21 @@
 import { Meteor }               from 'meteor/meteor';
 
-import { Teams }                from '../teams/teams.js';
-import { Boards }               from '../boards/boards.js';
-import { ModuleInstances }      from '../module-instances/module-instances.js';
-import { APICollection }        from '../api-collection/api-collection.js';
+import { Teams }                from '../teams/teams';
+import { Boards }               from '../boards/boards';
+import { ModuleInstances }      from '../module-instances/module-instances';
+import { APICollection }        from '../api-collection/api-collection';
 
 export const generateApi = (moduleInstanceId) => {
   let subscriptions = [];
-  let DiamondAPI = {
+  const DiamondAPI = {
     subscribe({ collection, filter = {}, callback }) {
       let subscription;
-      let subscriptionCallback = {
+      const subscriptionCallback = {
         onReady() {
-          let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-          let teamId = moduleInstance.board().team()._id;
+          const moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+          const teamId = moduleInstance.board().team()._id;
 
-          let query = APICollection.find({
+          const query = APICollection.find({
             $and: [
               {
                 '#collection': collection,
@@ -29,9 +29,9 @@ export const generateApi = (moduleInstanceId) => {
                   {
                     '#moduleId': moduleInstance.moduleId,
                     '#teamId': teamId,
-                  }
-                ]
-              }
+                  },
+                ],
+              },
             ],
           });
 
@@ -39,26 +39,27 @@ export const generateApi = (moduleInstanceId) => {
             callback(undefined, query.fetch());
           }
 
-          let caller = () => {
+          const caller = () => {
             // Check that the subscription is inside the subscriptions array
-            let subscriptionIsAlive = subscriptions.find((_subscription) => {
+            const subscriptionIsAlive = subscriptions.find((_subscription) => {
               return _subscription.subscriptionId === subscription.subscriptionId;
             }) !== undefined;
+
             if (subscriptionIsAlive) {
-              let updatedData = query.fetch();
+              const updatedData = query.fetch();
               callback(undefined, updatedData);
             }
           };
 
-          let handle = query.observeChanges({
+          const handle = query.observeChanges({
             added: caller,
             changed: caller,
             removed: caller,
           });
         },
-        onError(err) {
-          throw new console.error(err);
-        }
+        onError(error) {
+          throw new Meteor.Error(error);
+        },
       };
 
       subscription = Meteor.subscribe(
@@ -67,7 +68,6 @@ export const generateApi = (moduleInstanceId) => {
         collection,
         filter,
         subscriptionCallback);
-
 
       subscriptions.push(subscription);
 
@@ -124,19 +124,19 @@ export const generateApi = (moduleInstanceId) => {
     getBoards() {
       return Boards.find({
         _id: {
-          $in: this.getTeam().boards.map((board) => board._id)
-        }
+          $in: this.getTeam().boards.map(board => board._id),
+        },
       });
     },
     getUsers() {
       return this.getTeam().getUsers();
     },
     getBoard(boardId) {
-      let team = this.getTeam();
+      const team = this.getTeam();
       let result;
 
       team.boards.forEach((board) => {
-        if (board._id == boardId) {
+        if (board._id === boardId) {
           result = Boards.findOne(boardId);
         }
       });
@@ -145,23 +145,24 @@ export const generateApi = (moduleInstanceId) => {
     },
     getUser(userId) {
       // Validation
-      let team = ModuleInstances.findOne(moduleInstanceId).board().team();
+      const team = ModuleInstances.findOne(moduleInstanceId).board().team();
 
       if (!team.hasUser(userId)) {
-        throw new console.error(`User ${userId} doesn't exist in this team.`);
+        throw new Meteor.Error(`User ${userId} doesn't exist in this team.`);
       }
 
       // Return and error handling
-      let user = Meteor.users.findOne(userId);
+      const user = Meteor.users.findOne(userId);
 
       if (user) {
         return user;
       }
-      throw new console.error(`User ${userId} doesn't exist.`);
+
+      throw new Meteor.Error(`User ${userId} doesn't exist.`);
     },
     change(callback) {
       return 'This feature is not done yet. Sorry! :/';
-    }
+    },
   };
 
   return DiamondAPI;
