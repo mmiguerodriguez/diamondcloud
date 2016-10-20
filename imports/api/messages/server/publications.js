@@ -60,32 +60,27 @@ Meteor.publish('messages.last', function (teamUrl) {
   }
 
   const MESSAGES_LIMIT = 1;
-  let user = Meteor.users.findOne(this.userId);
-  let teamId = Teams.findOne({ url: teamUrl })._id;
+  const user = Meteor.users.findOne(this.userId);
+  const teamId = Teams.findOne({ url: teamUrl })._id;
 
   let directChats = DirectChats.getUserDirectChats(this.userId, teamId).fetch();
-  directChats = directChats.map((directChat) => {
-    return directChat._id;
-  });
+  directChats = directChats.map(directChat => directChat._id);
 
-  let boards = user.boards(teamId).fetch();
-  boards = boards.map((board) => {
-    return board._id;
-  });
+  const boards = user.boards(teamId).fetch().map(board => board._id);
 
   return Messages.find({
     $or: [
       {
         directChatId: {
-          $in: directChats
+          $in: directChats,
         },
       },
       {
         boardId: {
-          $in: boards
-        }
-      }
-    ]
+          $in: boards,
+        },
+      },
+    ],
   }, {
     sort: {
       createdAt: -1,
