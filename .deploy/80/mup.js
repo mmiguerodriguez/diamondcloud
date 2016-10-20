@@ -15,11 +15,16 @@ module.exports = {
     servers: {
       one: {}
     },
+    ssl: {
+   crt: 'diamondcloud.tk.crt', // this is a bundle of certificates
+  key: 'diamondcloud.tk.key', // this is the private key of the certificate
+   port: 443 // 443 is the default value and it's the standard HTTPS port
+ },
     buildOptions: {
       serverOnly: true,
     },
     env: {
-      ROOT_URL: 'http://diamondcloud.tk',
+      ROOT_URL: 'https://diamondcloud.tk',
       // METEOR_DOWN_KEY: 'MY_SUPER_SECRET_KEY',
       // ROOT_URL: 'http://159.203.182.182',
        //MONGO_URL: 'http://diamondcloud.tk'
@@ -27,6 +32,7 @@ module.exports = {
 
     //dockerImage: 'kadirahq/meteord'
     deployCheckWaitTime:60,
+    enableUploadProgressBar: true,
     
     dockerImage: 'abernix/meteord:base',
   },
