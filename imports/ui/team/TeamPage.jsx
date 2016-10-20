@@ -267,14 +267,17 @@ export default class TeamPage extends React.Component {
 
   render() {
     if (!TeamPage.boardId.get()) {
+      console.log('error', 1);
       return null;
     }
 
     if (this.props.team === undefined) {
+      console.log('error', 2);
       return null;
     }
 
     if (this.props.loading) {
+      console.log('error', 3);
       return (
         <div className="loading">
           <div className="loader" />
@@ -296,6 +299,7 @@ export default class TeamPage extends React.Component {
           },
         });
       } else {
+        console.log('error', 4);
         return (
           <div>
             <p>
@@ -305,6 +309,8 @@ export default class TeamPage extends React.Component {
         );
       }
     }
+    
+    console.log('no hay error');
 
     return (
       <div>

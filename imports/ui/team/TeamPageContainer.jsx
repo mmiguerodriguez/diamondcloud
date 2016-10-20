@@ -28,6 +28,14 @@ const TeamPageContainer = createContainer(({ params }) => {
     messagesHandle = Meteor.subscribe('messages.last', teamUrl);
   };
 
+  const teamsHandle = Meteor.subscribe('teams.dashboard', {
+    onReady() {
+      
+    },
+    onError(error) {
+      console.log('Error en la subscription de teams.dashboard', error);
+    },
+  });
   const teamHandle = Meteor.subscribe('teams.team', teamUrl, {
     onReady() {
       const firstBoard = Boards.findOne();
@@ -61,20 +69,18 @@ const TeamPageContainer = createContainer(({ params }) => {
       console.log('Error en la subscription de teams.team', error);
     },
   });
-  const loading = !teamHandle.ready();
-
-  console.log('TeamPage check', TeamPage);
+  const loading = !teamHandle.ready() || !teamsHandle.ready();
 
   return {
     loading,
-    team: Teams.findOne({ url: teamUrl }),
-    teams: Teams.find({}, { sort: { name: -1 } }).fetch(),
-    users: Meteor.users.find({}).fetch(),
-    boards: Boards.find({}, { sort: { name: -1 } }).fetch(),
-    directChats: DirectChats.find().fetch(),
-    messages: Messages.find({}).fetch(),
-    moduleInstances: ModuleInstances.find({}).fetch(),
-    modules: Modules.find({}, { sort: { name: -1 } }).fetch(),
+    team: !loading ? Teams.findOne({ url: teamUrl }) : {},
+    teams: !loading ? Teams.find({}, { sort: { name: -1 } }).fetch() : [],
+    users: !loading ? Meteor.users.find({}).fetch() : [],
+    boards: !loading ? Boards.find({}, { sort: { name: -1 } }).fetch() : [],
+    directChats: !loading ? DirectChats.find().fetch() : [],
+    messages: !loading ? Messages.find({}).fetch() : [],
+    moduleInstances: !loading ? ModuleInstances.find({}).fetch() : [],
+    modules: !loading ? Modules.find({}, { sort: { name: -1 } }).fetch() : [],
   };
 }, TeamPage);
 

@@ -536,7 +536,7 @@ export default class TeamLayout extends React.Component {
           hasMaximizedChats={this.state.hasMaximizedChats}
         />
 
-      <div className="moduleinstance-context-menu context-menu" ref={(c) => { this.moduleInstanceContextMenu = c; }}>
+        <div className="moduleinstance-context-menu context-menu" ref={(c) => { this.moduleInstanceContextMenu = c; }}>
           <div className="row" onClick={this.removeModuleInstance}>
             <div className="col-xs-4">
               <img src="/img/trash.svg" width="20px" />
