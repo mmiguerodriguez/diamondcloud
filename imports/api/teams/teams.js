@@ -12,6 +12,15 @@ Teams.helpers({
    *
    * TODO: let hierarchy be an array of hierarchies
    */
+  userHierarchy(email) {
+    for (const user of this.users) {
+      if (user.email === email) {
+        return user.hierarchy;
+      }
+    }
+
+    return 'ghost';
+  },
   userIsCertainHierarchy(email, hierarchy) {
     for (let i = 0; i < this.users.length; i += 1) {
       if (email === this.users[i].email) {

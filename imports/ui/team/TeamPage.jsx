@@ -236,7 +236,7 @@ export default class TeamPage extends React.Component {
       onReady() {
         TeamPage.boardId.set(boardId);
       },
-      onError(error) {
+      onError() {
         self.props.toggleError({
           type: 'show',
           body: 'Hubo un error interno al entrar al board',
@@ -270,22 +270,40 @@ export default class TeamPage extends React.Component {
       return null;
     }
 
-    const board = Boards.findOne(TeamPage.boardId.get());
-
-    if (this.props.loading) {
-      return (
-        <div className='loading'>
-          <div className='loader'></div>
-        </div>
-      );
-    }
-
     if (this.props.team === undefined) {
       return null;
     }
 
+    if (this.props.loading) {
+      return (
+        <div className="loading">
+          <div className="loader" />
+        </div>
+      );
+    }
+
+    const board = Boards.findOne(TeamPage.boardId.get());
+    const _board = Boards.findOne();
+
     if (!board) {
-      return null;
+      if (_board) {
+        TeamPage.boardId.set(_board._id);
+        TeamPage.boardSubscription.get().stop();
+
+        const boardSubscription = Meteor.subscribe('boards.board', _board._id, {
+          onReady() {
+            TeamPage.boardSubscription.set(boardSubscription);
+          },
+        });
+      } else {
+        return (
+          <div>
+            <p>
+              <a href="#shikaka">No hay ningun board, rip</a>
+            </p>
+          </div>
+        );
+      }
     }
 
     return (
@@ -297,7 +315,7 @@ export default class TeamPage extends React.Component {
           isAdmin={this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')}
 
           boards={this.props.boards}
-          board={board}
+          board={board || _board}
 
           modules={this.props.modules}
           moduleInstances={this.props.moduleInstances}

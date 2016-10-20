@@ -137,7 +137,6 @@ class TaskManagerPage extends React.Component {
           if (error) {
             console.error(error);
           } else {
-            console.log('Subscribe callback', result || []);
             self.setState({
               tasks: result || [],
               loading: false,
@@ -308,7 +307,6 @@ class CreateTask extends React.Component {
                   if (error) {
                     console.error(error);
                   } else {
-                    console.log('Inserted task correctly');
                     browserHistory.push('/tasks/show');
                   }
                 },
@@ -689,16 +687,12 @@ class Task extends React.Component {
         },
         callback(error, result) {
           if (error) {
-            console.error(error);
-
             self.props.showError({
               body: 'Ocurrió un error interno al iniciar la tarea',
             });
 
             self.stopTimer();
           } else {
-            console.log('Started task correctly');
-            
             self.props.showError({
               body: 'Tarea iniciada',
             });
@@ -730,16 +724,12 @@ class Task extends React.Component {
         },
         callback(error, result) {
           if (error) {
-            console.error(error);
-
             self.props.showError({
               body: 'Error al pausar una tarea',
             });
 
             self.startTimer();
           } else {
-            console.log('Paused task correctly');
-            
             self.props.showError({
               body: 'Tarea pausada',
             });
@@ -775,8 +765,6 @@ class Task extends React.Component {
               body: 'Error al archivar una tarea',
             });
           } else {
-            console.log('Archived task correctly');
-            
             self.props.showError({
               body: 'Tarea archivada',
             });
@@ -833,14 +821,10 @@ class Task extends React.Component {
       updateQuery,
       callback(error, result) {
         if (error) {
-          console.error(error);
-
           this.props.showError({
             body: 'Error al actualizar el estado de la tarea',
           });
         } else {
-          console.log('Updated task status correctly');
-          
           this.props.showError({
             body: 'Estado de la tarea actualizado',
           });
@@ -879,8 +863,6 @@ class Task extends React.Component {
                 self.setState({
                   task_title: self.props.task.title,
                 });
-              } else {
-                console.log('Updated task status correctly');
               }
             }
           });

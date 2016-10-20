@@ -168,6 +168,13 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
 
 Boards.isValid = (boardId, userId) => {
   const user = Meteor.users.findOne(userId);
+  const team = Boards.findOne(boardId).team();
+
+  const isDirector =
+    team.userIsCertainHierarchy(user.email(), 'director creativo') ||
+    team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
+    team.userIsCertainHierarchy(user.email(), 'coordinador');
+
   const board = Boards.findOne({
     _id: boardId,
     $or: [
@@ -178,6 +185,16 @@ Boards.isValid = (boardId, userId) => {
             email: user.email(),
           },
         },
+      },
+      {
+        $and: [
+          {
+            visibleForDirectors: true,
+          },
+          {
+            _id: isDirector ? boardId : undefined,
+          },
+        ],
       },
     ],
   });
@@ -190,7 +207,11 @@ Boards.isValid = (boardId, userId) => {
 };
 
 Boards.addModuleInstance = (boardId, moduleInstanceId) => {
-  // TODO: Add user is in board validation
+  if (!Boards.isValid(boardId, Meteor.userId())) {
+    throw new Meteor.Error('Boards.addModuleInstance.notInBoard',
+    'Must be a member of a board to add moduleInstances to it.');
+  }
+
   Boards.update({
     _id: boardId,
   }, {

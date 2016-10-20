@@ -135,7 +135,7 @@ if (Meteor.isServer) {
       expected.seen = true;
 
       seeMessage.call({ messageId: messages[0]._id }, (err, result) => {
-        if (err) console.log(err);
+        if (err) console.error(err);
         chai.assert.deepEqual(result, expected);
         done();
       });
