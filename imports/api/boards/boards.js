@@ -182,6 +182,7 @@ Boards.isValid = (boardId, userId) => {
     team.userIsCertainHierarchy(user.email(), 'director creativo') ||
     team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
     team.userIsCertainHierarchy(user.email(), 'coordinador');
+  const isSistemas = team.userIsCertainHierarchy(user.email(), 'sistemas');
 
   const board = Boards.findOne({
     _id: boardId,
@@ -200,9 +201,14 @@ Boards.isValid = (boardId, userId) => {
             visibleForDirectors: true,
           },
           {
+            // Check that isDirector is true
             _id: isDirector ? boardId : undefined,
           },
         ],
+      },
+      {
+        // Check that isSistemas is true
+        _id: isSistemas ? boardId : undefined,
       },
     ],
   });
