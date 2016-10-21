@@ -558,8 +558,13 @@ class BoardsList extends React.Component {
  */
 class Board extends React.Component {
   render() {
+    const classes = classNames({
+      board: !this.props.coordination,
+      'board-fixed': this.props.coordination,
+    });
+
     return (
-      <div className='board'>
+      <div className={classes}>
         <TasksList
           board={this.props.board}
           tasks={this.props.tasks}

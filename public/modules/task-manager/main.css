@@ -64,6 +64,10 @@
   width: 100%;
   margin-right: 20px;
 }
+.board-fixed {
+  width: 250px;
+  margin-right: 20px;
+}
 .task-manager {
   min-height: 100vh;
   background-color: #3fa4e7;
