@@ -3,6 +3,7 @@ import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
 import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
+import { printObject }   from '../helpers/print-objects.js';
 import   faker           from 'faker';
 
 import { DirectChats }   from './direct-chats.js';
@@ -93,6 +94,7 @@ if (Meteor.isServer) {
             ]
           }),
         ];
+
         messages = [];
 
         for(let i = 0; i < 3; i++) {
@@ -159,6 +161,7 @@ if (Meteor.isServer) {
 
         const realChats = [
           directChats[0],
+          directChats[4],
           directChats[3],
         ];
 
@@ -166,9 +169,10 @@ if (Meteor.isServer) {
       });
 
       it('should return user direct-chat with another user', function() {
-        const foundChat = DirectChats.getDirectChat(users[3]._id, teams[3]._id).fetch();
-        const chat = directChats[4];
-        
+        const foundChat = DirectChats.getDirectChat(users[1]._id, teams[0]._id);
+        const chat = directChats[0];
+
+        printObject(foundChat, chat);
         chai.assert.deepEqual(foundChat, chat);
       });
 
