@@ -211,7 +211,8 @@ export default class Board extends React.Component {
               this.props.board.isPrivate &&
               !this.props.team.userIsCertainHierarchy(email, 'director creativo') &&
               !this.props.team.userIsCertainHierarchy(email, 'director de cuentas') &&
-              !this.props.team.userIsCertainHierarchy(email, 'coordinador') ? (
+              !this.props.team.userIsCertainHierarchy(email, 'coordinador') &&
+              this.props.board.type === 'creativos' ? (
                 <div className="visibility">
                   {
                     this.state.visibleForDirectors ? (
