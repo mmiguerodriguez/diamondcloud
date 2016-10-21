@@ -197,7 +197,7 @@ export default class Board extends React.Component {
           <div className="sub-header-data col-xs-6">
             <ol className="breadcrumb truncate">
               <li>
-                <a href="">{this.props.team.name}</a>
+                <a href="#">{this.props.team.name}</a>
               </li>
               <li className="active">{this.props.board.name}</li>
             </ol>
