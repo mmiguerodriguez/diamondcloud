@@ -53,6 +53,7 @@ if (Meteor.isServer) {
           Factory.create('boardMessage'),//publicBoard
           Factory.create('boardMessage'),//privateBoardWithUser
         ];
+
         messages[0].directChatId = directChatWithUser._id;
         messages[1].boardId = publicBoard._id;
         messages[2].boardId = privateBoardWithUser._id;
@@ -160,8 +161,8 @@ if (Meteor.isServer) {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('messages.last', teamWithUser.url, (collections) => {
-          printObject(collections.Messages);
-          chai.assert.equal(collections.Messages.length, 1);
+          messages = [messages[2], messages[1], messages[0]];
+          chai.assert.deepEqual(collections.Messages, messages);
           done();
         });
       });

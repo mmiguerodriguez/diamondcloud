@@ -1,4 +1,5 @@
 import { Meteor }      from 'meteor/meteor';
+import { printObject } from '../../helpers/print-objects.js';
 
 import { Messages }    from '../messages.js';
 import { Teams }       from '../../teams/teams.js';
