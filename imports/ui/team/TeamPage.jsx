@@ -1,5 +1,4 @@
 import { Meteor }          from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker'
 
 import React               from 'react';
 import { browserHistory }  from 'react-router';
