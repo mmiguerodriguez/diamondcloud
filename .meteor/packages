@@ -40,3 +40,4 @@ meteorhacks:kadira                    # Kadira
 velocity:meteor-stubs                 # Stubs
 raix:push                             # Mobile notifications
 shell-server
+jcbernack:reactive-aggregate
