@@ -7,11 +7,8 @@ import isMobile            from 'ismobilejs';
 import { Boards }          from '../../api/boards/boards';
 import { DirectChats }     from '../../api/direct-chats/direct-chats';
 
-import preloadImages       from '../preloadImages';
 import NotificationSystem  from '../notifications/notificationSystem/NotificationSystem';
 import TeamLayout          from './TeamLayout';
-
-preloadImages();
 
 export default class TeamPage extends React.Component {
   constructor(props) {
