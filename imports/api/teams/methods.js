@@ -6,6 +6,7 @@ import  Future             from 'fibers/future';
 import { Teams }           from './teams';
 import { Mail }            from '../mails/mails';
 import { Boards }          from '../boards/boards';
+import { DirectChats }     from '../direct-chats/direct-chats';
 import { createBoard }     from '../boards/methods';
 
 export const createTeam = new ValidatedMethod({
@@ -275,6 +276,10 @@ export const removeUserFromTeam = new ValidatedMethod({
 
       boards.forEach((board) => {
         Boards.removeUser(board._id, user._id);
+      });
+
+      DirectChats.remove({
+        'users._id': user._id,
       });
     }
 

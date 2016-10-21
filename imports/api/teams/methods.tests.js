@@ -9,6 +9,7 @@ import { Mail }                 from '../mails/mails.js';
 
 import { Teams }                from './teams.js';
 import { Boards }               from '../boards/boards.js';
+import { DirectChats }          from '../direct-chats/direct-chats.js';
 import { createTeam,
          editTeam,
          changeUserHierarchy,
@@ -28,7 +29,7 @@ if (Meteor.isServer) {
     describe('Methods', function() {
       let users, team, board, boards, generalBoardId = Random.id(),
           createModuleInstanceArgs,
-          apiInsertArgs;
+          apiInsertArgs, directChats;
 
       beforeEach(function() {
         resetDatabase();
@@ -52,6 +53,18 @@ if (Meteor.isServer) {
           Factory.create('privateBoard'),
         ];
 
+        directChats = [
+          Factory.create('directChat'),
+          Factory.create('directChat'),
+        ];
+
+        directChats[0].teamId = team._id;
+        directChats[0].users.push({ _id: users[2]._id, notifications: 0 });
+        directChats[0].users.push({ _id: users[0]._id, notifications: 0 });
+        directChats[1].teamId = team._id;
+        directChats[1].users.push({ _id: users[0]._id, notifications: 0 });
+        directChats[1].users.push({ _id: users[1]._id, notifications: 0 });
+
         team.users[0].email = users[0].emails[0].address;
         team.users.push({ email: users[1].emails[0].address, hierarchy: 'creativo' });
         team.users.push({ email: users[2].emails[0].address, hierarchy: 'creativo' });
@@ -74,6 +87,10 @@ if (Meteor.isServer) {
 
         boards.forEach((boardOfBoards) => {
           Boards.insert(boardOfBoards);
+        });
+
+        directChats.forEach((directChat) => {
+          DirectChats.insert(directChat);
         });
 
         sinon.stub(Meteor, 'user', () => users[0]);
@@ -251,6 +268,7 @@ if (Meteor.isServer) {
         removeUserFromTeam.call(args, (err, result) => {
           chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));
           chai.assert.isTrue(Boards.findOne(board._id).users.length === 0);
+          chai.assert.isTrue(DirectChats.find().count() === 1);
           done();
         });
       });
