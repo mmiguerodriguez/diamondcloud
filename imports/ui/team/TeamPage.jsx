@@ -238,7 +238,7 @@ export default class TeamPage extends React.Component {
 
     const subscription = Meteor.subscribe('boards.board', boardId, {
       onReady() {
-        this.props.setBoardId(boardId);
+        self.props.setBoardId(boardId);
       },
       onError() {
         self.props.toggleError({
@@ -270,6 +270,8 @@ export default class TeamPage extends React.Component {
   }
 
   render() {
+    const self = this;
+
     if (!this.props.boardId) {
       console.log('error', 1);
       return null;
@@ -293,15 +295,22 @@ export default class TeamPage extends React.Component {
     const _board = Boards.findOne();
 
     if (!board) {
+      console.log('no hay board');
       if (_board) {
+        console.log('hay un board existente', Boards.findOne(_board._id).name);
         this.props.setBoardId(_board._id);
         this.props.boardSubscription.stop();
 
         const boardSubscription = Meteor.subscribe('boards.board', _board._id, {
           onReady() {
-            this.props.setBoardSubscription(boardSubscription);
+            self.props.setBoardSubscription(boardSubscription);
           },
+          onStop() {
+            console.log('wtf');
+          }
         });
+
+        this.props.setBoardSubscription(boardSubscription);
       } else {
         console.log('error', 4);
         return (
@@ -356,10 +365,6 @@ export default class TeamPage extends React.Component {
 
 TeamPage.propTypes = {
   loading: React.PropTypes.bool.isRequired,
-  boardId: React.PropTypes.string.isRequired,
-  boardSubscription: React.PropTypes.object.isRequired,
-  setBoardId: React.PropTypes.func.isRequired,
-  setBoardSubscription: React.PropTypes.func.isRequired,
   team: React.PropTypes.object,
   teams: React.PropTypes.array.isRequired,
   users: React.PropTypes.array.isRequired,
@@ -369,4 +374,8 @@ TeamPage.propTypes = {
   moduleInstances: React.PropTypes.array.isRequired,
   modules: React.PropTypes.array.isRequired,
   toggleError: React.PropTypes.func.isRequired,
+  boardId: React.PropTypes.string.isRequired,
+  boardSubscription: React.PropTypes.object.isRequired,
+  setBoardId: React.PropTypes.func.isRequired,
+  setBoardSubscription: React.PropTypes.func.isRequired,
 };

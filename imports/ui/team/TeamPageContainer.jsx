@@ -36,9 +36,6 @@ const TeamPageContainer = createContainer(({ params }) => {
   };
 
   const teamsHandle = Meteor.subscribe('teams.dashboard', {
-    onReady() {
-
-    },
     onError(error) {
       console.log('Error en la subscription de teams.dashboard', error);
     },
@@ -51,7 +48,7 @@ const TeamPageContainer = createContainer(({ params }) => {
         onReady() {
           console.log('Setting boardId, ', firstBoard._id);
           setBoardId(firstBoard._id);
-          console.log('boardId set is', boardId.get())
+          console.log('boardId set is', boardId.get());
         },
         onError(error) {
           console.log('Error en la subscription de boards.board', error);
