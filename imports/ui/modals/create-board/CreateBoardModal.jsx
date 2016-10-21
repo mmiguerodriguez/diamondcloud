@@ -138,6 +138,12 @@ export default class CreateBoardModal extends React.Component {
             value: user.email(),
           });
         }
+      } else {
+        // This executes when the user is unregistered
+        arr.push({
+          label: _user.email,
+          value: _user.email,
+        });
       }
     });
 
