@@ -14,7 +14,6 @@ import ChatLayout                   from './chat/ChatLayout';
 import SidebarLayout                from './sidebar/SidebarLayout';
 import NotificationsPermissionAsker from './notifications-permission-asker/NotificationsPermissionAsker';
 import CreateBoardModal             from '../modals/create-board/CreateBoardModal';
-import CreateChatModal              from '../modals/create-chat/CreateChatModal';
 import ConfigTeamModal              from '../modals/config-team/ConfigTeamModal';
 import ConfigBoardModal             from '../modals/config-board/ConfigBoardModal';
 
@@ -39,7 +38,6 @@ export default class TeamLayout extends React.Component {
     this.changeBoard = this.changeBoard.bind(this);
     this.removeModuleInstance = this.removeModuleInstance.bind(this);
     this.openCreateBoardModal = this.openCreateBoardModal.bind(this);
-    this.openCreateChatModal = this.openCreateChatModal.bind(this);
     this.openConfigTeamModal = this.openConfigTeamModal.bind(this);
     this.openConfigBoardModal = this.openConfigBoardModal.bind(this);
     this.loadTeam = this.loadTeam.bind(this);
@@ -47,6 +45,7 @@ export default class TeamLayout extends React.Component {
     this.closePermissionAsker = this.closePermissionAsker.bind(this);
     this.openModuleInstanceContextMenu = this.openModuleInstanceContextMenu.bind(this);
     this.openBoardContextMenu = this.openBoardContextMenu.bind(this);
+    this.createDirectChat = this.createDirectChat.bind(this);
   }
 
   componentDidMount() {
@@ -270,10 +269,6 @@ export default class TeamLayout extends React.Component {
     $('#createBoardModal').modal('show');
   }
 
-  openCreateChatModal() {
-    $('#createChatModal').modal('show');
-  }
-
   openConfigTeamModal() {
     this.loadTeam(this.props.team._id, () => {
       $('#configTeamModal').modal('show');//show modal once state is updated
@@ -289,7 +284,22 @@ export default class TeamLayout extends React.Component {
       team: Teams.findOne(id),
     }, callback);
   }
+  // Creates a directChat
+  createDirectChat(teamId, userId) {
+    const self = this;
 
+    Meteor.call('DirectChats.methods.create', {
+      teamId,
+      userId,
+    }, (error, response) => {
+      if (error) {
+        console.log('error');
+      } else {
+        self.props.addChat({ directChatId: response._id });
+      }
+    });
+  }
+  // Mobile dropdown
   renderTeams() {
     const arr = [];
 
@@ -305,7 +315,7 @@ export default class TeamLayout extends React.Component {
 
     return arr;
   }
-
+  // Mobile created directChats
   renderDirectChats() {
     return this.props.directChats.map((_directChat) => {
       const directChat = DirectChats.findOne(_directChat._id);
@@ -350,7 +360,41 @@ export default class TeamLayout extends React.Component {
       );
     });
   }
-
+  // Mobile not-created directChats
+  renderUsersChat() {
+    let arr = [];
+  
+    this.props.users.forEach((user) => {
+      if (user._id !== Meteor.userId()) {
+        let directChat = DirectChats.getDirectChat(user._id, this.props.team._id);
+        if (!directChat) {
+          arr.push(
+            <div
+              className="item"
+              role="button"
+              onClick={() => this.createDirectChat(this.props.team._id, user._id)}
+              key={user._id}
+            >
+              <div className="col-xs-2">
+                <img
+                  className="img-circle"
+                  src={`${user.profile.picture}?sz=60`}
+                  width="48px"
+                />
+              </div>
+              <div className="col-xs-10 info">
+                <p className="user truncate">{user.profile.name}</p>
+                <p className="last-message truncate"></p>
+              </div>
+            </div>
+          );
+        }
+      }
+    });
+  
+    return arr;
+  }
+  // Mobile board chats
   renderBoardsChats() {
     return this.props.boards.map((_board) => {
       const board = Boards.findOne(_board._id);
@@ -426,8 +470,8 @@ export default class TeamLayout extends React.Component {
                 openBoardContextMenu={this.openBoardContextMenu}
                 toggleCollapsible={this.toggleCollapsible}
                 openCreateBoardModal={this.openCreateBoardModal}
-                openCreateChatModal={this.openCreateChatModal}
                 openConfigTeamModal={this.openConfigTeamModal}
+                createDirectChat={this.createDirectChat}
               />
               <Board
                 team={this.props.team}
@@ -507,16 +551,7 @@ export default class TeamLayout extends React.Component {
                 </div>
                 <div className="users" id="users">
                   {this.renderDirectChats()}
-                  <div
-                    className="new-chat visible-xs-block"
-                    onClick={this.openCreateChatModal}
-                  >
-                    <img
-                      className="icon users"
-                      src="/img/add-people-icon.svg"
-                      width="26px"
-                    />
-                  </div>
+                  {this.renderUsersChat()}
                 </div>
               </div>
             </div>
@@ -587,12 +622,6 @@ export default class TeamLayout extends React.Component {
             </div>
           ) : (null)
         }
-        <CreateChatModal
-          team={this.props.team}
-          addChat={this.props.addChat}
-          toggleCollapsible={this.toggleCollapsible}
-          toggleError={this.props.toggleError}
-        />
       </div>
     );
   }

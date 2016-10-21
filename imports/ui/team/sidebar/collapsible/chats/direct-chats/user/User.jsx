@@ -7,26 +7,11 @@ export default class User extends React.Component {
     this.createDirectChat = this.createDirectChat.bind(this);
   }
 
-  createDirectChat() {
-    const self = this;
-
-    Meteor.call('DirectChats.methods.create', {
-      teamId: this.props.team._id,
-      userId: this.props.user._id,
-    }, (error, response) => {
-      if (error) {
-        console.log('error');
-      } else {
-        self.props.addChat({ directChatId: response._id });
-      }
-    });
-  }
-
   render() {
     return (
       <div
         className="row row-fixed-margin"
-        onClick={this.createDirectChat}
+        onClick={() => this.props.createDirectChat(this.props.team._id, this.props.user._id)}
       >
         <div className="col-xs-2 img-fixed-margin fixed-padding">
           <img
@@ -47,4 +32,5 @@ User.propTypes = {
   team: React.PropTypes.object.isRequired,
   user: React.PropTypes.object.isRequired,
   addChat: React.PropTypes.func.isRequired,
+  createDirectChat: React.PropTypes.func.isRequired,
 };

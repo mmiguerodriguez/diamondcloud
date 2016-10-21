@@ -31,13 +31,12 @@ export default class ChatsCollapsible extends React.Component {
               users={this.props.users}
               directChats={this.props.directChats}
               addChat={this.props.addChat}
+              createDirectChat={this.props.createDirectChat}
             />
           </div>
         }
         footer={
-          <a className="btn btn-default footer-btn" role="button" onClick={this.props.openCreateChatModal}>
-            <img src="/img/add-people-icon.svg" style={{ WebkitFilter: 'invert(1)' }} width="32px" />
-          </a>
+          <div></div>
         }
       />
     );
@@ -50,5 +49,5 @@ ChatsCollapsible.propTypes = {
   boards: React.PropTypes.array.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
   addChat: React.PropTypes.func.isRequired,
-  openCreateChatModal: React.PropTypes.func.isRequired,
+  createDirectChat: React.PropTypes.func.isRequired,
 };

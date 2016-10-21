@@ -323,9 +323,10 @@ export default class TeamPage extends React.Component {
     return (
       <div>
         <TeamLayout
+          users={this.props.users}
+
           teams={this.props.teams}
           team={this.props.team}
-          users={this.props.users}
           isAdmin={this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')}
 
           boards={this.props.boards}

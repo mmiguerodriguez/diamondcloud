@@ -24,11 +24,8 @@ export default class DirectChatsLayout extends React.Component {
     let arr = [];
   
     this.props.users.forEach((user) => {
-      let directChat = DirectChats.getDirectChat(user._id, this.props.team._id);
-
-      console.log(directChat, user._id);
-      
       if (user._id !== Meteor.userId()) {
+        let directChat = DirectChats.getDirectChat(user._id, this.props.team._id);
         if (!directChat) {
           arr.push(
             <User
@@ -36,6 +33,7 @@ export default class DirectChatsLayout extends React.Component {
               user={user}
               team={this.props.team}
               addChat={this.props.addChat}
+              createDirectChat={this.props.createDirectChat}
             />
           );
         }
@@ -74,4 +72,5 @@ DirectChatsLayout.propTypes = {
   users: React.PropTypes.array.isRequired,
   directChats: React.PropTypes.array.isRequired,
   addChat: React.PropTypes.func.isRequired,
+  createDirectChat: React.PropTypes.func.isRequired,
 };

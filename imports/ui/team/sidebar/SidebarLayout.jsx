@@ -89,9 +89,9 @@ export default class SidebarLayout extends React.Component {
           users={this.props.users}
           boards={this.props.boards}
           directChats={this.props.directChats}
-          toggleCollapsible={this.props.toggleCollapsible}
           addChat={this.props.addChat}
-          openCreateChatModal={this.props.openCreateChatModal}
+          createDirectChat={this.props.createDirectChat}
+          toggleCollapsible={this.props.toggleCollapsible}
         />
       </div>
     );
@@ -101,21 +101,16 @@ export default class SidebarLayout extends React.Component {
 SidebarLayout.propTypes = {
   team: React.PropTypes.object.isRequired,
   isAdmin: React.PropTypes.bool.isRequired,
-
   users: React.PropTypes.array.isRequired,
   boards: React.PropTypes.array.isRequired,
   modules: React.PropTypes.array.isRequired,
-
   directChats: React.PropTypes.array.isRequired,
-
   addChat: React.PropTypes.func.isRequired,
+  createDirectChat: React.PropTypes.func.isRequired,
   changeBoard: React.PropTypes.func.isRequired,
   openBoardContextMenu: React.PropTypes.func.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
-
   openCreateBoardModal: React.PropTypes.func.isRequired,
-  openCreateChatModal: React.PropTypes.func.isRequired,
   openConfigTeamModal: React.PropTypes.func.isRequired,
-
   permissionAsker: React.PropTypes.bool.isRequired,
 };
