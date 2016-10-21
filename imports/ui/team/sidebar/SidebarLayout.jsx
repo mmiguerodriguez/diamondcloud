@@ -85,6 +85,8 @@ export default class SidebarLayout extends React.Component {
           openBoardContextMenu={this.props.openBoardContextMenu}
         />
         <ChatsCollapsible
+          team={this.props.team}
+          users={this.props.users}
           boards={this.props.boards}
           directChats={this.props.directChats}
           toggleCollapsible={this.props.toggleCollapsible}
@@ -100,6 +102,7 @@ SidebarLayout.propTypes = {
   team: React.PropTypes.object.isRequired,
   isAdmin: React.PropTypes.bool.isRequired,
 
+  users: React.PropTypes.array.isRequired,
   boards: React.PropTypes.array.isRequired,
   modules: React.PropTypes.array.isRequired,
 

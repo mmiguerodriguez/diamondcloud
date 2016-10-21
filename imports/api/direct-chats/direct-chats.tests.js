@@ -85,6 +85,13 @@ if (Meteor.isServer) {
               { _id: users[3]._id, notifications: faker.random.number({ min: 1, max: 20 }) },
             ]
           }),
+          Factory.create('directChat', {
+            teamId: teams[0]._id,
+            users: [
+              { _id: users[0]._id, notifications: faker.random.number({ min: 1, max: 20 }) },
+              { _id: users[1]._id, notifications: faker.random.number({ min: 1, max: 20 }) },
+            ]
+          }),
         ];
         messages = [];
 
@@ -145,17 +152,24 @@ if (Meteor.isServer) {
       });
 
       it('should return user direct-chats', function() {
-        let foundChats = [
+        const foundChats = [
           ...DirectChats.getUserDirectChats(users[0]._id, teams[0]._id).fetch(),
           ...DirectChats.getUserDirectChats(users[0]._id, teams[3]._id).fetch(),
         ];
 
-        let realChats = [
+        const realChats = [
           directChats[0],
           directChats[3],
         ];
 
         chai.assert.deepEqual(foundChats, realChats);
+      });
+
+      it('should return user direct-chat with another user', function() {
+        const foundChat = DirectChats.getDirectChat(users[3]._id, teams[3]._id).fetch();
+        const chat = directChats[4];
+        
+        chai.assert.deepEqual(foundChat, chat);
       });
 
       it('should return the other user from the direct-chat', function(){

@@ -8,31 +8,35 @@ export default class ChatsCollapsible extends React.Component {
   render() {
     return (
       <Collapsible
-        id={ 'chats-collapsible' }
+        id={'chats-collapsible'}
         header={
           <div>
             <div
-              type='button'
-              className='close col-xs-2'
-              onClick={ this.props.toggleCollapsible.bind(null, 'chats') }>
-              <img src='/img/close-icon.svg' width='18px' />
+              type="button"
+              className="close col-xs-2"
+              onClick={this.props.toggleCollapsible.bind(null, 'chats')}>
+              <img src="/img/close-icon.svg" width="18px" />
             </div>
-            <h3 className='col-xs-10 title'>Mensajes</h3>
+            <h3 className="col-xs-10 title">Mensajes</h3>
           </div>
         }
         body={
           <div>
             <BoardsLayout
-              boards={ this.props.boards }
-              addChat={ this.props.addChat } />
+              boards={this.props.boards}
+              addChat={this.props.addChat}
+            />
             <DirectChatsLayout
-              directChats={ this.props.directChats }
-              addChat={ this.props.addChat } />
+              team={this.props.team}
+              users={this.props.users}
+              directChats={this.props.directChats}
+              addChat={this.props.addChat}
+            />
           </div>
         }
         footer={
-          <a className='btn btn-default footer-btn' role='button' onClick={ this.props.openCreateChatModal }>
-            <img src='/img/add-people-icon.svg' style={{ 'WebkitFilter': 'invert(1)' }} width='32px' />
+          <a className="btn btn-default footer-btn" role="button" onClick={this.props.openCreateChatModal}>
+            <img src="/img/add-people-icon.svg" style={{ WebkitFilter: 'invert(1)' }} width="32px" />
           </a>
         }
       />
@@ -41,8 +45,9 @@ export default class ChatsCollapsible extends React.Component {
 }
 
 ChatsCollapsible.propTypes = {
+  team: React.PropTypes.object.isRequired,
+  users: React.PropTypes.array.isRequired,
   boards: React.PropTypes.array.isRequired,
-  directChats: React.PropTypes.array.isRequired,
   toggleCollapsible: React.PropTypes.func.isRequired,
   addChat: React.PropTypes.func.isRequired,
   openCreateChatModal: React.PropTypes.func.isRequired,
