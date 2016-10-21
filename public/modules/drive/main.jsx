@@ -1533,7 +1533,7 @@ class FileViewerLayout extends React.Component {
         </div>
       );
     }
-    
+    console.log(this.props.fileType.indexOf('image'));
     return (
       <div>
         <div className='drive-navbar'>
@@ -1543,7 +1543,7 @@ class FileViewerLayout extends React.Component {
           </i>
         </div>
         {
-          this.props.fileType.indexOf('image') !== 1 || this.props.fileType.indexOf('video') !== 1 ?
+          (this.props.fileType.indexOf('image') !== -1 || this.props.fileType.indexOf('video') !== -1) ?
           (
           <div className="content-container">
             <div className="image-container">
@@ -1627,8 +1627,6 @@ ReactDOM.render(
   </Router>,
   document.getElementById('render-target')
 );
-
-
 
 /**
  * Check if current user has authorized this application.
