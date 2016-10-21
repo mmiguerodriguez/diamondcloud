@@ -11,6 +11,8 @@ import preloadImages       from '../preloadImages';
 import NotificationSystem  from '../notifications/notificationSystem/NotificationSystem';
 import TeamLayout          from './TeamLayout';
 
+preloadImages();
+
 export default class TeamPage extends React.Component {
   constructor(props) {
     super(props);
@@ -25,10 +27,6 @@ export default class TeamPage extends React.Component {
     this.removeChat = this.removeChat.bind(this);
     this.boardSubscribe = this.boardSubscribe.bind(this);
     this.togglePosition = this.togglePosition.bind(this);
-  }
-
-  componentWillMount() {
-    preloadImages();
   }
 
   componentDidUpdate() {
