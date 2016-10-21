@@ -4,10 +4,10 @@
     position: absolute;
     height: calc(100vh - 50px);
     width: 100%;
-    background-image: url(https://cdn.businesscollective.com/wp-content/uploads/bigstock-Group-of-Multiethnic-Busy-Peop-660582581-675x320.jpg);
+    background-image: url("/img/cyd-landing-background.jpg");
     background-size: cover;
     background-repeat: no-repeat;
-    filter: blur(1px);
+    filter: blur(3px);
     z-index: -1;
   }
   .items-container {

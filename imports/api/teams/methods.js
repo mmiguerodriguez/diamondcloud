@@ -1,13 +1,12 @@
 import { Meteor }          from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
-import { printObject }     from '../helpers/print-objects.js';
 import  Future             from 'fibers/future';
 
-import { Teams }           from './teams.js';
-import { Mail }            from '../mails/mails.js';
-import { Boards }          from '../boards/boards.js';
-import { createBoard }     from '../boards/methods.js';
+import { Teams }           from './teams';
+import { Mail }            from '../mails/mails';
+import { Boards }          from '../boards/boards';
+import { createBoard }     from '../boards/methods';
 
 export const createTeam = new ValidatedMethod({
   name: 'Teams.methods.create',
@@ -15,18 +14,31 @@ export const createTeam = new ValidatedMethod({
     name: { type: String },
     plan: { type: String, allowedValues: ['free', 'premium'] },
     type: { type: String, min: 0, max: 200 },
-    users: { type: [Object], blackbox: true, optional: true }, // [{ email, hierarchy }]
+    users: { type: [Object], optional: true }, // [{ email, hierarchy }]
+    'users.$.email': { type: String },
+    'users.$.hierarchy': {
+      type: String,
+      allowedValues: [
+        'sistemas',
+        'creativo',
+        'director creativo',
+        'director de cuentas',
+        'coordinador',
+        'administrador',
+        'medios',
+      ],
+    },
     url: { type: String },
   }).validator(),
   run({ name, plan, type, users, url }) {
-    if (!!users) {
+    if (users) {
       if (!Meteor.user()) {
         throw new Meteor.Error('Teams.methods.create.notLoggedIn',
         'Must be logged in to make a team.');
       }
     }
-    let team, teamId;
-    team = {
+
+    const team = {
       name,
       plan,
       type,
@@ -35,6 +47,7 @@ export const createTeam = new ValidatedMethod({
       url,
       archived: false,
     };
+    let teamId;
 
     if (users) {
       team.users.push({
@@ -53,11 +66,13 @@ export const createTeam = new ValidatedMethod({
       });
     }
 
-    let future = new Future();
-    Teams.insert(team, (err, res) => {
-      if (err) throw new Meteor.Error(err);
+    const future = new Future();
+    Teams.insert(team, (error, result) => {
+      if (error) {
+        throw new Meteor.Error(error);
+      }
 
-      teamId = res;
+      teamId = result;
       team._id = teamId;
 
       createBoard.call({
@@ -67,14 +82,14 @@ export const createTeam = new ValidatedMethod({
         isPrivate: false,
         visibleForDirectors: false,
         //users: team.users,
-      }, (err, res) => {
-        if (!!err) {
-          future.throw(err);
+      }, (error, result) => {
+        if (error) {
+          future.throw(error);
         }
 
-        team.boards.push({ _id: res._id });
+        team.boards.push({ _id: result._id });
 
-        if (!!users) {
+        if (users) {
           users.forEach(({ email }) => {
             if (Meteor.users.findByEmail(email, {})) {
               // If user is not registered in Diamond Cloud
@@ -100,17 +115,17 @@ export const createTeam = new ValidatedMethod({
     });
 
     return future.wait();
-  }
+  },
 });
 
 export const editTeam = new ValidatedMethod({
   name: 'Teams.methods.edit',
   validate: new SimpleSchema({
-    'teamId': { type: String },
-    'team': { type: Object },
-    'team.name': { type: String, optional: true, },
+    teamId: { type: String },
+    team: { type: Object },
+    'team.name': { type: String, optional: true },
     'team.plan': { type: String, optional: true, allowedValues: ['free', 'premium'] },
-    'team.type': { type: String, optional: true, },
+    'team.type': { type: String, optional: true },
   }).validator(),
   run({ team, teamId }) {
     if (!Meteor.user()) {
@@ -119,26 +134,30 @@ export const editTeam = new ValidatedMethod({
     }
 
     Teams.update({ _id: teamId }, {
-      $set: team
+      $set: team,
     });
+
     return Teams.findOne(teamId);
-  }
+  },
 });
 
 export const changeUserHierarchy = new ValidatedMethod({
   name: 'Teams.methods.changeUserHierarchy',
   validate: new SimpleSchema({
     teamId: { type: String },
-  	userEmail: { type: String },
-  	hierarchy: { type: String, allowedValues: [
-      'sistemas',
-      'creativo',
-      'director creativo',
-      'director de cuentas',
-      'coordinador',
-      'administrador',
-      'medios',
-    ] },
+    userEmail: { type: String },
+    hierarchy: {
+      type: String,
+      allowedValues: [
+        'sistemas',
+        'creativo',
+        'director creativo',
+        'director de cuentas',
+        'coordinador',
+        'administrador',
+        'medios',
+      ],
+    },
   }).validator(),
   run({ teamId, userEmail, hierarchy }) {
     if (!Meteor.user()) {
@@ -146,36 +165,39 @@ export const changeUserHierarchy = new ValidatedMethod({
       'Must be logged in to edit a team.');
     }
 
-    let team = Teams.findOne(teamId);
+    const team = Teams.findOne(teamId);
     if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
       throw new Meteor.Error('Teams.methods.changeUserHierarchy.notAllowed',
-      "The user is not allowed to change the hierarchy of another user.");
+      'The user is not allowed to change the hierarchy of another user.');
     }
 
     Teams.update({
       _id: teamId,
-      'users.email': userEmail
+      'users.email': userEmail,
     }, {
       $set: {
-		    'users.$.hierarchy': hierarchy,
-	    },
+        'users.$.hierarchy': hierarchy,
+      },
     });
-  }
+  },
 });
 
 export const shareTeam = new ValidatedMethod({
   name: 'Teams.methods.share',
   validate: new SimpleSchema({
     email: { type: String, regEx: SimpleSchema.RegEx.Email },
-    hierarchy: { type: String, allowedValues: [
-      'sistemas',
-      'creativo',
-      'director creativo',
-      'director de cuentas',
-      'coordinador',
-      'administrador',
-      'medios',
-    ] },
+    hierarchy: {
+      type: String,
+      allowedValues: [
+        'sistemas',
+        'creativo',
+        'director creativo',
+        'director de cuentas',
+        'coordinador',
+        'administrador',
+        'medios',
+      ],
+    },
     teamId: { type: String },
   }).validator(),
   run({ email, hierarchy, teamId }) {
@@ -184,21 +206,18 @@ export const shareTeam = new ValidatedMethod({
       'Must be logged in to edit a team.');
     }
 
-    let team = Teams.findOne(teamId);
+    const team = Teams.findOne(teamId);
     if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
       throw new Meteor.Error('Teams.methods.share.notAllowed',
-      "The user is not allowed to share the team");
+      'The user is not allowed to share the team');
     }
 
-    let user = { email, hierarchy };
-
+    const user = { email, hierarchy };
     Teams.addUser(teamId, user);
-    // TODO: Add user to public Boards
 
-    let existingUser = Meteor.users.findByEmail(email, {});
-
+    const existingUser = Meteor.users.findByEmail(email, {});
     if (existingUser) {
-      //if user is not registered in Diamond Cloud
+      // User registered
       Mail.sendMail({
         from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
         to: email,
@@ -222,7 +241,7 @@ export const shareTeam = new ValidatedMethod({
     }
 
     return Teams.findOne(teamId);
-  }
+  },
 });
 
 export const removeUserFromTeam = new ValidatedMethod({
@@ -242,17 +261,17 @@ export const removeUserFromTeam = new ValidatedMethod({
       'You can\'t remove yourself from a team.');
     }
 
-    let team = Teams.findOne(teamId);
-    let user = Meteor.users.findByEmail(email, {});
+    const team = Teams.findOne(teamId);
+    const user = Meteor.users.findByEmail(email, {});
 
     if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
       throw new Meteor.Error('Teams.methods.removeUser.notAllowed',
-      "The user is not allowed to remove a user from the team");
+      'The user is not allowed to remove a user from the team');
     }
 
     // Remove user from boards if user exists on the database
     if (user) {
-      let boards = user.boards(teamId).fetch();
+      const boards = user.boards(teamId).fetch();
 
       boards.forEach((board) => {
         Boards.removeUser(board._id, user._id);
@@ -262,7 +281,7 @@ export const removeUserFromTeam = new ValidatedMethod({
     Teams.removeUser(teamId, email);
 
     return Teams.findOne(teamId);
-  }
+  },
 });
 
 export const archiveTeam = new ValidatedMethod({
@@ -276,22 +295,22 @@ export const archiveTeam = new ValidatedMethod({
       'Must be logged in to archive a team.');
     }
     // Verify user is allowed to archive team
-    let team = Teams.findOne(teamId);
+    const team = Teams.findOne(teamId);
     if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
       throw new Meteor.Error('Teams.methods.archive.notAllowed',
-      "The user is not allowed to archive the team");
+      'The user is not allowed to archive the team');
     }
 
     Teams.update(teamId, {
       $set: {
         archived: true,
-      }
+      },
     });
 
     // Testing purposes
     // may need to change in the future
     return Teams.findOne(teamId);
-  }
+  },
 });
 
 export const dearchiveTeam = new ValidatedMethod({
@@ -306,20 +325,20 @@ export const dearchiveTeam = new ValidatedMethod({
     }
 
     // Verify user is allowed to dearchive the team
-    let team = Teams.findOne(teamId);
+    const team = Teams.findOne(teamId);
     if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
       throw new Meteor.Error('Teams.methods.dearchive.notAllowed',
-      "The user is not allowed to dearchive the team");
+      'The user is not allowed to dearchive the team');
     }
 
     Teams.update(teamId, {
       $set: {
         archived: false,
-      }
+      },
     });
 
     // Testing purposes
     // may need to change in the future
     return Teams.findOne(teamId);
-  }
+  },
 });

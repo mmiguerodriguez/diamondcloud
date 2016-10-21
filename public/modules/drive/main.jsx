@@ -6,6 +6,8 @@ browserHistory.push('/folder'); // initialize the router
 // Google Drive API
 const CLIENT_ID = '624318008240-lkme1mqg4ist618vrmj70rkqbo95njnd.apps.googleusercontent.com';
 const folderMimeType = 'application/vnd.google-apps.folder';
+const ERROR_DELAY = 5000;
+let authObject;
 
 class Index extends React.Component {
   constructor(props) {
@@ -13,12 +15,48 @@ class Index extends React.Component {
 
     this.state = {
       openedDocumentId: '',
+      
+      error: {
+        type: '',
+        body: '',
+        delay: '',
+        showing: false,
+      }
     };
+    
+    this.error = this.error.bind(this);
   }
-  render() {
-    return React.cloneElement(this.props.children, {
-      openedDocumentId: this.state.openedDocumentId,
+  
+  error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
+    console.log(type, body);
+    this.setState({
+      error: {
+        body,
+        delay: delay || ERROR_DELAY,
+        showing: type === 'show',
+      },
     });
+  }
+  
+  render() {
+    return (
+      <div>
+        {
+          React.cloneElement(this.props.children, {
+            openedDocumentId: this.state.openedDocumentId,
+            error: this.error,
+          })
+        }
+        {
+          this.state.error.showing ? (
+            <ErrorMessage
+              error={this.error}
+              {...this.state.error}
+            />
+          ) : (null)
+        }
+      </div>
+    );
   }
 
   componentDidMount() {
@@ -72,8 +110,36 @@ class FileManagerLayout extends React.Component {
             className="col-xs-3 icon-type create-doc"
             src="/modules/drive/img/google-slides.svg"
           />);
+          
       default:
-        return null;
+        // Check if the file is an image
+        if(fileType.indexOf("image/") !== -1) {
+          return (
+            <img
+              alt="Imagen"
+              className="col-xs-3 icon-type create-doc"
+              src="/modules/drive/img/image.svg"
+            />
+          );
+        // Check if the file is a video
+        } else if (fileType.indexOf("video/") !== -1) {
+          return (
+            <img
+              alt="Video"
+              className="col-xs-3 icon-type create-doc"
+              src="/modules/drive/img/video.svg"
+            />
+          );
+        // Return the default image
+        } else {
+          return (
+            <img
+              alt="Documento"
+              className="col-xs-3 icon-type create-doc"
+              src="/modules/drive/img/google-docs.svg"
+            />
+          );
+        }
     }
   }
   constructor(props) {
@@ -83,6 +149,7 @@ class FileManagerLayout extends React.Component {
       name: '',
       fileType: 'application/vnd.google-apps.document',
       initializedFilePickerCard: false,
+      fileToUpload: null,
     };
   }
 
@@ -92,7 +159,13 @@ class FileManagerLayout extends React.Component {
       parentFolderId: this.props.folderId,
       callback(error) {
         if (error) {
-          console.error(error); // TODO: handle error
+          this.props.toggleError({
+            type: 'show',
+            body: 'Error al importar el documento',
+          });
+          self.setState({
+            loadingDocuments: false,
+          });
         }
       },
     });
@@ -192,18 +265,16 @@ class FileManagerLayout extends React.Component {
         <div
           className="document fixed"
           title={document.name}
+          onClick={
+            () => {
+              browserHistory.push(`/document/${document._id}`);
+            }
+          }
         >
           {
             FileManagerLayout.renderDocumentTypeImg(document.fileType)
           }
-          <p
-            className="col-xs-9 document-title truncate"
-            onClick={
-              () => {
-                browserHistory.push(`/document/${document._id}`);
-              }
-            }
-          >
+          <p className="col-xs-9 document-title truncate">
             {document.name}
           </p>
         </div>
@@ -214,7 +285,17 @@ class FileManagerLayout extends React.Component {
             parentFolderId: this.props.folderId,
             mimeType: document.fileType,
             isImported: document.isImported,
-            callback: () => {}, // TODO: handle loading and error
+            callback: (error, result) => {
+              if(error) {
+                this.props.toggleError({
+                  type: 'show',
+                  body: 'Error al borrar el documento',
+                });
+                self.setState({
+                  loadingDocuments: false,
+                });
+              }
+            },
           })}
         >
           delete
@@ -222,7 +303,6 @@ class FileManagerLayout extends React.Component {
       </div>
     ));
   }
-
 
   componentDidMount() {
     this.props.initPicker('import-file', this.handleImport.bind(this));
@@ -242,11 +322,24 @@ class FileManagerLayout extends React.Component {
   render() {
     return (
       <div>
+        {
+          (this.state.loadingDocuments || this.state.loadingFolders) ? (
+            <div className="loading">
+              <div className="loader"></div>
+            </div>
+          ) : (null)
+        }
         <div className='file-manager ui-widget-content'>
           {
             // Create document modal
           }
-          <div className="modal fade" id="create-document" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div
+            className="modal fade"
+            id="create-document"
+            tabIndex="-1"
+            role="dialog"
+            aria-labelledby="myModalLabel"
+          >
             <div className="modal-dialog" role="document">
               <div className="modal-content">
                 <div className="modal-header">
@@ -287,8 +380,12 @@ class FileManagerLayout extends React.Component {
                       fileType: this.state.fileType,
                       parentFolderId: this.props.folderId,
                       diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
-                      callback: () => {
-                        $('#create-document').modal('hide');
+                      callback: (error, result) => {
+                        if (error) {
+                        
+                        } else {
+                          $('#create-document').modal('hide');
+                        }
                       },
                     })}>
                       Crear
@@ -348,6 +445,73 @@ class FileManagerLayout extends React.Component {
               </div>
             </div>
           </div>
+          {
+            // Upload photos and videos modal
+          }
+          <div
+            className="modal fade"
+            id="upload-files"
+            tabIndex="-1"
+            role="dialog"
+            aria-labelledby="myModalLabel"
+          >
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 className="modal-title" id="myModalLabel">Subir foto o video</h4>
+                </div>
+                <div className="modal-body">
+                  <div className="form-group name">
+                    <label htmlFor="file">Seleccionar imagen o video para subir</label>
+                    <input
+                      type="file"
+                      accept="image/*,video/*"
+                      className="form-control"
+                      id="file"
+                      placeholder="Seleccionar imagen o video"
+                      onChange={(e) => {
+                        this.setState({
+                          file: e.target.files[0],
+                        });
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-default"
+                    data-dismiss="modal"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={this.props.uploadFile.bind(this, {
+                        file: this.state.file,
+                        parentFolderId: this.props.folderId,
+                        diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
+                        callback(error, result) {
+                        if(error) {
+                          this.props.toggleError({
+                            type: 'show',
+                            body: 'Error al subir la imagen/video',
+                          });
+                        } else {
+                          $('#upload-files').modal('hide');
+                        }
+                        },
+                      })
+                    }
+                  >
+                    Subir
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div className='folder-navbar'>
             {
               (this.props.folderId) ?
@@ -363,64 +527,73 @@ class FileManagerLayout extends React.Component {
                 (
                   <div
                     className="go-back-to-document"
-                    onClick={() => {
-                      browserHistory.push(`/document/${this.props.openedDocumentId}`);
-                    }}
+                    onClick={
+                      () => {
+                        browserHistory.push(`/document/${this.props.openedDocumentId}`);
+                      }
+                    }
                   >
                     Volver al documento
                   </div>
                 ) : (null)
             }
           </div>
-          <div className="container-fluid files-container">
-            <p className="folders-title-container">
-              Carpetas
-            </p>
-            <hr className="divider" />
-            <div className="folders-container">
-              {
-                (this.props.loadingFolders) ?
-                  (
-                    <p>Cargando...</p>
-                  ) : (
-                    this.renderFolders()
-                  )
-              }
-            </div>
-            <p className="documents-title-container">
-              Archivos
-            </p>
-            <hr className="divider" />
-            <div className="documents-container">
-              {
-                (this.props.loadingDocuments) ?
-                  (
-                    <p>Cargando...</p>
-                  ) : (
-                    this.renderDocuments()
-                  )
-              }
-            </div>
-          </div>
+          {
+            (this.props.loadingDocuments || this.props.loadingFolders) ?
+              (
+                <div className="loading">
+                  <div className="loader"></div>
+                </div>
+              ) : (
+                <div className="container-fluid files-container">
+                  <p className="folders-title-container">
+                    Carpetas
+                  </p>
+                  <hr className="divider" />
+                  <div className="folders-container">
+                    {
+                      this.renderFolders()
+                    }
+                  </div>
+                  <p className="documents-title-container">
+                    Archivos
+                  </p>
+                  <hr className="divider" />
+                  <div className="documents-container">
+                    {
+                      this.renderDocuments()
+                    }
+                  </div>
+                </div>
+              )
+          }
           <div className="create">
+            <div 
+              className="img"
+              data-toggle="modal"
+              data-target="#create-document"
+              title='Crear documento'
+            />
             <div className="options">
               <div
                 className="option drive"
                 id="import-file"
-                title='Importar de drive'
-              ></div>
+                title="Importar de drive"
+              />
               <div
                 className="option folder"
                 data-toggle="modal"
                 data-target="#create-folder"
-                title='Crear carpeta'>
+                title='Crear carpeta'
+                >
               </div>
               <div
-                className="option doc"
+                className="option upload"
+                id="upload-files"
                 data-toggle="modal"
-                data-target="#create-document"
-                title='Crear documento'>
-              </div>
+                data-target="#upload-files"
+                title="Subir foto o video"
+              />
             </div>
           </div>
         </div>
@@ -446,13 +619,78 @@ FileManagerLayout.propTypes = {
   createFolder: React.PropTypes.func.isRequired,
   importDocument: React.PropTypes.func.isRequired,
   deleteDocument: React.PropTypes.func.isRequired,
+  uploadFile: React.PropTypes.func.isRequired,
   initPicker: React.PropTypes.func.isRequired,
   diamondCloudDriveFolderId: React.PropTypes.string.isRequired,
   openedDocumentId: React.PropTypes.string.isRequired,
 };
 
 class FileManagerPage extends React.Component {
-
+  /**
+   * Inserts a file in module storage, and in rootFiles if necessary
+   * @param {String} id
+   * @param {String} name
+   * @param {String} fileType
+   * @param {String} parentFolderId (optional)
+   * @param {String} isImported (optional)
+   * @return {Promise} promise
+   */
+  static insertFileInStorage({ id, name, fileType, parentFolderId = null, isImported = false }) {
+    function insertDocumentInStorage() {
+      return new Promise((fulfill, reject) => {
+        DiamondAPI.insert({
+          // Depending on the type of file, insert it in folders or documents
+          collection: (fileType === folderMimeType) ? 'folders' : 'documents',
+          object: {
+            _id: id,
+            parentFolderId,
+            name,
+            fileType,
+            isImported,
+          },
+          isGlobal: true,
+          callback(error, result) {
+            if (error) {
+              reject(error);
+            } else {
+              fulfill(result);
+            }
+          },
+        });
+      });
+    }
+    function insertDocumentInRootFiles() {
+      return new Promise((fulfill, reject) => {
+        DiamondAPI.insert({
+          collection: 'rootFiles',
+          object: {
+            documentId: id, // resp is the response to the create
+                                        // request, not to the permission one
+            boardId: DiamondAPI.getCurrentBoard()._id,
+          },
+          isGlobal: true,
+          callback(error, result) {
+            if (error) {
+              reject(error);
+            } else {
+              fulfill(result);
+            }
+          },
+        });
+      });
+    }
+    if (!parentFolderId) {
+      return new Promise((fulfill, reject) => {
+        insertDocumentInRootFiles()
+          .then(() => insertDocumentInStorage(), reject)
+          .then(fulfill, reject);
+      });
+    }
+    return new Promise((fulfill, reject) => {
+      insertDocumentInStorage()
+      .then(fulfill, reject);
+    });
+  }
   /**
    * Returns if the current user is the drive owner of certain folder
    * @param {String} folderId
@@ -476,7 +714,7 @@ class FileManagerPage extends React.Component {
       },
     });
   }
-
+  
   constructor(props) {
     super(props);
 
@@ -498,7 +736,7 @@ class FileManagerPage extends React.Component {
                           */
     };
   }
-
+  
   render() {
     return (
       <FileManagerLayout
@@ -511,13 +749,14 @@ class FileManagerPage extends React.Component {
         createFolder={this.createFolder}
         importDocument={this.importDocument}
         deleteDocument={this.deleteDocument}
+        uploadFile={this.uploadFile}
         initPicker={this.initPicker}
         diamondCloudDriveFolderId={this.state.diamondCloudDriveFolderId}
         openedDocumentId={this.props.openedDocumentId}
+        toggleError={this.props.error}
       />
     );
   }
-
 
   componentDidMount() {
 
@@ -581,8 +820,6 @@ class FileManagerPage extends React.Component {
   }
 
   getDriveData(folderId) {
-    // TODO show only the documents and folders of the current folder
-    // TODO dessuscribe from the old folders
     const self = this;
     let subscriptions = [];
 
@@ -716,15 +953,32 @@ class FileManagerPage extends React.Component {
    */
   createDocument({ name, parentFolderId = null, fileType, diamondCloudDriveFolderId, callback = () => {} }) {
     // Check if there is a Diamond Cloud drive folder
-    if (!diamondCloudDriveFolderId) {
-      console.error('There was an error while creating the document. Please try again');
-      // TODO: handle this error
-      return;
-    }
-    let self = this;
+    const self = this;
     self.setState({
       loadingDocuments: true,
     });
+    if (!diamondCloudDriveFolderId) {
+      this.props.toggleError({
+        type: 'show',
+        body: 'Error al crear el documento',
+      });
+      self.setState({
+        loadingDocuments: false,
+      });
+      callback('diamondCloudDriveFolderId is not defined');
+      return;
+    }
+    if(name === '') {
+      this.props.toggleError({
+        type: 'show',
+        body: 'No se puede crear un documento sin titulo',
+      });
+      self.setState({
+        loadingDocuments: false,
+      });
+      callback('name is empty');
+      return;
+    }
     function createDocumentInDrive(isOwner) {
       return gapi.client.drive.files.create({
         resource: {
@@ -745,84 +999,55 @@ class FileManagerPage extends React.Component {
         type: 'anyone',
       });
     }
-    function insertDocumentInStorage(resp) {
-      if (!parentFolderId) {
-        DiamondAPI.insert({
-          collection: 'rootFiles',
-          object: {
-            documentId: resp.result.id, // resp is the response to the create
-                                        // request, not to the permission one
-            boardId: DiamondAPI.getCurrentBoard()._id,
-          },
-          isGlobal: true,
-          callback(err, res) {
-            if (!!err) {
-              console.error(err);
-            }
-          }
-        });
-      }
-
-      DiamondAPI.insert({
-        collection: 'documents',
-        object: {
-          _id: resp.result.id,
-          parentFolderId,
-          name,
-          fileType,
-          isImported: false,
-        },
-        isGlobal: true,
-        callback(error, result){
-          self.setState({
-            loadingDocuments: false,
-          });
-          callback(error, result);
-        },
-      });
-    }
     if (parentFolderId) {
       // Check if user is owner of current folder
-      DiamondAPI.get({
-        collection: 'folders',
-        filter: {
-          _id: parentFolderId,
-        },
-        callback(error, result) {
-          if (error) {
-            callback(error);
-            return;
-          }
-          createDocumentInDrive(result[0].ownerId === DiamondAPI.getCurrentUser)
-            .then((response) => {
-              createDrivePermission(response)
-              .then(() => {
-                insertDocumentInStorage(response);
-              }, callback);
-            }, callback);
-        },
-      });
       FileManagerPage.isUserOwnerOfFolder(parentFolderId, (error, result) => {
         if (error) {
           callback(error);
           return;
         }
+        let id;
         createDocumentInDrive(result)
           .then((response) => {
-            createDrivePermission(response)
-            .then(() => {
-              insertDocumentInStorage(response);
-            }, callback);
-          }, callback);
+            id = response.result.id;
+            return createDrivePermission(response);
+          }, callback)
+          .then(() => FileManagerPage.insertFileInStorage({
+            id,
+            name,
+            fileType,
+            parentFolderId,
+          }), callback)
+          .then((_result) => {
+            callback(null, _result);
+          }, (_error) => {
+            callback(_error);
+          });
       });
     } else {
+      let id;
       createDocumentInDrive()
         .then((response) => {
-          createDrivePermission(response)
-          .then(() => {
-            insertDocumentInStorage(response);
-          }, callback);
-        }, callback);
+          id = response.result.id;
+          return createDrivePermission(response);
+        }, callback)
+        .then(() => FileManagerPage.insertFileInStorage({
+          id,
+          name,
+          fileType,
+          parentFolderId,
+        }), callback)
+        .then((_result) => {
+          self.setState({
+            loadingDocuments: false,
+          });
+          callback(null, _result);
+        }, (_error) => {
+          self.setState({
+            loadingDocuments: false,
+          });
+          callback(_error);
+        });
     }
   }
 
@@ -835,16 +1060,33 @@ class FileManagerPage extends React.Component {
      *   @param {Object} response
      */
   createFolder({ name, parentFolderId = null, diamondCloudDriveFolderId, callback = () => {} }) {
+    const self = this;
     // Check if there is a Diamond Cloud drive folder
     if (!diamondCloudDriveFolderId) {
-      callback('There was an error while creating the document. Please try again');
+      this.props.toggleError({
+        type: 'show',
+        body: 'Error al crear la carpeta',
+      });
+      self.setState({
+        loadingDocuments: false,
+      });
+      callback('diamondCloudDriveFolderId is not defined');
       return false;
-      // TODO: handle this error
     }
-    let self = this;
     self.setState({
       loadingFolders: true,
     });
+    if(name === "") {
+      this.props.toggleError({
+        type: 'show',
+        body: 'No se puede crear una carpeta sin titulo',
+      });
+      self.setState({
+        loadingDocuments: false,
+      });
+      callback('name is empty');
+      return;
+    }
     function createFolderInDrive(isOwner) {
       // Create the folder in Drive
       gapi.client.drive.files.create({
@@ -875,7 +1117,7 @@ class FileManagerPage extends React.Component {
             callback(err, res) {
               if (err) {
                 self.setState({
-                  loadingFolders
+                  loadingFolders: false,
                 });
                 callback(err, null);
               } else {
@@ -978,6 +1220,10 @@ class FileManagerPage extends React.Component {
    *   @param {Object} response
    */
   deleteDocument(params) {
+    const self = this;
+    self.setState({
+      loadingFolders: true,
+    });
     // We need to redeclare the function to have a reference to it.
     // Otherwise, we would not be able to call it recursivaly,
     // as we don't know in which context it is going to run.
@@ -1095,29 +1341,129 @@ class FileManagerPage extends React.Component {
     recursiveDeleteDocument(params);
   }
 
+  /**
+   * uploadFile: Uploades a file to drive
+   * @param {File} file
+   * @param {String} parentFolderId (optional)
+   * @param {String} diamondCloudDriveFolderId
+   * @param {Function} callback (optional)
+   *   @param {String} error
+   *   @param {Object} response
+   */
+  uploadFile({ file, parentFolderId = null, diamondCloudDriveFolderId, callback = () => {} }) {
+    const self = this;
+    self.setState({
+      loadingFolders: true,
+    });
+    if(!file) {
+      this.props.toggleError({
+        type: 'show',
+        body: 'No se ha elegido la imagen/video',
+      });
+      self.setState({
+        loadingFolders: false,
+      });
+      return;
+    }
+    /**
+   * Insert new file.
+   *
+   * @param {File} fileData File object to read data from.
+   * @param {Function} callback Function to call when the request is complete.
+   */
+    function insertFileToDrive(fileData, _callback = () => {}) {
+      const boundary = '-------314159265358979323846';
+      const delimiter = "\r\n--" + boundary + "\r\n";
+      const close_delim = "\r\n--" + boundary + "--";
+
+      let reader = new FileReader();
+      reader.readAsBinaryString(fileData);
+      reader.onload = function (e) {
+        const contentType = fileData.type || 'application/octet-stream';
+        const metadata = {
+          title: fileData.name,
+          mimeType: contentType,
+          parents: [{ id: diamondCloudDriveFolderId }], // TODO: add parentFolderId
+        };
+        console.log("metadata: ", metadata);
+
+        const base64Data = btoa(reader.result);
+        const multipartRequestBody =
+            delimiter +
+            'Content-Type: application/json\r\n\r\n' +
+            JSON.stringify(metadata) +
+            delimiter +
+            'Content-Type: ' + contentType + '\r\n' +
+            'Content-Transfer-Encoding: base64\r\n' +
+            '\r\n' +
+            base64Data +
+            close_delim;
+
+        const request = gapi.client.request({
+          path: '/upload/drive/v2/files',
+          method: 'POST',
+          params: { uploadType: 'multipart' },
+          headers: {
+            'Content-Type': `multipart/mixed; boundary="${boundary}"`,
+          },
+          body: multipartRequestBody
+        });
+        request.execute(_callback);
+      };
+    }
+    insertFileToDrive(file, (result) => {
+      FileManagerPage.insertFileInStorage({
+        id: result.id,
+        name: file.name,
+        fileType: file.type,
+        parentFolderId,
+      })
+        .then((_result) => {
+          self.setState({
+            loadingFolders: false,
+          });
+          callback(null, _result);
+        }, (_error) => {
+          self.setState({
+            loadingFolders: false,
+          });
+          callback(_error);
+        });
+    });
+  }
+
   initPicker(openButtonId, callback) {
     /**
      * openButtonId is the button that is used to open the file picker
      * callback(file)
      */
-  	let picker = new FilePicker({
-  		apiKey: 'AIzaSyCb04iiO8_pvdHsuf3XCNbdGw8SIbR9CxQ',
-  		clientId: CLIENT_ID,
-  		buttonEl: document.getElementById(openButtonId),
-  		onSelect: callback,
-  		gapi
+     let picker = new FilePicker({
+       apiKey: 'AIzaSyCb04iiO8_pvdHsuf3XCNbdGw8SIbR9CxQ',
+       clientId: CLIENT_ID,
+       buttonEl: document.getElementById(openButtonId),
+       onSelect: callback,
+       gapi
   	});
   }
 }
 
 class FileViewerPage extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+      fileType: null,
+    };
+  }
   render() {
     let url = 'https://drive.google.com/open?id=' + this.props.params.documentId;
     return (
       <FileViewerLayout
         url={url}
-        />
+        fileType={this.state.fileType}
+        loading={this.state.loading}
+      />
     );
   }
 
@@ -1151,11 +1497,43 @@ class FileViewerPage extends React.Component {
         }
       });
     }
+    const self = this;
+    // Set the fileType
+    DiamondAPI.get({
+      collection: 'documents',
+      filter: {
+        _id: this.props.params.documentId,
+      },
+      callback(error, result) {
+        if (error) {
+          self.setState({
+            loading: false,
+          })
+          self.props.toggleError({
+            type: 'show',
+            body: 'Error al abrir el documento',
+          });
+        } else {
+          self.setState({
+            loading: false,
+            fileType: result[0].fileType,
+          });
+        }
+      }
+    });
   }
 }
 
 class FileViewerLayout extends React.Component {
   render() {
+    if (this.props.loading) {
+      return (
+        <div className="loading">
+          <div className="loader"></div>
+        </div>
+      );
+    }
+    console.log(this.props.fileType.indexOf('image'));
     return (
       <div>
         <div className='drive-navbar'>
@@ -1164,27 +1542,84 @@ class FileViewerLayout extends React.Component {
             onClick={ () => { browserHistory.push('/folder') } }>
           </i>
         </div>
-        <iframe
-          src={this.props.url}
-          style={
-            {
-              width: '100%',
-              height: 'calc(100% - 32px)'
-            }
-          }
-        />
+        {
+          (this.props.fileType.indexOf('image') !== -1 || this.props.fileType.indexOf('video') !== -1) ?
+          (
+          <div className="content-container">
+            <div className="image-container">
+              <div className="photo" />
+              <p className="image-text">
+                Para poder acceder a la imagen/video hace click <a href={this.props.url} target="_blank">acá</a>
+              </p>
+          </div>
+        </div>
+          ) : (
+            <iframe
+              src={this.props.url}
+              style={
+                {
+                  width: '100%',
+                  height: 'calc(100% - 42px)'
+                }
+              }
+            />
+          )
+        }
       </div>
     );
   }
 }
 
 FileViewerLayout.propTypes = {
-                                  url: React.PropTypes.string.isRequired,
+  url: React.PropTypes.string.isRequired,
+  fileType: React.PropTypes.string.isRequired,
+  loading: React.PropTypes.string.isRequired,
+};
+
+/**
+ * In case of error show this component.
+ */
+class ErrorMessage extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {};
+
+    this.close = this.close.bind(this);
+  }
+
+  componentDidMount() {
+    setTimeout(this.close.bind(null), this.props.delay);
+  }
+
+  close() {
+    const self = this;
+
+    $('.error-message').removeClass('show-error');
+    $('.error-message').addClass('hide-error', () => {
+      setTimeout(self.props.error.bind(null, { type: 'hide' }), 700);
+    });
+  }
+
+  render() {
+    return (
+      <div className="error-message show-error">
+        <div className="error-body">{this.props.body}</div>
+        <div className="error-close" onClick={this.close}>Cerrar</div>
+      </div>
+    );
+  }
+}
+
+ErrorMessage.propTypes = {
+  body: React.PropTypes.string.isRequired,
+  delay: React.PropTypes.number.isRequired,
+  showing: React.PropTypes.bool.isRequired,
 };
 
 ReactDOM.render(
   <Router history={browserHistory}>
-    <Route path='/' component={Index} >
+    <Route path='/' component={Index}>
       <Route path='/folder' component={FileManagerPage} />
       <Route path='/folder/:folderId' component={FileManagerPage} />
       <Route path='/document/:documentId' component={FileViewerPage} />
@@ -1206,8 +1641,15 @@ function checkAuth(callback = () => {}, i = 0) {
         client_id: CLIENT_ID,
         scope: SCOPES.join(' '),
         immediate: true,
-      }, () => {
-        gapi.client.load('drive', 'v3', callback);
+      }, (authResult) => {
+        if (authResult) {
+          authObject = authResult;
+          gapi.client.load('drive', 'v3', callback);
+        } else {
+          setTimeout(() => {
+            checkAuth(callback, i + 1);
+          }, 100);
+        }
       });
     } else {
       setTimeout(() => {

@@ -1,11 +1,11 @@
+import { Meteor }          from 'meteor/meteor';
 import { Mongo }           from 'meteor/mongo';
-import { printObject }     from '../helpers/print-objects.js';
 
-import { Teams }           from '../teams/teams.js';
-import { Messages }        from '../messages/messages.js';
-import { ModuleInstances } from '../module-instances/module-instances.js';
+import { Teams }           from '../teams/teams';
+import { Messages }        from '../messages/messages';
+import { ModuleInstances } from '../module-instances/module-instances';
 
-export let Boards = new Mongo.Collection('Boards');
+export const Boards = new Mongo.Collection('Boards');
 
 Boards.helpers({
   team() {
@@ -17,10 +17,11 @@ Boards.helpers({
       },
     });
   },
-  getModuleInstances(fields) {
-    let moduleInstances = [];
 
-    this.moduleInstances.map((moduleInstance) => {
+  getModuleInstances(fields) {
+    const moduleInstances = [];
+
+    this.moduleInstances.forEach((moduleInstance) => {
       moduleInstances.push(moduleInstance._id);
     });
 
@@ -30,22 +31,25 @@ Boards.helpers({
       },
       archived: false,
     }, {
-      fields
+      fields,
     });
   },
-  getMessages(options) {
+
+  getMessages() {
     return Messages.find({
       boardId: this._id,
     }, {
       sort: {
         createdAt: 1,
-      }
+      },
     });
   },
+
   getLastMessage() {
-    let messages = this.getMessages().fetch();
+    const messages = this.getMessages().fetch();
     return messages[messages.length - 1] || { content: '' };
   },
+
   getNotifications() {
     let notifications;
 
@@ -57,28 +61,29 @@ Boards.helpers({
 
     return notifications || 0;
   },
-  getUsers() {
-    let f = (x, p) => x.map((e) => e[p]);
 
-    let users = Meteor.users.find({
+  getUsers() {
+    const f = (x, p) => x.map(e => e[p]);
+
+    const users = Meteor.users.find({
       'emails.address': {
-        $in: f(this.users, 'email')
-      }
+        $in: f(this.users, 'email'),
+      },
     }, {
       fields: {
-        _id: 1
-      }
+        _id: 1,
+      },
     }).fetch();
 
     // [{ _id }, { _id }, ...] -> ['', '', ...]
-    let usersIds = f(users, '_id');
+    const usersIds = f(users, '_id');
 
     // remove actual user
-    let index = usersIds.indexOf(Meteor.userId());
+    const index = usersIds.indexOf(Meteor.userId());
     usersIds.splice(index, 1);
 
     return usersIds;
-  }
+  },
 });
 
 Boards.boardFields = {
@@ -102,28 +107,28 @@ Boards.moduleInstancesFields = {
   minimized: 1,
 };
 
-Boards.getBoards = (boardsIds, userId, fields) => {
-  fields = fields || {};
-  if (Object.prototype.toString.call(boardsIds[0]) === "[object Object]"){
-    boardsIds = boardsIds.map((board) => board._id);
+Boards.getBoards = (boardsIds, userId, fields = {}) => {
+  if (Object.prototype.toString.call(boardsIds[0]) === '[object Object]') {
+    boardsIds = boardsIds.map(board => board._id);
   }
 
   // Se asume que todos los boardsIds pertenecen al mismo Team
 
-  let team = Boards.findOne(boardsIds[0]).team();
-  let user = Meteor.users.findOne(userId);
+  const team = Boards.findOne(boardsIds[0]).team();
+  const user = Meteor.users.findOne(userId);
 
-  let isDirector =
+  const isDirector =
     team.userIsCertainHierarchy(user.email(), 'director creativo') ||
     team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
     team.userIsCertainHierarchy(user.email(), 'coordinador');
+  const isSistemas = team.userIsCertainHierarchy(user.email(), 'sistemas');
 
-  let result = Boards.find({
+  const result = Boards.find({
     $and: [
       {
         _id: {
-          $in: boardsIds
-        }
+          $in: boardsIds,
+        },
       },
       {
         $or: [
@@ -131,8 +136,8 @@ Boards.getBoards = (boardsIds, userId, fields) => {
             users: {
               $elemMatch: {
                 email: user.email(),
-              }
-            }
+              },
+            },
           },
           {
             isPrivate: false,
@@ -143,33 +148,41 @@ Boards.getBoards = (boardsIds, userId, fields) => {
                 visibleForDirectors: true,
               },
               {
+                // Check that isDirector is true
                 _id: {
                   $in: isDirector ? boardsIds : [],
-                }
-              }
+                },
+              },
             ],
-          }
+          },
+          {
+            // Check that isSistemas is true
+            _id: {
+              $in: isSistemas ? boardsIds : [],
+            },
+          },
         ],
       },
       {
-        archived: false
-      }
-    ]
+        archived: false,
+      },
+    ],
   }, {
-    fields
+    fields,
   });
 
   return result;
 };
 
 Boards.isValid = (boardId, userId) => {
-  const team = Boards.findOne(boardId).team();
   const user = Meteor.users.findOne(userId);
+  const team = Boards.findOne(boardId).team();
 
   const isDirector =
     team.userIsCertainHierarchy(user.email(), 'director creativo') ||
     team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
     team.userIsCertainHierarchy(user.email(), 'coordinador');
+  const isSistemas = team.userIsCertainHierarchy(user.email(), 'sistemas');
 
   const board = Boards.findOne({
     _id: boardId,
@@ -188,9 +201,14 @@ Boards.isValid = (boardId, userId) => {
             visibleForDirectors: true,
           },
           {
+            // Check that isDirector is true
             _id: isDirector ? boardId : undefined,
           },
         ],
+      },
+      {
+        // Check that isSistemas is true
+        _id: isSistemas ? boardId : undefined,
       },
     ],
   });
@@ -203,39 +221,44 @@ Boards.isValid = (boardId, userId) => {
 };
 
 Boards.addModuleInstance = (boardId, moduleInstanceId) => {
-  //todo: add user is in board validation
+  if (!Boards.isValid(boardId, Meteor.userId())) {
+    throw new Meteor.Error('Boards.addModuleInstance.notInBoard',
+    'Must be a member of a board to add moduleInstances to it.');
+  }
+
   Boards.update({
     _id: boardId,
   }, {
     $push: {
       moduleInstances: {
         _id: moduleInstanceId,
-      }
-    }
+      },
+    },
   });
 };
 
 Boards.addUser = (boardId, userId) => {
-  if (!Boards.isValid(boardId, Meteor.userId())){
+  if (!Boards.isValid(boardId, Meteor.userId())) {
     throw new Meteor.Error('Boards.addUser.notInBoard',
     'Must be a member of a board to add users to it.');
   }
 
-  let user = Meteor.users.findOne(userId);
+  const user = Meteor.users.findOne(userId);
   Boards.update(boardId, {
     $push: {
-      users : {
+      users: {
         email: user.email(),
         notifications: 0,
       },
     },
   });
 };
+
 Boards.removeUser = (boardId, userId) => {
-  let user = Meteor.users.findOne(userId);
+  const user = Meteor.users.findOne(userId);
   Boards.update(boardId, {
     $pull: {
-      users : {
+      users: {
         email: user.email(),
       },
     },
@@ -243,12 +266,12 @@ Boards.removeUser = (boardId, userId) => {
 };
 
 Boards.addNotification = (boardId, userId) => {
-  let user = Meteor.users.findOne(userId);
-  let users = Boards.findOne(boardId).users;
+  const user = Meteor.users.findOne(userId);
+  const users = Boards.findOne(boardId).users;
 
-  users.forEach((_user, index, array) => {
+  users.forEach((_user, index) => {
     if (_user.email !== user.email()) {
-      array[index].notifications = _user.notifications + 1;
+      users[index].notifications = _user.notifications + 1;
     }
   });
 
@@ -258,20 +281,16 @@ Boards.addNotification = (boardId, userId) => {
     },
   });
 };
+
 Boards.resetNotifications = (boardId, userId) => {
   const user = Meteor.users.findOne(userId);
-  let users = Boards.findOne(boardId).users;
+  const users = Boards.findOne(boardId).users;
 
-  users = users.map((e) => {
-    if (e.email !== user.email()) {
-      return {
-        ...e,
-        notifications: 0,
-      };
+  users.forEach((_user, index) => {
+    if (_user.email !== user.email()) {
+      users[index].notifications = 0;
     }
-
-    return undefined;
-  }).filter(e => e !== undefined);
+  });
 
   Boards.update(boardId, {
     $set: {
@@ -279,5 +298,3 @@ Boards.resetNotifications = (boardId, userId) => {
     },
   });
 };
-
-/* global Meteor */

@@ -1,12 +1,12 @@
-import { Teams }      from '../../api/teams/teams.js';
-import { createTeam } from '../../api/teams/methods.js';
+import { Teams }      from '../../api/teams/teams';
+import { createTeam } from '../../api/teams/methods';
 
 if (Teams.find().count() === 0) {
   const TEAMS = [
     { name: 'Carlos y Darío', plan: 'free', type: 'Agencia publicitaria', url: 'carlosydario' },
-    { name: 'Diamond Cloud', plan: 'premium', type: 'Web', url: 'diamond' },
+    { name: 'Diamond Cloud', plan: 'premium', type: 'Plataforma web', url: 'diamond' },
   ];
-  
+
   TEAMS.forEach((team) => {
     createTeam.call(team, (error, result) => {
       if (error) {

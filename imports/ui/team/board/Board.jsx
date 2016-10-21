@@ -1,7 +1,11 @@
+import { Meteor }     from 'meteor/meteor';
 import React          from 'react';
 import classNames     from 'classnames';
 
+import { Modules }    from '../../../api/modules/modules';
 import ModuleInstance from '../../module-instance/ModuleInstance';
+
+const MAX_MODULE_INSTANCES = 8;
 
 export default class Board extends React.Component {
   constructor(props) {
@@ -17,12 +21,12 @@ export default class Board extends React.Component {
   componentDidMount() {
     const self = this;
 
-    $('.board').droppable({
+    $(this.board).droppable({
       accept(e) {
         const validClasses = ['module-item', 'module-container'];
         let valid = false;
 
-        validClasses.forEach((c) => (valid = e.hasClass(c) ? true : valid));
+        validClasses.forEach(c => (valid = e.hasClass(c) ? true : valid));
         return valid;
       },
       drop(event, ui) {
@@ -36,26 +40,33 @@ export default class Board extends React.Component {
           const x = ui.position.top - 40;
           const y = ui.position.left;
 
-          if (x >= 0 && y >= 0) {
-            Meteor.call('ModuleInstances.methods.create', {
-              boardId,
-              moduleId,
-              x,
-              y,
-              width: 350, // must change to fixed
-              height: 400, // must change to fixed
-            }, (error, result) => {
-              if (error) {
-                self.props.toggleError({
-                  type: 'show',
-                  body: 'Hubo un error interno al crear el módulo',
-                });
-              }
-            });
+          if (self.props.moduleInstances.length < MAX_MODULE_INSTANCES) {
+            if (x >= 0 && y >= 0) {
+              Meteor.call('ModuleInstances.methods.create', {
+                boardId,
+                moduleId,
+                x,
+                y,
+                width: Modules.findOne(moduleId).settings.width,
+                height: Modules.findOne(moduleId).settings.height,
+              }, (error, result) => {
+                if (error) {
+                  self.props.toggleError({
+                    type: 'show',
+                    body: 'Hubo un error interno al crear el módulo',
+                  });
+                }
+              });
+            } else {
+              self.props.toggleError({
+                type: 'show',
+                body: 'No se puede crear un módulo en esas coordenadas',
+              });
+            }
           } else {
             self.props.toggleError({
               type: 'show',
-              body: 'No se puede crear un módulo en esas coordenadas',
+              body: `No se pueden crear más módulos (máximo ${MAX_MODULE_INSTANCES})`,
             });
           }
         } else if (container) {
@@ -155,12 +166,7 @@ export default class Board extends React.Component {
   renderModules() {
     if (this.props.moduleInstances) {
       return this.props.moduleInstances.map((moduleInstance) => {
-        let module;
-        this.props.modules.forEach((_module) => {
-          if (_module._id === moduleInstance.moduleId) {
-            module = _module;
-          }
-        });
+        const module = Modules.findOne(moduleInstance.moduleId);
 
         return (
           <ModuleInstance
@@ -183,6 +189,7 @@ export default class Board extends React.Component {
     const classes = classNames('board-container', {
       'permission-asker-opened': this.props.permissionAsker,
     });
+    const email = Meteor.user().email();
 
     return (
       <div className={classes}>
@@ -196,42 +203,44 @@ export default class Board extends React.Component {
             </ol>
             { /* <h4 className='title truncate'>{ this.props.board.name }</h4> */ }
           </div>
-          <div className="col-xs-6 right-data">
+          <div className="col-xs-6 right-data truncate">
             <h4 className="members truncate">
               {this.renderUsers()}
             </h4>
             {
-              this.props.board.isPrivate ?
-              <div className="visibility">
-                {
-                  this.state.visibleForDirectors ? (
-                    <img
-                      role="button"
-                      onClick={() => this.toggleBoardToDirectors('lockBoard')}
-                      src="/img/visibility-off.svg"
-                      className="visibility-img"
-                      title="Hacer no visible para directores"
-                      alt="Hacer no visible para directores"
-                    />
-                  ) : (
-                    <img
-                      role="button"
-                      onClick={() => this.toggleBoardToDirectors('unlockBoard')}
-                      src="/img/visibility-on.svg"
-                      className="visibility-img"
-                      title="Hacer visible para directores"
-                      alt="Hacer visible para directores"
-                    />
-                  )
-                }
-              </div>
-              : null
+              this.props.board.isPrivate &&
+              !this.props.team.userIsCertainHierarchy(email, 'director creativo') &&
+              !this.props.team.userIsCertainHierarchy(email, 'director de cuentas') &&
+              !this.props.team.userIsCertainHierarchy(email, 'coordinador') &&
+              this.props.board.type === 'creativos' ? (
+                <div className="visibility">
+                  {
+                    this.state.visibleForDirectors ? (
+                      <img
+                        role="button"
+                        onClick={() => this.toggleBoardToDirectors('lockBoard')}
+                        src="/img/visibility-off.svg"
+                        className="visibility-img"
+                        title="Hacer no visible para directores"
+                        alt="Hacer no visible para directores"
+                      />
+                    ) : (
+                      <img
+                        role="button"
+                        onClick={() => this.toggleBoardToDirectors('unlockBoard')}
+                        src="/img/visibility-on.svg"
+                        className="visibility-img"
+                        title="Hacer visible para directores"
+                        alt="Hacer visible para directores"
+                      />
+                    )
+                  }
+                </div>
+              ) : (null)
             }
             <span
               className="message-icon-span"
-              onClick={this.props.addChat.bind(null, {
-                boardId: this.props.board._id
-              })}
+              onClick={this.props.addChat.bind(null, { boardId: this.props.board._id })}
             >
               { /* <h4 className='message-text'>Chat del board</h4> */ }
               <img
@@ -243,7 +252,7 @@ export default class Board extends React.Component {
             </span>
           </div>
         </div>
-        <div className="board">
+        <div className="board" ref={(c) => { this.board = c; }}>
           {this.renderModules()}
         </div>
       </div>

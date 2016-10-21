@@ -134,7 +134,7 @@ class VideoChatPage extends React.Component {
     webrtc.on('localMediaError', (error) => {
       self.error({
         type: 'show',
-        body: 'Hubo un error al acceder a la cámara/micrófono',
+        body: 'Error en la cámara/micrófono',
       });
     });
 
@@ -230,6 +230,24 @@ class VideoChatLayout extends React.Component {
     this.changeMaximizedVideo = this.changeMaximizedVideo.bind(this);
   }
 
+  connect() {
+    if (this.props.readyToCall) {
+      const board = DiamondAPI.getCurrentBoard();
+
+      this.props.webrtc.joinRoom(board._id);
+
+      this.setState({
+        connected: true,
+      });
+    }
+  }
+
+  changeMaximizedVideo(id) {
+    this.setState({
+      maximizedVideo: id,
+    });
+  }
+
   renderVideos() {
     return this.props.videos.map((video) => {
       return (
@@ -248,26 +266,15 @@ class VideoChatLayout extends React.Component {
     });
   }
 
-  connect() {
-    if (this.props.readyToCall) {
-      const board = DiamondAPI.getCurrentBoard();
-
-      this.props.webrtc.joinRoom(board._id);
-      this.setState({
-        connected: true,
-      });
-    }
-  }
-
   render() {
+    const remoteVideos = this.renderVideos();
     return (
       <div>
         <UserVideo
           id={this.props.localVideoId}
           position={
-            (this.state.maximizedVideo === this.props.localVideoId) ?
-              ('maximized-video') :
-              ('minimized-video')
+            (this.state.maximizedVideo === this.props.localVideoId) || (remoteVideos.length === 0)  ?
+              ('maximized-video') : ('minimized-video')
           }
           onClick={this.changeMaximizedVideo}
           webrtc={this.props.webrtc}
@@ -276,7 +283,7 @@ class VideoChatLayout extends React.Component {
         {
           this.state.connected ? (
             <div>
-              {this.renderVideos()}
+              {remoteVideos}
             </div>
           ) : (
             <div className="join-background">
@@ -290,12 +297,6 @@ class VideoChatLayout extends React.Component {
       </div>
     );
   }
-
-  changeMaximizedVideo(id) {
-    this.setState({
-      maximizedVideo: id,
-    });
-  }
 }
 
 /**
@@ -303,6 +304,17 @@ class VideoChatLayout extends React.Component {
  * 100% width and height.
  */
 class UserVideo extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { video: 'playing', audio: 'unmuted' };
+
+    this.pause = this.pause.bind(this);
+    this.resume = this.resume.bind(this);
+    this.mute = this.mute.bind(this);
+    this.unmute = this.unmute.bind(this);
+  }
+
   pause() {
     this.props.webrtc.pauseVideo();
     this.setState({
@@ -329,17 +341,6 @@ class UserVideo extends React.Component {
     this.setState({
       audio: 'unmuted',
     });
-  }
-
-  constructor(props) {
-    super(props);
-
-    this.state = { video: 'playing', audio: 'unmuted' };
-
-    this.pause = this.pause.bind(this);
-    this.resume = this.resume.bind(this);
-    this.mute = this.mute.bind(this);
-    this.unmute = this.unmute.bind(this);
   }
 
   render() {
@@ -396,14 +397,6 @@ class UserVideo extends React.Component {
  * videos.
  */
 class Video extends React.Component {
-  mute() {
-    this.video.volume = 0;
-  }
-
-  unmute() {
-    this.video.volume = this.state.startVolume;
-  }
-
   constructor(props) {
     super(props);
 
@@ -417,6 +410,14 @@ class Video extends React.Component {
     this.setState({
       startVolume: this.video.volume,
     });
+  }
+
+  mute() {
+    this.video.volume = 0;
+  }
+
+  unmute() {
+    this.video.volume = this.state.startVolume;
   }
 
   render() {

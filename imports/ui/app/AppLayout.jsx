@@ -42,7 +42,6 @@ export default class AppLayout extends React.Component {
   }
 
   render() {
-    console.log('check el bug', this.props.children);
     return (
       <div>
         <NavbarLayout

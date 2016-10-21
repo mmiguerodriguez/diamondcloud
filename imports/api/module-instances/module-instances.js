@@ -1,16 +1,15 @@
 import { Mongo }  from 'meteor/mongo';
 
-import { Boards } from '../boards/boards.js';
+import { Boards } from '../boards/boards';
 
-export let ModuleInstances = new Mongo.Collection('ModuleInstances');
+export const ModuleInstances = new Mongo.Collection('ModuleInstances');
 
 ModuleInstances.helpers({
-  board(fields) {
-    fields = fields || {};
+  board(fields = {}) {
     return Boards.findOne({
       'moduleInstances._id': this._id,
     }, { fields });
-  }
+  },
 });
 
 /**
@@ -28,12 +27,12 @@ ModuleInstances.helpers({
  *  the moduleInstances.
  */
 ModuleInstances.insertManyInstances = (moduleInstances, boardId, callback) => {
-  let promises = [];
+  const promises = [];
 
   moduleInstances.forEach((moduleInstance) => {
-    let promise = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
       ModuleInstances.insert(moduleInstance, (error, result) => {
-        let moduleInstanceId = result;
+        const moduleInstanceId = result;
 
         if (error) {
           reject(error, false);

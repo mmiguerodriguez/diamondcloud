@@ -1,12 +1,13 @@
 import { Meteor }                   from 'meteor/meteor';
-import { Teams }                    from '../../api/teams/teams';
-import { Boards }                   from '../../api/boards/boards';
-import { DirectChats }              from '../../api/direct-chats/direct-chats';
 
 import React                        from 'react';
 import { Link }                     from 'react-router';
 import classNames                   from 'classnames';
 import isMobile                     from 'ismobilejs';
+
+import { Teams }                    from '../../api/teams/teams';
+import { Boards }                   from '../../api/boards/boards';
+import { DirectChats }              from '../../api/direct-chats/direct-chats';
 
 import Board                        from './board/Board';
 import ChatLayout                   from './chat/ChatLayout';
@@ -22,17 +23,16 @@ export default class TeamLayout extends React.Component {
     super(props);
 
     this.state = {
-      'board-context-menu-id': null,
-      'moduleinstance-context-menu-id': null,
-      'moduleinstance-iframe': null,
-      'has-maximized-chats': false,
+      boardIdContextMenu: null,
+      moduleInstanceIdContextMenu: null,
+      moduleinstanceIframe: null,
+      hasMaximizedChats: false,
       permissionAsker: !isMobile.any ? Notification.permission === 'default' : false,
       togglingCollapsible: false,
     };
 
     this.refs = {
       'board-context-menu': null,
-      'moduleinstance-context-menu': null,
     };
 
     this.removeBoard = this.removeBoard.bind(this);
@@ -62,341 +62,13 @@ export default class TeamLayout extends React.Component {
 
     $(document).bind('mousedown', (e) => {
       if (!$(e.target).parents('.moduleinstance-context-menu').length > 0) {
-        self.closeContextMenu(this.refs['moduleinstance-context-menu']);
+        self.closeContextMenu(this.moduleInstanceContextMenu);
       }
     });
 
     if (this.props.team.users.length === 1) {
       this.openConfigTeamModal();
     }
-  }
-  // chats
-  renderChats() {
-    return this.props.chats.map((chat) =>
-      <ChatLayout
-        key={chat.directChatId || chat.boardId}
-        chat={chat}
-        users={this.props.team.users}
-        boards={this.props.boards}
-        directChats={this.props.directChats}
-        position={isMobile.any ? 'mobile' : 'medium'}
-        togglePosition={this.togglePosition}
-        removeChat={this.props.removeChat}
-        hasMaximizedChats={this.state['has-maximized-chats']}
-        toggleError={this.props.toggleError}
-      />
-    );
-  }
-
-  togglePosition(chat, oldPosition, newPosition) {
-    chat.setState({
-      position: newPosition,
-    }, () => {
-      if (newPosition === 'maximized' || oldPosition === 'maximized') {
-        this.setState({
-          'has-maximized-chats': !this.state['has-maximized-chats'],
-        });
-      }
-    });
-  }
-  // minimized
-  renderTeams() {
-    const arr = [];
-
-    this.props.teams.forEach((team) => {
-      if (this.props.team._id !== team._id) {
-        arr.push(
-          <li key={ team._id } className='item-li'>
-            <Link to={ '/team/' + team.url } className='item-a truncate'>{ team.name }</Link>
-          </li>
-        );
-      }
-    });
-
-    return arr;
-  }
-
-  renderDirectChats() {
-    return this.props.directChats.map((_directChat) => {
-      const directChat = DirectChats.findOne(_directChat._id);
-
-      const lastMessage = directChat.getLastMessage();
-      const user = directChat.getUser();
-      const notifications = directChat.getNotifications();
-
-      const infoClasses = classNames({
-        'col-xs-8': notifications > 0,
-        'col-xs-10': notifications === 0,
-      }, 'info');
-
-      return (
-        <div
-          className="item"
-          role="button"
-          onClick={this.props.addChat.bind(null, { directChatId: directChat._id })}
-          key={directChat._id}
-        >
-          <div className="col-xs-2">
-            <img
-              className="img-circle"
-              src={`${user.profile.picture}?sz=60`}
-              width="48px"
-            />
-          </div>
-          <div className={infoClasses}>
-            <p className="user truncate">{user.profile.name}</p>
-            <p className="last-message truncate">{lastMessage.content}</p>
-          </div>
-          {
-            notifications > 0 ? (
-              <div className="col-xs-2">
-                <div className="pin">
-                  <p className="text">{notifications}</p>
-                </div>
-              </div>
-            ) : (null)
-          }
-        </div>
-      );
-    });
-  }
-
-  renderBoardsChats() {
-    return this.props.boards.map((_board) => {
-      const board = Boards.findOne(_board._id);
-
-      const lastMessage = board.getLastMessage();
-      const notifications = board.getNotifications();
-
-      const infoClasses = classNames({
-        'col-xs-8': notifications > 0,
-        'col-xs-10': notifications === 0,
-      }, 'info');
-
-      return (
-        <div
-          className="item"
-          role="button"
-          onClick={this.props.addChat.bind(null, { boardId: board._id })}
-          key={board._id}
-        >
-          <div className="col-xs-2">
-            <img
-              className="img-circle"
-              src="http://image.flaticon.com/icons/svg/60/60541.svg"
-              width="48px"
-            />
-          </div>
-          <div className={infoClasses}>
-            <p className="user truncate">{board.name}</p>
-            <p className="last-message truncate">
-              {
-                lastMessage.content !== '' ? (
-                  Meteor.users.findOne(lastMessage.senderId).profile.name + ': ' + lastMessage.content
-                ) : (lastMessage.content)
-              }
-            </p>
-          </div>
-          {
-            notifications > 0 ? (
-              <div className="col-xs-2">
-                <div className="pin">
-                  <p className="text">{notifications}</p>
-                </div>
-              </div>
-            ) : (null)
-          }
-        </div>
-      );
-    });
-  }
-
-  render() {
-    const chatsContainer = classNames({
-      auto: !this.state['has-maximized-chats'],
-      maximized: this.state['has-maximized-chats'],
-      mobile: isMobile.any,
-      hidden: this.props.chats.length === 0,
-    }, 'chats-container');
-
-    return (
-      <div>
-        {
-          !isMobile.any ? (
-            <div>
-              {
-                this.state.permissionAsker ? (
-                  <NotificationsPermissionAsker close={this.closePermissionAsker} />
-                ) : (null)
-              }
-              <SidebarLayout
-                {...this.props}
-                changeBoard={this.changeBoard}
-                permissionAsker={this.state.permissionAsker}
-                openBoardContextMenu={this.openBoardContextMenu}
-                toggleCollapsible={this.toggleCollapsible}
-                openCreateBoardModal={this.openCreateBoardModal}
-                openCreateChatModal={this.openCreateChatModal}
-                openConfigTeamModal={this.openConfigTeamModal}
-              />
-              <Board
-                team={this.props.team}
-                boards={this.props.boards}
-                board={this.props.board}
-                users={this.props.users}
-                moduleInstances={this.props.moduleInstances}
-                moduleInstancesFrames={this.props.moduleInstancesFrames}
-                modules={this.props.modules}
-                addChat={this.props.addChat}
-                openModuleInstanceContextMenu={this.openModuleInstanceContextMenu}
-                permissionAsker={this.state.permissionAsker}
-                toggleError={this.props.toggleError}
-              />
-            </div>
-          ) : (
-            <div>
-              <div className="dropdown">
-                <button
-                  className="btn col-xs-12"
-                  id="dLabel"
-                  type="button"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
-                  {this.props.team.name}
-                  <span className="caret" />
-                </button>
-                <ul className="dropdown-menu col-xs-12" aria-labelledby="dLabel">
-                  {this.renderTeams()}
-                </ul>
-              </div>
-              <div className="tabs">
-                <ul className="nav nav-tabs" role="tablist">
-                  <li className="item col-xs-6 active">
-                    <a
-                      href="#boards"
-                      aria-controls="boards"
-                      role="tab"
-                      data-toggle="tab"
-                      aria-expanded="false"
-                    >
-                      Boards
-                    </a>
-                  </li>
-                  <li className="item col-xs-6">
-                    <a
-                      href="#users"
-                      aria-controls="users"
-                      role="tab"
-                      data-toggle="tab"
-                      aria-expanded="true"
-                    >
-                      Users
-                    </a>
-                  </li>
-                </ul>
-              </div>
-              <div className="chats">
-                <div className="boards active" id="boards">
-                  {this.renderBoardsChats()}
-                  {
-                    this.props.isAdmin ? (
-                      <div
-                        className="new-chat visible-xs-block"
-                        onClick={this.openCreateBoardModal}
-                      >
-                        <img
-                          className="icon boards active"
-                          src="/img/sidebar/messages.svg"
-                          width="26px"
-                        />
-                      </div>
-                    ) : (null)
-                  }
-                </div>
-                <div className="users" id="users">
-                  {this.renderDirectChats()}
-                  <div
-                    className="new-chat visible-xs-block"
-                    onClick={this.openCreateChatModal}
-                  >
-                    <img
-                      className="icon users"
-                      src="/img/add-people-icon.svg"
-                      width="26px"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        }
-
-        <div className={chatsContainer}>
-          {this.renderChats()}
-        </div>
-
-        <div className="moduleinstance-context-menu context-menu" ref="moduleinstance-context-menu">
-          <div className="row" onClick={this.removeModuleInstance}>
-            <div className="col-xs-4">
-              <img src="http://image0.flaticon.com/icons/svg/60/60761.svg" width="20px" />
-            </div>
-            <p className="col-xs-8">Eliminar</p>
-          </div>
-        </div>
-
-        {
-          this.props.isAdmin ? (
-            <div>
-              <div className="board-context-menu context-menu" ref="board-context-menu">
-                <div className="row" onClick={this.openConfigBoardModal}>
-                  <div className="col-xs-4">
-                    <img src="/img/teamconfig.svg" width="20px" />
-                  </div>
-                  <div className="col-xs-8">Editar</div>
-                </div>
-                <div className="row" onClick={this.removeBoard}>
-                  <div className="col-xs-4">
-                    <img src="http://image0.flaticon.com/icons/svg/60/60761.svg" width="20px" />
-                  </div>
-                  <p className="col-xs-8">Eliminar</p>
-                </div>
-              </div>
-              <CreateBoardModal
-                team={this.props.team}
-                addChat={this.props.addChat}
-                changeBoard={this.changeBoard}
-                toggleCollapsible={this.toggleCollapsible}
-                toggleError={this.props.toggleError}
-              />
-              <ConfigTeamModal
-                key={this.props.team._id}
-                team={this.props.team}
-                loadTeam={this.loadTeam}
-                toggleError={this.props.toggleError}
-              />
-              {
-                this.state['board-context-menu-id'] ? (
-                  <ConfigBoardModal
-                    team={this.props.team}
-                    boards={this.props.boards}
-                    boardId={this.state['board-context-menu-id']}
-                    toggleError={this.props.toggleError}
-                  />
-                ) : (null)
-              }
-            </div>
-          ) : (null)
-        }
-        <CreateChatModal
-          team={this.props.team}
-          addChat={this.props.addChat}
-          toggleCollapsible={this.toggleCollapsible}
-          toggleError={this.props.toggleError}
-        />
-      </div>
-    );
   }
   // boards
   changeBoard(boardId) {
@@ -405,7 +77,7 @@ export default class TeamLayout extends React.Component {
 
   removeBoard() {
     if (this.props.isAdmin) {
-      const boardId = this.state['board-context-menu-id'];
+      const boardId = this.state.boardIdContextMenu;
 
       Meteor.call('Boards.methods.archiveBoard', { _id: boardId }, (error, result) => {
         if (error) {
@@ -442,7 +114,7 @@ export default class TeamLayout extends React.Component {
         });
 
       this.setState({
-        'board-context-menu-id': boardId,
+        boardIdContextMenu: boardId,
       });
     }
   }
@@ -450,9 +122,9 @@ export default class TeamLayout extends React.Component {
   removeModuleInstance() {
     const self = this;
 
-    const moduleInstanceId = this.state['moduleinstance-context-menu-id'];
-    const contextMenu = this.refs['moduleinstance-context-menu'];
-    const iframe = this.state['moduleinstance-iframe'];
+    const moduleInstanceId = this.state.moduleInstanceIdContextMenu;
+    const contextMenu = this.moduleInstanceContextMenu;
+    const iframe = this.state.moduleinstanceIframe;
 
     Meteor.call('ModuleInstances.methods.archive', { moduleInstanceId }, (error, result) => {
       if (error) {
@@ -468,19 +140,19 @@ export default class TeamLayout extends React.Component {
   }
 
   openModuleInstanceContextMenu(moduleInstanceId, iframe, event) {
-    event.preventDefault(); // Prevent normal contextMenu from showing up
+    event.preventDefault();
 
-    $(this.refs['moduleinstance-context-menu'])
+    $(this.moduleInstanceContextMenu)
       .finish()
       .toggle(100)
       .css({
-        top: event.pageY + 'px',
-        left: event.pageX + 'px',
+        top: `${event.pageY}px`,
+        left: `${event.pageX}px`,
       });
 
     this.setState({
-      'moduleinstance-context-menu-id': moduleInstanceId,
-      'moduleinstance-iframe': iframe,
+      moduleInstanceIdContextMenu: moduleInstanceId,
+      moduleinstanceIframe: iframe,
     });
   }
 
@@ -617,6 +289,313 @@ export default class TeamLayout extends React.Component {
       team: Teams.findOne(id),
     }, callback);
   }
+
+  renderTeams() {
+    const arr = [];
+
+    this.props.teams.forEach((team) => {
+      if (this.props.team._id !== team._id) {
+        arr.push(
+          <li key={ team._id } className='item-li'>
+            <Link to={ '/team/' + team.url } className='item-a truncate'>{ team.name }</Link>
+          </li>
+        );
+      }
+    });
+
+    return arr;
+  }
+
+  renderDirectChats() {
+    return this.props.directChats.map((_directChat) => {
+      const directChat = DirectChats.findOne(_directChat._id);
+
+      const lastMessage = directChat.getLastMessage();
+      const user = directChat.getUser();
+      const notifications = directChat.getNotifications();
+
+      const infoClasses = classNames({
+        'col-xs-8': notifications > 0,
+        'col-xs-10': notifications === 0,
+      }, 'info');
+
+      return (
+        <div
+          className="item"
+          role="button"
+          onClick={this.props.addChat.bind(null, { directChatId: directChat._id })}
+          key={directChat._id}
+        >
+          <div className="col-xs-2">
+            <img
+              className="img-circle"
+              src={`${user.profile.picture}?sz=60`}
+              width="48px"
+            />
+          </div>
+          <div className={infoClasses}>
+            <p className="user truncate">{user.profile.name}</p>
+            <p className="last-message truncate">{lastMessage.content}</p>
+          </div>
+          {
+            notifications > 0 ? (
+              <div className="col-xs-2">
+                <div className="pin">
+                  <p className="text">{notifications}</p>
+                </div>
+              </div>
+            ) : (null)
+          }
+        </div>
+      );
+    });
+  }
+
+  renderBoardsChats() {
+    return this.props.boards.map((_board) => {
+      const board = Boards.findOne(_board._id);
+
+      const lastMessage = board.getLastMessage();
+      const notifications = board.getNotifications();
+
+      const infoClasses = classNames({
+        'col-xs-8': notifications > 0,
+        'col-xs-10': notifications === 0,
+      }, 'info');
+
+      return (
+        <div
+          className="item"
+          role="button"
+          onClick={this.props.addChat.bind(null, { boardId: board._id })}
+          key={board._id}
+        >
+          <div className="col-xs-2">
+            <img
+              className="img-circle"
+              src="/img/board-chat.svg"
+              width="48px"
+            />
+          </div>
+          <div className={infoClasses}>
+            <p className="user truncate">{board.name}</p>
+            <p className="last-message truncate">
+              {
+                lastMessage.content !== '' ? (
+                  Meteor.users.findOne(lastMessage.senderId).profile.name + ': ' + lastMessage.content
+                ) : (lastMessage.content)
+              }
+            </p>
+          </div>
+          {
+            notifications > 0 ? (
+              <div className="col-xs-2">
+                <div className="pin">
+                  <p className="text">{notifications}</p>
+                </div>
+              </div>
+            ) : (null)
+          }
+        </div>
+      );
+    });
+  }
+
+  render() {
+    const chatsContainer = classNames({
+      auto: !this.state.hasMaximizedChats,
+      maximized: this.state.hasMaximizedChats,
+      mobile: isMobile.any,
+      hidden: this.props.chats.length === 0,
+    }, 'chats-container');
+
+    return (
+      <div>
+        {
+          !isMobile.any ? (
+            <div>
+              {
+                this.state.permissionAsker ? (
+                  <NotificationsPermissionAsker close={this.closePermissionAsker} />
+                ) : (null)
+              }
+              <SidebarLayout
+                {...this.props}
+                changeBoard={this.changeBoard}
+                permissionAsker={this.state.permissionAsker}
+                openBoardContextMenu={this.openBoardContextMenu}
+                toggleCollapsible={this.toggleCollapsible}
+                openCreateBoardModal={this.openCreateBoardModal}
+                openCreateChatModal={this.openCreateChatModal}
+                openConfigTeamModal={this.openConfigTeamModal}
+              />
+              <Board
+                team={this.props.team}
+                boards={this.props.boards}
+                board={this.props.board}
+                users={this.props.users}
+                moduleInstances={this.props.moduleInstances}
+                moduleInstancesFrames={this.props.moduleInstancesFrames}
+                modules={this.props.modules}
+                addChat={this.props.addChat}
+                openModuleInstanceContextMenu={this.openModuleInstanceContextMenu}
+                permissionAsker={this.state.permissionAsker}
+                toggleError={this.props.toggleError}
+              />
+            </div>
+          ) : (
+            <div>
+              <div className="dropdown">
+                <button
+                  className="btn col-xs-12"
+                  id="dLabel"
+                  type="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  {this.props.team.name}
+                  <span className="caret" />
+                </button>
+                <ul className="dropdown-menu col-xs-12" aria-labelledby="dLabel">
+                  {this.renderTeams()}
+                </ul>
+              </div>
+              <div className="tabs">
+                <ul className="nav nav-tabs" role="tablist">
+                  <li className="item col-xs-6 active">
+                    <a
+                      href="#boards"
+                      aria-controls="boards"
+                      role="tab"
+                      data-toggle="tab"
+                      aria-expanded="false"
+                    >
+                      Boards
+                    </a>
+                  </li>
+                  <li className="item col-xs-6">
+                    <a
+                      href="#users"
+                      aria-controls="users"
+                      role="tab"
+                      data-toggle="tab"
+                      aria-expanded="true"
+                    >
+                      Users
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div className="chats">
+                <div className="boards active" id="boards">
+                  {this.renderBoardsChats()}
+                  {
+                    this.props.isAdmin ? (
+                      <div
+                        className="new-chat visible-xs-block"
+                        onClick={this.openCreateBoardModal}
+                      >
+                        <img
+                          className="icon boards active"
+                          src="/img/sidebar/messages.svg"
+                          width="26px"
+                        />
+                      </div>
+                    ) : (null)
+                  }
+                </div>
+                <div className="users" id="users">
+                  {this.renderDirectChats()}
+                  <div
+                    className="new-chat visible-xs-block"
+                    onClick={this.openCreateChatModal}
+                  >
+                    <img
+                      className="icon users"
+                      src="/img/add-people-icon.svg"
+                      width="26px"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        <ChatLayout
+          class={chatsContainer}
+          chats={this.props.chats}
+          team={this.props.team}
+          boards={this.props.boards}
+          directChats={this.props.directChats}
+          togglePosition={this.props.togglePosition}
+          toggleError={this.props.toggleError}
+          openHiddenChat={this.props.openHiddenChat}
+          removeChat={this.props.removeChat}
+          hasMaximizedChats={this.state.hasMaximizedChats}
+        />
+
+        <div className="moduleinstance-context-menu context-menu" ref={(c) => { this.moduleInstanceContextMenu = c; }}>
+          <div className="row" onClick={this.removeModuleInstance}>
+            <div className="col-xs-4">
+              <img src="/img/trash.svg" width="20px" />
+            </div>
+            <p className="col-xs-8">Eliminar</p>
+          </div>
+        </div>
+
+        {
+          this.props.isAdmin ? (
+            <div>
+              <div className="board-context-menu context-menu" ref="board-context-menu">
+                <div className="row" onClick={this.openConfigBoardModal}>
+                  <div className="col-xs-4">
+                    <img src="/img/teamconfig.svg" width="20px" />
+                  </div>
+                  <div className="col-xs-8">Editar</div>
+                </div>
+                <div className="row" onClick={this.removeBoard}>
+                  <div className="col-xs-4">
+                    <img src="/img/trash.svg" width="20px" />
+                  </div>
+                  <p className="col-xs-8">Eliminar</p>
+                </div>
+              </div>
+              <CreateBoardModal
+                team={this.props.team}
+                addChat={this.props.addChat}
+                changeBoard={this.changeBoard}
+                toggleCollapsible={this.toggleCollapsible}
+                toggleError={this.props.toggleError}
+              />
+              <ConfigTeamModal
+                key={this.props.team._id}
+                team={this.props.team}
+                loadTeam={this.loadTeam}
+                toggleError={this.props.toggleError}
+              />
+              {
+                this.state.boardIdContextMenu ? (
+                  <ConfigBoardModal
+                    team={this.props.team}
+                    board={Boards.findOne(this.state.boardIdContextMenu)}
+                    toggleError={this.props.toggleError}
+                  />
+                ) : (null)
+              }
+            </div>
+          ) : (null)
+        }
+        <CreateChatModal
+          team={this.props.team}
+          addChat={this.props.addChat}
+          toggleCollapsible={this.toggleCollapsible}
+          toggleError={this.props.toggleError}
+        />
+      </div>
+    );
+  }
 }
 
 TeamLayout.propTypes = {
@@ -635,7 +614,9 @@ TeamLayout.propTypes = {
   chats: React.PropTypes.array.isRequired,
 
   addChat: React.PropTypes.func.isRequired,
+  openHiddenChat: React.PropTypes.func.isRequired,
   removeChat: React.PropTypes.func.isRequired,
   boardSubscribe: React.PropTypes.func.isRequired,
+  togglePosition: React.PropTypes.func.isRequired,
   toggleError: React.PropTypes.func.isRequired,
 };

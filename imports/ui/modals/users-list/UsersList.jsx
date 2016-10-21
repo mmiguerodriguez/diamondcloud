@@ -23,7 +23,7 @@ export default class UsersList extends React.Component {
   }
 
   handleKey(event) {
-    if (event.which == 13) {
+    if (event.which === 13) {
       this.handleSubmit();
     }
   }
@@ -115,6 +115,7 @@ export default class UsersList extends React.Component {
   render() {
     const email = this.state.email;
     const isAdmin = this.props.team ? this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas') : true;
+    const users = this.renderUsers();
 
     return (
       <div>
@@ -137,7 +138,7 @@ export default class UsersList extends React.Component {
                   value={this.state.hierarchy}
                   onChange={e => this.handleChange('hierarchy', e)}
                 >
-                  <option hidden value="-1">Tipo de trabajador</option>
+                  <option hidden value="-1">Jerarquía</option>
                   <option value="sistemas">Sistemas</option>
                   <option value="creativo">Creativo</option>
                   <option value="director creativo">Director creativo</option>
@@ -161,10 +162,10 @@ export default class UsersList extends React.Component {
           ) : (null)
         }
         {
-          this.renderUsers().length > 0 ? (
+          users.length > 0 ? (
             <div className="row container-fluid contacts-list-row">
               <div className="contacts-list col-xs-12">
-                {this.renderUsers()}
+                {users}
               </div>
             </div>
           ) : (null)
