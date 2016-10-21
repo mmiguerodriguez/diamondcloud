@@ -30,10 +30,10 @@ if (Meteor.isClient) {
       ],
     },
     requestOfflineToken: {
-      google: true,
+      google: false,
     },
     forceApprovalPrompt: {
-      google: true,
+      google: "auto",
     },
   });
 
