@@ -7,7 +7,6 @@ import isMobile            from 'ismobilejs';
 import { Boards }          from '../../api/boards/boards';
 import { DirectChats }     from '../../api/direct-chats/direct-chats';
 
-import preloadImages       from '../preloadImages';
 import NotificationSystem  from '../notifications/notificationSystem/NotificationSystem';
 import TeamLayout          from './TeamLayout';
 
@@ -25,10 +24,6 @@ export default class TeamPage extends React.Component {
     this.removeChat = this.removeChat.bind(this);
     this.boardSubscribe = this.boardSubscribe.bind(this);
     this.togglePosition = this.togglePosition.bind(this);
-  }
-
-  componentWillMount() {
-    preloadImages();
   }
 
   componentDidUpdate() {
@@ -295,22 +290,22 @@ export default class TeamPage extends React.Component {
     const _board = Boards.findOne();
 
     if (!board) {
-      console.log('no hay board');
       if (_board) {
-        console.log('hay un board existente', Boards.findOne(_board._id).name);
         this.props.setBoardId(_board._id);
         this.props.boardSubscription.stop();
 
-        const boardSubscription = Meteor.subscribe('boards.board', _board._id, {
-          onReady() {
-            self.props.setBoardSubscription(boardSubscription);
-          },
-          onStop() {
-            console.log('wtf');
-          }
-        });
+        /**
+         * Temporal fix
+         * See why this works...
+         */
+        setTimeout(() => {
+          const boardSubscription = Meteor.subscribe('boards.board', _board._id, {
+            onReady() {
+              self.props.setBoardSubscription(boardSubscription);
+            },
+          });
+        }, 0);
 
-        this.props.setBoardSubscription(boardSubscription);
       } else {
         console.log('error', 4);
         return (
