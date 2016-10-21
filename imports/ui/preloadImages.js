@@ -48,8 +48,7 @@ const preloadImages = () => {
   ];
 
   IMAGES.forEach((src) => {
-    const img = new Image();
-    img.src = src;
+    new Image().src = src;
   });
 };
 
