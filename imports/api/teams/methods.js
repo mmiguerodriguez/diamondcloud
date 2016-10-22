@@ -6,6 +6,7 @@ import  Future             from 'fibers/future';
 import { Teams }           from './teams';
 import { Mail }            from '../mails/mails';
 import { Boards }          from '../boards/boards';
+import { Messages }        from '../messages/messages';
 import { DirectChats }     from '../direct-chats/direct-chats';
 import { createBoard }     from '../boards/methods';
 
@@ -272,14 +273,24 @@ export const removeUserFromTeam = new ValidatedMethod({
 
     // Remove user from boards if user exists on the database
     if (user) {
-      const boards = user.boards(teamId).fetch();
+      const boardsIds = user.boards(teamId).fetch().map(board => board._id);
 
-      boards.forEach((board) => {
-        Boards.removeUser(board._id, user._id);
+      boardsIds.forEach((boardId) => {
+        Boards.removeUser(boardId, user._id);
       });
+
+      const directChatsIds = DirectChats.find({
+        'users._id': user._id,
+      }).fetch().map(directChat => directChat._id);
 
       DirectChats.remove({
         'users._id': user._id,
+      });
+
+      Messages.remove({
+        directChatId: {
+          $in: directChatsIds,
+        },
       });
     }
 
