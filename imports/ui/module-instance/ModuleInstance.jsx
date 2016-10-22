@@ -3,8 +3,6 @@ import React           from 'react';
 import { generateApi } from '../../api/api/api-client';
 
 const PIN_HEIGHT = 16;
-const TEXT_HEIGHT = 20;
-const MARGIN = 8;
 
 export default class ModuleInstance extends React.Component {
   constructor(props) {
@@ -18,12 +16,15 @@ export default class ModuleInstance extends React.Component {
       minimized: this.props.moduleInstance.minimized,
       loading: true,
     };
+    
+    this.iframeLoaded = this.iframeLoaded.bind(this);
+    this.toggleMinimize = this.toggleMinimize.bind(this);
   }
 
   componentDidMount() {
     const DiamondAPI = generateApi(this.props.moduleInstance._id);
 
-    this.iframe.onload = this.iframeLoaded.bind(this);
+    this.iframe.onload = this.iframeLoaded;
     this.iframe.contentWindow.DiamondAPI = DiamondAPI;
     this.props.moduleInstancesFrames.push(this.iframe.contentWindow);
   }
@@ -102,7 +103,7 @@ export default class ModuleInstance extends React.Component {
       left: this.props.moduleInstance.y,
       width: this.props.moduleInstance.width,
       height: this.props.moduleInstance.height,
-      marginTop: this.state.minimized ? PIN_HEIGHT /* + TEXT_HEIGHT */ + PIN_HEIGHT/2 : PIN_HEIGHT,
+      marginTop: PIN_HEIGHT,
     };
     
     return (
@@ -131,7 +132,7 @@ export default class ModuleInstance extends React.Component {
             <div
               className="module-pin"
               role="button"
-              onClick={this.toggleMinimize.bind(this)}
+              onClick={this.toggleMinimize}
               onContextMenu={
                 this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.iframe)
               }
