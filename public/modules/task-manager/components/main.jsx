@@ -834,11 +834,11 @@ class Task extends React.Component {
       updateQuery,
       callback(error, result) {
         if (error) {
-          this.props.showError({
+          self.props.showError({
             body: 'Error al actualizar el estado de la tarea',
           });
         } else {
-          this.props.showError({
+          self.props.showError({
             body: 'Estado de la tarea actualizado',
           });
         }
