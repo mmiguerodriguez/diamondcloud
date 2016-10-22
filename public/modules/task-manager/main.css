@@ -93,6 +93,7 @@
 .task-title {
   margin: 15px 0 5px;
   font-weight: bold;
+  word-wrap: break-word;
 }
 .fixed-title {
   padding: 0px;

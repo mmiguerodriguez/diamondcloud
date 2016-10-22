@@ -795,6 +795,7 @@ class Task extends React.Component {
     const durations = [];
     let updateQuery;
 
+    /*
     if (status === 'finished') {
       const date = new Date().getTime();
       this.props.task.durations.forEach((duration) => {
@@ -818,6 +819,12 @@ class Task extends React.Component {
         },
       };
     }
+    */
+    updateQuery = {
+      $set: {
+        status,
+      },
+    };
 
     DiamondAPI.update({
       collection: 'tasks',
@@ -1191,12 +1198,12 @@ class Task extends React.Component {
           {
             !this.props.coordination && (this.props.doing || this.state.doing) ? (
               <div>
-                <div className='record'>
+                {/*<div className='record'>
                   <img
                     src='/modules/task-manager/img/record.svg'
                     width='25px'
                   />
-                </div>
+                </div>*/}
                 <div
                   className='done'
                   title='Marcar como finalizado'
@@ -1207,7 +1214,7 @@ class Task extends React.Component {
                       width='25px'
                     />
                 </div>
-                <div
+                {/*<div
                   className='pause'
                   title='Marcar como pausado'
                   role='button'
@@ -1216,7 +1223,7 @@ class Task extends React.Component {
                       src='/modules/task-manager/img/pause-button.svg'
                       width='15px'
                     />
-                </div>
+                </div>*/}
               </div>
             ) : (null)
           }
@@ -1234,7 +1241,7 @@ class Task extends React.Component {
                       width='25px'
                     />
                 </div>
-                <div
+                {/*<div
                   className='play'
                   title='Marcar como haciendo'
                   role='button'
@@ -1243,7 +1250,7 @@ class Task extends React.Component {
                       src='/modules/task-manager/img/play-arrow.svg'
                       width='15px'
                     />
-                </div>
+                </div>*/}
               </div>
             ) : (null)
           }
@@ -1315,13 +1322,13 @@ class TaskInformation extends React.Component {
             <p>
               <b>Board:</b> {this.state.board.name}
             </p>
-            <p>
+            {/*<p>
               <b>Usuarios:</b>
             </p>
             <UserTaskInformation
               durations={this.state.task.durations}
               users={this.props.users}
-            />
+            />*/}
           </div>
         </div>
       </div>
