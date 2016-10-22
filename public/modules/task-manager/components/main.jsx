@@ -121,8 +121,9 @@ class TaskManagerPage extends React.Component {
       const filter = coordination ? {
         archived: false,
       } : {
-        boardId: currentBoard._id,
+        archived: false,
         status: 'not_finished',
+        boardId: currentBoard._id,
       };
 
       /**
