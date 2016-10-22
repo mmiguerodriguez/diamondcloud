@@ -119,8 +119,7 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
 
   const isDirector =
     team.userIsCertainHierarchy(user.email(), 'director creativo') ||
-    team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
-    team.userIsCertainHierarchy(user.email(), 'coordinador');
+    team.userIsCertainHierarchy(user.email(), 'director de cuentas');
   const isSistemas = team.userIsCertainHierarchy(user.email(), 'sistemas');
   const isCoordinador = team.userIsCertainHierarchy(user.email(), 'coordinador');
 
@@ -167,7 +166,7 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
             _id: {
               $in: isCoordinador ? boardsIds : [],
             },
-          }
+          },
         ],
       },
       {
@@ -187,9 +186,10 @@ Boards.isValid = (boardId, userId) => {
 
   const isDirector =
     team.userIsCertainHierarchy(user.email(), 'director creativo') ||
-    team.userIsCertainHierarchy(user.email(), 'director de cuentas') ||
-    team.userIsCertainHierarchy(user.email(), 'coordinador');
+    team.userIsCertainHierarchy(user.email(), 'director de cuentas')
   const isSistemas = team.userIsCertainHierarchy(user.email(), 'sistemas');
+  const isCoordinador = team.userIsCertainHierarchy(user.email(), 'isCoordinador');
+  
 
   const board = Boards.findOne({
     _id: boardId,
@@ -216,6 +216,10 @@ Boards.isValid = (boardId, userId) => {
       {
         // Check that isSistemas is true
         _id: isSistemas ? boardId : undefined,
+      },
+      {
+        // Check that isCoordinador is true
+        _id: isCoordinador ? boardId : undefined,
       },
     ],
   });
