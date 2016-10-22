@@ -1,62 +1,47 @@
-import React      from 'react';
-import classNames from 'classnames';
-import isMobile   from 'ismobilejs';
+import React from 'react';
 
-import Chat       from './chat/Chat';
-
-const CHAT_WIDTH = 250 + 24;
+import Chat  from './chat/Chat';
 
 export default class ChatLayout extends React.Component {
   renderChats() {
-    const width = $('.board-container').width();
     const chats = [];
-    let chatsWidth = 0;
 
     this.props.chats.forEach((chat, index) => {
-      chatsWidth += CHAT_WIDTH;
-
-      if (chatsWidth > width) {
-        chatsWidth -= CHAT_WIDTH;
+      if (chat.position !== 'hidden') {
+        chats.push(
+          <Chat
+            key={chat.directChatId || chat.boardId}
+            index={index}
+            chat={chat}
+            position={chat.position}
+            chats={this.props.chats}
+            users={this.props.team.users}
+            boards={this.props.boards}
+            directChats={this.props.directChats}
+            openHiddenChat={this.props.openHiddenChat}
+            togglePosition={this.props.togglePosition}
+            toggleError={this.props.toggleError}
+            removeChat={this.props.removeChat}
+            hasMaximizedChats={this.props.hasMaximizedChats}
+          />
+        );
       }
-
-      chats.push(
-        <Chat
-          key={chat.directChatId || chat.boardId}
-          index={index}
-          chat={chat}
-          position={chat.position}
-          chats={this.props.chats}
-          users={this.props.team.users}
-          boards={this.props.boards}
-          directChats={this.props.directChats}
-          openHiddenChat={this.props.openHiddenChat}
-          togglePosition={this.props.togglePosition}
-          toggleError={this.props.toggleError}
-          removeChat={this.props.removeChat}
-          hasMaximizedChats={this.props.hasMaximizedChats}
-        />
-      );
     });
 
     return chats;
   }
 
   renderHiddenChats() {
-    const width = $('.board-container').width();
     const chats = [];
-    let chatsWidth = 0;
 
     this.props.chats.forEach((chat, index) => {
-      chatsWidth += CHAT_WIDTH;
-
-      if (chatsWidth > width) {
-        chatsWidth -= CHAT_WIDTH;
+      if (chat.position === 'hidden') {
         chats.push(
           <Chat
             key={chat.directChatId || chat.boardId}
             index={index}
             chat={chat}
-            position={'hidden'}
+            position={chat.position}
             chats={this.props.chats}
             users={this.props.team.users}
             boards={this.props.boards}
