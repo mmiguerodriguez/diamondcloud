@@ -143,7 +143,6 @@ class TaskManagerPage extends React.Component {
           }
         },
       });
-      console.error('hola. estos son los boards: ', DiamondAPI.getBoards().fetch(), coordination);
       self.setState({
         boards: DiamondAPI.getBoards().fetch(),
         users: DiamondAPI.getUsers(),
