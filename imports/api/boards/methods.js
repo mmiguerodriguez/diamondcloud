@@ -204,7 +204,7 @@ export const editBoard = new ValidatedMethod({
           users.push({ email: user.email, notifications: 0 });
         }
       });
-    } else if ((!board.isPrivate && isPrivate) || (board.isPrivate && isPrivate)) {
+    } else {
       users.forEach((user, index) => {
         if (!team.hasUser({ email: user.email })) {
           throw new Meteor.Error('Boards.methods.createBoard.userNotInTeam',
@@ -216,8 +216,6 @@ export const editBoard = new ValidatedMethod({
           if (_user.email === user.email) {
             users[index].notifications = _user.notifications;
             found = true;
-          } else if (_user.email === Meteor.user().email()) {
-            users.push({ email: Meteor.user().email(), notifications: _user.notifications });
           }
         });
 
