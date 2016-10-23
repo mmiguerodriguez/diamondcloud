@@ -16,9 +16,7 @@ export default class ConfigBoardModal extends React.Component {
     super(props);
 
     let users = [];
-    this.props.board.users.forEach((user) => {
-      users.push(user.email);
-    });
+    users = this.props.board.users.map(user => user.email);
     users = users.join(',');
 
     this.state = {
@@ -38,7 +36,7 @@ export default class ConfigBoardModal extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.board._id !== this.props.board._id) {
       let users = [];
-      nextProps.board.users.map(user => user.email);
+      users = nextProps.board.users.map(user => user.email);
       users = users.join(',');
 
       this.setState({
