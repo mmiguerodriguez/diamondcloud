@@ -73,7 +73,6 @@ export default class Chat extends React.Component {
     const obj = {
       type: 'text',
       content: text,
-      createdAt: new Date().getTime(),
     };
 
     if (self.props.chat.directChatId) {

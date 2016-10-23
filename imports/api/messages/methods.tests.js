@@ -5,27 +5,33 @@ import { chai }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
-import { Teams }         from '../teams/teams.js';
-import { Boards }        from '../boards/boards.js';
-import { DirectChats }   from '../direct-chats/direct-chats.js';
-import { Messages }      from './messages.js';
-import { sendMessage,
-         seeMessage }    from './methods.js';
+import { Teams }         from '../teams/teams';
+import { Boards }        from '../boards/boards';
+import { DirectChats }   from '../direct-chats/direct-chats';
+import { Messages }      from './messages';
+import {
+  sendMessage,
+  seeMessage
+}                        from './methods';
 
-import '../factories/factories.js';
+import '../factories/factories';
 
 if (Meteor.isServer) {
-  describe('Messages', function() {
-    let users, team, board, directChat, messages;
-    let title, text, query;
-    let test_1,
-        test_2,
-        result_1,
-        result_2,
-        expect_1,
-        expect_2;
+  describe('Messages', () => {
+    let users;
+    let team;
+    let board;
+    let directChat;
+    let messages;
+    let title;
+    let text;
+    let query;
+    let test1;
+    let test2;
+    let expect1;
+    let expect2;
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
       resetDatabase();
 
       users = [
@@ -58,34 +64,29 @@ if (Meteor.isServer) {
       messages[1].boardId = board._id;
       messages[1].senderId = users[1]._id;
 
-      test_1 = {
+      test1 = {
         boardId: board._id,
         type: 'text',
         content: faker.lorem.sentence(),
-        createdAt: (new Date()).getTime(),
       };
-      expect_1 = {
+      test2 = {
+        directChatId: directChat._id,
+        type: 'text',
+        content: faker.lorem.sentence(),
+      };
+      expect1 = {
         senderId: users[0]._id,
         type: 'text',
-        content: test_1.content,
-        createdAt: test_1.createdAt,
+        content: test1.content,
         boardId: board._id,
         seers: [],
       };
-
-      test_2 = {
-        directChatId: directChat._id,
-        type: 'text',
-        content: faker.lorem.sentence(),
-        createdAt: (new Date()).getTime(),
-      };
-      expect_2 = {
+      expect2 = {
         senderId: users[0]._id,
         type: 'text',
-        content: test_2.content,
-        createdAt: test_2.createdAt,
+        content: test2.content,
         directChatId: directChat._id,
-        seen: false
+        seen: false,
       };
 
       resetDatabase();
@@ -111,51 +112,56 @@ if (Meteor.isServer) {
       done();
     });
 
-    afterEach(function(done) {
+    afterEach((done) => {
       Meteor.user.restore();
       Meteor.userId.restore();
       Push.send.restore();
       done();
     });
 
-    it('should send a message', function(done) {
-      sendMessage.call(test_1, (err, result_1) => {
-        if (err) throw new Meteor.Error(err);
-        sendMessage.call(test_2, (err, result_2) => {
-          if (err) throw new Meteor.Error(err);
-          chai.assert.deepEqual(expect_1, result_1);
-          chai.assert.deepEqual(expect_2, result_2);
+    it('should send a message', (done) => {
+      sendMessage.call(test1, (error, result1) => {
+        if (error) throw new Meteor.Error(error);
+        sendMessage.call(test2, (error, result2) => {
+          if (error) throw new Meteor.Error(error);
+
+          expect1.createdAt = result1.createdAt;
+          expect2.createdAt = result2.createdAt;
+
+          chai.assert.deepEqual(expect1, result1);
+          chai.assert.deepEqual(expect2, result2);
+
           done();
         });
       });
     });
 
-    it('should see a message in a directChat', function(done) {
-      let expected = messages[0];
+    it('should see a message in a directChat', (done) => {
+      const expected = messages[0];
       expected.seen = true;
 
-      seeMessage.call({ messageId: messages[0]._id }, (err, result) => {
-        if (err) console.error(err);
+      seeMessage.call({ messageId: messages[0]._id }, (error, result) => {
+        if (error) throw new Meteor.Error(error);
         chai.assert.deepEqual(result, expected);
         done();
       });
     });
 
-    it('should see a message in a board', function(done) {
-      let expected = messages[1];
+    it('should see a message in a board', (done) => {
+      const expected = messages[1];
       expected.seers.push(users[0]._id);
 
-      seeMessage.call({ messageId: messages[1]._id }, (err, result) => {
+      seeMessage.call({ messageId: messages[1]._id }, (error, result) => {
         chai.assert.deepEqual(result, expected);
         done();
       });
     });
 
-    it('should show a notification correctly', function(done) {
-      sendMessage.call(test_1, (err, result_1) => {
-        if (err) throw new Meteor.Error(err);
-        let expectText = users[0].profile.name + ': ' + test_1.content;
-        let expectQuery = {
+    it('should show a notification correctly', (done) => {
+      sendMessage.call(test1, (error, result) => {
+        if (error) throw new Meteor.Error(error);
+        const expectText = `${users[0].profile.name}: ${test1.content}`;
+        const expectQuery = {
           userId: {
             $in: [users[1]._id],
           }
@@ -165,14 +171,14 @@ if (Meteor.isServer) {
         chai.assert.equal(expectText, text);
         chai.assert.deepEqual(expectQuery, query);
 
-        sendMessage.call(test_2, (err, result_2) => {
-          if (err) throw new Meteor.Error(err);
-          let expectQuery = {
+        sendMessage.call(test2, (error, result) => {
+          if (error) throw new Meteor.Error(error);
+          const expectQuery = {
             userId: users[1]._id,
           };
 
           chai.assert.equal(users[1].profile.name, title);
-          chai.assert.equal(test_2.content, text);
+          chai.assert.equal(test2.content, text);
           chai.assert.deepEqual(expectQuery, query);
 
           done();
