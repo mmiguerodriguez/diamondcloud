@@ -106,7 +106,7 @@ export default class ModuleInstance extends React.Component {
         const paddingRight = $board.width() - (ui.position.left + ui.size.width);
         const paddingBottom = $board.height() - (PIN_HEIGHT + ui.position.top + ui.size.height);
 
-        $('iframe', ui.element)
+        $(self.module)
         .width(ui.size.width)
         .height(ui.size.height);
 

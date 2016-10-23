@@ -43,8 +43,8 @@ input:focus, select:focus, textarea:focus, button:focus {
 }
 
 /* override jquery-ui styles */
-.ui-icon,.ui-widget-content .ui-icon {
-  background-image: url("http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/images/ui-icons_222222_256x240.png") !important;
+.ui-icon, .ui-widget-content .ui-icon {
+  background-image: url("https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/images/ui-icons_222222_256x240.png") !important;
 }
 .ui-icon-gripsmall-diagonal-se {
   background-position: -78px -222px !important;
