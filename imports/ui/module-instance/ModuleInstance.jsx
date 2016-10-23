@@ -43,7 +43,9 @@ export default class ModuleInstance extends React.Component {
       containment: 'parent',
       handle: '.module-pin',
       cursor: '-webkit-grabbing !important',
-      cursorAt: { top: -6 },
+      cursorAt: {
+        top: -6,
+      },
       distance: 5,
       iframeFix: true,
     })
@@ -52,7 +54,26 @@ export default class ModuleInstance extends React.Component {
       disabled: this.state.minimized,
       minWidth: this.props.module.settings.minWidth,
       minHeight: this.props.module.settings.minHeight,
+      start(event, ui) {
+        console.log(ui.position, ui.element, ui.size);
+        ui.element.append(
+          $('<div/>', {
+            id: 'iframe-helper',
+            css: {
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              padding: 1920, // We use this to prevent issues with other modules
+              'z-index': 10,
+            },
+          })
+        );
+      },
       stop(event, ui) {
+        $('#iframe-helper', ui.element).remove();
+
         const moduleInstanceId = self.props.moduleInstance._id;
         const { width, height } = ui.size;
 
@@ -66,6 +87,11 @@ export default class ModuleInstance extends React.Component {
           }
         });
       },
+      resize(event, ui) {
+        $('iframe', ui.element)
+        .width(ui.size.width)
+        .height(ui.size.height);
+      }
     });
 
     this.setState({
