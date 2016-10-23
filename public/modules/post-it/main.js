@@ -29,7 +29,7 @@ window.onload = () => {
           }
         });
       } else {
-        handleNewData(result[0]);
+        handleNewData(result[0].text);
       }
     },
   });
@@ -46,7 +46,7 @@ window.onload = () => {
       }
 
       if (!!result && result.length > 0) {
-        handleNewData(result[0]);
+        handleNewData(result[0].text);
       }
     },
   });
@@ -63,8 +63,7 @@ function insertStartupData(callback) {
   DiamondAPI.insert({
     collection: 'postIt',
     object: {
-      title: '',
-      description: '',
+      text: '',
     },
     isGlobal: false,
     callback,
@@ -74,14 +73,14 @@ function insertStartupData(callback) {
 /**
  * updatePostIt(e, key)
  * e: String // input or textarea target
- * key: String // title or description
+ * key: String // text
  *
  * Called on the keyDown of the <input> and <textarea> elements.
  * It contains a timeout that is removed when the function gets
  * called again, since we want to update the data once every
  * 1000 ms.
  */
-function updatePostIt(e, key) {
+function updatePostIt(e) {
   clearTimeout(TIMEOUT);
 
   TIMEOUT = setTimeout(() => {
@@ -90,30 +89,27 @@ function updatePostIt(e, key) {
       filter: {},
       updateQuery: {
         $set: {
-          [key]: e.value,
-        }
+          text: e.value,
+        },
       },
-      callback(error, result) {
+      callback(error) {
         if (error) {
           console.error(error);
         }
-      }
+      },
     });
   }, INTERVAL);
 }
 
 /**
  * handleNewData(data)
- * data: Object // { title, description }
+ * data: Object // text
  *
  * Handles the new data either called from the subscription
  * or the first APIGet and gives it to the respective
  * <input> and <textarea> elements.
  */
-function handleNewData(data) {
-  pushData('title', data.title);
-  pushData('description', data.description);
-
+function handleNewData(text) {
   /**
    * pushData(e, value)
    * e: String // DOM Element Id
@@ -121,8 +117,10 @@ function handleNewData(data) {
    *
    * Sets the value for a DOM element
    */
-  function pushData(e, value) {
-    let elem = document.getElementById(e);
+  function pushData(value) {
+    const elem = document.getElementById('text');
     elem.value = value;
   }
+
+  pushData(text);
 }
