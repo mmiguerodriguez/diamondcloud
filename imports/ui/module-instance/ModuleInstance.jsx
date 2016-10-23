@@ -86,8 +86,9 @@ export default class ModuleInstance extends React.Component {
         });
       },
       resize(event, ui) {
-        const paddingRight = $('.board').width() - (ui.position.left + ui.size.width);
-        const paddingBottom = $('.board').height() - (PIN_HEIGHT + ui.position.top + ui.size.height);
+        const $board = $('.board');
+        const paddingRight = $board.width() - (ui.position.left + ui.size.width);
+        const paddingBottom = $board.height() - (PIN_HEIGHT + ui.position.top + ui.size.height);
 
         $('iframe', ui.element)
         .width(ui.size.width)
