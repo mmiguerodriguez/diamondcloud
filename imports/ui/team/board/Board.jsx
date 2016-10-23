@@ -13,6 +13,7 @@ export default class Board extends React.Component {
 
     this.state = {
       visibleForDirectors: this.props.board.visibleForDirectors,
+      zIndexs: {},
     };
 
     this.toggleBoardToDirectors = this.toggleBoardToDirectors.bind(this);
@@ -107,6 +108,18 @@ export default class Board extends React.Component {
     }
   }
 
+  getMaxZIndex() {
+    let maxZIndex = 0;
+
+    for (const i in this.state.zIndexs) {
+      if (this.state.zIndexs[i] > maxZIndex) {
+        maxZIndex = this.state.zIndexs[i];
+      }
+    }
+
+    return maxZIndex;
+  }
+
   toggleBoardToDirectors(methodName) {
     const self = this;
 
@@ -168,6 +181,17 @@ export default class Board extends React.Component {
       return this.props.moduleInstances.map((moduleInstance) => {
         const module = Modules.findOne(moduleInstance.moduleId);
 
+        const changeState = () => {
+          const obj = this.state.zIndexs;
+          obj[moduleInstance._id] = this.getMaxZIndex() + 1;
+
+          this.setState({
+            zIndexs: obj,
+          });
+
+          return this.getMaxZIndex();
+        };
+
         return (
           <ModuleInstance
             key={moduleInstance._id}
@@ -176,6 +200,7 @@ export default class Board extends React.Component {
             module={module}
             boards={this.props.boards}
             users={this.props.users}
+            changeState={changeState}
             openModuleInstanceContextMenu={this.props.openModuleInstanceContextMenu}
           />
         );
@@ -197,7 +222,7 @@ export default class Board extends React.Component {
           <div className="sub-header-data col-xs-6">
             <ol className="breadcrumb truncate">
               <li>
-                <a href="">{this.props.team.name}</a>
+                <a href="#">{this.props.team.name}</a>
               </li>
               <li className="active">{this.props.board.name}</li>
             </ol>
@@ -211,7 +236,8 @@ export default class Board extends React.Component {
               this.props.board.isPrivate &&
               !this.props.team.userIsCertainHierarchy(email, 'director creativo') &&
               !this.props.team.userIsCertainHierarchy(email, 'director de cuentas') &&
-              !this.props.team.userIsCertainHierarchy(email, 'coordinador') ? (
+              !this.props.team.userIsCertainHierarchy(email, 'coordinador') &&
+              this.props.board.type === 'creativos' ? (
                 <div className="visibility">
                   {
                     this.state.visibleForDirectors ? (

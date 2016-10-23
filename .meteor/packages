@@ -41,3 +41,4 @@ velocity:meteor-stubs                 # Stubs
 raix:push                             # Mobile notifications
 meson:electron
 shell-server
+jcbernack:reactive-aggregate

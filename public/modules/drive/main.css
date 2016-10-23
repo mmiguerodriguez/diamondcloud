@@ -1,13 +1,19 @@
 html {
   width: 100%;
   height: 100%;
+  overflow-x: hidden;
 }
-
 body {
   width: 100%;
   height: 100%;
   background: #fafafa;
   font-family: 'roboto' !important;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .loading {
@@ -53,6 +59,43 @@ body {
   }
 }
 
+.error-message {
+  position: absolute;
+  right: 10px;
+  bottom: 15px;
+  padding: 10px;
+  color: #fff;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.3);
+  z-index: 2000;
+}
+.show-error {
+  animation-name: appear;
+  animation-duration: 0.7s;
+}
+.hide-error {
+  animation-name: disappear;
+  animation-duration: 0.7s;
+}
+@keyframes appear {
+  0% {right: -100px; opacity: 0;}
+  100% {right: 10px; opacity: 1;}
+}
+@keyframes disappear {
+  0% {right: 10px; opacity: 1;}
+  100% {right: -100px; opacity: 0;}
+}
+.error-body {
+  display: inline-block;
+}
+.error-close {
+  display: inline-block;
+  margin-left: 10px;
+  color: #f1c40f;
+  cursor: pointer;
+}
+
 .file-manager {
   overflow: auto;
   height: 100vh;
@@ -61,10 +104,9 @@ body {
 }
 
 .folders-title-container, .documents-title-container {
-    margin: 10px 0 0;
-    font-weight: bold;
+  margin: 10px 0 0;
+  font-weight: bold;
 }
-
 .documents-container {
   margin-bottom: 70px;
 }
@@ -86,18 +128,7 @@ body {
 .fixed {
   margin: 10px 0 !important;
 }
-.preview {
-  height: calc(100% - 30px);
-  background-image: url(http://46.22.133.24/files/itsupport/drive2.jpg);
-  background-size: 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-.truncate {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+
 .create {
   position: fixed;
   bottom: 15px;
@@ -110,9 +141,18 @@ body {
   cursor: pointer;
 }
 .create .img {
-  width: 24px;
-  margin: 16px;
+  width: 55px;
+  height: 55px;
+  background-image: url(http://image.flaticon.com/icons/svg/61/61112.svg);
+  background-size: 18px;
+  background-position: center;
+  background-repeat: no-repeat;
   -webkit-filter: invert(1);
+  transition: 0.3s all ease;
+}
+.create:hover .img {
+  transform: rotate(360deg);
+  background-image: url(/modules/drive/img/google-docs.svg);
 }
 .create:hover {
   box-shadow: 0px 0px 10px 1px rgba(0,0,0, 0.3);
@@ -273,8 +313,8 @@ img.icon-type.import-drive {
 }
 .go-back-to-document {
   float: right;
-  font-size: 19px;
-  margin-top: 5px;
+  font-size: 18px;
+  margin-top: 5.5px;
   margin-right: 5px;
   color: #000;
   padding: 3px;
@@ -287,4 +327,35 @@ img.icon-type.import-drive {
 .go-back-to-document:hover {
   opacity: 0.9;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+
+.content-container {
+  width: 100%;
+  height: calc(100% - 42px);
+  background-color: #eeeeee;
+}
+.image-container {
+  height: 250px;
+  width: 250px;
+  border-radius: 50%;
+  background-color: #f1f1f1;
+  position: absolute;
+  left: 0;
+  top: 42px;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+.photo {
+  width: 81px;
+  margin: 50px 84.5px 0px;
+  opacity: 0.7;
+  background: no-repeat url(/modules/drive/img/image.svg) 0;
+  background-size: 100%;
+  height: 100px;
+}
+.image-text {
+  text-align: center;
+  padding: 10px;
 }

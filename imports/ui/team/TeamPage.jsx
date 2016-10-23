@@ -1,5 +1,4 @@
 import { Meteor }          from 'meteor/meteor';
-import { ReactiveVar }     from 'meteor/reactive-var';
 
 import React               from 'react';
 import { browserHistory }  from 'react-router';
@@ -10,6 +9,8 @@ import { DirectChats }     from '../../api/direct-chats/direct-chats';
 
 import NotificationSystem  from '../notifications/notificationSystem/NotificationSystem';
 import TeamLayout          from './TeamLayout';
+
+const CHAT_WIDTH = 250 + 24;
 
 export default class TeamPage extends React.Component {
   constructor(props) {
@@ -45,15 +46,23 @@ export default class TeamPage extends React.Component {
    */
   getChats() {
     const { chats } = this.state;
+    const BOARD_WIDTH = $('.board-container').width();
+    const MAX_CHATS = Math.floor(BOARD_WIDTH / CHAT_WIDTH);
 
     chats.map((chat, index) => {
       if (chat.boardId) {
-        chats[index].messages = Boards.findOne(chat.boardId).getMessages().fetch();
+        chat.messages = Boards.findOne(chat.boardId).getMessages().fetch();
       } else {
-        chats[index].messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
+        chat.messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
       }
 
-      chats[index].position = chat.position || (isMobile.any ? 'mobile' : 'medium');
+      if (index >= MAX_CHATS) {
+        const position = isMobile.any ? 'mobile' : 'hidden';
+        chat.position = position;
+      } else {
+        const position = chat.position !== 'hidden' ? chat.position : (isMobile.any ? 'mobile' : 'medium');
+        chat.position = position;
+      }
 
       return chat;
     });
@@ -70,13 +79,17 @@ export default class TeamPage extends React.Component {
    */
   addChat(obj) {
     const self = this;
+    const BOARD_WIDTH = $('.board-container').width();
+    const MAX_CHATS = Math.floor(BOARD_WIDTH / CHAT_WIDTH);
 
     let { chats } = this.state;
+    let chatIndex;
 
     if (obj.boardId) {
       let found = false;
-      chats.forEach((chat) => {
+      chats.forEach((chat, index) => {
         if (chat.boardId === obj.boardId) {
+          chatIndex = index;
           found = true;
         }
       });
@@ -100,11 +113,17 @@ export default class TeamPage extends React.Component {
             });
           },
         });
+      } else {
+        console.log(MAX_CHATS);
+        if (chatIndex >= MAX_CHATS) {
+          this.openHiddenChat(chatIndex);
+        }
       }
     } else {
       let found = false;
-      chats.forEach((chat) => {
+      chats.forEach((chat, index) => {
         if (chat.directChatId === obj.directChatId) {
+          chatIndex = index;
           found = true;
         }
       });
@@ -128,6 +147,11 @@ export default class TeamPage extends React.Component {
             });
           },
         });
+      } else {
+        console.log(MAX_CHATS);
+        if (chatIndex >= MAX_CHATS) {
+          this.openHiddenChat(chatIndex);
+        }
       }
     }
   }
@@ -220,21 +244,21 @@ export default class TeamPage extends React.Component {
   boardSubscribe(boardId) {
     const self = this;
 
-    if (TeamPage.boardId.get() === boardId) {
+    if (this.props.boardId === boardId) {
       return;
     }
 
-    if (TeamPage.boardSubscription.get()) {
+    if (this.props.boardSubscription) {
       this.state.moduleInstancesFrames.forEach((frame) => {
         frame.DiamondAPI.unsubscribe();
       });
 
-      TeamPage.boardSubscription.get().stop();
+      this.props.boardSubscription.stop();
     }
 
     const subscription = Meteor.subscribe('boards.board', boardId, {
       onReady() {
-        TeamPage.boardId.set(boardId);
+        self.props.setBoardId(boardId);
       },
       onError() {
         self.props.toggleError({
@@ -244,7 +268,7 @@ export default class TeamPage extends React.Component {
       },
     });
 
-    TeamPage.boardSubscription.set(subscription);
+    this.props.setBoardSubscription(subscription);
   }
   /**
    * Toggles the position of the chat.
@@ -266,15 +290,20 @@ export default class TeamPage extends React.Component {
   }
 
   render() {
-    if (!TeamPage.boardId.get()) {
+    const self = this;
+
+    if (!this.props.boardId) {
+      console.log('error', 1);
       return null;
     }
 
     if (this.props.team === undefined) {
+      console.log('error', 2);
       return null;
     }
 
     if (this.props.loading) {
+      console.log('error', 3);
       return (
         <div className="loading">
           <div className="loader" />
@@ -282,36 +311,47 @@ export default class TeamPage extends React.Component {
       );
     }
 
-    const board = Boards.findOne(TeamPage.boardId.get());
+    const board = Boards.findOne(this.props.boardId);
     const _board = Boards.findOne();
 
     if (!board) {
       if (_board) {
-        TeamPage.boardId.set(_board._id);
-        TeamPage.boardSubscription.get().stop();
+        this.props.setBoardId(_board._id);
+        this.props.boardSubscription.stop();
 
-        const boardSubscription = Meteor.subscribe('boards.board', _board._id, {
-          onReady() {
-            TeamPage.boardSubscription.set(boardSubscription);
-          },
-        });
+        /**
+         * Temporal fix
+         * See why this works...
+         */
+        setTimeout(() => {
+          const boardSubscription = Meteor.subscribe('boards.board', _board._id, {
+            onReady() {
+              self.props.setBoardSubscription(boardSubscription);
+            },
+          });
+        }, 0);
+
       } else {
+        console.log('error', 4);
         return (
           <div>
             <p>
-              <a href="#shikaka">No hay ningun board, rip</a>
+              <a href="">No hay ningun board, rip</a>
             </p>
           </div>
         );
       }
     }
 
+    console.log('no hay error');
+
     return (
       <div>
         <TeamLayout
+          users={this.props.users}
+
           teams={this.props.teams}
           team={this.props.team}
-          users={this.props.users}
           isAdmin={this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')}
 
           boards={this.props.boards}
@@ -344,8 +384,6 @@ export default class TeamPage extends React.Component {
   }
 }
 
-TeamPage.boardId = new ReactiveVar();
-TeamPage.boardSubscription = new ReactiveVar();
 TeamPage.propTypes = {
   loading: React.PropTypes.bool.isRequired,
   team: React.PropTypes.object,
@@ -357,4 +395,8 @@ TeamPage.propTypes = {
   moduleInstances: React.PropTypes.array.isRequired,
   modules: React.PropTypes.array.isRequired,
   toggleError: React.PropTypes.func.isRequired,
+  boardId: React.PropTypes.string.isRequired,
+  boardSubscription: React.PropTypes.object.isRequired,
+  setBoardId: React.PropTypes.func.isRequired,
+  setBoardSubscription: React.PropTypes.func.isRequired,
 };

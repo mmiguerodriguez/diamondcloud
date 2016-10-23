@@ -1,12 +1,13 @@
-import React     from 'react';
+import { Meteor } from 'meteor/meteor';
+import React      from 'react';
 
-import Modal     from '../Modal';
-import UsersList from '../users-list/UsersList';
+import Modal      from '../Modal';
+import UsersList  from '../users-list/UsersList';
 import {
   InputError,
   TextInput,
-  SelectInput
-}                from '../../validation/inputs';
+  SelectInput,
+}                 from '../../validation/inputs';
 
 export default class ConfigTeamModal extends React.Component {
   constructor(props) {
@@ -14,8 +15,6 @@ export default class ConfigTeamModal extends React.Component {
 
     this.state = {
       name: this.props.team.name,
-      plan: this.props.team.plan,
-      type: this.props.team.type,
     };
 
     this.close = this.close.bind(this);
@@ -42,30 +41,16 @@ export default class ConfigTeamModal extends React.Component {
 
     if (team.name !== '') {
       if (team.name.length >= 3) {
-        if (team.type !== '') {
-          if (team.type.length >= 3) {
-            Meteor.call('Teams.methods.edit', { teamId: this.props.team._id, team }, (error, result) => {
-              if (error) {
-                this.props.toggleError({
-                  type: 'show',
-                  body: 'Hubo un error al modificar los datos del equipo',
-                });
-              } else {
-                this.close();
-              }
-            });
-          } else {
+        Meteor.call('Teams.methods.edit', { teamId: this.props.team._id, team }, (error, result) => {
+          if (error) {
             this.props.toggleError({
               type: 'show',
-              body: 'El tipo del equipo debe tener 3 o más caracteres',
+              body: 'Hubo un error al modificar los datos del equipo',
             });
+          } else {
+            this.close();
           }
-        } else {
-          this.props.toggleError({
-            type: 'show',
-            body: 'El tipo del equipo no puede estar vacío',
-          });
-        }
+        });
       } else {
         this.props.toggleError({
           type: 'show',
@@ -83,27 +68,40 @@ export default class ConfigTeamModal extends React.Component {
   addUser(user) {
     if (user.email !== '') {
       if (/\S+@\S+\.\S+/.test(user.email)) {
-        if (user.hierarchy) {
-          Meteor.call('Teams.methods.share', {
-            teamId: this.props.team._id,
-            email: user.email,
-            hierarchy: user.hierarchy,
-          }, (error, result) => {
-            if (error) {
+        if (user.email !== Meteor.user().email()) {
+          if (!this.props.team.hasUser(user.email)) {
+            if (user.hierarchy) {
+              Meteor.call('Teams.methods.share', {
+                teamId: this.props.team._id,
+                email: user.email,
+                hierarchy: user.hierarchy,
+              }, (error, result) => {
+                if (error) {
+                  this.props.toggleError({
+                    type: 'show',
+                    body: 'Hubo un error interno al compartir el equipo',
+                  });
+                } else {
+                  this.props.loadTeam(this.props.team._id);
+                  // TODO: show success message
+                }
+              });
+            } else {
               this.props.toggleError({
                 type: 'show',
-                body: 'Hubo un error interno al compartir el equipo',
+                body: 'No seleccionaste una jerarquía',
               });
             }
-            else {
-              this.props.loadTeam(this.props.team._id);
-              // todo: show success message
-            }
-          });
+          } else {
+            this.props.toggleError({
+              type: 'show',
+              body: 'El usuario ya está en el equipo',
+            });
+          }
         } else {
           this.props.toggleError({
             type: 'show',
-            body: 'No seleccionaste una jerarquía',
+            body: 'No podés compartirte el equipo a vos mismo',
           });
         }
       } else {
@@ -172,28 +170,6 @@ export default class ConfigTeamModal extends React.Component {
                   />
                 </div>
               </div>
-              <div className="name-input">
-                <label
-                  htmlFor="projectType"
-                  className="col-xs-2 control-label left-align"
-                >
-                  Tipo
-                </label>
-                <div
-                  id="otherProjectType"
-                  className="col-xs-12 col-sm-10"
-                >
-                  <TextInput
-                    id="projectType"
-                    class="form-control"
-                    placeholder="Tipo de equipo"
-                    value={this.state.type}
-                    onChange={e => this.handleChange('type', e)}
-                    required={false}
-                    errorMessage="El tipo de equipo no es válido"
-                  />
-                </div>
-              </div>
             </div>
             <hr />
             <h4 className="configuration-title">Miembros</h4>
@@ -202,6 +178,7 @@ export default class ConfigTeamModal extends React.Component {
               team={this.props.team}
               addUser={this.addUser}
               removeUser={this.removeUser}
+              toggleError={this.props.toggleError}
             />
           </div>
         }

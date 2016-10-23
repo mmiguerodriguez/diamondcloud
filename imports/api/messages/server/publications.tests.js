@@ -4,6 +4,7 @@ import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { sinon }                from 'meteor/practicalmeteor:sinon';
 import { chai }                 from 'meteor/practicalmeteor:chai';
 import { Random }               from 'meteor/random';
+import { printObject }          from '../../helpers/print-objects.js';
 import   faker                  from 'faker';
 import                               './publications.js';
 
@@ -20,7 +21,7 @@ if (Meteor.isServer) {
       teamWithoutUser, teamWithoutUserPublicBoard;
   describe('Messages', function() {
     describe('Publications', function() {
-      
+
       beforeEach(function() {
         resetDatabase();
 
@@ -52,11 +53,12 @@ if (Meteor.isServer) {
           Factory.create('boardMessage'),//publicBoard
           Factory.create('boardMessage'),//privateBoardWithUser
         ];
+
         messages[0].directChatId = directChatWithUser._id;
         messages[1].boardId = publicBoard._id;
         messages[2].boardId = privateBoardWithUser._id;
         resetDatabase();
-        
+
         Meteor.users.insert(user);
 
         Teams.insert(teamWithUser);
@@ -139,30 +141,33 @@ if (Meteor.isServer) {
       });
       it("should not publish the messages of a public board in which the user isn't in", function(done){
         const collector = new PublicationCollector({ userId: user._id });
-        
+
         let collect = () => {
               collector.collect('messages.chat', { boardId: teamWithoutUserPublicBoard._id }, (collections) => {});
-            }, 
+            },
             error;
-        
+
         try {
           collect();
         } catch(err) {
           error = err;
         }
-        
+
         chai.assert.isTrue(error.error == 'Messages.chat.wrongParameters');
         done();
       });
-      
-      it('should publish the last message of a user', function(done) {
+
+      it('should publish the last message of a user', (done) => {
         const collector = new PublicationCollector({ userId: user._id });
 
         collector.collect('messages.last', teamWithUser.url, (collections) => {
-          chai.assert.equal(collections.Messages.length, 1);
+          messages = [messages[2], messages[1], messages[0]];
+          chai.assert.deepEqual(collections.Messages, messages);
           done();
         });
       });
     });
   });
 }
+
+/* global it */

@@ -12,7 +12,7 @@ Meteor.publishComposite('teams.dashboard', function () {
     'Must be logged in to view teams.');
   }
 
-  let user = Meteor.users.findOne(this.userId);
+  const user = Meteor.users.findOne(this.userId);
   return {
     find: function() {
       return user.teams({
@@ -23,9 +23,9 @@ Meteor.publishComposite('teams.dashboard', function () {
       {
         find: function(team) {
           return team.getUsers(Teams.dashboardUsersFields);
-        }
-      }
-    ]
+        },
+      },
+    ],
   };
 });
 
@@ -36,16 +36,16 @@ Meteor.publishComposite('teams.team', function (teamUrl) {
     'Must be logged in to view teams.');
   }
 
-  let user = Meteor.users.findOne(this.userId);
-  let teamId = Teams.findOne({ url: teamUrl })._id;
+  const user = Meteor.users.findOne(this.userId);
+  const teamId = Teams.findOne({ url: teamUrl })._id;
 
   return {
-    find: function() {
+    find: function () {
       return Teams.getTeam(teamId, user.email(), Teams.teamFields);
     },
     children: [
       {
-        find: function(team) {
+        find: function (team) {
           return Boards.getBoards(team.boards, this.userId, {
             _id: 1,
             name: 1,
@@ -57,20 +57,20 @@ Meteor.publishComposite('teams.team', function (teamUrl) {
         },
       },
       {
-        find: function(team) {
+        find: function (team) {
           return DirectChats.getUserDirectChats(this.userId, team._id);
-        }
+        },
       },
       {
-        find: function(team) {
+        find: function (team) {
           return team.getUsers(Teams.teamUsersFields);
         }
       },
       {
-        find: function(team) {
+        find: function () {
           return Modules.find({ validated: true });
-        }
-      }
-    ]
+        },
+      },
+    ],
   };
 });

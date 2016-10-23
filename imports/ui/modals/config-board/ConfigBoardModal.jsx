@@ -16,11 +16,7 @@ export default class ConfigBoardModal extends React.Component {
     super(props);
 
     let users = [];
-    this.props.board.users.forEach((user) => {
-      if (user.email !== Meteor.user().email()) {
-        users.push(user.email);
-      }
-    });
+    users = this.props.board.users.map(user => user.email);
     users = users.join(',');
 
     this.state = {
@@ -40,11 +36,7 @@ export default class ConfigBoardModal extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.board._id !== this.props.board._id) {
       let users = [];
-      nextProps.board.users.forEach((user) => {
-        if (user.email !== Meteor.user().email()) {
-          users.push(user.email);
-        }
-      });
+      users = nextProps.board.users.map(user => user.email);
       users = users.join(',');
 
       this.setState({
@@ -82,8 +74,6 @@ export default class ConfigBoardModal extends React.Component {
       } else {
         board.users = [];
       }
-
-      board.users.push({ email: Meteor.user().email() });
     } else {
       board.users = [];
     }
@@ -156,12 +146,16 @@ export default class ConfigBoardModal extends React.Component {
     this.props.team.users.forEach((_user) => {
       const user = Meteor.users.findByEmail(_user.email, {});
       if (user) {
-        if (user._id !== Meteor.userId()) {
-          arr.push({
-            label: user.profile.name,
-            value: user.email(),
-          });
-        }
+        arr.push({
+          label: user.profile.name,
+          value: user.email(),
+        });
+      } else {
+        // This executes when the user is unregistered
+        arr.push({
+          label: _user.email,
+          value: _user.email,
+        });
       }
     });
 

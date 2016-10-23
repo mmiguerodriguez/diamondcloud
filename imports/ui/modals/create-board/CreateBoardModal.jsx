@@ -33,7 +33,7 @@ export default class CreateBoardModal extends React.Component {
     $('#createBoardModal').modal('hide');
     this.setState({
       name: '',
-      // isPrivate: false,
+      isPrivate: false,
       users: '',
       type: BOARD_TYPES[0].value,
     });
@@ -58,7 +58,9 @@ export default class CreateBoardModal extends React.Component {
         board.users = [];
       }
 
-      board.users.push({ email: Meteor.user().email() });
+      if (this.state.type === 'sistemas') {
+        board.users.push({ email: Meteor.user().email() });
+      }
     } else {
       board.users = [];
     }
@@ -73,10 +75,6 @@ export default class CreateBoardModal extends React.Component {
             });
           } else {
             this.close();
-
-            this.props.toggleCollapsible('boards');
-            this.props.changeBoard(result._id);
-            this.props.addChat({ boardId: result._id });
           }
         });
       } else {
@@ -134,12 +132,16 @@ export default class CreateBoardModal extends React.Component {
     this.props.team.users.forEach((_user) => {
       const user = Meteor.users.findByEmail(_user.email, {});
       if (user) {
-        if (user._id !== Meteor.userId()) {
-          arr.push({
-            label: user.profile.name,
-            value: user.email(),
-          });
-        }
+        arr.push({
+          label: user.profile.name,
+          value: user.email(),
+        });
+      } else {
+        // This executes when the user is unregistered
+        arr.push({
+          label: _user.email,
+          value: _user.email,
+        });
       }
     });
 
@@ -273,7 +275,7 @@ export default class CreateBoardModal extends React.Component {
                 type="button"
                 className="btn btn-cancel btn-hover"
                 data-dismiss="modal"
-                onClick={this.onClose}
+                onClick={this.close}
               >
                 Cancelar
               </button>

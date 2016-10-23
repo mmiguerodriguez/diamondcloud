@@ -47,7 +47,7 @@ export const createBoard = new ValidatedMethod({
     'users.$.email': { type: String, regEx: SimpleSchema.RegEx.Email, optional: true },
     visibleForDirectors: { type: Boolean, optional: true },
   }).validator(),
-  run({ teamId, name, type, isPrivate, users, visibleForDirectors }) {
+  run({ teamId, name, type, isPrivate, users = [], visibleForDirectors = false }) {
     if (name !== 'General' && type !== 'default') {
       if (!Meteor.user()) {
         throw new Meteor.Error('Boards.methods.createBoard.notLoggedIn',
@@ -56,8 +56,6 @@ export const createBoard = new ValidatedMethod({
     }
 
     const team = Teams.findOne(teamId);
-    users = users || [];
-    visibleForDirectors = !!visibleForDirectors;
 
     if (isPrivate) {
       users.forEach((user, index, array) => {
@@ -133,9 +131,9 @@ export const createBoard = new ValidatedMethod({
             future.return(_board);
           }
         });
+      } else {
+        future.return(_board);
       }
-
-      future.return(_board);
     });
     return future.wait();
   },
@@ -206,7 +204,7 @@ export const editBoard = new ValidatedMethod({
           users.push({ email: user.email, notifications: 0 });
         }
       });
-    } else if ((!board.isPrivate && isPrivate) || (board.isPrivate && isPrivate)) {
+    } else {
       users.forEach((user, index) => {
         if (!team.hasUser({ email: user.email })) {
           throw new Meteor.Error('Boards.methods.createBoard.userNotInTeam',
@@ -218,8 +216,6 @@ export const editBoard = new ValidatedMethod({
           if (_user.email === user.email) {
             users[index].notifications = _user.notifications;
             found = true;
-          } else if (_user.email === Meteor.user().email()) {
-            users.push({ email: Meteor.user().email(), notifications: _user.notifications });
           }
         });
 

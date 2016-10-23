@@ -8,7 +8,7 @@ export default class LandingLayout extends React.Component {
       <div className="landing">
         <div className="background" />
         <div className="items-container">
-          <img className="title" src="http://www.carlosydario.com/images/logo.jpg" />
+          <img className="title" src="/img/logo-cyd.jpg" />
           <AccountsUIWrapper />
         </div>
       </div>

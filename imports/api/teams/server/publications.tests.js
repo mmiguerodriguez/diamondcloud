@@ -38,8 +38,8 @@ if (Meteor.isServer) {
 
         boards[2].users[0].email = user.emails[0].address;
 
-        teams[0].users[0] = { email: user.emails[0].address, hierarchy: 'sistemas' };
-        teams[1].users[0] = { email: user.emails[0].address, hierarchy: 'sistemas' };
+        teams[0].users[0] = { email: user.emails[0].address, hierarchy: 'creativo' };
+        teams[1].users[0] = { email: user.emails[0].address, hierarchy: 'creativo' };
         teams[2].users = [{ email: faker.internet.email(), hierarchy: 'sistemas' }];
 
         boards.forEach((board) => {

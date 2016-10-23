@@ -8,9 +8,9 @@ export default class NotificationsPermissionAsker extends React.Component {
         <p onClick={Notifications.askPermission.bind(this)}>
           Hacé click acá para habilitar las notificaciones cuando te llegan mensajes
         </p>
-        <span
-          className="glyphicon glyphicon-remove"
-          aria-hidden="true"
+        <img 
+          className="close-notification-permission" 
+          src="/img/close-icon.svg" 
           onClick={this.props.close}
         />
       </div>

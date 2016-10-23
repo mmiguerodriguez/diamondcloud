@@ -21,6 +21,7 @@ Teams.helpers({
 
     return 'ghost';
   },
+
   userIsCertainHierarchy(email, hierarchy) {
     for (let i = 0; i < this.users.length; i += 1) {
       if (email === this.users[i].email) {
@@ -39,15 +40,15 @@ Teams.helpers({
     let found = false;
 
     if (typeof user === 'string') {
-      user = Meteor.users.findOne(user);
-      mail = user.email();
-    } else {
-      if (user._id) {
-        user = Meteor.users.findOne(user._id);
-        mail = user.email();
-      } else if (typeof user.email === 'string') {
-        mail = user.email;
+      if (/\S+@\S+\.\S+/.test(user)) { // email RegEx
+        mail = user;
+      } else {
+        mail = Meteor.users.findOne(user).email();
       }
+    } else if (user._id) {
+      mail = Meteor.users.findOne(user._id).email();
+    } else if (typeof user.email === 'string') {
+      mail = user.email;
     }
 
     this.users.forEach((_user) => {

@@ -2,10 +2,10 @@ import { Meteor }          from 'meteor/meteor';
 import { ValidatedMethod } from 'meteor/mdg:validated-method';
 import { SimpleSchema }    from 'meteor/aldeed:simple-schema';
 
-import { Messages }        from './messages.js';
-import { Boards }          from '../boards/boards.js';
-import { DirectChats }     from '../direct-chats/direct-chats.js';
-import { Notifications }   from '../notifications/notifications.js';
+import { Messages }        from './messages';
+import { Boards }          from '../boards/boards';
+import { DirectChats }     from '../direct-chats/direct-chats';
+import { Notifications }   from '../notifications/notifications';
 
 export const sendMessage = new ValidatedMethod({
   name: 'Messages.methods.send',
@@ -14,23 +14,22 @@ export const sendMessage = new ValidatedMethod({
     boardId: { type: String, optional: true },
     type: { type: String, allowedValues: ['text'] },
     content: { type: String },
-    createdAt: { type: Number }
   }).validator(),
-  run({ directChatId, boardId, type, content, createdAt }) {
+  run({ directChatId, boardId, type, content }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('Messages.methods.send.notLoggedIn',
       'Must be logged in to send a message.');
     }
 
-    let message = {
+    const message = {
       senderId: Meteor.userId(),
       type,
       content,
-      createdAt,
+      createdAt: new Date().getTime(),
     };
 
     // Check if board or directChat exists
-    if (!!directChatId) {
+    if (directChatId) {
       message.directChatId = directChatId;
       message.seen = false;
       DirectChats.addNotification(directChatId, message.senderId);
@@ -39,7 +38,7 @@ export const sendMessage = new ValidatedMethod({
         directChatId,
         message,
       });
-    } else if (!!boardId) {
+    } else if (boardId) {
       message.boardId = boardId;
       message.seers = [];
       Boards.addNotification(boardId, message.senderId);
@@ -62,7 +61,7 @@ export const sendMessage = new ValidatedMethod({
 export const seeMessage = new ValidatedMethod({
   name: 'Messages.methods.see',
   validate: new SimpleSchema({
-    messageId: { type: String, regEx: SimpleSchema.RegEx.Id, },
+    messageId: { type: String, regEx: SimpleSchema.RegEx.Id },
   }).validator(),
   run({ messageId }) {
     if (!Meteor.user()) {
@@ -75,19 +74,19 @@ export const seeMessage = new ValidatedMethod({
       Messages.update(messageId, {
         $push: {
           seers: Meteor.userId(),
-        }
+        },
       });
       Boards.resetNotifications(message.boardId, message.senderId);
     } else if (message.directChatId) {
       Messages.update(messageId, {
         $set: {
           seen: true,
-        }
+        },
       });
       DirectChats.resetNotifications(message.directChatId, message.senderId);
     }
 
     message = Messages.findOne(messageId);
     return message;
-  }
+  },
 });

@@ -34,8 +34,7 @@ const isCoordination = (board) => {
   if (
     board.type === 'coordinadores' ||
     board.type === 'directores creativos' ||
-    board.type === 'directores de cuentas' ||
-    board.type === 'administradores'
+    board.type === 'directores de cuentas'
   ) {
     return true;
   }
@@ -121,8 +120,9 @@ class TaskManagerPage extends React.Component {
       const filter = coordination ? {
         archived: false,
       } : {
-        boardId: currentBoard._id,
+        archived: false,
         status: 'not_finished',
+        boardId: currentBoard._id,
       };
 
       /**
@@ -144,7 +144,6 @@ class TaskManagerPage extends React.Component {
           }
         },
       });
-
       self.setState({
         boards: DiamondAPI.getBoards().fetch(),
         users: DiamondAPI.getUsers(),
@@ -558,8 +557,13 @@ class BoardsList extends React.Component {
  */
 class Board extends React.Component {
   render() {
+    const classes = classNames({
+      board: !this.props.coordination,
+      'board-fixed': this.props.coordination,
+    });
+
     return (
-      <div className='board'>
+      <div className={classes}>
         <TasksList
           board={this.props.board}
           tasks={this.props.tasks}
@@ -789,6 +793,7 @@ class Task extends React.Component {
     const durations = [];
     let updateQuery;
 
+    /*
     if (status === 'finished') {
       const date = new Date().getTime();
       this.props.task.durations.forEach((duration) => {
@@ -812,6 +817,12 @@ class Task extends React.Component {
         },
       };
     }
+    */
+    updateQuery = {
+      $set: {
+        status,
+      },
+    };
 
     DiamondAPI.update({
       collection: 'tasks',
@@ -821,11 +832,11 @@ class Task extends React.Component {
       updateQuery,
       callback(error, result) {
         if (error) {
-          this.props.showError({
+          self.props.showError({
             body: 'Error al actualizar el estado de la tarea',
           });
         } else {
-          this.props.showError({
+          self.props.showError({
             body: 'Estado de la tarea actualizado',
           });
         }
@@ -1185,12 +1196,12 @@ class Task extends React.Component {
           {
             !this.props.coordination && (this.props.doing || this.state.doing) ? (
               <div>
-                <div className='record'>
+                {/*<div className='record'>
                   <img
                     src='/modules/task-manager/img/record.svg'
                     width='25px'
                   />
-                </div>
+                </div>*/}
                 <div
                   className='done'
                   title='Marcar como finalizado'
@@ -1201,7 +1212,7 @@ class Task extends React.Component {
                       width='25px'
                     />
                 </div>
-                <div
+                {/*<div
                   className='pause'
                   title='Marcar como pausado'
                   role='button'
@@ -1210,7 +1221,7 @@ class Task extends React.Component {
                       src='/modules/task-manager/img/pause-button.svg'
                       width='15px'
                     />
-                </div>
+                </div>*/}
               </div>
             ) : (null)
           }
@@ -1228,7 +1239,7 @@ class Task extends React.Component {
                       width='25px'
                     />
                 </div>
-                <div
+                {/*<div
                   className='play'
                   title='Marcar como haciendo'
                   role='button'
@@ -1237,7 +1248,7 @@ class Task extends React.Component {
                       src='/modules/task-manager/img/play-arrow.svg'
                       width='15px'
                     />
-                </div>
+                </div>*/}
               </div>
             ) : (null)
           }
@@ -1309,13 +1320,13 @@ class TaskInformation extends React.Component {
             <p>
               <b>Board:</b> {this.state.board.name}
             </p>
-            <p>
+            {/*<p>
               <b>Usuarios:</b>
             </p>
             <UserTaskInformation
               durations={this.state.task.durations}
               users={this.props.users}
-            />
+            />*/}
           </div>
         </div>
       </div>

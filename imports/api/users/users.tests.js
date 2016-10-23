@@ -32,8 +32,14 @@ if (Meteor.isServer) {
           Factory.create('privateBoard'), // without user
         ];
 
-        teams[0].users[0].email = user.emails[0].address;
-        teams[1].users[0].email = user.emails[0].address;
+        teams[0].users[0] = {
+          email: user.emails[0].address,
+          hierarchy: 'creativo',
+        };
+        teams[1].users[0] = {
+          email: user.emails[0].address,
+          hierarchy: 'creativo',
+        };
 
         boards[2].users[0].email = user.emails[0].address;
 

@@ -1,4 +1,5 @@
 import { Meteor }      from 'meteor/meteor';
+import { printObject } from '../../helpers/print-objects.js';
 
 import { Messages }    from '../messages.js';
 import { Teams }       from '../../teams/teams.js';
@@ -42,7 +43,7 @@ Meteor.publish('messages.chat', function ({ directChatId, boardId }) {
   return Messages.find({
     $or: [
       { directChatId },
-      { boardId }
+      { boardId },
     ],
   }, {
     sort: {
@@ -68,23 +69,64 @@ Meteor.publish('messages.last', function (teamUrl) {
 
   const boards = user.boards(teamId).fetch().map(board => board._id);
 
-  return Messages.find({
-    $or: [
-      {
-        directChatId: {
-          $in: directChats,
-        },
+  ReactiveAggregate(this, Messages, [
+    {
+      $match: {
+        $or: [
+          {
+            boardId: {
+              $in: boards,
+            },
+          },
+          {
+            directChatId: {
+              $in: directChats,
+            },
+          },
+        ],
       },
-      {
-        boardId: {
-          $in: boards,
-        },
-      },
-    ],
-  }, {
-    sort: {
-      createdAt: -1,
     },
-    limit: MESSAGES_LIMIT,
-  });
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+    {
+      $group: {
+        _id: {
+          boardId: '$boardId',
+          directChatId: '$directChatId',
+        },
+        messages: {
+          $push: '$$ROOT',
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        messages: {
+          $slice: ['$messages', 0, MESSAGES_LIMIT],
+        },
+      },
+    },
+    {
+      $unwind: '$messages',
+    },
+    {
+      $project: {
+        _id: '$messages._id',
+        senderId: '$messages.senderId',
+        type: '$messages.type',
+        content: '$messages.content',
+        createdAt: '$messages.createdAt',
+        boardId: '$messages.boardId',
+        directChatId: '$messages.directChatId',
+        seers: '$messages.seers',
+        seen: '$messages.seen',
+      },
+    },
+  ]);
 });
+
+/* global ReactiveAggregate */

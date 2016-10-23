@@ -58,6 +58,22 @@ DirectChats.getUserDirectChats = (userId, teamId) => {
   });
 };
 
+DirectChats.getDirectChat = (userId, teamId) => {
+  return DirectChats.findOne({
+    teamId,
+    $or: [
+      {
+        'users.0._id': Meteor.userId(),
+        'users.1._id': userId,
+      },
+      {
+        'users.1._id': Meteor.userId(),
+        'users.0._id': userId,
+      }
+    ],
+  });
+};
+
 DirectChats.isValid = (directChatId, userId) => {
   const directChat = DirectChats.findOne({
     _id: directChatId,

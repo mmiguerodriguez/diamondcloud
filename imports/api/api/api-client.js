@@ -5,7 +5,7 @@ import { Boards }               from '../boards/boards';
 import { ModuleInstances }      from '../module-instances/module-instances';
 import { APICollection }        from '../api-collection/api-collection';
 
-export const generateApi = (moduleInstanceId) => {
+export const generateAPI = (moduleInstanceId) => {
   let subscriptions = [];
   const DiamondAPI = {
     subscribe({ collection, filter = {}, callback }) {
