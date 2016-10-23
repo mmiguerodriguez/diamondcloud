@@ -186,10 +186,9 @@ Boards.isValid = (boardId, userId) => {
 
   const isDirector =
     team.userIsCertainHierarchy(user.email(), 'director creativo') ||
-    team.userIsCertainHierarchy(user.email(), 'director de cuentas')
+    team.userIsCertainHierarchy(user.email(), 'director de cuentas');
   const isSistemas = team.userIsCertainHierarchy(user.email(), 'sistemas');
   const isCoordinador = team.userIsCertainHierarchy(user.email(), 'isCoordinador');
-  
 
   const board = Boards.findOne({
     _id: boardId,

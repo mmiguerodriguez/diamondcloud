@@ -131,9 +131,9 @@ export const createBoard = new ValidatedMethod({
             future.return(_board);
           }
         });
+      } else {
+        future.return(_board);
       }
-
-      future.return(_board);
     });
     return future.wait();
   },
