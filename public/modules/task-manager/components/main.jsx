@@ -34,8 +34,7 @@ const isCoordination = (board) => {
   if (
     board.type === 'coordinadores' ||
     board.type === 'directores creativos' ||
-    board.type === 'directores de cuentas' ||
-    board.type === 'administradores'
+    board.type === 'directores de cuentas'
   ) {
     return true;
   }
@@ -144,7 +143,6 @@ class TaskManagerPage extends React.Component {
           }
         },
       });
-
       self.setState({
         boards: DiamondAPI.getBoards().fetch(),
         users: DiamondAPI.getUsers(),

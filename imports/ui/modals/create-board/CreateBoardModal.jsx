@@ -132,12 +132,10 @@ export default class CreateBoardModal extends React.Component {
     this.props.team.users.forEach((_user) => {
       const user = Meteor.users.findByEmail(_user.email, {});
       if (user) {
-        if (user._id !== Meteor.userId()) {
-          arr.push({
-            label: user.profile.name,
-            value: user.email(),
-          });
-        }
+        arr.push({
+          label: user.profile.name,
+          value: user.email(),
+        });
       } else {
         // This executes when the user is unregistered
         arr.push({
