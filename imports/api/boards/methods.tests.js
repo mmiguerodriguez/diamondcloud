@@ -188,10 +188,6 @@ if (Meteor.isServer) {
           email: users[1].emails[0].address,
           notifications: boards[4].users[1].notifications,
         },
-        {
-          email: users[0].emails[0].address,
-          notifications: boards[4].users[0].notifications,
-        },
       ];
 
       editBoard.call(args1, (error, result1) => {
@@ -202,8 +198,8 @@ if (Meteor.isServer) {
             if (error) {
               throw new Meteor.Error(error);
             } else {
-              chai.assert.equal(JSON.stringify(expect1), JSON.stringify(result1));
-              chai.assert.equal(JSON.stringify(expect2), JSON.stringify(result2));
+              chai.assert.equal(JSON.stringify(result1), JSON.stringify(expect1));
+              chai.assert.equal(JSON.stringify(result2), JSON.stringify(expect2));
 
               done();
             }
