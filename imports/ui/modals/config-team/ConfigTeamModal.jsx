@@ -1,12 +1,13 @@
-import React     from 'react';
+import { Meteor } from 'meteor/meteor';
+import React      from 'react';
 
-import Modal     from '../Modal';
-import UsersList from '../users-list/UsersList';
+import Modal      from '../Modal';
+import UsersList  from '../users-list/UsersList';
 import {
   InputError,
   TextInput,
-  SelectInput
-}                from '../../validation/inputs';
+  SelectInput,
+}                 from '../../validation/inputs';
 
 export default class ConfigTeamModal extends React.Component {
   constructor(props) {
@@ -67,27 +68,40 @@ export default class ConfigTeamModal extends React.Component {
   addUser(user) {
     if (user.email !== '') {
       if (/\S+@\S+\.\S+/.test(user.email)) {
-        if (user.hierarchy) {
-          Meteor.call('Teams.methods.share', {
-            teamId: this.props.team._id,
-            email: user.email,
-            hierarchy: user.hierarchy,
-          }, (error, result) => {
-            if (error) {
+        if (user.email !== Meteor.user().email()) {
+          if (!this.props.team.hasUser(user.email)) {
+            if (user.hierarchy) {
+              Meteor.call('Teams.methods.share', {
+                teamId: this.props.team._id,
+                email: user.email,
+                hierarchy: user.hierarchy,
+              }, (error, result) => {
+                if (error) {
+                  this.props.toggleError({
+                    type: 'show',
+                    body: 'Hubo un error interno al compartir el equipo',
+                  });
+                } else {
+                  this.props.loadTeam(this.props.team._id);
+                  // TODO: show success message
+                }
+              });
+            } else {
               this.props.toggleError({
                 type: 'show',
-                body: 'Hubo un error interno al compartir el equipo',
+                body: 'No seleccionaste una jerarquía',
               });
             }
-            else {
-              this.props.loadTeam(this.props.team._id);
-              // TODO: show success message
-            }
-          });
+          } else {
+            this.props.toggleError({
+              type: 'show',
+              body: 'El usuario ya está en el equipo',
+            });
+          }
         } else {
           this.props.toggleError({
             type: 'show',
-            body: 'No seleccionaste una jerarquía',
+            body: 'No podés compartirte el equipo a vos mismo',
           });
         }
       } else {
@@ -164,6 +178,7 @@ export default class ConfigTeamModal extends React.Component {
               team={this.props.team}
               addUser={this.addUser}
               removeUser={this.removeUser}
+              toggleError={this.props.toggleError}
             />
           </div>
         }

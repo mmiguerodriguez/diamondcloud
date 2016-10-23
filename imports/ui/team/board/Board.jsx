@@ -108,6 +108,18 @@ export default class Board extends React.Component {
     }
   }
 
+  getMaxZIndex() {
+    let maxZIndex = 0;
+
+    for (const i in this.state.zIndexs) {
+      if (this.state.zIndexs[i] > maxZIndex) {
+        maxZIndex = this.state.zIndexs[i];
+      }
+    }
+
+    return maxZIndex;
+  }
+
   toggleBoardToDirectors(methodName) {
     const self = this;
 
@@ -130,18 +142,6 @@ export default class Board extends React.Component {
         });
       }
     });
-  }
-
-  getMaxZIndex() {
-    let maxZIndex = 0;
-
-    for (const i in this.state.zIndexs) {
-      if (this.state.zIndexs[i] > maxZIndex) {
-        maxZIndex = this.state.zIndexs[i];
-      }
-    }
-
-    return maxZIndex;
   }
 
   renderUsers() {

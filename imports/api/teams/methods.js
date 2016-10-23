@@ -208,10 +208,21 @@ export const shareTeam = new ValidatedMethod({
       'Must be logged in to edit a team.');
     }
 
+    if (Meteor.user().email() === email) {
+      throw new Meteor.Error('Teams.methods.share.cantShareYourself',
+      'You can\'t share yourself to a team');
+    }
+
     const team = Teams.findOne(teamId);
+
     if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
       throw new Meteor.Error('Teams.methods.share.notAllowed',
       'The user is not allowed to share the team');
+    }
+
+    if (team.hasUser(email)) {
+      throw new Meteor.Error('Teams.methods.share.alreadyInTeam',
+      'The user you want to add is already in the team');
     }
 
     const user = { email, hierarchy };
