@@ -33,7 +33,7 @@ export default class CreateBoardModal extends React.Component {
     $('#createBoardModal').modal('hide');
     this.setState({
       name: '',
-      // isPrivate: false,
+      isPrivate: false,
       users: '',
       type: BOARD_TYPES[0].value,
     });
@@ -275,7 +275,7 @@ export default class CreateBoardModal extends React.Component {
                 type="button"
                 className="btn btn-cancel btn-hover"
                 data-dismiss="modal"
-                onClick={this.onClose}
+                onClick={this.close}
               >
                 Cancelar
               </button>

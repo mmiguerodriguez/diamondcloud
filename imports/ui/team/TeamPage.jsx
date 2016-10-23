@@ -10,6 +10,8 @@ import { DirectChats }     from '../../api/direct-chats/direct-chats';
 import NotificationSystem  from '../notifications/notificationSystem/NotificationSystem';
 import TeamLayout          from './TeamLayout';
 
+const CHAT_WIDTH = 250 + 24;
+
 export default class TeamPage extends React.Component {
   constructor(props) {
     super(props);
@@ -44,15 +46,23 @@ export default class TeamPage extends React.Component {
    */
   getChats() {
     const { chats } = this.state;
+    const BOARD_WIDTH = $('.board-container').width();
+    const MAX_CHATS = Math.floor(BOARD_WIDTH / CHAT_WIDTH);
 
     chats.map((chat, index) => {
       if (chat.boardId) {
-        chats[index].messages = Boards.findOne(chat.boardId).getMessages().fetch();
+        chat.messages = Boards.findOne(chat.boardId).getMessages().fetch();
       } else {
-        chats[index].messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
+        chat.messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
       }
 
-      chats[index].position = chat.position || (isMobile.any ? 'mobile' : 'medium');
+      if (index >= MAX_CHATS) {
+        const position = isMobile.any ? 'mobile' : 'hidden';
+        chat.position = position;
+      } else {
+        const position = chat.position !== 'hidden' ? chat.position : (isMobile.any ? 'mobile' : 'medium');
+        chat.position = position;
+      }
 
       return chat;
     });
@@ -69,13 +79,17 @@ export default class TeamPage extends React.Component {
    */
   addChat(obj) {
     const self = this;
+    const BOARD_WIDTH = $('.board-container').width();
+    const MAX_CHATS = Math.floor(BOARD_WIDTH / CHAT_WIDTH);
 
     let { chats } = this.state;
+    let chatIndex;
 
     if (obj.boardId) {
       let found = false;
-      chats.forEach((chat) => {
+      chats.forEach((chat, index) => {
         if (chat.boardId === obj.boardId) {
+          chatIndex = index;
           found = true;
         }
       });
@@ -99,11 +113,17 @@ export default class TeamPage extends React.Component {
             });
           },
         });
+      } else {
+        console.log(MAX_CHATS);
+        if (chatIndex >= MAX_CHATS) {
+          this.openHiddenChat(chatIndex);
+        }
       }
     } else {
       let found = false;
-      chats.forEach((chat) => {
+      chats.forEach((chat, index) => {
         if (chat.directChatId === obj.directChatId) {
+          chatIndex = index;
           found = true;
         }
       });
@@ -127,6 +147,11 @@ export default class TeamPage extends React.Component {
             });
           },
         });
+      } else {
+        console.log(MAX_CHATS);
+        if (chatIndex >= MAX_CHATS) {
+          this.openHiddenChat(chatIndex);
+        }
       }
     }
   }
@@ -323,9 +348,10 @@ export default class TeamPage extends React.Component {
     return (
       <div>
         <TeamLayout
+          users={this.props.users}
+
           teams={this.props.teams}
           team={this.props.team}
-          users={this.props.users}
           isAdmin={this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')}
 
           boards={this.props.boards}

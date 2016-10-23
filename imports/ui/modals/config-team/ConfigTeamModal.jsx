@@ -14,8 +14,6 @@ export default class ConfigTeamModal extends React.Component {
 
     this.state = {
       name: this.props.team.name,
-      plan: this.props.team.plan,
-      type: this.props.team.type,
     };
 
     this.close = this.close.bind(this);
@@ -42,30 +40,16 @@ export default class ConfigTeamModal extends React.Component {
 
     if (team.name !== '') {
       if (team.name.length >= 3) {
-        if (team.type !== '') {
-          if (team.type.length >= 3) {
-            Meteor.call('Teams.methods.edit', { teamId: this.props.team._id, team }, (error, result) => {
-              if (error) {
-                this.props.toggleError({
-                  type: 'show',
-                  body: 'Hubo un error al modificar los datos del equipo',
-                });
-              } else {
-                this.close();
-              }
-            });
-          } else {
+        Meteor.call('Teams.methods.edit', { teamId: this.props.team._id, team }, (error, result) => {
+          if (error) {
             this.props.toggleError({
               type: 'show',
-              body: 'El tipo del equipo debe tener 3 o más caracteres',
+              body: 'Hubo un error al modificar los datos del equipo',
             });
+          } else {
+            this.close();
           }
-        } else {
-          this.props.toggleError({
-            type: 'show',
-            body: 'El tipo del equipo no puede estar vacío',
-          });
-        }
+        });
       } else {
         this.props.toggleError({
           type: 'show',
@@ -97,7 +81,7 @@ export default class ConfigTeamModal extends React.Component {
             }
             else {
               this.props.loadTeam(this.props.team._id);
-              // todo: show success message
+              // TODO: show success message
             }
           });
         } else {
@@ -169,28 +153,6 @@ export default class ConfigTeamModal extends React.Component {
                     emptyMessage="Es obligatorio poner un nombre"
                     minCharactersMessage="El nombre debe tener 3 o más caracteres"
                     required
-                  />
-                </div>
-              </div>
-              <div className="name-input">
-                <label
-                  htmlFor="projectType"
-                  className="col-xs-2 control-label left-align"
-                >
-                  Tipo
-                </label>
-                <div
-                  id="otherProjectType"
-                  className="col-xs-12 col-sm-10"
-                >
-                  <TextInput
-                    id="projectType"
-                    class="form-control"
-                    placeholder="Tipo de equipo"
-                    value={this.state.type}
-                    onChange={e => this.handleChange('type', e)}
-                    required={false}
-                    errorMessage="El tipo de equipo no es válido"
                   />
                 </div>
               </div>

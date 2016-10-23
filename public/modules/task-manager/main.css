@@ -64,6 +64,10 @@
   width: 100%;
   margin-right: 20px;
 }
+.board-fixed {
+  width: 250px;
+  margin-right: 20px;
+}
 .task-manager {
   min-height: 100vh;
   background-color: #3fa4e7;
@@ -89,6 +93,7 @@
 .task-title {
   margin: 15px 0 5px;
   font-weight: bold;
+  word-wrap: break-word;
 }
 .fixed-title {
   padding: 0px;
