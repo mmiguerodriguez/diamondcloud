@@ -16,7 +16,7 @@ export default class ModuleInstance extends React.Component {
       minimized: this.props.moduleInstance.minimized,
       loading: true,
     };
-    
+
     this.iframeLoaded = this.iframeLoaded.bind(this);
     this.toggleMinimize = this.toggleMinimize.bind(this);
   }
@@ -55,9 +55,8 @@ export default class ModuleInstance extends React.Component {
       minWidth: this.props.module.settings.minWidth,
       minHeight: this.props.module.settings.minHeight,
       start(event, ui) {
-        console.log(ui.position, ui.element, ui.size);
         ui.element.append(
-          $('<div/>', {
+          $('<div />', {
             id: 'iframe-helper',
             css: {
               position: 'absolute',
@@ -65,7 +64,6 @@ export default class ModuleInstance extends React.Component {
               right: 0,
               bottom: 0,
               left: 0,
-              padding: 1920, // We use this to prevent issues with other modules
               'z-index': 10,
             },
           })
@@ -88,10 +86,19 @@ export default class ModuleInstance extends React.Component {
         });
       },
       resize(event, ui) {
+        const paddingRight = $('.board').width() - (ui.position.left + ui.size.width);
+        const paddingBottom = $('.board').height() - (PIN_HEIGHT + ui.position.top + ui.size.height);
+
         $('iframe', ui.element)
         .width(ui.size.width)
         .height(ui.size.height);
-      }
+
+        $('#iframe-helper', ui.element)
+        .width(ui.size.width)
+        .height(ui.size.height)
+        .css('padding-right', paddingRight)
+        .css('padding-bottom', paddingBottom);
+      },
     });
 
     this.setState({
@@ -131,7 +138,7 @@ export default class ModuleInstance extends React.Component {
       height: this.props.moduleInstance.height,
       marginTop: PIN_HEIGHT,
     };
-    
+
     return (
       <div
         className="module-container"
