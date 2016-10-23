@@ -172,7 +172,6 @@ if (Meteor.isServer) {
         const foundChat = DirectChats.getDirectChat(users[1]._id, teams[0]._id);
         const chat = directChats[0];
 
-        printObject(foundChat, chat);
         chai.assert.deepEqual(foundChat, chat);
       });
 
