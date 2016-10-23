@@ -1,12 +1,6 @@
 import React from 'react';
 
 export default class User extends React.Component {
-  constructor(props) {
-    super(props);
-    
-    this.createDirectChat = this.createDirectChat.bind(this);
-  }
-
   render() {
     return (
       <div

@@ -363,7 +363,7 @@ export default class TeamLayout extends React.Component {
   // Mobile not-created directChats
   renderUsersChat() {
     let arr = [];
-  
+
     this.props.users.forEach((user) => {
       if (user._id !== Meteor.userId()) {
         let directChat = DirectChats.getDirectChat(user._id, this.props.team._id);
@@ -391,7 +391,7 @@ export default class TeamLayout extends React.Component {
         }
       }
     });
-  
+
     return arr;
   }
   // Mobile board chats
