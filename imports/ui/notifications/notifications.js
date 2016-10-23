@@ -10,7 +10,7 @@ const Notifications = {
       this.props.close();
     });
   },
-  sendNotification({ body, icon = 'http://diamondcloud.tk/img/logo.ico', title, timeout = 5000, onclick = () => { window.focus(); } }) {
+  sendNotification({ body, icon = 'https://diamondcloud.tk/img/logo.ico', title, timeout = 5000, onclick = () => { window.focus(); } }) {
     if (Notification.permission === 'granted') {
       const notification = new Notification(title, { body, icon });
 
