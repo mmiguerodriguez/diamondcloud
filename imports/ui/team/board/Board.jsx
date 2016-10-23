@@ -13,6 +13,7 @@ export default class Board extends React.Component {
 
     this.state = {
       visibleForDirectors: this.props.board.visibleForDirectors,
+      zIndexs: {},
     };
 
     this.toggleBoardToDirectors = this.toggleBoardToDirectors.bind(this);
@@ -131,6 +132,18 @@ export default class Board extends React.Component {
     });
   }
 
+  getMaxZIndex() {
+    let maxZIndex = 0;
+
+    for (const i in this.state.zIndexs) {
+      if (this.state.zIndexs[i] > maxZIndex) {
+        maxZIndex = this.state.zIndexs[i];
+      }
+    }
+
+    return maxZIndex;
+  }
+
   renderUsers() {
     if (this.props.board.isPrivate) {
       return this.props.board.users.map((_user) => {
@@ -168,6 +181,17 @@ export default class Board extends React.Component {
       return this.props.moduleInstances.map((moduleInstance) => {
         const module = Modules.findOne(moduleInstance.moduleId);
 
+        const changeState = () => {
+          const obj = this.state.zIndexs;
+          obj[moduleInstance._id] = this.getMaxZIndex() + 1;
+
+          this.setState({
+            zIndexs: obj,
+          });
+
+          return this.getMaxZIndex();
+        };
+
         return (
           <ModuleInstance
             key={moduleInstance._id}
@@ -176,6 +200,7 @@ export default class Board extends React.Component {
             module={module}
             boards={this.props.boards}
             users={this.props.users}
+            changeState={changeState}
             openModuleInstanceContextMenu={this.props.openModuleInstanceContextMenu}
           />
         );

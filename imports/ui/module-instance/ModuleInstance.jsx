@@ -1,10 +1,8 @@
 import React           from 'react';
 
-import { generateApi } from '../../api/api/api-client';
+import { generateAPI } from '../../api/api/api-client';
 
 const PIN_HEIGHT = 16;
-const TEXT_HEIGHT = 20;
-const MARGIN = 8;
 
 export default class ModuleInstance extends React.Component {
   constructor(props) {
@@ -17,11 +15,12 @@ export default class ModuleInstance extends React.Component {
       height: this.props.moduleInstance.height,
       minimized: this.props.moduleInstance.minimized,
       loading: true,
+      zIndex: 0,
     };
   }
 
   componentDidMount() {
-    const DiamondAPI = generateApi(this.props.moduleInstance._id);
+    const DiamondAPI = generateAPI(this.props.moduleInstance._id);
 
     this.iframe.onload = this.iframeLoaded.bind(this);
     this.iframe.contentWindow.DiamondAPI = DiamondAPI;
@@ -37,6 +36,12 @@ export default class ModuleInstance extends React.Component {
   iframeLoaded() {
     const self = this;
 
+    this.iframe.contentWindow.document.body.onclick = () => {
+      self.setState({
+        zIndex: self.props.changeState(),
+      });
+    };
+
     $(this.module)
     .draggable({
       containment: 'parent',
@@ -45,12 +50,22 @@ export default class ModuleInstance extends React.Component {
       cursorAt: { top: -6 },
       distance: 5,
       iframeFix: true,
+      start() {
+        self.setState({
+          zIndex: self.props.changeState(),
+        });
+      },
     })
     .resizable({
       containment: 'parent',
       disabled: this.state.minimized,
       minWidth: this.props.module.settings.minWidth,
       minHeight: this.props.module.settings.minHeight,
+      start() {
+        self.setState({
+          zIndex: self.props.changeState(),
+        });
+      },
       stop(event, ui) {
         const moduleInstanceId = self.props.moduleInstance._id;
         const { width, height } = ui.size;
@@ -103,8 +118,9 @@ export default class ModuleInstance extends React.Component {
       width: this.props.moduleInstance.width,
       height: this.props.moduleInstance.height,
       marginTop: this.state.minimized ? PIN_HEIGHT /* + TEXT_HEIGHT */ + PIN_HEIGHT/2 : PIN_HEIGHT,
+      zIndex: this.state.zIndex,
     };
-    
+
     return (
       <div
         className="module-container"
@@ -133,7 +149,11 @@ export default class ModuleInstance extends React.Component {
               role="button"
               onClick={this.toggleMinimize.bind(this)}
               onContextMenu={
-                this.props.openModuleInstanceContextMenu.bind(null, this.props.moduleInstance._id, this.iframe)
+                this.props.openModuleInstanceContextMenu.bind(
+                  null,
+                  this.props.moduleInstance._id,
+                  this.iframe
+                )
               }
             >
               <img className="img" src={`${this.props.module.path}/image.png`} />
@@ -159,5 +179,6 @@ ModuleInstance.propTypes = {
   module: React.PropTypes.object.isRequired,
   boards: React.PropTypes.array.isRequired,
   users: React.PropTypes.array.isRequired,
+  changeState: React.PropTypes.func.isRequired,
   openModuleInstanceContextMenu: React.PropTypes.func.isRequired,
 };

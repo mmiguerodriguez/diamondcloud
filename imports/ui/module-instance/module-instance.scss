@@ -32,10 +32,7 @@
     height: inherit;
     border: none;
   }
-  
-  &:active, &:hover {
-    z-index: 100;
-  }
+
   &.ui-resizable-disabled {
     height: auto !important;
     .module-pin {

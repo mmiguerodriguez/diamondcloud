@@ -12,7 +12,7 @@ import { Boards }               from '../boards/boards.js';
 import { ModuleInstances }      from '../module-instances/module-instances.js';
 import { APICollection }        from '../api-collection/api-collection.js';
 
-import { generateApi }          from './api-client.js';
+import { generateAPI }          from './api-client.js';
 
 if (Meteor.isClient) {
   describe('API', () => {
@@ -67,7 +67,7 @@ if (Meteor.isClient) {
           documents.push(Factory.create('spamAPIDocument'));
         }
 
-        DiamondAPI = generateApi(moduleInstances[0]._id);
+        DiamondAPI = generateAPI(moduleInstances[0]._id);
 
         insertParams = {
           collection: collections[0],
