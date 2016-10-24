@@ -143,7 +143,7 @@ body {
 .create .img {
   width: 55px;
   height: 55px;
-  background-image: url(http://image.flaticon.com/icons/svg/61/61112.svg);
+  background-image: url('img/add.svg');
   background-size: 18px;
   background-position: center;
   background-repeat: no-repeat;
@@ -152,14 +152,14 @@ body {
 }
 .create:hover .img {
   transform: rotate(360deg);
-  background-image: url(/modules/drive/img/google-docs.svg);
+  background-image: url('img/google-docs.svg');
 }
 .create:hover {
   box-shadow: 0px 0px 10px 1px rgba(0,0,0, 0.3);
 }
-.create:hover .options .doc, 
-.create:hover .options .drive , 
-.create:hover .options .folder, 
+.create:hover .options .doc,
+.create:hover .options .drive ,
+.create:hover .options .folder,
 .create:hover .options .upload {
   opacity: 1;
 }
@@ -183,9 +183,9 @@ body {
   background-repeat: no-repeat;
   background-size: 18px;
 }
-.doc, 
-.folder, 
-.drive, 
+.doc,
+.folder,
+.drive,
 .upload {
   opacity: 0;
 }
@@ -290,7 +290,7 @@ img.icon-type.import-drive {
   height: 32px;
   display: inline-block;
   vertical-align: middle;
-  background-image: url(img/go-back.svg);
+  background-image: url('img/go-back.svg');
   background-position: center;
   background-size: 18px;
   background-repeat: no-repeat;
@@ -321,7 +321,7 @@ img.icon-type.import-drive {
   background-color: #fff;
   border-radius: 5px;
   cursor: pointer;
-  opacity: 0.5; 
+  opacity: 0.5;
   transition: 0.3s all ease;
 }
 .go-back-to-document:hover {
@@ -351,7 +351,7 @@ img.icon-type.import-drive {
   width: 81px;
   margin: 50px 84.5px 0px;
   opacity: 0.7;
-  background: no-repeat url(/modules/drive/img/image.svg) 0;
+  background: no-repeat url('img/image.svg') 0;
   background-size: 100%;
   height: 100px;
 }

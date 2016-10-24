@@ -11,6 +11,7 @@ import { Modules }         from '../../api/modules/modules';
 import { DirectChats }     from '../../api/direct-chats/direct-chats';
 import { Messages }        from '../../api/messages/messages';
 
+import hierarchyToType     from '../helpers/hierarchyToType';
 import TeamPage            from './TeamPage';
 
 const boardId = new ReactiveVar('');
@@ -42,12 +43,38 @@ const TeamPageContainer = createContainer(({ params }) => {
   });
   const teamHandle = Meteor.subscribe('teams.team', teamUrl, {
     onReady() {
-      const firstBoard = Boards.findOne();
-      console.log('First Board', firstBoard._id);
-      const boardHandle = Meteor.subscribe('boards.board', firstBoard._id, {
+      /**
+       * Get the team and hierarchy of the user to find a
+       * board with the same type/hierarchy
+       */
+      const team = Teams.findOne({ url: teamUrl });
+      const hierarchy = team.userHierarchy(Meteor.user().email());
+      const type = hierarchyToType(hierarchy);
+
+      /**
+       * Check if there is a board with the user hierarchy
+       */
+      let board = Boards.findOne({ type });
+      /**
+       * If this board doesn't exist, we check again if there
+       * is any board which the user can access
+       */
+      if (!board) {
+        board = Boards.findOne();
+        /**
+         * If we don't find any board, then we show the user
+         * a not found page since he can't see any board
+         */
+        if (!board) {
+          browserHistory.push('/404');
+        }
+      }
+
+      console.log('First Board', board._id);
+      const boardHandle = Meteor.subscribe('boards.board', board._id, {
         onReady() {
-          console.log('Setting boardId, ', firstBoard._id);
-          setBoardId(firstBoard._id);
+          console.log('Setting boardId, ', board._id);
+          setBoardId(board._id);
           console.log('boardId set is', boardId.get());
         },
         onError(error) {

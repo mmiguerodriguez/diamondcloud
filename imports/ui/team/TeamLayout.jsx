@@ -132,7 +132,10 @@ export default class TeamLayout extends React.Component {
           body: 'Hubo un error al eliminar el módulo',
         });
       } else {
-        iframe.contentWindow.DiamondAPI.unsubscribe();
+        if (iframe.contentWindow) {
+          iframe.contentWindow.DiamondAPI.unsubscribe();
+        }
+
         self.closeContextMenu(contextMenu);
       }
     });

@@ -1,9 +1,24 @@
-const { DiamondAPI } = window;
+const {
+  DiamondAPI,
+  EmojiPicker,
+  $,
+} = window;
+
 const INTERVAL = 1000;
 
 let TIMEOUT;
+let $ELEMENT;
 
 window.onload = () => {
+  window.emojiPicker = new EmojiPicker({
+    emojiable_selector: '[data-emojiable=true]',
+    assetsPath: 'https://cdnjs.cloudflare.com/ajax/libs/emoji-picker/1.0/img/',
+    popupButtonClasses: 'fa fa-smile-o',
+  }).discover();
+
+  $ELEMENT = $('div.post-it-text');
+  $ELEMENT.on('DOMSubtreeModified', updatePostIt);
+
   /**
    * When module loads, DiamondAPI gets the data it has at first time
    * to check if we need to insert some startup data
@@ -45,8 +60,10 @@ window.onload = () => {
         console.error(error);
       }
 
-      if (!!result && result.length > 0) {
-        handleNewData(result[0].text);
+      if (result && result.length > 0) {
+        if (result[0].text !== $ELEMENT.text()) {
+          handleNewData(result[0].text);
+        }
       }
     },
   });
@@ -89,7 +106,7 @@ function updatePostIt(e) {
       filter: {},
       updateQuery: {
         $set: {
-          text: e.value,
+          text: $ELEMENT.html(),
         },
       },
       callback(error) {
@@ -112,14 +129,12 @@ function updatePostIt(e) {
 function handleNewData(text) {
   /**
    * pushData(e, value)
-   * e: String // DOM Element Id
    * value: String // Value of the element
    *
    * Sets the value for a DOM element
    */
   function pushData(value) {
-    const elem = document.getElementById('text');
-    elem.value = value;
+    $ELEMENT.html(value);
   }
 
   pushData(text);
