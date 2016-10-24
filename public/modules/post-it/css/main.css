@@ -1,10 +1,8 @@
-/* Post It CSS */
-
 @font-face {
-    font-family: 'Noto';
-    font-style: normal;
-    font-weight: 400;
-    src: url(../font/NotoColorEmoji.ttf);
+  font-family: 'Noto';
+  font-style: normal;
+  font-weight: 400;
+  src: url(../font/NotoColorEmoji.ttf);
 }
 
 body {
@@ -39,4 +37,12 @@ input:focus {
 
 .post-it-text:focus {
   outline: none;
+}
+
+/**
+ * Fixes issue when clicking enter and then
+ * removing text
+ */
+span {
+  font-size: inherit !important;
 }

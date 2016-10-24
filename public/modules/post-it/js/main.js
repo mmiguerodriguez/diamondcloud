@@ -129,7 +129,6 @@ function updatePostIt(e) {
 function handleNewData(text) {
   /**
    * pushData(e, value)
-   * e: String // DOM Element Id
    * value: String // Value of the element
    *
    * Sets the value for a DOM element
