@@ -1,9 +1,25 @@
-const { DiamondAPI } = window;
+const {
+  DiamondAPI,
+  $,
+} = window;
+
 const INTERVAL = 1000;
 
 let TIMEOUT;
 
+window.emojioneVersion = '2.1.1';
 window.onload = () => {
+  $('#text').emojioneArea({
+    pickerPosition: 'bottom',
+    events: {
+      keyup(editor, event) {
+        updatePostIt();
+      },
+      emojibtn_click(button, event) {
+        updatePostIt();
+      },
+    },
+  });
   /**
    * When module loads, DiamondAPI gets the data it has at first time
    * to check if we need to insert some startup data
@@ -45,7 +61,7 @@ window.onload = () => {
         console.error(error);
       }
 
-      if (!!result && result.length > 0) {
+      if (result && result.length > 0) {
         handleNewData(result[0].text);
       }
     },
@@ -80,7 +96,7 @@ function insertStartupData(callback) {
  * called again, since we want to update the data once every
  * 1000 ms.
  */
-function updatePostIt(e) {
+function updatePostIt() {
   clearTimeout(TIMEOUT);
 
   TIMEOUT = setTimeout(() => {
@@ -89,7 +105,7 @@ function updatePostIt(e) {
       filter: {},
       updateQuery: {
         $set: {
-          text: e.value,
+          text: $('.emojionearea-editor').html(),
         },
       },
       callback(error) {
@@ -118,8 +134,8 @@ function handleNewData(text) {
    * Sets the value for a DOM element
    */
   function pushData(value) {
-    const elem = document.getElementById('text');
-    elem.value = value;
+    const $elem = $('.emojionearea-editor');
+    $elem.html(value);
   }
 
   pushData(text);
