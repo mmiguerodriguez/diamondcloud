@@ -15,7 +15,7 @@ class Index extends React.Component {
 
     this.state = {
       openedDocumentId: '',
-      
+
       error: {
         type: '',
         body: '',
@@ -23,10 +23,10 @@ class Index extends React.Component {
         showing: false,
       }
     };
-    
+
     this.error = this.error.bind(this);
   }
-  
+
   error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
     console.log(type, body);
     this.setState({
@@ -37,7 +37,7 @@ class Index extends React.Component {
       },
     });
   }
-  
+
   render() {
     return (
       <div>
@@ -110,7 +110,7 @@ class FileManagerLayout extends React.Component {
             className="col-xs-3 icon-type create-doc"
             src="/modules/drive/img/google-slides.svg"
           />);
-          
+
       default:
         // Check if the file is an image
         if(fileType.indexOf("image/") !== -1) {
@@ -382,7 +382,7 @@ class FileManagerLayout extends React.Component {
                       diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
                       callback: (error, result) => {
                         if (error) {
-                        
+
                         } else {
                           $('#create-document').modal('hide');
                         }
@@ -568,7 +568,7 @@ class FileManagerLayout extends React.Component {
               )
           }
           <div className="create">
-            <div 
+            <div
               className="img"
               data-toggle="modal"
               data-target="#create-document"
@@ -714,7 +714,7 @@ class FileManagerPage extends React.Component {
       },
     });
   }
-  
+
   constructor(props) {
     super(props);
 
@@ -736,7 +736,7 @@ class FileManagerPage extends React.Component {
                           */
     };
   }
-  
+
   render() {
     return (
       <FileManagerLayout
@@ -1003,6 +1003,9 @@ class FileManagerPage extends React.Component {
       // Check if user is owner of current folder
       FileManagerPage.isUserOwnerOfFolder(parentFolderId, (error, result) => {
         if (error) {
+          self.setState({
+            loadingDocuments: false,
+          });
           callback(error);
           return;
         }
@@ -1011,16 +1014,32 @@ class FileManagerPage extends React.Component {
           .then((response) => {
             id = response.result.id;
             return createDrivePermission(response);
-          }, callback)
+          }, (_error) => {
+            self.setState({
+              loadingDocuments: false,
+            });
+            callback(_error);
+          })
           .then(() => FileManagerPage.insertFileInStorage({
             id,
             name,
             fileType,
             parentFolderId,
-          }), callback)
+          }), (_error) => {
+            self.setState({
+              loadingDocuments: false,
+            });
+            callback(_error);
+          })
           .then((_result) => {
+            self.setState({
+              loadingDocuments: false,
+            });
             callback(null, _result);
           }, (_error) => {
+            self.setState({
+              loadingDocuments: false,
+            });
             callback(_error);
           });
       });
@@ -1030,13 +1049,23 @@ class FileManagerPage extends React.Component {
         .then((response) => {
           id = response.result.id;
           return createDrivePermission(response);
-        }, callback)
+        }, (_error) => {
+          self.setState({
+            loadingDocuments: false,
+          });
+          callback(_error);
+        })
         .then(() => FileManagerPage.insertFileInStorage({
           id,
           name,
           fileType,
           parentFolderId,
-        }), callback)
+        }), (_error) => {
+          self.setState({
+            loadingDocuments: false,
+          });
+          callback(_error);
+        })
         .then((_result) => {
           self.setState({
             loadingDocuments: false,
