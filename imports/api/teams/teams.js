@@ -114,12 +114,12 @@ Teams.removeUser = (teamId, userEmail) => {
   });
 };
 
-Teams.getTeam = (teamId, userEmail, fields = { _id: 1, name: 1 }) => {
-  return Teams.find({
+Teams.getTeam = (teamId, userEmail, fields = { _id: 1, name: 1 }) => (
+  Teams.find({
     _id: teamId,
     'users.email': userEmail,
     archived: false,
   }, {
     fields,
-  });
-};
+  })
+);

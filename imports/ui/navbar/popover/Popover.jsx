@@ -20,8 +20,10 @@ export default class Popover extends React.Component {
             <b className='user-info'>{ this.props.user.profile.name }</b>
             <p className='user-mail text-muted truncate'>{ this.props.user.email() }</p>
             <p className='user-mail text-muted truncate'>
-              { 
-                /* this.props.user.getHierarchy(teamId) Aca va a aparecer la jerarquia del usuario. Saludos, Ryan del pasado. */ 
+              {
+                (this.props.team) ?
+                this.props.team.userHierarchy(this.props.user.email())
+                : (null)
               }</p>
           </div>
         </div>
@@ -35,7 +37,7 @@ export default class Popover extends React.Component {
     );
   }
   logout() {
-    let self = this;
+    const self = this;
     Meteor.logout(() => {
       browserHistory.push('/'); // Redirect to landing page
       $('div[role="tooltip"].popover').remove(); // Remove actual node element
@@ -46,5 +48,6 @@ export default class Popover extends React.Component {
 
 Popover.propTypes = {
   user: React.PropTypes.object.isRequired,
+  team: React.PropTypes.object,
   onLogout: React.PropTypes.func.isRequired,
 };
