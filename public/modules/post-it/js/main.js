@@ -1,25 +1,24 @@
 const {
   DiamondAPI,
+  EmojiPicker,
   $,
 } = window;
 
 const INTERVAL = 1000;
 
 let TIMEOUT;
+let $ELEMENT;
 
-window.emojioneVersion = '2.1.1';
 window.onload = () => {
-  $('#text').emojioneArea({
-    pickerPosition: 'bottom',
-    events: {
-      keyup(editor, event) {
-        updatePostIt();
-      },
-      emojibtn_click(button, event) {
-        updatePostIt();
-      },
-    },
-  });
+  window.emojiPicker = new EmojiPicker({
+    emojiable_selector: '[data-emojiable=true]',
+    assetsPath: 'https://cdnjs.cloudflare.com/ajax/libs/emoji-picker/1.0/img/',
+    popupButtonClasses: 'fa fa-smile-o',
+  }).discover();
+
+  $ELEMENT = $('div.post-it-text');
+  $ELEMENT.on('DOMSubtreeModified', updatePostIt);
+
   /**
    * When module loads, DiamondAPI gets the data it has at first time
    * to check if we need to insert some startup data
@@ -62,7 +61,9 @@ window.onload = () => {
       }
 
       if (result && result.length > 0) {
-        handleNewData(result[0].text);
+        if (result[0].text !== $ELEMENT.text()) {
+          handleNewData(result[0].text);
+        }
       }
     },
   });
@@ -96,7 +97,7 @@ function insertStartupData(callback) {
  * called again, since we want to update the data once every
  * 1000 ms.
  */
-function updatePostIt() {
+function updatePostIt(e) {
   clearTimeout(TIMEOUT);
 
   TIMEOUT = setTimeout(() => {
@@ -105,7 +106,7 @@ function updatePostIt() {
       filter: {},
       updateQuery: {
         $set: {
-          text: $('.emojionearea-editor').html(),
+          text: $ELEMENT.text(),
         },
       },
       callback(error) {
@@ -134,8 +135,7 @@ function handleNewData(text) {
    * Sets the value for a DOM element
    */
   function pushData(value) {
-    const $elem = $('.emojionearea-editor');
-    $elem.html(value);
+    $ELEMENT.text(value);
   }
 
   pushData(text);

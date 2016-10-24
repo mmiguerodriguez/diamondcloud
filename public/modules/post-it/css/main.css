@@ -1,5 +1,12 @@
 /* Post It CSS */
 
+@font-face {
+    font-family: 'Noto';
+    font-style: normal;
+    font-weight: 400;
+    src: url(../font/NotoColorEmoji.ttf);
+}
+
 body {
   background: #ffffa5;
 }
@@ -18,7 +25,7 @@ input:focus {
 }
 
 .post-it-text {
-  font-size: 1.1em;
+  font-size: 1.75em;
   text-align: left;
   width: 100%;
   border: none;
@@ -27,7 +34,7 @@ input:focus {
   resize: none;
   height: 100%;
   padding: 5px 10px;
-  font-family: 'Kalam' !important;
+  font-family: 'Kalam', 'Noto' !important;
 }
 
 .post-it-text:focus {
