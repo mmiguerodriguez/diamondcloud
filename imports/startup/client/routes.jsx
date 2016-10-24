@@ -16,7 +16,7 @@ import NotFound          from '../../ui/not-found/NotFoundPage';
 // Override accounts templates
 import '../../ui/accounts/accounts-templates';
 
-export const renderRoutes = () => (
+const renderRoutes = () => (
   <Router history={browserHistory}>
     <Redirect from="/" to="carlosydario" />
     <Route path="/carlosydario" component={AppPageContainer}>
@@ -32,6 +32,8 @@ export const renderRoutes = () => (
     <Route path="*" component={NotFound} />
   </Router>
 );
+
+export default renderRoutes;
 
 /*
   import Dashboard from '../../ui/dashboard/DashboardPage.jsx';

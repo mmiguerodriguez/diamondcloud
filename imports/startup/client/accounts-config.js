@@ -33,7 +33,7 @@ if (Meteor.isClient) {
       google: false,
     },
     forceApprovalPrompt: {
-      google: "auto",
+      google: 'auto',
     },
   });
 
