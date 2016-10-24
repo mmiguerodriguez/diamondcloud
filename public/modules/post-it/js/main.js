@@ -106,7 +106,7 @@ function updatePostIt(e) {
       filter: {},
       updateQuery: {
         $set: {
-          text: $ELEMENT.text(),
+          text: $ELEMENT.html(),
         },
       },
       callback(error) {
@@ -134,7 +134,7 @@ function handleNewData(text) {
    * Sets the value for a DOM element
    */
   function pushData(value) {
-    $ELEMENT.text(value);
+    $ELEMENT.html(value);
   }
 
   pushData(text);
