@@ -11,6 +11,7 @@ import NotificationSystem  from '../notifications/notificationSystem/Notificatio
 import TeamLayout          from './TeamLayout';
 
 const CHAT_WIDTH = 250 + 24;
+const HIDDEN_CHATS_BTN_WIDTH = 45;
 
 export default class TeamPage extends React.Component {
   constructor(props) {
@@ -47,12 +48,14 @@ export default class TeamPage extends React.Component {
   getChats() {
     const { chats } = this.state;
     const BOARD_WIDTH = $('.board-container').width();
-    const MAX_CHATS = Math.floor(BOARD_WIDTH / CHAT_WIDTH);
+    const MAX_CHATS = Math.floor((BOARD_WIDTH - HIDDEN_CHATS_BTN_WIDTH) / CHAT_WIDTH);
 
-    chats.map((chat, index) => {
+    chats.map((_chat, index) => {
+      const chat = _chat;
+
       if (chat.boardId) {
         chat.messages = Boards.findOne(chat.boardId).getMessages().fetch();
-      } else {
+      } else if (chat.directChatId) {
         chat.messages = DirectChats.findOne(chat.directChatId).getMessages().fetch();
       }
 
@@ -80,7 +83,7 @@ export default class TeamPage extends React.Component {
   addChat(obj) {
     const self = this;
     const BOARD_WIDTH = $('.board-container').width();
-    const MAX_CHATS = Math.floor(BOARD_WIDTH / CHAT_WIDTH);
+    const MAX_CHATS = Math.floor((BOARD_WIDTH - HIDDEN_CHATS_BTN_WIDTH) / CHAT_WIDTH);
 
     let { chats } = this.state;
     let chatIndex;
@@ -114,7 +117,6 @@ export default class TeamPage extends React.Component {
           },
         });
       } else {
-        console.log(MAX_CHATS);
         if (chatIndex >= MAX_CHATS) {
           this.openHiddenChat(chatIndex);
         }
@@ -148,7 +150,6 @@ export default class TeamPage extends React.Component {
           },
         });
       } else {
-        console.log(MAX_CHATS);
         if (chatIndex >= MAX_CHATS) {
           this.openHiddenChat(chatIndex);
         }
