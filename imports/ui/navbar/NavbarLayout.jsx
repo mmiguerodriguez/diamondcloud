@@ -1,10 +1,10 @@
 import { Meteor }          from 'meteor/meteor';
-import React          from 'react';
+import React               from 'react';
 import { browserHistory }  from 'react-router';
 
-import Profile        from './profile/Profile';
-// import SearchBar   from './search-bar/SearchBar.jsx';
-import Popover        from './popover/Popover';
+import Profile             from './profile/Profile';
+// import SearchBar        from './search-bar/SearchBar.jsx';
+import Popover             from './popover/Popover';
 
 export default class NavbarLayout extends React.Component {
 
