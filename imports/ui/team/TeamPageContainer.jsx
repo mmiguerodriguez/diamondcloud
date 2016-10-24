@@ -46,8 +46,16 @@ const TeamPageContainer = createContainer(({ params }) => {
       /**
        * Get the team and hierarchy of the user to find a
        * board with the same type/hierarchy
+       *
+       * If team isn't found, we return the user to a
+       * not found page
        */
       const team = Teams.findOne({ url: teamUrl });
+      if (!team) {
+        browserHistory.push('/404');
+        return;
+      }
+
       const hierarchy = team.userHierarchy(Meteor.user().email());
       const type = hierarchyToType(hierarchy);
 
@@ -67,6 +75,7 @@ const TeamPageContainer = createContainer(({ params }) => {
          */
         if (!board) {
           browserHistory.push('/404');
+          return;
         }
       }
 
