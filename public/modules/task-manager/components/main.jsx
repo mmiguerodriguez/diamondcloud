@@ -13,8 +13,7 @@ const {
 const {
   Router,
   Route,
-  IndexRoute,
-  browserHistory
+  browserHistory,
 } = ReactRouter;
 
 /**
