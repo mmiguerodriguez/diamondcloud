@@ -39,6 +39,5 @@ dburles:collection-helpers            # Helpers
 meteorhacks:kadira                    # Kadira
 velocity:meteor-stubs                 # Stubs
 raix:push                             # Mobile notifications
-meson:electron
 shell-server
 jcbernack:reactive-aggregate
