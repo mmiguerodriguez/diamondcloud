@@ -182,6 +182,10 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
 
 Boards.isValid = (boardId, userId) => {
   const user = Meteor.users.findOne(userId);
+  if (!user) {
+    return false;
+  }
+
   const team = Boards.findOne(boardId).team();
 
   const isDirector =
