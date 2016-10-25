@@ -132,6 +132,7 @@ export default class UsersList extends React.Component {
                   value={email}
                   onChange={e => this.handleChange('email', e)}
                   onKeyDown={this.handleKey}
+                  style={{textTransform: "lowercase"}}
                 />
                 <select
                   className="form-control user-type"
