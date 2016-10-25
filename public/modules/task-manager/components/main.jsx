@@ -1191,8 +1191,14 @@ class Task extends React.Component {
               />
             ) : (null)
           }
-
+          
           {
+            this.props.coordination && !this.state.editing && this.props.task.status === "finished" ? (
+              <div className="finished-task" />
+            ) : (null)
+          }
+
+          {/*
             !this.props.coordination && (this.props.doing || this.state.doing) ? (
               <div>
                 {/*<div className='record'>
@@ -1200,18 +1206,18 @@ class Task extends React.Component {
                     src='/modules/task-manager/img/record.svg'
                     width='25px'
                   />
-                </div>*/}
+                </div>}
                 <div
                   className='done'
                   title='Marcar como finalizado'
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
-                      src='/modules/task-manager/img/finished-task.svg'
+                      src='http://image.flaticon.com/icons/svg/65/65578.svg'
                       width='25px'
                     />
                 </div>
-                {/*<div
+                {<div
                   className='pause'
                   title='Marcar como pausado'
                   role='button'
@@ -1220,13 +1226,13 @@ class Task extends React.Component {
                       src='/modules/task-manager/img/pause-button.svg'
                       width='15px'
                     />
-                </div>*/}
+                </div>}
               </div>
             ) : (null)
-          }
+          */}
 
           {
-            !this.props.coordination && (!this.props.doing || !this.state.doing) && this.props.task.status === 'not_finished' ? (
+            !this.props.coordination /* && (!this.props.doing || !this.state.doing) */ && this.props.task.status === 'not_finished' ? (
               <div>
                 <div
                   className='done'
@@ -1234,8 +1240,8 @@ class Task extends React.Component {
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
-                      src='/modules/task-manager/img/finished-task.svg'
-                      width='25px'
+                      src='http://image.flaticon.com/icons/svg/65/65578.svg'
+                      width='20px'
                     />
                 </div>
                 {/*<div
@@ -1311,7 +1317,7 @@ class TaskInformation extends React.Component {
               <b>Tarea:</b> {this.state.task.title}
             </p>
             <p>
-              <b>Fecha de vencimiento:</b> {new Date(this.state.task.dueDate).toLocaleDateString()}
+              <b>Vencimiento:</b> {new Date(this.state.task.dueDate).toLocaleDateString()}
             </p>
             <p>
               <b>Estado:</b> {this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada'}
