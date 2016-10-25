@@ -1,3 +1,4 @@
+import { analytics } from 'meteor/okgrow:analytics'; // Package for analytics
 import React             from 'react';
 import {
   Router,
@@ -16,20 +17,24 @@ import NotFound          from '../../ui/not-found/NotFoundPage';
 // Override accounts templates
 import '../../ui/accounts/accounts-templates';
 
+const logPageView = (nextState) => {
+  analytics.page(nextState.location.pathname);
+};
+
 const renderRoutes = () => (
   <Router history={browserHistory}>
     <Redirect from="/" to="carlosydario" />
-    <Route path="/carlosydario" component={AppPageContainer}>
+    <Route path="/carlosydario" component={AppPageContainer} onEnter={logPageView}>
       <IndexRoute component={LandingPage} />
-      <Route path="/team/:teamUrl" component={TeamPageContainer} />
-      <Route path="*" component={NotFound} />
+      <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
+      <Route path="*" component={NotFound} onEnter={logPageView} />
     </Route>
-    <Route path="/diamond" component={AppPageContainer}>
+    <Route path="/diamond" component={AppPageContainer} onEnter={logPageView}>
       <IndexRoute component={LandingPage} />
-      <Route path="/team/:teamUrl" component={TeamPageContainer} />
-      <Route path="*" component={NotFound} />
+      <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
+      <Route path="*" component={NotFound} onEnter={logPageView} />
     </Route>
-    <Route path="*" component={NotFound} />
+    <Route path="*" component={NotFound} onEnter={logPageView} />
   </Router>
 );
 

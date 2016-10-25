@@ -41,3 +41,4 @@ velocity:meteor-stubs                 # Stubs
 raix:push                             # Mobile notifications
 shell-server
 jcbernack:reactive-aggregate
+okgrow:analytics
