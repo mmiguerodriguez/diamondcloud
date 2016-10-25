@@ -136,7 +136,7 @@
   right: 10px;
   top: 10px;
   background-size: 100%;
-  background-image: url(http://image.flaticon.com/icons/svg/65/65578.svg);
+  background-image: url(img/flag.svg);
   opacity: 0.7;
   transition: 0.3s all ease;
 }
@@ -147,15 +147,6 @@
   padding: 0 15px;
   width: 18px;
   float: right;
-}
-.not-doing-task {
-  background-image: url(http://image.flaticon.com/icons/svg/61/61221.svg);
-}
-.doing-task {
-  background-image: url(http://image.flaticon.com/icons/svg/60/60731.svg);
-}
-.done-task {
-  background-image: url(http://image.flaticon.com/icons/svg/60/60727.svg);
 }
 .task:hover .edit-task,
 .task:hover .archive-task {
