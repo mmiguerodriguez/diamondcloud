@@ -1,15 +1,25 @@
 const {
   DiamondAPI,
-  EmojiPicker,
   $,
 } = window;
 
 const INTERVAL = 1000;
 
 let TIMEOUT;
-let $ELEMENT;
 
+window.emojioneVersion = '2.1.1';
 window.onload = () => {
+  $('#text').emojioneArea({
+    pickerPosition: 'bottom',
+    events: {
+      keydown(editor, event) {
+        updatePostIt();
+      },
+      emojibtn_click(button, event) {
+        updatePostIt();
+      },
+    },
+  });
   /**
    * When module loads, DiamondAPI gets the data it has at first time
    * to check if we need to insert some startup data
@@ -52,7 +62,7 @@ window.onload = () => {
       }
 
       if (result && result.length > 0) {
-        if (result[0].text !== $('#text').val()) {
+        if (result[0].text !== $('.emojionearea-editor').html()) {
           handleNewData(result[0].text);
         }
       }
@@ -88,7 +98,7 @@ function insertStartupData(callback) {
  * called again, since we want to update the data once every
  * 1000 ms.
  */
-function updatePostIt(e) {
+function updatePostIt() {
   clearTimeout(TIMEOUT);
 
   TIMEOUT = setTimeout(() => {
@@ -97,7 +107,7 @@ function updatePostIt(e) {
       filter: {},
       updateQuery: {
         $set: {
-          text: e.value,
+          text: $('.emojionearea-editor').html(),
         },
       },
       callback(error) {
@@ -120,13 +130,51 @@ function updatePostIt(e) {
 function handleNewData(text) {
   /**
    * pushData(e, value)
+   * e: String // DOM Element Id
    * value: String // Value of the element
    *
    * Sets the value for a DOM element
    */
   function pushData(value) {
-    $('#text').val(value);
+    const $elem = $('.emojionearea-editor');
+    const pos = window.getSelection().focusOffset;
+
+    $elem.html(value);
+    console.log(pos, getIndex($elem[0], pos),window.getSelection().focusOffset);
+    createSelection($elem[0], pos);
   }
 
   pushData(text);
+}
+
+function createSelection(node, pos) {
+  if (!node) {
+    return;
+  }
+  
+  console.log(pos);
+
+  if (pos > node.length || node.length == undefined) pos = node.length;
+  
+  let range = document.createRange();
+  range.setStart(node, pos);
+  range.setEnd(node, pos);
+  
+  let newSel = window.getSelection();
+  newSel.removeAllRanges();
+  newSel.addRange(range);
+}
+
+function getIndex(el, node) {
+  let count = el.childNodes.length;
+  let child_index = -1;
+
+  for (let i = 0; i < count; i++) {
+    console.log(el.childNodes[i]);
+    if (node === el.childNodes[i]) {
+      child_index = i;
+      break;
+    }
+  }
+  return child_index;
 }
