@@ -3,7 +3,7 @@
  */
  
 [
-  '/img/404error.jpg',
+  '/img/error-404.png',
   '/img/add-people-icon.svg',
   '/img/board-background-png.png',
   '/img/board-chat.svg',
