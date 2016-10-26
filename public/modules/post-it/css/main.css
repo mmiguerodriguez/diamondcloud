@@ -1,3 +1,17 @@
+/* Scrollbar */
+*::-webkit-scrollbar {
+  width: 10px!important;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, .2);
+}
+*::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, .08);
+}
+.app-wrapper-main::-webkit-scrollbar-track {
+  background-color: #dfdfdf;
+}
+
 @font-face {
   font-family: 'Noto';
   font-style: normal;
@@ -37,12 +51,4 @@ input:focus {
 
 .post-it-text:focus {
   outline: none;
-}
-
-/**
- * Fixes issue when clicking enter and then
- * removing text
- */
-span {
-  font-size: inherit !important;
 }
