@@ -526,7 +526,7 @@ class FileManagerLayout extends React.Component {
               (this.props.openedDocumentId) ?
                 (
                   <div
-                    className="go-back-to-document"
+                    className="navbar-btn back-document"
                     onClick={
                       () => {
                         browserHistory.push(`/document/${this.props.openedDocumentId}`);
@@ -1568,14 +1568,18 @@ class FileViewerLayout extends React.Component {
         <div className='drive-navbar'>
           <i
             className="go-back"
-            onClick={ () => { browserHistory.push('/folder') } }>
-          </i>
+            onClick={ () => { browserHistory.push('/folder') } }
+          />
           <p className='file-name truncate' title={this.props.fileName}>{this.props.fileName}</p>
           {
             (this.props.fileType === 'application/vnd.google-apps.presentation') ?
-            <i
-              className="presentate"
-              onClick={() => { browserHistory.push(`/presentation/${this.props.}`) }}
+            (<i
+              className="navbar-btn presentate"
+              onClick={() => { browserHistory.push(`/presentation/${this.props.id}`) }}
+            >
+              Iniciar presentación
+            </i>) :
+            (null)
           }
         </div>
         {
@@ -1601,6 +1605,37 @@ class FileViewerLayout extends React.Component {
             />
           )
         }
+      </div>
+    );
+  }
+}
+
+class PresentationPage extends React.Component {
+  render() {
+    return (
+      <div>
+        <div className='drive-navbar'>
+          <i
+            className="go-back"
+            onClick={ () => { browserHistory.push('/folder') } }
+          />
+          <p className='file-name truncate' title={this.props.fileName}>{this.props.fileName}</p>
+          <i
+            className="navbar-btn presentate"
+            onClick={() => { browserHistory.push(`/document/${this.props.params.id}`) }}
+          >
+            Volver a edición
+          </i>
+        </div>
+        <iframe
+          src={`https://docs.google.com/presentation/d/${this.props.params.id}/preview?slide=${this.props.params.slide}`}
+          style={
+            {
+              width: '100%',
+              height: 'calc(100% - 42px)'
+            }
+          }
+        />
       </div>
     );
   }
@@ -1660,6 +1695,8 @@ ReactDOM.render(
       <Route path='/folder' component={FileManagerPage} />
       <Route path='/folder/:folderId' component={FileManagerPage} />
       <Route path='/document/:documentId' component={FileViewerPage} />
+      <Route path='/presentation/:id' component={PresentationPage} />
+      <Route path='/presentation/:id/slide' component={PresentationPage} />
     </Route>
   </Router>,
   document.getElementById('render-target')
