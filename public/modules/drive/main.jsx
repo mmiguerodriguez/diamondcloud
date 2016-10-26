@@ -1482,7 +1482,7 @@ class FileViewerPage extends React.Component {
     super(props);
     this.state = {
       loading: true,
-      fileType: null,
+      file: {},
     };
   }
   render() {
@@ -1490,8 +1490,9 @@ class FileViewerPage extends React.Component {
     return (
       <FileViewerLayout
         url={url}
-        fileType={this.state.fileType}
+        fileType={this.state.file.fileType}
         loading={this.state.loading}
+        fileName={this.state.file.name}
       />
     );
   }
@@ -1527,7 +1528,7 @@ class FileViewerPage extends React.Component {
       });
     }
     const self = this;
-    // Set the fileType
+    // Set the selected file
     DiamondAPI.get({
       collection: 'documents',
       filter: {
@@ -1545,7 +1546,7 @@ class FileViewerPage extends React.Component {
         } else {
           self.setState({
             loading: false,
-            fileType: result[0].fileType,
+            file: result[0],
           });
         }
       }
@@ -1570,6 +1571,7 @@ class FileViewerLayout extends React.Component {
             className="go-back"
             onClick={ () => { browserHistory.push('/folder') } }>
           </i>
+          <p className='file-name truncate' title={this.props.fileName}>{this.props.fileName}</p>
         </div>
         {
           (this.props.fileType.indexOf('image') !== -1 || this.props.fileType.indexOf('video') !== -1) ?
@@ -1603,6 +1605,7 @@ FileViewerLayout.propTypes = {
   url: React.PropTypes.string.isRequired,
   fileType: React.PropTypes.string.isRequired,
   loading: React.PropTypes.string.isRequired,
+  fileName: React.PropTypes.string.isRequired,
 };
 
 /**
