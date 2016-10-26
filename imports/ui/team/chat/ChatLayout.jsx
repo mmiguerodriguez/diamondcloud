@@ -69,6 +69,7 @@ export default class ChatLayout extends React.Component {
         {
           hiddenChats.length > 0 ? (
             <div className="users-hidden">
+              <img src="/img/sidebar/messages.svg" className="icon" />
               <div className="users">
                 {hiddenChats}
               </div>

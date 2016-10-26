@@ -147,13 +147,13 @@ export default class Chat extends React.Component {
       return (
         <div className={classes}>
           <p
-            className="col-xs-10 chat-text truncate"
+            className="chat-text truncate"
             onClick={this.props.togglePosition.bind(null, this.props.index, 'medium')}
           >
             <b>{this.getName()}</b>
           </p>
           <div
-            className="col-xs-2 chat-image"
+            className="chat-image"
             onClick={this.props.removeChat.bind(this, this.state.chatType)}
           >
             <div className="close-image chat-back-image" />
