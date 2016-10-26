@@ -1255,7 +1255,7 @@ class Task extends React.Component {
           {
             !this.state.editing ? (
               <div className='col-xs-12'>
-                <p className='col-xs-12 expiration'>Vencimiento: {$.format.date(new Date(this.props.task.dueDate), 'MM/dd/yyyy')}</p>
+                <p className='col-xs-12 expiration'>Vencimiento: {$.format.date(new Date(this.props.task.dueDate), 'dd/MM/yyyy')}</p>
               </div>
             ) : (null)
           }
