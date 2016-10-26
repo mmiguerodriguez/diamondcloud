@@ -4,17 +4,19 @@
 @import 'notifications-permission-asker/notifications-permission-asker';
 
 .chats-container {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   right: 0;
+  display: flex;
+  height: 30px;
+  width: auto;
   z-index: 100000;
   &.auto {
     width: auto;
     max-width: calc(100vw - 64px);
     height: auto;
-    max-height: 268px;
+    max-height: 30px;
     padding-left: 90px;
-    overflow-y: hidden;
   }
   &.maximized {
     width: calc(100% - 64px);

@@ -87,5 +87,8 @@ input:focus, select:focus, textarea:focus, button:focus {
 
 // Modal z-index
 .modal-backdrop {
-  z-index: 100001;
+  z-index: 100001 !important;
+}
+.modal {
+  z-index: 100002 !important;
 }
