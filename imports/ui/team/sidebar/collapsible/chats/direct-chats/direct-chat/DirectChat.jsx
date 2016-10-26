@@ -25,7 +25,7 @@ export default class DirectChat extends React.Component {
         </div>
         {
           this.props.notifications > 0 ? (
-            <div className="col-xs-2 img-fixed-margin">
+            <div className="col-xs-2 badge-fixed-margin">
               <div className="messages-badge img-circle">{this.props.notifications}</div>
             </div>
           ) : (null)
