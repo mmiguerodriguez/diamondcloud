@@ -1,24 +1,25 @@
+
 const {
   DiamondAPI,
-  EmojiPicker,
   $,
 } = window;
 
 const INTERVAL = 1000;
-
 let TIMEOUT;
-let $ELEMENT;
+
+/**
+ * Creates emojioneArea element for emojis
+ */
+window.emojioneVersion = '2.1.4';
+$('#text').emojioneArea({
+  pickerPosition: 'bottom',
+  events: {
+    keydown: updatePostIt,
+    emojibtn_click: updatePostIt,
+  },
+});
 
 window.onload = () => {
-  window.emojiPicker = new EmojiPicker({
-    emojiable_selector: '[data-emojiable=true]',
-    assetsPath: 'https://cdnjs.cloudflare.com/ajax/libs/emoji-picker/1.0/img/',
-    popupButtonClasses: 'fa fa-smile-o',
-  }).discover();
-
-  $ELEMENT = $('div.post-it-text');
-  $ELEMENT.on('DOMSubtreeModified', updatePostIt);
-
   /**
    * When module loads, DiamondAPI gets the data it has at first time
    * to check if we need to insert some startup data
@@ -61,7 +62,7 @@ window.onload = () => {
       }
 
       if (result && result.length > 0) {
-        if (result[0].text !== $ELEMENT.text()) {
+        if (result[0].text !== $('.emojionearea-editor').html()) {
           handleNewData(result[0].text);
         }
       }
@@ -97,16 +98,18 @@ function insertStartupData(callback) {
  * called again, since we want to update the data once every
  * 1000 ms.
  */
-function updatePostIt(e) {
+function updatePostIt() {
   clearTimeout(TIMEOUT);
 
   TIMEOUT = setTimeout(() => {
+    formatHTML();
+
     DiamondAPI.update({
       collection: 'postIt',
       filter: {},
       updateQuery: {
         $set: {
-          text: $ELEMENT.html(),
+          text: $('.emojionearea-editor').html(),
         },
       },
       callback(error) {
@@ -129,13 +132,88 @@ function updatePostIt(e) {
 function handleNewData(text) {
   /**
    * pushData(e, value)
+   * e: String // DOM Element Id
    * value: String // Value of the element
    *
    * Sets the value for a DOM element
    */
   function pushData(value) {
-    $ELEMENT.html(value);
+    const $elem = $('.emojionearea-editor');
+
+    const selection = window.getSelection();
+    const position = selection.focusOffset || null;
+    const focusNode = selection.focusNode ? selection.focusNode.parentNode : null;
+
+    const node = $elem ? $elem[0] : null;
+    const index = node ? getNodeIndex(node, focusNode) : null;
+
+    $elem.html(value);
+    formatHTML();
+
+    /**
+     * Creates a selection for the node we want, to fix issues
+     * when new data is inserted on the DOM node.
+     */
+    if (selection.type !== 'None') {
+      if (node) {
+        if (index === -1) {
+          createSelection(node.childNodes[0], 0);
+        } else if (index === 0) {
+          createSelection(node.childNodes[0], position);
+        } else {
+          createSelection(node.childNodes[index], position);
+        }
+      }
+    }
   }
 
   pushData(text);
+}
+/**
+ * Creates a selection on an element at a certain
+ * position
+ * @param {Node} node
+ * @param {Number} position
+ */
+function createSelection(node, position) {
+  const range = document.createRange();
+  range.setStart(node.firstChild, position);
+  range.setEnd(node.firstChild, position);
+
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+/**
+ * Compares the parent childNodes and the nodes passed
+ * and returns the index of where that node is
+ * located at.
+ * @param  {Node} parent
+ * @param  {Node} node
+ * @return {Number} index
+ */
+function getNodeIndex(parent, node) {
+  for (let i = 0; i < parent.childNodes.length; i += 1) {
+    if (parent.childNodes[i] === node) {
+      return i;
+    }
+  }
+  return -1;
+}
+/**
+ * Formats the $('.emojionearea-editor') so it is full of
+ * <divs> instead of random text nodes
+ * Also fixes anissue with <img> tags since they were
+ * inserted as <divs> occupying the whole line.
+ */
+function formatHTML() {
+  $('.emojionearea-editor')
+  .contents()
+  .filter(function () {
+    return (
+      this.nodeType !== 1 ||
+      this.tagName === 'IMG'
+    );
+  })
+  .wrap('<div style="display: inline-block !important" />');
 }

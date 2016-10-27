@@ -1,9 +1,4 @@
-@font-face {
-  font-family: 'Noto';
-  font-style: normal;
-  font-weight: 400;
-  src: url(../font/NotoColorEmoji.ttf);
-}
+/* Post It CSS */
 
 body {
   background: #ffffa5;
@@ -23,7 +18,7 @@ input:focus {
 }
 
 .post-it-text {
-  font-size: 1.75em;
+  font-size: 1.1em;
   text-align: left;
   width: 100%;
   border: none;
@@ -32,17 +27,18 @@ input:focus {
   resize: none;
   height: 100%;
   padding: 5px 10px;
-  font-family: 'Kalam', 'Noto' !important;
+  font-family: 'Kalam' !important;
 }
 
 .post-it-text:focus {
   outline: none;
 }
 
-/**
- * Fixes issue when clicking enter and then
- * removing text
- */
-span {
-  font-size: inherit !important;
+[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  display: block;
+}
+
+.emojionearea-editor {
+  height: 100%;
 }
