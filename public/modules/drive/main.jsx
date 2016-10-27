@@ -526,7 +526,7 @@ class FileManagerLayout extends React.Component {
               (this.props.openedDocumentId) ?
                 (
                   <div
-                    className="go-back-to-document"
+                    className="drive-navbar-btn back-document"
                     onClick={
                       () => {
                         browserHistory.push(`/document/${this.props.openedDocumentId}`);
@@ -1486,10 +1486,9 @@ class FileViewerPage extends React.Component {
     };
   }
   render() {
-    let url = 'https://drive.google.com/open?id=' + this.props.params.documentId;
     return (
       <FileViewerLayout
-        url={url}
+        id={this.props.params.documentId}
         fileType={this.state.file.fileType}
         loading={this.state.loading}
         fileName={this.state.file.name}
@@ -1563,15 +1562,25 @@ class FileViewerLayout extends React.Component {
         </div>
       );
     }
-    console.log(this.props.fileType.indexOf('image'));
+    let url = `https://drive.google.com/open?id=${this.props.id}`;
     return (
       <div>
         <div className='drive-navbar'>
           <i
             className="go-back"
-            onClick={ () => { browserHistory.push('/folder') } }>
-          </i>
+            onClick={ () => { browserHistory.push('/folder') } }
+          />
           <p className='file-name truncate' title={this.props.fileName}>{this.props.fileName}</p>
+          {
+            (this.props.fileType === 'application/vnd.google-apps.presentation') ?
+            (<i
+              className="drive-navbar-btn presentate"
+              onClick={() => { browserHistory.push(`/presentation/${this.props.id}`) }}
+            >
+              Iniciar presentación
+            </i>) :
+            (null)
+          }
         </div>
         {
           (this.props.fileType.indexOf('image') !== -1 || this.props.fileType.indexOf('video') !== -1) ?
@@ -1580,13 +1589,13 @@ class FileViewerLayout extends React.Component {
             <div className="image-container">
               <div className="photo" />
               <p className="image-text">
-                Para poder acceder a la imagen/video hace click <a href={this.props.url} target="_blank">acá</a>
+                Para poder acceder a la imagen/video hace click <a href={url} target="_blank">acá</a>
               </p>
           </div>
         </div>
           ) : (
             <iframe
-              src={this.props.url}
+              src={url}
               style={
                 {
                   width: '100%',
@@ -1601,8 +1610,39 @@ class FileViewerLayout extends React.Component {
   }
 }
 
+class PresentationPage extends React.Component {
+  render() {
+    return (
+      <div>
+        <div className='drive-navbar'>
+          <i
+            className="go-back"
+            onClick={ () => { browserHistory.push('/folder') } }
+          />
+          <p className='file-name truncate' title={this.props.fileName}>{this.props.fileName}</p>
+          <i
+            className="drive-navbar-btn presentate"
+            onClick={() => { browserHistory.push(`/document/${this.props.params.id}`) }}
+          >
+            Volver a edición
+          </i>
+        </div>
+        <iframe
+          src={`https://docs.google.com/presentation/d/${this.props.params.id}/preview?slide=${this.props.params.slide}`}
+          style={
+            {
+              width: '100%',
+              height: 'calc(100% - 42px)'
+            }
+          }
+        />
+      </div>
+    );
+  }
+}
+
 FileViewerLayout.propTypes = {
-  url: React.PropTypes.string.isRequired,
+  id: React.PropTypes.string.isRequired,
   fileType: React.PropTypes.string.isRequired,
   loading: React.PropTypes.string.isRequired,
   fileName: React.PropTypes.string.isRequired,
@@ -1655,6 +1695,8 @@ ReactDOM.render(
       <Route path='/folder' component={FileManagerPage} />
       <Route path='/folder/:folderId' component={FileManagerPage} />
       <Route path='/document/:documentId' component={FileViewerPage} />
+      <Route path='/presentation/:id' component={PresentationPage} />
+      <Route path='/presentation/:id/slide' component={PresentationPage} />
     </Route>
   </Router>,
   document.getElementById('render-target')
