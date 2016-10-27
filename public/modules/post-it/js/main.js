@@ -19,7 +19,6 @@ $('#text').emojioneArea({
   },
 });
 
-
 window.onload = () => {
   /**
    * When module loads, DiamondAPI gets the data it has at first time
