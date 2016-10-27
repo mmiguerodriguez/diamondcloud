@@ -1,8 +1,5 @@
 import { Accounts }  from 'meteor/accounts-base';
 
-import { shareTeam } from '../../api/teams/methods';
-import { Teams }     from '../../api/teams/teams';
-
 /**
  * Callback when a user is created.
  * @param {Function} func
