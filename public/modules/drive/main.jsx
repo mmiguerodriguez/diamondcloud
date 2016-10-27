@@ -526,7 +526,7 @@ class FileManagerLayout extends React.Component {
               (this.props.openedDocumentId) ?
                 (
                   <div
-                    className="navbar-btn back-document"
+                    className="drive-navbar-btn back-document"
                     onClick={
                       () => {
                         browserHistory.push(`/document/${this.props.openedDocumentId}`);
@@ -1574,7 +1574,7 @@ class FileViewerLayout extends React.Component {
           {
             (this.props.fileType === 'application/vnd.google-apps.presentation') ?
             (<i
-              className="navbar-btn presentate"
+              className="drive-navbar-btn presentate"
               onClick={() => { browserHistory.push(`/presentation/${this.props.id}`) }}
             >
               Iniciar presentación
@@ -1621,7 +1621,7 @@ class PresentationPage extends React.Component {
           />
           <p className='file-name truncate' title={this.props.fileName}>{this.props.fileName}</p>
           <i
-            className="navbar-btn presentate"
+            className="drive-navbar-btn presentate"
             onClick={() => { browserHistory.push(`/document/${this.props.params.id}`) }}
           >
             Volver a edición

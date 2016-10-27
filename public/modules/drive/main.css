@@ -301,7 +301,7 @@ img.icon-type.import-drive {
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
   opacity: 0.9;
 }
-.navbar-btn {
+.drive-navbar-btn {
   float: right;
   font-size: 18px;
   margin-top: 5.5px;
@@ -315,7 +315,7 @@ img.icon-type.import-drive {
   transition: 0.3s all ease;
   font-style: normal;
 }
-.navbar-btn:hover {
+.drive-navbar-btn:hover {
   opacity: 0.9;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
