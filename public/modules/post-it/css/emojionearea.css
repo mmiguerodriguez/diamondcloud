@@ -65,25 +65,9 @@
   font-size: 20px; }
 /* line 35, ../scss/emojionearea.scss */
 .emojionearea .emojionearea-editor {
-  display: block;
-  height: auto;
-  min-height: 8em;
-  max-height: 15em;
-  overflow: auto;
-  padding: 6px 24px 6px 12px;
-  line-height: 1.42857143;
-  font-size: inherit;
-  color: #555;
-  background-color: transparent;
-  border: 0;
-  cursor: text;
-  margin-right: 1px;
-  -moz-border-radius: 0;
-  -webkit-border-radius: 0;
-  border-radius: 0;
-  -moz-box-shadow: none;
-  -webkit-box-shadow: none;
-  box-shadow: none; }
+    padding: 6px 25px 6px 12px;
+    color: #3f3f3f;
+    margin-right: 1px; }
   /* line 52, ../scss/emojionearea.scss */
   .emojionearea .emojionearea-editor:empty:before {
     content: attr(placeholder);

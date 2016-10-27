@@ -1,25 +1,26 @@
+
 const {
   DiamondAPI,
   $,
 } = window;
 
 const INTERVAL = 1000;
-
 let TIMEOUT;
 
-window.emojioneVersion = '2.1.1';
+/**
+ * Creates emojioneArea element for emojis
+ */
+window.emojioneVersion = '2.1.4';
+$('#text').emojioneArea({
+  pickerPosition: 'bottom',
+  events: {
+    keydown: updatePostIt,
+    emojibtn_click: updatePostIt,
+  },
+});
+
+
 window.onload = () => {
-  $('#text').emojioneArea({
-    pickerPosition: 'bottom',
-    events: {
-      keydown(editor, event) {
-        updatePostIt();
-      },
-      emojibtn_click(button, event) {
-        updatePostIt();
-      },
-    },
-  });
   /**
    * When module loads, DiamondAPI gets the data it has at first time
    * to check if we need to insert some startup data
@@ -102,6 +103,8 @@ function updatePostIt() {
   clearTimeout(TIMEOUT);
 
   TIMEOUT = setTimeout(() => {
+    formatHTML();
+
     DiamondAPI.update({
       collection: 'postIt',
       filter: {},
@@ -137,44 +140,81 @@ function handleNewData(text) {
    */
   function pushData(value) {
     const $elem = $('.emojionearea-editor');
-    const pos = window.getSelection().focusOffset;
+
+    const selection = window.getSelection();
+    const position = selection.focusOffset || null;
+    const focusNode = selection.focusNode ? selection.focusNode.parentNode : null;
+
+    const node = $elem ? $elem[0] : null;
+    const index = node ? getNodeIndex(node, focusNode) : null;
 
     $elem.html(value);
-    console.log(pos, getIndex($elem[0], pos),window.getSelection().focusOffset);
-    createSelection($elem[0], pos);
+    formatHTML();
+
+    /**
+     * Creates a selection for the node we want, to fix issues
+     * when new data is inserted on the DOM node.
+     */
+    if (selection.type !== 'None') {
+      if (node) {
+        if (index === -1) {
+          createSelection(node.childNodes[0], 0);
+        } else if (index === 0) {
+          createSelection(node.childNodes[0], position);
+        } else {
+          createSelection(node.childNodes[index], position);
+        }
+      }
+    }
   }
 
   pushData(text);
 }
+/**
+ * Creates a selection on an element at a certain
+ * position
+ * @param {Node} node
+ * @param {Number} position
+ */
+function createSelection(node, position) {
+  const range = document.createRange();
+  range.setStart(node.firstChild, position);
+  range.setEnd(node.firstChild, position);
 
-function createSelection(node, pos) {
-  if (!node) {
-    return;
-  }
-  
-  console.log(pos);
-
-  if (pos > node.length || node.length == undefined) pos = node.length;
-  
-  let range = document.createRange();
-  range.setStart(node, pos);
-  range.setEnd(node, pos);
-  
-  let newSel = window.getSelection();
-  newSel.removeAllRanges();
-  newSel.addRange(range);
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
 }
-
-function getIndex(el, node) {
-  let count = el.childNodes.length;
-  let child_index = -1;
-
-  for (let i = 0; i < count; i++) {
-    console.log(el.childNodes[i]);
-    if (node === el.childNodes[i]) {
-      child_index = i;
-      break;
+/**
+ * Compares the parent childNodes and the nodes passed
+ * and returns the index of where that node is
+ * located at.
+ * @param  {Node} parent
+ * @param  {Node} node
+ * @return {Number} index
+ */
+function getNodeIndex(parent, node) {
+  for (let i = 0; i < parent.childNodes.length; i += 1) {
+    if (parent.childNodes[i] === node) {
+      return i;
     }
   }
-  return child_index;
+  return -1;
+}
+/**
+ * Formats the $('.emojionearea-editor') so it is full of
+ * <divs> instead of random text nodes
+ * Also fixes anissue with <img> tags since they were
+ * inserted as <divs> occupying the whole line.
+ */
+function formatHTML() {
+  $('.emojionearea-editor')
+  .contents()
+  .filter(function () {
+    return (
+      this.nodeType !== 1 ||
+      this.tagName === 'IMG'
+    );
+  })
+  .wrap('<div style="display: inline-block !important" />');
 }
