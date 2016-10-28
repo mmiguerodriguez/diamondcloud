@@ -15,6 +15,8 @@ class Index extends React.Component {
 
     this.state = {
       openedDocumentId: '',
+      presentationView: false,
+      slide: '',
 
       error: {
         type: '',
@@ -44,6 +46,8 @@ class Index extends React.Component {
         {
           React.cloneElement(this.props.children, {
             openedDocumentId: this.state.openedDocumentId,
+            presentationView: this.state.presentationView,
+            slide: this.state.slide,
             error: this.error,
           })
         }
@@ -71,8 +75,20 @@ class Index extends React.Component {
         if (result.length > 0) {
           self.setState({
             openedDocumentId: result[0].openedDocumentId,
+            presentationView: result[0].presentationView,
+            slide: result[0].slide,
           });
-          browserHistory.push(`/document/${result[0].openedDocumentId}`);
+          if (result[0].presentationView) {
+            browserHistory.push(
+              `/presentation/${result[0].openedDocumentId}/
+              ${(result[0].slide) ?
+                result[0].slide :
+                null
+              }`
+            );
+          } else {
+            browserHistory.push(`/document/${result[0].openedDocumentId}`);
+          }
         }
       },
     });
@@ -1503,6 +1519,8 @@ class FileViewerPage extends React.Component {
         collection: 'globalValues',
         object: {
           openedDocumentId: this.props.params.documentId,
+          presentationView: false,
+          slide: '',
         },
         isGlobal: false,
         callback(error) {
@@ -1511,12 +1529,15 @@ class FileViewerPage extends React.Component {
           }
         },
       });
-    } else if (this.props.openedDocumentId !== this.props.params.documentId) {
+    } else if (this.props.openedDocumentId !== this.props.params.documentId ||
+      this.props.presentationView) {
       DiamondAPI.update({
         collection: 'globalValues',
         updateQuery: {
           $set: {
             openedDocumentId: this.props.params.documentId,
+            presentationView: false,
+            slide: '',
           }
         },
         callback(error) {
@@ -1639,6 +1660,43 @@ class PresentationPage extends React.Component {
       </div>
     );
   }
+  
+  componentDidMount() {
+    // Set in the data storage the opened document
+    if (!this.props.openedDocumentId) {
+      DiamondAPI.insert({
+        collection: 'globalValues',
+        object: {
+          openedDocumentId: this.props.params.documentId,
+          presentationView: true,
+          slide: this.props.params.slide,
+        },
+        isGlobal: false,
+        callback(error) {
+          if (error) {
+            console.error(error); // TODO: handle error
+          }
+        },
+      });
+    } else if (this.props.openedDocumentId !== this.props.params.documentId ||
+      !this.props.presentationView || this.props.slide !== this.props.params.slide) {
+      DiamondAPI.update({
+        collection: 'globalValues',
+        updateQuery: {
+          $set: {
+            openedDocumentId: this.props.params.documentId,
+            presentationView: true,
+            slide: this.props.params.slide,
+          }
+        },
+        callback(error) {
+          if (error) {
+            console.error(error); // TODO: handle error
+          }
+        }
+      });
+    }
+  }
 }
 
 FileViewerLayout.propTypes = {
@@ -1696,7 +1754,7 @@ ReactDOM.render(
       <Route path='/folder/:folderId' component={FileManagerPage} />
       <Route path='/document/:documentId' component={FileViewerPage} />
       <Route path='/presentation/:id' component={PresentationPage} />
-      <Route path='/presentation/:id/slide' component={PresentationPage} />
+      <Route path='/presentation/:id/:slide' component={PresentationPage} />
     </Route>
   </Router>,
   document.getElementById('render-target')
