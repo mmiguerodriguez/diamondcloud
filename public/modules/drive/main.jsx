@@ -15,8 +15,6 @@ class Index extends React.Component {
 
     this.state = {
       openedDocumentId: '',
-      presentationView: false,
-      slide: '',
 
       error: {
         type: '',
@@ -75,18 +73,8 @@ class Index extends React.Component {
         if (result.length > 0) {
           self.setState({
             openedDocumentId: result[0].openedDocumentId,
-            presentationView: result[0].presentationView,
-            slide: result[0].slide,
           });
-          if (result[0].presentationView) {
-            browserHistory.push(
-              `/presentation/${result[0].openedDocumentId}/${
-                (result[0].slide) ?
-                  result[0].slide : ''
-              }`);
-          } else {
-            browserHistory.push(`/document/${result[0].openedDocumentId}`);
-          }
+          browserHistory.push(`/document/${result[0].openedDocumentId}`);
         }
       },
     });
@@ -1517,8 +1505,6 @@ class FileViewerPage extends React.Component {
         collection: 'globalValues',
         object: {
           openedDocumentId: this.props.params.documentId,
-          presentationView: false,
-          slide: '',
         },
         isGlobal: false,
         callback(error) {
@@ -1534,8 +1520,6 @@ class FileViewerPage extends React.Component {
         updateQuery: {
           $set: {
             openedDocumentId: this.props.params.documentId,
-            presentationView: false,
-            slide: '',
           }
         },
         callback(error) {
@@ -1629,13 +1613,14 @@ class FileViewerLayout extends React.Component {
   }
 }
 
+FileViewerLayout.propTypes = {
+  id: React.PropTypes.string.isRequired,
+  fileType: React.PropTypes.string.isRequired,
+  loading: React.PropTypes.string.isRequired,
+  fileName: React.PropTypes.string.isRequired,
+};
+
 class PresentationPage extends React.Component {
-  constructor(props) {
-    super(props);
-    
-    this.handleSlideChange = this.handleSlideChange.bind(this);
-  }
-  
   render() {
     return (
       <div>
@@ -1653,85 +1638,18 @@ class PresentationPage extends React.Component {
           </i>
         </div>
         <iframe
-          src={`https://docs.google.com/presentation/d/${this.props.params.id}/preview?slide=${this.props.params.slide}`}
+          src={`https://docs.google.com/presentation/d/${this.props.params.id}/preview`}
           style={
             {
               width: '100%',
               height: 'calc(100% - 42px)'
             }
           }
-          onLoad={this.handleSlideChange}
         />
       </div>
     );
   }
-  
-  componentDidMount() {
-    // Set in the data storage the opened document
-    if (!this.props.openedDocumentId) {
-      DiamondAPI.insert({
-        collection: 'globalValues',
-        object: {
-          openedDocumentId: this.props.params.documentId,
-          presentationView: true,
-          slide: this.props.params.slide,
-        },
-        isGlobal: false,
-        callback(error) {
-          if (error) {
-            console.error(error); // TODO: handle error
-          }
-        },
-      });
-    } else if (this.props.openedDocumentId !== this.props.params.documentId ||
-      !this.props.presentationView || this.props.slide !== this.props.params.slide) {
-      DiamondAPI.update({
-        collection: 'globalValues',
-        updateQuery: {
-          $set: {
-            openedDocumentId: this.props.params.documentId,
-            presentationView: true,
-            slide: this.props.params.slide,
-          }
-        },
-        callback(error) {
-          if (error) {
-            console.error(error); // TODO: handle error
-          }
-        }
-      });
-    }
-  }
-  
-  handleSlideChange(event) {
-    console.log('El target es: ', event.target);
-    const slide = event.target.src.substr(event.target.src.indexOf('slide=') + 'slide='.length);
-    console.log(slide);
-    /*if (newSlide !== this.props.slide) {
-      DiamondAPI.insert({
-        collection: 'globalValues',
-        object: {
-          openedDocumentId: this.props.params.documentId,
-          presentationView: true,
-          slide: newSlide,
-        },
-        isGlobal: false,
-        callback(error) {
-          if (error) {
-            console.error(error); // TODO: handle error
-          }
-        },
-      });
-    }*/
-  }
 }
-
-FileViewerLayout.propTypes = {
-  id: React.PropTypes.string.isRequired,
-  fileType: React.PropTypes.string.isRequired,
-  loading: React.PropTypes.string.isRequired,
-  fileName: React.PropTypes.string.isRequired,
-};
 
 /**
  * In case of error show this component.
@@ -1781,7 +1699,6 @@ ReactDOM.render(
       <Route path='/folder/:folderId' component={FileManagerPage} />
       <Route path='/document/:documentId' component={FileViewerPage} />
       <Route path='/presentation/:id' component={PresentationPage} />
-      <Route path='/presentation/:id/:slide' component={PresentationPage} />
     </Route>
   </Router>,
   document.getElementById('render-target')
