@@ -25,19 +25,21 @@ export default class DirectChatsLayout extends React.Component {
   
     this.props.team.users.forEach((_user) => {
       const user = Meteor.users.findByEmail(_user.email, {});
-
-      if (user._id !== Meteor.userId()) {
-        let directChat = DirectChats.getDirectChat(user._id, this.props.team._id);
-        if (!directChat) {
-          arr.push(
-            <User
-              key={user._id}
-              user={user}
-              team={this.props.team}
-              addChat={this.props.addChat}
-              createDirectChat={this.props.createDirectChat}
-            />
-          );
+      
+      if (user) {
+        if (user._id !== Meteor.userId()) {
+          let directChat = DirectChats.getDirectChat(user._id, this.props.team._id);
+          if (!directChat) {
+            arr.push(
+              <User
+                key={user._id}
+                user={user}
+                team={this.props.team}
+                addChat={this.props.addChat}
+                createDirectChat={this.props.createDirectChat}
+              />
+            );
+          }
         }
       }
     });
@@ -54,7 +56,7 @@ export default class DirectChatsLayout extends React.Component {
         <hr className='hr-fixed-color' />
         <div>
           {
-            this.props.directChats.length > 0 || this.props.team.users.length > 1 ? (
+            this.props.directChats.length > 0 || this.props.team.getUsers({}).fetch().length > 1 ? (
               <div>
                 {this.renderDirectChats()}
                 {this.renderUsers()}

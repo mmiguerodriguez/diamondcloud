@@ -369,30 +369,32 @@ export default class TeamLayout extends React.Component {
 
     this.props.team.users.forEach((_user) => {
       const user = Meteor.users.findByEmail(_user.email, {});
-
-      if (user._id !== Meteor.userId()) {
-        let directChat = DirectChats.getDirectChat(user._id, this.props.team._id);
-        if (!directChat) {
-          arr.push(
-            <div
-              className="item"
-              role="button"
-              onClick={() => this.createDirectChat(this.props.team._id, user._id)}
-              key={user._id}
-            >
-              <div className="col-xs-2">
-                <img
-                  className="img-circle"
-                  src={`${user.profile.picture}?sz=60`}
-                  width="48px"
-                />
+      
+      if (user) {
+        if (user._id !== Meteor.userId()) {
+          let directChat = DirectChats.getDirectChat(user._id, this.props.team._id);
+          if (!directChat) {
+            arr.push(
+              <div
+                className="item"
+                role="button"
+                onClick={() => this.createDirectChat(this.props.team._id, user._id)}
+                key={user._id}
+              >
+                <div className="col-xs-2">
+                  <img
+                    className="img-circle"
+                    src={`${user.profile.picture}?sz=60`}
+                    width="48px"
+                  />
+                </div>
+                <div className="col-xs-10 info">
+                  <p className="user truncate">{user.profile.name}</p>
+                  <p className="last-message truncate"></p>
+                </div>
               </div>
-              <div className="col-xs-10 info">
-                <p className="user truncate">{user.profile.name}</p>
-                <p className="last-message truncate"></p>
-              </div>
-            </div>
-          );
+            );
+          }
         }
       }
     });

@@ -1558,6 +1558,8 @@ class FileViewerPage extends React.Component {
             type: 'show',
             body: 'Error al abrir el documento',
           });
+        } else if (result.length === 0) {
+          browserHistory.push('/folder');
         } else {
           self.setState({
             loading: false,
@@ -1566,6 +1568,37 @@ class FileViewerPage extends React.Component {
         }
       }
     });
+  }
+  
+  componentWillReceiveProps(nextProps) {
+    if (this.props.params.documentId !== nextProps.params.documentId) {
+      const self = this;
+      // Set the selected file
+      DiamondAPI.get({
+        collection: 'documents',
+        filter: {
+          _id: nextProps.params.documentId,
+        },
+        callback(error, result) {
+          if (error) {
+            self.setState({
+              loading: false,
+            });
+            self.props.toggleError({
+              type: 'show',
+              body: 'Error al abrir el documento',
+            });
+          } else if (result.length === 0) {
+            browserHistory.push('/folder');
+          } else {
+            self.setState({
+              loading: false,
+              file: result[0],
+            });
+          }
+        }
+      });
+    }
   }
 }
 

@@ -5,12 +5,9 @@ export const Teams = new Mongo.Collection('Teams');
 
 Teams.helpers({
   /**
-   * Shows if the user has certain hierarchy in the given team
+   * Returns the user hierarchy in the team
    * @param {String} email
-   * @param {String} hierarchy
-   * @returns {Boolean} isCertainHierarchy
-   *
-   * TODO: let hierarchy be an array of hierarchies
+   * @returns {String} hierarchy
    */
   userHierarchy(email) {
     for (const user of this.users) {
@@ -21,7 +18,14 @@ Teams.helpers({
 
     return 'ghost';
   },
-
+  /**
+   * Shows if the user has a certain hierarchy in the team
+   * @param {String} email
+   * @param {String} hierarchy
+   * @returns {Boolean} isCertainHierarchy
+   *
+   * TODO: let hierarchy be an array of hierarchies
+   */
   userIsCertainHierarchy(email, hierarchy) {
     for (let i = 0; i < this.users.length; i += 1) {
       if (email === this.users[i].email) {
