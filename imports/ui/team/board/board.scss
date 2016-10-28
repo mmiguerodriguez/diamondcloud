@@ -40,14 +40,13 @@
     display: flex;
   }
   .right-data {
-    padding-top: 4px;
     text-align: right;
   }
   .title {
     max-width: 50%;
     padding: 10px;
     margin-top: 0px !important;
-    margin-bottom: 0 !important;
+    margin-top: -3px !important;
     border-right: solid 1px #3f3f3f;
   }
   .breadcrumb {
@@ -74,12 +73,13 @@
   .visibility {
     display: inline;
     padding: 0 5px;
+    vertical-align: sub;
     .visibility-img {
       width: 28px;
     }
   }
   .members {
-    display: inline;
+    display: inline-block;
     max-width: 50%;
     padding: 5px;
     margin-top: 0 !important;
@@ -94,8 +94,10 @@
 
   }
   .message-icon-span {
-    display: inline;
+    display: inline-block;
     margin-left: 5px;
+    margin-top: 7px;
+    vertical-align: top;
     .message-icon {
       cursor: pointer;
       -webkit-filter: invert(0.855);
@@ -172,4 +174,8 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+label {
+  margin-bottom: 10.5px;
 }

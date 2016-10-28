@@ -242,11 +242,13 @@ export default class Board extends React.Component {
               !this.props.team.userIsCertainHierarchy(email, 'coordinador') &&
               this.props.board.type === 'creativos' ? (
                 <div className="visibility">
-                  <label className="switch">
+                  <label 
+                    className="switch"
+                    onClick={() => this.toggleBoardToDirectors('lockBoard')}>
                     <input type="checkbox" />
                     <div className="slider round"></div>
                   </label>
-                  {
+                  {/*
                     this.state.visibleForDirectors ? (
                       <img
                         role="button"
@@ -266,7 +268,7 @@ export default class Board extends React.Component {
                         alt="Hacer visible para directores"
                       />
                     )
-                  }
+                  */}
                 </div>
               ) : (null)
             }
