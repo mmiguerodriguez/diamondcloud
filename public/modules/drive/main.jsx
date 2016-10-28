@@ -44,6 +44,8 @@ class Index extends React.Component {
         {
           React.cloneElement(this.props.children, {
             openedDocumentId: this.state.openedDocumentId,
+            presentationView: this.state.presentationView,
+            slide: this.state.slide,
             error: this.error,
           })
         }
@@ -216,7 +218,18 @@ class FileManagerLayout extends React.Component {
             parentFolderId: this.props.folderId,
             mimeType: folderMimeType,
             isImported: folder.isImported,
-            callback: () => {}, // TODO: handle loading and error
+            callback: (error, result) => {
+              if (error) {
+                this.props.toggleError({
+                  type: 'show',
+                  body: 'Hubo un error al eliminar la carpeta',
+                });
+              }
+              console.log('asd');
+              this.setState({
+                loadingFolders: false,
+              });
+            },
           })}
         >
           delete
@@ -286,15 +299,16 @@ class FileManagerLayout extends React.Component {
             mimeType: document.fileType,
             isImported: document.isImported,
             callback: (error, result) => {
-              if(error) {
+              if (error) {
                 this.props.toggleError({
                   type: 'show',
-                  body: 'Error al borrar el documento',
-                });
-                self.setState({
-                  loadingDocuments: false,
+                  body: 'Hubo un error al borrar el documento',
                 });
               }
+
+              this.setState({
+                loadingFolders: false,
+              });
             },
           })}
         >
@@ -1250,9 +1264,11 @@ class FileManagerPage extends React.Component {
    */
   deleteDocument(params) {
     const self = this;
+
     self.setState({
       loadingFolders: true,
     });
+
     // We need to redeclare the function to have a reference to it.
     // Otherwise, we would not be able to call it recursivaly,
     // as we don't know in which context it is going to run.
@@ -1263,8 +1279,6 @@ class FileManagerPage extends React.Component {
         callback(error, null);
         return false;
       }
-
-      let self = this;
 
       // TODO: handle this with promises
       removeFromRoot((error, result) => {
@@ -1324,7 +1338,11 @@ class FileManagerPage extends React.Component {
         if (id && !isImported) {
           gapi.client.drive.files.delete({
             fileId: id,
-          }).then(_callback, _callback);
+          }).then((result) => {
+            _callback(null, result);
+          }, (error) => {
+            _callback(error, null);
+          });
         } else {
           _callback();
         }
@@ -1336,33 +1354,30 @@ class FileManagerPage extends React.Component {
           DiamondAPI.remove({
             collection: 'folders',
             filter: {
-              parentFolderId
+              parentFolderId,
             },
             callback(error, response) {
-              if (!!error) {
+              if (error) {
                 _callback(error, response);
               } else {
                 DiamondAPI.remove({
                   collection: 'documents',
                   filter: {
-                    parentFolderId
+                    parentFolderId,
                   },
-                  callback
+                  callback,
                 });
               }
             }
-          })
+          });
         } else {
-          let collection = (mimeType === folderMimeType) ? 'folders' : 'documents',
-              filter = (!!id) ? {
-                _id: id
-              } : {
-                parentFolderId,
-              };
+          let collection = (mimeType === folderMimeType) ? 'folders' : 'documents';
+          let filter = id ? { _id: id } : { parentFolderId };
+
           DiamondAPI.remove({
-            collection: collection,
+            collection,
             filter,
-            callback: _callback
+            callback: _callback,
           });
         }
       }
@@ -1511,7 +1526,8 @@ class FileViewerPage extends React.Component {
           }
         },
       });
-    } else if (this.props.openedDocumentId !== this.props.params.documentId) {
+    } else if (this.props.openedDocumentId !== this.props.params.documentId ||
+      this.props.presentationView) {
       DiamondAPI.update({
         collection: 'globalValues',
         updateQuery: {
@@ -1610,6 +1626,13 @@ class FileViewerLayout extends React.Component {
   }
 }
 
+FileViewerLayout.propTypes = {
+  id: React.PropTypes.string.isRequired,
+  fileType: React.PropTypes.string.isRequired,
+  loading: React.PropTypes.string.isRequired,
+  fileName: React.PropTypes.string.isRequired,
+};
+
 class PresentationPage extends React.Component {
   render() {
     return (
@@ -1628,7 +1651,7 @@ class PresentationPage extends React.Component {
           </i>
         </div>
         <iframe
-          src={`https://docs.google.com/presentation/d/${this.props.params.id}/preview?slide=${this.props.params.slide}`}
+          src={`https://docs.google.com/presentation/d/${this.props.params.id}/preview`}
           style={
             {
               width: '100%',
@@ -1640,13 +1663,6 @@ class PresentationPage extends React.Component {
     );
   }
 }
-
-FileViewerLayout.propTypes = {
-  id: React.PropTypes.string.isRequired,
-  fileType: React.PropTypes.string.isRequired,
-  loading: React.PropTypes.string.isRequired,
-  fileName: React.PropTypes.string.isRequired,
-};
 
 /**
  * In case of error show this component.
@@ -1696,7 +1712,6 @@ ReactDOM.render(
       <Route path='/folder/:folderId' component={FileManagerPage} />
       <Route path='/document/:documentId' component={FileViewerPage} />
       <Route path='/presentation/:id' component={PresentationPage} />
-      <Route path='/presentation/:id/slide' component={PresentationPage} />
     </Route>
   </Router>,
   document.getElementById('render-target')
