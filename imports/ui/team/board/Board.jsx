@@ -214,11 +214,14 @@ export default class Board extends React.Component {
     const classes = classNames('board-container', {
       'permission-asker-opened': this.props.permissionAsker,
     });
+    const lock = classNames('sub-header', {
+      'lock': !this.state.visibleForDirectors,
+    });
     const email = Meteor.user().email();
 
     return (
       <div className={classes}>
-        <div className="sub-header">
+        <div className={lock}>
           <div className="sub-header-data col-xs-6">
             <ol className="breadcrumb truncate">
               <li>
@@ -239,6 +242,10 @@ export default class Board extends React.Component {
               !this.props.team.userIsCertainHierarchy(email, 'coordinador') &&
               this.props.board.type === 'creativos' ? (
                 <div className="visibility">
+                  <label className="switch">
+                    <input type="checkbox" />
+                    <div className="slider round"></div>
+                  </label>
                   {
                     this.state.visibleForDirectors ? (
                       <img

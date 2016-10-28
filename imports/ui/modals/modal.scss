@@ -3,13 +3,16 @@
 @import 'create-board/create-board-modal';
 @import 'config-board/config-board-modal';
 @import 'users-list/users-list';
-@import 'create-chat/create-chat-modal';
+// @import 'create-chat/create-chat-modal';
 
 .modal-header, .modal-footer {
-  padding: 24px !important;
   border: none !important;
 }
+.modal-header {
+  padding: 24px 24px 0px !important;
+}
 .modal-body {
+  padding: 15px 24px !important;
   overflow-y: auto;
   overflow-x: hidden;
   .modal-body-fixed {
@@ -32,11 +35,16 @@
     opacity: 0.7;
   }
 }
-.btn-accept {
-  background-color: $peter-river;
-  color: $white;
-  // box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.3);
-}
-.btn-accept:hover, .btn-accept:active, .btn-accept:focus {
-  color: $white !important;
+.modal-footer {
+  padding: 15px 24px !important;
+  .row {
+    margin: 0 !important;
+    .btn-accept {
+      background-color: $peter-river;
+      color: $white;
+    }
+    .btn-accept:hover, .btn-accept:active, .btn-accept:focus {
+      color: $white !important;
+    }
+  }
 }

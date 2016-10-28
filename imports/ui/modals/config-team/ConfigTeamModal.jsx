@@ -140,13 +140,12 @@ export default class ConfigTeamModal extends React.Component {
             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
               <img src="/img/close-icon.svg" width="18px" />
             </button>
-            <h4 className="modal-title">Configuración del equipo</h4>
+            <h4 className="modal-title">Configuración de {this.props.team.name}</h4>
           </div>
         }
         body={
           <div>
-            <h4 className="configuration-title">Equipo</h4>
-            <p className="explanation-text margin">Edite el nombre y tipo del equipo</p>
+            { /* <h4 className="configuration-title">{this.props.team.name}</h4>
             <div className="row">
               <div className="name-input">
                 <label
@@ -170,8 +169,7 @@ export default class ConfigTeamModal extends React.Component {
                   />
                 </div>
               </div>
-            </div>
-            <hr />
+            </div> */ }
             <h4 className="configuration-title">Miembros</h4>
             <p className="explanation-text margin">Agregue miembros al equipo.</p>
             <UsersList
@@ -194,7 +192,7 @@ export default class ConfigTeamModal extends React.Component {
             <button
               type="button"
               className="btn btn-accept btn-hover"
-              onClick={this.saveTeam}
+              onClick={this.close}
             >
               Guardar
             </button>
