@@ -216,7 +216,18 @@ class FileManagerLayout extends React.Component {
             parentFolderId: this.props.folderId,
             mimeType: folderMimeType,
             isImported: folder.isImported,
-            callback: () => {}, // TODO: handle loading and error
+            callback: (error, result) => {
+              if (error) {
+                this.props.toggleError({
+                  type: 'show',
+                  body: 'Hubo un error al eliminar la carpeta',
+                });
+              }
+              console.log('asd');
+              this.setState({
+                loadingFolders: false,
+              });
+            },
           })}
         >
           delete
@@ -286,15 +297,16 @@ class FileManagerLayout extends React.Component {
             mimeType: document.fileType,
             isImported: document.isImported,
             callback: (error, result) => {
-              if(error) {
+              if (error) {
                 this.props.toggleError({
                   type: 'show',
-                  body: 'Error al borrar el documento',
-                });
-                self.setState({
-                  loadingDocuments: false,
+                  body: 'Hubo un error al borrar el documento',
                 });
               }
+
+              this.setState({
+                loadingFolders: false,
+              });
             },
           })}
         >
@@ -1250,9 +1262,11 @@ class FileManagerPage extends React.Component {
    */
   deleteDocument(params) {
     const self = this;
+
     self.setState({
       loadingFolders: true,
     });
+
     // We need to redeclare the function to have a reference to it.
     // Otherwise, we would not be able to call it recursivaly,
     // as we don't know in which context it is going to run.
@@ -1263,8 +1277,6 @@ class FileManagerPage extends React.Component {
         callback(error, null);
         return false;
       }
-
-      let self = this;
 
       // TODO: handle this with promises
       removeFromRoot((error, result) => {
@@ -1324,7 +1336,11 @@ class FileManagerPage extends React.Component {
         if (id && !isImported) {
           gapi.client.drive.files.delete({
             fileId: id,
-          }).then(_callback, _callback);
+          }).then((result) => {
+            _callback(null, result);
+          }, (error) => {
+            _callback(error, null);
+          });
         } else {
           _callback();
         }
@@ -1336,33 +1352,30 @@ class FileManagerPage extends React.Component {
           DiamondAPI.remove({
             collection: 'folders',
             filter: {
-              parentFolderId
+              parentFolderId,
             },
             callback(error, response) {
-              if (!!error) {
+              if (error) {
                 _callback(error, response);
               } else {
                 DiamondAPI.remove({
                   collection: 'documents',
                   filter: {
-                    parentFolderId
+                    parentFolderId,
                   },
-                  callback
+                  callback,
                 });
               }
             }
-          })
+          });
         } else {
-          let collection = (mimeType === folderMimeType) ? 'folders' : 'documents',
-              filter = (!!id) ? {
-                _id: id
-              } : {
-                parentFolderId,
-              };
+          let collection = (mimeType === folderMimeType) ? 'folders' : 'documents';
+          let filter = id ? { _id: id } : { parentFolderId };
+
           DiamondAPI.remove({
-            collection: collection,
+            collection,
             filter,
-            callback: _callback
+            callback: _callback,
           });
         }
       }
