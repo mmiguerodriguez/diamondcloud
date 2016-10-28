@@ -92,6 +92,7 @@ export default class SidebarLayout extends React.Component {
           addChat={this.props.addChat}
           createDirectChat={this.props.createDirectChat}
           toggleCollapsible={this.props.toggleCollapsible}
+          openConfigTeamModal={this.props.openConfigTeamModal}
         />
       </div>
     );

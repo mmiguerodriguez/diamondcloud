@@ -32,6 +32,7 @@ export default class ChatsCollapsible extends React.Component {
               directChats={this.props.directChats}
               addChat={this.props.addChat}
               createDirectChat={this.props.createDirectChat}
+              openConfigTeamModal={this.props.openConfigTeamModal}
             />
           </div>
         }
@@ -50,4 +51,5 @@ ChatsCollapsible.propTypes = {
   toggleCollapsible: React.PropTypes.func.isRequired,
   addChat: React.PropTypes.func.isRequired,
   createDirectChat: React.PropTypes.func.isRequired,
+  openConfigTeamModal: React.PropTypes.func.isRequired,
 };

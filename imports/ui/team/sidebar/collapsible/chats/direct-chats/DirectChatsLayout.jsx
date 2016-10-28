@@ -23,7 +23,9 @@ export default class DirectChatsLayout extends React.Component {
   renderUsers() {
     let arr = [];
   
-    this.props.users.forEach((user) => {
+    this.props.team.users.forEach((_user) => {
+      const user = Meteor.users.findByEmail(_user.email, {});
+
       if (user._id !== Meteor.userId()) {
         let directChat = DirectChats.getDirectChat(user._id, this.props.team._id);
         if (!directChat) {
@@ -52,13 +54,15 @@ export default class DirectChatsLayout extends React.Component {
         <hr className='hr-fixed-color' />
         <div>
           {
-            (this.props.directChats.length !== 0 || this.props.users.length !== 0) ? (
+            this.props.directChats.length > 0 || this.props.team.users.length > 1 ? (
               <div>
                 {this.renderDirectChats()}
                 {this.renderUsers()}
               </div>
             ) : (
-              <p className='no-chat-text'>No tienes chats activos, para crear uno hacé click en <img src='/img/add-people-icon.svg' width='18px' /></p> 
+              <p className='no-chat-text'>
+                No hay usuarios en el equipo, para compartirlo hacé click <a onClick={this.props.openConfigTeamModal} role="button">acá</a>
+              </p> 
             )
           }
         </div>
@@ -73,4 +77,5 @@ DirectChatsLayout.propTypes = {
   directChats: React.PropTypes.array.isRequired,
   addChat: React.PropTypes.func.isRequired,
   createDirectChat: React.PropTypes.func.isRequired,
+  openConfigTeamModal: React.PropTypes.func.isRequired,
 };

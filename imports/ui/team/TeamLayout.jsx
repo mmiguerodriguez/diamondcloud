@@ -367,7 +367,9 @@ export default class TeamLayout extends React.Component {
   renderUsersChat() {
     let arr = [];
 
-    this.props.users.forEach((user) => {
+    this.props.team.users.forEach((_user) => {
+      const user = Meteor.users.findByEmail(_user.email, {});
+
       if (user._id !== Meteor.userId()) {
         let directChat = DirectChats.getDirectChat(user._id, this.props.team._id);
         if (!directChat) {
