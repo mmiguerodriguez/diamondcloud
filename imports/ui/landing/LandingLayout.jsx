@@ -5,7 +5,7 @@ import AccountsUIWrapper from '../accounts/AccountsUIWrapper';
 
 export default class LandingLayout extends React.Component {
   render() {
-    const isCyD = this.props.location.pathname === '/carlosydario';
+    const isCyD = this.props.location.pathname === '/carlosydario' || this.props.location.pathname === '/presentacion';
     const backgroundClass = classNames({
       diamond: !isCyD,
       cyd: isCyD,

@@ -1,4 +1,4 @@
-import { analytics } from 'meteor/okgrow:analytics'; // Package for analytics
+import { analytics }     from 'meteor/okgrow:analytics'; // Package for analytics
 import React             from 'react';
 import {
   Router,
@@ -30,6 +30,11 @@ const renderRoutes = () => (
       <Route path="*" component={NotFound} onEnter={logPageView} />
     </Route>
     <Route path="/diamond" component={AppPageContainer} onEnter={logPageView}>
+      <IndexRoute component={LandingPage} />
+      <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
+      <Route path="*" component={NotFound} onEnter={logPageView} />
+    </Route>
+    <Route path="/presentacion" component={AppPageContainer} onEnter={logPageView}>
       <IndexRoute component={LandingPage} />
       <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
       <Route path="*" component={NotFound} onEnter={logPageView} />
