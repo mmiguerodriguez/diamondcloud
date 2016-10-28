@@ -80,12 +80,10 @@ class Index extends React.Component {
           });
           if (result[0].presentationView) {
             browserHistory.push(
-              `/presentation/${result[0].openedDocumentId}/
-              ${(result[0].slide) ?
-                result[0].slide :
-                null
-              }`
-            );
+              `/presentation/${result[0].openedDocumentId}/${
+                (result[0].slide) ?
+                  result[0].slide : ''
+              }`);
           } else {
             browserHistory.push(`/document/${result[0].openedDocumentId}`);
           }
@@ -1632,6 +1630,12 @@ class FileViewerLayout extends React.Component {
 }
 
 class PresentationPage extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.handleSlideChange = this.handleSlideChange.bind(this);
+  }
+  
   render() {
     return (
       <div>
@@ -1656,6 +1660,7 @@ class PresentationPage extends React.Component {
               height: 'calc(100% - 42px)'
             }
           }
+          onLoad={this.handleSlideChange}
         />
       </div>
     );
@@ -1696,6 +1701,28 @@ class PresentationPage extends React.Component {
         }
       });
     }
+  }
+  
+  handleSlideChange(event) {
+    console.log('El target es: ', event.target);
+    const slide = event.target.src.substr(event.target.src.indexOf('slide=') + 'slide='.length);
+    console.log(slide);
+    /*if (newSlide !== this.props.slide) {
+      DiamondAPI.insert({
+        collection: 'globalValues',
+        object: {
+          openedDocumentId: this.props.params.documentId,
+          presentationView: true,
+          slide: newSlide,
+        },
+        isGlobal: false,
+        callback(error) {
+          if (error) {
+            console.error(error); // TODO: handle error
+          }
+        },
+      });
+    }*/
   }
 }
 
