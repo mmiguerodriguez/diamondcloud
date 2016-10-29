@@ -11,23 +11,23 @@ if (!isMobile.any) {
   $.extend($.fn.popover.Constructor.DEFAULTS, {
     react: false
   });
-  
-  let oldSetContent = $.fn.popover.Constructor.prototype.setContent;
-  $.fn.popover.Constructor.prototype.setContent = function() {
+
+  const oldSetContent = $.fn.popover.Constructor.prototype.setContent;
+  $.fn.popover.Constructor.prototype.setContent = function () {
     if (!this.options.react) {
       return oldSetContent.call(this);
     }
-  
-    let $tip = this.tip();
-    let title = this.getTitle();
-    let content = this.getContent();
-  
+
+    const $tip = this.tip();
+    const title = this.getTitle();
+    const content = this.getContent();
+
     $tip.removeClass('fade top bottom left right in');
-  
+
     // If we've already rendered, there's no need to render again
     if (!$tip.find('.popover-content').html()) {
       // Render title, if any
-      let $title = $tip.find('.popover-title');
+      const $title = $tip.find('.popover-title');
       if (title) {
         ReactDOM.render(title, $title[0]);
       } else {

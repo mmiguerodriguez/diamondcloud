@@ -33,3 +33,12 @@ input:focus {
 .post-it-text:focus {
   outline: none;
 }
+
+[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  display: block;
+}
+
+.emojionearea-editor {
+  height: 100%;
+}

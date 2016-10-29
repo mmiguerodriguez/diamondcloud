@@ -13,7 +13,7 @@ export default class UsersList extends React.Component {
 
     this.handleKey = this.handleKey.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.addUser = this.addUser.bind(this);
   }
 
   handleChange(index, event) {
@@ -24,15 +24,16 @@ export default class UsersList extends React.Component {
 
   handleKey(event) {
     if (event.which === 13) {
-      this.handleSubmit();
+      this.addUser();
     }
   }
 
-  handleSubmit() {
+  addUser() {
     this.props.addUser({
       email: this.state.email,
       hierarchy: this.state.hierarchy,
     });
+
     this.setState({
       email: '',
     });
@@ -131,6 +132,7 @@ export default class UsersList extends React.Component {
                   value={email}
                   onChange={e => this.handleChange('email', e)}
                   onKeyDown={this.handleKey}
+                  style={{textTransform: "lowercase"}}
                 />
                 <select
                   className="form-control user-type"
@@ -150,7 +152,7 @@ export default class UsersList extends React.Component {
                 <div
                   className="input-group-addon search-input"
                   role="button"
-                  onClick={this.handleSubmit}
+                  onClick={this.addUser}
                 >
                   <img
                     src="/img/add-people-icon.svg"

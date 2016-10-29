@@ -2,6 +2,17 @@
   "public": {
     "gcm": {
       "projectNumber": "624318008240"
+    },
+    "analyticsSettings": {
+      "Google Analytics" : {
+        "trackingId": "UA-86274384-1",
+        "autorun": false
+      },
+      "Mixpanel" : {
+        "token": "c8386a2cb81199d11e15cdbbab370a7d",
+        "people": true,
+        "autorun": false
+      }
     }
   },
   "private": {
@@ -14,9 +25,9 @@
     "gcm": {
       "apiKey": "AIzaSyAjSq4PZtUlCpXdBv-FRs_6fL-oc9CXOJg"
     },
-    "kadira": { 
-      "appId": "WxpzmytS2eYuZra5H", 
-      "appSecret": "c234fbc9-95a3-49a6-9b54-19906c7e09ae" 
+    "kadira": {
+      "appId": "WxpzmytS2eYuZra5H",
+      "appSecret": "c234fbc9-95a3-49a6-9b54-19906c7e09ae"
     }
   }
 }

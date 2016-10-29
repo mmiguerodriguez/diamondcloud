@@ -1,10 +1,16 @@
 import { Meteor }           from 'meteor/meteor';
 
-import { ModuleInstances }  from '../../module-instances/module-instances.js';
-import { APICollection }       from '../../api-collection/api-collection.js';
-import { Boards }           from '../../boards/boards.js';
+import { ModuleInstances }  from '../../module-instances/module-instances';
+import { APICollection }    from '../../api-collection/api-collection';
+import { Boards }           from '../../boards/boards';
 
 Meteor.publish('APICollection.data', function (moduleInstanceId, collection, filter) {
+  if (!this.userId) {
+    this.stop();
+    throw new Meteor.Error('APICollection.data.notLoggedIn',
+    'Must be logged in to view module data.');
+  }
+
   const moduleInstance = ModuleInstances.findOne(moduleInstanceId);
 
   if (moduleInstance === undefined || moduleInstance === null) {

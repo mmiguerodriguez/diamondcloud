@@ -3,7 +3,7 @@
 @import 'modules/modules';
 
 .collapsible {
-  z-index: 103;
+  z-index: 100001;
   display: none;
   position: absolute;
   width: 250px;
@@ -41,6 +41,7 @@
   .title {
     margin-top: 10px;
     font-weight: 600;
+    color: #000 !important;
   }
   .close {
     z-index: 1;

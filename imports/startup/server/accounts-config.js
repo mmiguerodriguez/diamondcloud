@@ -1,5 +1,4 @@
-import { shareTeam } from '../../api/teams/methods.js';
-import { Teams }     from '../../api/teams/teams.js';
+import { Accounts }  from 'meteor/accounts-base';
 
 /**
  * Callback when a user is created.
@@ -12,11 +11,13 @@ import { Teams }     from '../../api/teams/teams.js';
  *  The user we will be inserting to the
  *  database.
  */
-Accounts.onCreateUser((options, user) => {
+Accounts.onCreateUser((options, _user) => {
+  const user = _user;
+
   const service = Object.keys(user.services);
-  let name = user.services[service].name;
-  let email = user.services[service].email;
-  let picture = user.services[service].picture;
+  const name = user.services[service].name;
+  const email = user.services[service].email;
+  const picture = user.services[service].picture;
 
   user.emails = [{ address: email }];
   user.profile = {

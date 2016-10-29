@@ -15,7 +15,7 @@ class Index extends React.Component {
 
     this.state = {
       openedDocumentId: '',
-      
+
       error: {
         type: '',
         body: '',
@@ -23,10 +23,10 @@ class Index extends React.Component {
         showing: false,
       }
     };
-    
+
     this.error = this.error.bind(this);
   }
-  
+
   error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
     console.log(type, body);
     this.setState({
@@ -37,13 +37,15 @@ class Index extends React.Component {
       },
     });
   }
-  
+
   render() {
     return (
       <div>
         {
           React.cloneElement(this.props.children, {
             openedDocumentId: this.state.openedDocumentId,
+            presentationView: this.state.presentationView,
+            slide: this.state.slide,
             error: this.error,
           })
         }
@@ -110,7 +112,7 @@ class FileManagerLayout extends React.Component {
             className="col-xs-3 icon-type create-doc"
             src="/modules/drive/img/google-slides.svg"
           />);
-          
+
       default:
         // Check if the file is an image
         if(fileType.indexOf("image/") !== -1) {
@@ -216,7 +218,18 @@ class FileManagerLayout extends React.Component {
             parentFolderId: this.props.folderId,
             mimeType: folderMimeType,
             isImported: folder.isImported,
-            callback: () => {}, // TODO: handle loading and error
+            callback: (error, result) => {
+              if (error) {
+                this.props.toggleError({
+                  type: 'show',
+                  body: 'Hubo un error al eliminar la carpeta',
+                });
+              }
+              console.log('asd');
+              this.setState({
+                loadingFolders: false,
+              });
+            },
           })}
         >
           delete
@@ -286,15 +299,16 @@ class FileManagerLayout extends React.Component {
             mimeType: document.fileType,
             isImported: document.isImported,
             callback: (error, result) => {
-              if(error) {
+              if (error) {
                 this.props.toggleError({
                   type: 'show',
-                  body: 'Error al borrar el documento',
-                });
-                self.setState({
-                  loadingDocuments: false,
+                  body: 'Hubo un error al borrar el documento',
                 });
               }
+
+              this.setState({
+                loadingFolders: false,
+              });
             },
           })}
         >
@@ -382,7 +396,7 @@ class FileManagerLayout extends React.Component {
                       diamondCloudDriveFolderId: this.props.diamondCloudDriveFolderId,
                       callback: (error, result) => {
                         if (error) {
-                        
+
                         } else {
                           $('#create-document').modal('hide');
                         }
@@ -526,7 +540,7 @@ class FileManagerLayout extends React.Component {
               (this.props.openedDocumentId) ?
                 (
                   <div
-                    className="go-back-to-document"
+                    className="drive-navbar-btn back-document"
                     onClick={
                       () => {
                         browserHistory.push(`/document/${this.props.openedDocumentId}`);
@@ -568,7 +582,7 @@ class FileManagerLayout extends React.Component {
               )
           }
           <div className="create">
-            <div 
+            <div
               className="img"
               data-toggle="modal"
               data-target="#create-document"
@@ -714,7 +728,7 @@ class FileManagerPage extends React.Component {
       },
     });
   }
-  
+
   constructor(props) {
     super(props);
 
@@ -736,7 +750,7 @@ class FileManagerPage extends React.Component {
                           */
     };
   }
-  
+
   render() {
     return (
       <FileManagerLayout
@@ -1003,6 +1017,9 @@ class FileManagerPage extends React.Component {
       // Check if user is owner of current folder
       FileManagerPage.isUserOwnerOfFolder(parentFolderId, (error, result) => {
         if (error) {
+          self.setState({
+            loadingDocuments: false,
+          });
           callback(error);
           return;
         }
@@ -1011,16 +1028,32 @@ class FileManagerPage extends React.Component {
           .then((response) => {
             id = response.result.id;
             return createDrivePermission(response);
-          }, callback)
+          }, (_error) => {
+            self.setState({
+              loadingDocuments: false,
+            });
+            callback(_error);
+          })
           .then(() => FileManagerPage.insertFileInStorage({
             id,
             name,
             fileType,
             parentFolderId,
-          }), callback)
+          }), (_error) => {
+            self.setState({
+              loadingDocuments: false,
+            });
+            callback(_error);
+          })
           .then((_result) => {
+            self.setState({
+              loadingDocuments: false,
+            });
             callback(null, _result);
           }, (_error) => {
+            self.setState({
+              loadingDocuments: false,
+            });
             callback(_error);
           });
       });
@@ -1030,13 +1063,23 @@ class FileManagerPage extends React.Component {
         .then((response) => {
           id = response.result.id;
           return createDrivePermission(response);
-        }, callback)
+        }, (_error) => {
+          self.setState({
+            loadingDocuments: false,
+          });
+          callback(_error);
+        })
         .then(() => FileManagerPage.insertFileInStorage({
           id,
           name,
           fileType,
           parentFolderId,
-        }), callback)
+        }), (_error) => {
+          self.setState({
+            loadingDocuments: false,
+          });
+          callback(_error);
+        })
         .then((_result) => {
           self.setState({
             loadingDocuments: false,
@@ -1221,9 +1264,11 @@ class FileManagerPage extends React.Component {
    */
   deleteDocument(params) {
     const self = this;
+
     self.setState({
       loadingFolders: true,
     });
+
     // We need to redeclare the function to have a reference to it.
     // Otherwise, we would not be able to call it recursivaly,
     // as we don't know in which context it is going to run.
@@ -1234,8 +1279,6 @@ class FileManagerPage extends React.Component {
         callback(error, null);
         return false;
       }
-
-      let self = this;
 
       // TODO: handle this with promises
       removeFromRoot((error, result) => {
@@ -1295,7 +1338,11 @@ class FileManagerPage extends React.Component {
         if (id && !isImported) {
           gapi.client.drive.files.delete({
             fileId: id,
-          }).then(_callback, _callback);
+          }).then((result) => {
+            _callback(null, result);
+          }, (error) => {
+            _callback(error, null);
+          });
         } else {
           _callback();
         }
@@ -1307,33 +1354,30 @@ class FileManagerPage extends React.Component {
           DiamondAPI.remove({
             collection: 'folders',
             filter: {
-              parentFolderId
+              parentFolderId,
             },
             callback(error, response) {
-              if (!!error) {
+              if (error) {
                 _callback(error, response);
               } else {
                 DiamondAPI.remove({
                   collection: 'documents',
                   filter: {
-                    parentFolderId
+                    parentFolderId,
                   },
-                  callback
+                  callback,
                 });
               }
             }
-          })
+          });
         } else {
-          let collection = (mimeType === folderMimeType) ? 'folders' : 'documents',
-              filter = (!!id) ? {
-                _id: id
-              } : {
-                parentFolderId,
-              };
+          let collection = (mimeType === folderMimeType) ? 'folders' : 'documents';
+          let filter = id ? { _id: id } : { parentFolderId };
+
           DiamondAPI.remove({
-            collection: collection,
+            collection,
             filter,
-            callback: _callback
+            callback: _callback,
           });
         }
       }
@@ -1453,16 +1497,16 @@ class FileViewerPage extends React.Component {
     super(props);
     this.state = {
       loading: true,
-      fileType: null,
+      file: {},
     };
   }
   render() {
-    let url = 'https://drive.google.com/open?id=' + this.props.params.documentId;
     return (
       <FileViewerLayout
-        url={url}
-        fileType={this.state.fileType}
+        id={this.props.params.documentId}
+        fileType={this.state.file.fileType}
         loading={this.state.loading}
+        fileName={this.state.file.name}
       />
     );
   }
@@ -1482,7 +1526,8 @@ class FileViewerPage extends React.Component {
           }
         },
       });
-    } else if (this.props.openedDocumentId !== this.props.params.documentId) {
+    } else if (this.props.openedDocumentId !== this.props.params.documentId ||
+      this.props.presentationView) {
       DiamondAPI.update({
         collection: 'globalValues',
         updateQuery: {
@@ -1498,7 +1543,7 @@ class FileViewerPage extends React.Component {
       });
     }
     const self = this;
-    // Set the fileType
+    // Set the selected file
     DiamondAPI.get({
       collection: 'documents',
       filter: {
@@ -1513,14 +1558,47 @@ class FileViewerPage extends React.Component {
             type: 'show',
             body: 'Error al abrir el documento',
           });
+        } else if (result.length === 0) {
+          browserHistory.push('/folder');
         } else {
           self.setState({
             loading: false,
-            fileType: result[0].fileType,
+            file: result[0],
           });
         }
       }
     });
+  }
+  
+  componentWillReceiveProps(nextProps) {
+    if (this.props.params.documentId !== nextProps.params.documentId) {
+      const self = this;
+      // Set the selected file
+      DiamondAPI.get({
+        collection: 'documents',
+        filter: {
+          _id: nextProps.params.documentId,
+        },
+        callback(error, result) {
+          if (error) {
+            self.setState({
+              loading: false,
+            });
+            self.props.toggleError({
+              type: 'show',
+              body: 'Error al abrir el documento',
+            });
+          } else if (result.length === 0) {
+            browserHistory.push('/folder');
+          } else {
+            self.setState({
+              loading: false,
+              file: result[0],
+            });
+          }
+        }
+      });
+    }
   }
 }
 
@@ -1533,14 +1611,25 @@ class FileViewerLayout extends React.Component {
         </div>
       );
     }
-    console.log(this.props.fileType.indexOf('image'));
+    let url = `https://drive.google.com/open?id=${this.props.id}`;
     return (
       <div>
         <div className='drive-navbar'>
           <i
             className="go-back"
-            onClick={ () => { browserHistory.push('/folder') } }>
-          </i>
+            onClick={ () => { browserHistory.push('/folder') } }
+          />
+          <p className='file-name truncate' title={this.props.fileName}>{this.props.fileName}</p>
+          {
+            (this.props.fileType === 'application/vnd.google-apps.presentation') ?
+            (<i
+              className="drive-navbar-btn presentate"
+              onClick={() => { browserHistory.push(`/presentation/${this.props.id}`) }}
+            >
+              Iniciar presentación
+            </i>) :
+            (null)
+          }
         </div>
         {
           (this.props.fileType.indexOf('image') !== -1 || this.props.fileType.indexOf('video') !== -1) ?
@@ -1549,13 +1638,13 @@ class FileViewerLayout extends React.Component {
             <div className="image-container">
               <div className="photo" />
               <p className="image-text">
-                Para poder acceder a la imagen/video hace click <a href={this.props.url} target="_blank">acá</a>
+                Para poder acceder a la imagen/video hace click <a href={url} target="_blank">acá</a>
               </p>
           </div>
         </div>
           ) : (
             <iframe
-              src={this.props.url}
+              src={url}
               style={
                 {
                   width: '100%',
@@ -1571,10 +1660,42 @@ class FileViewerLayout extends React.Component {
 }
 
 FileViewerLayout.propTypes = {
-  url: React.PropTypes.string.isRequired,
+  id: React.PropTypes.string.isRequired,
   fileType: React.PropTypes.string.isRequired,
   loading: React.PropTypes.string.isRequired,
+  fileName: React.PropTypes.string.isRequired,
 };
+
+class PresentationPage extends React.Component {
+  render() {
+    return (
+      <div>
+        <div className='drive-navbar'>
+          <i
+            className="go-back"
+            onClick={ () => { browserHistory.push('/folder') } }
+          />
+          <p className='file-name truncate' title={this.props.fileName}>{this.props.fileName}</p>
+          <i
+            className="drive-navbar-btn presentate"
+            onClick={() => { browserHistory.push(`/document/${this.props.params.id}`) }}
+          >
+            Volver a edición
+          </i>
+        </div>
+        <iframe
+          src={`https://docs.google.com/presentation/d/${this.props.params.id}/preview`}
+          style={
+            {
+              width: '100%',
+              height: 'calc(100% - 42px)'
+            }
+          }
+        />
+      </div>
+    );
+  }
+}
 
 /**
  * In case of error show this component.
@@ -1623,6 +1744,7 @@ ReactDOM.render(
       <Route path='/folder' component={FileManagerPage} />
       <Route path='/folder/:folderId' component={FileManagerPage} />
       <Route path='/document/:documentId' component={FileViewerPage} />
+      <Route path='/presentation/:id' component={PresentationPage} />
     </Route>
   </Router>,
   document.getElementById('render-target')

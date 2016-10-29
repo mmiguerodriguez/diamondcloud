@@ -17,12 +17,15 @@ export default class ModuleInstance extends React.Component {
       loading: true,
       zIndex: 0,
     };
+
+    this.iframeLoaded = this.iframeLoaded.bind(this);
+    this.toggleMinimize = this.toggleMinimize.bind(this);
   }
 
   componentDidMount() {
     const DiamondAPI = generateAPI(this.props.moduleInstance._id);
 
-    this.iframe.onload = this.iframeLoaded.bind(this);
+    this.iframe.onload = this.iframeLoaded;
     this.iframe.contentWindow.DiamondAPI = DiamondAPI;
     this.props.moduleInstancesFrames.push(this.iframe.contentWindow);
   }
@@ -47,7 +50,9 @@ export default class ModuleInstance extends React.Component {
       containment: 'parent',
       handle: '.module-pin',
       cursor: '-webkit-grabbing !important',
-      cursorAt: { top: -6 },
+      cursorAt: {
+        top: -6,
+      },
       distance: 5,
       iframeFix: true,
       start() {
@@ -61,12 +66,28 @@ export default class ModuleInstance extends React.Component {
       disabled: this.state.minimized,
       minWidth: this.props.module.settings.minWidth,
       minHeight: this.props.module.settings.minHeight,
-      start() {
+      start(event, ui) {
+        ui.element.append(
+          $('<div />', {
+            id: 'iframe-helper',
+            css: {
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              'z-index': 10,
+            },
+          })
+        );
+
         self.setState({
           zIndex: self.props.changeState(),
         });
       },
       stop(event, ui) {
+        $('#iframe-helper', ui.element).remove();
+
         const moduleInstanceId = self.props.moduleInstance._id;
         const { width, height } = ui.size;
 
@@ -79,6 +100,21 @@ export default class ModuleInstance extends React.Component {
             console.error(error);
           }
         });
+      },
+      resize(event, ui) {
+        const $board = $('.board');
+        const paddingRight = $board.width() - (ui.position.left + ui.size.width);
+        const paddingBottom = $board.height() - (PIN_HEIGHT + ui.position.top + ui.size.height);
+
+        $(self.module)
+        .width(ui.size.width)
+        .height(ui.size.height);
+
+        $('#iframe-helper', ui.element)
+        .width(ui.size.width)
+        .height(ui.size.height)
+        .css('padding-right', paddingRight)
+        .css('padding-bottom', paddingBottom);
       },
     });
 
@@ -117,7 +153,7 @@ export default class ModuleInstance extends React.Component {
       left: this.props.moduleInstance.y,
       width: this.props.moduleInstance.width,
       height: this.props.moduleInstance.height,
-      marginTop: this.state.minimized ? PIN_HEIGHT /* + TEXT_HEIGHT */ + PIN_HEIGHT/2 : PIN_HEIGHT,
+      marginTop: PIN_HEIGHT,
       zIndex: this.state.zIndex,
     };
 
@@ -147,7 +183,7 @@ export default class ModuleInstance extends React.Component {
             <div
               className="module-pin"
               role="button"
-              onClick={this.toggleMinimize.bind(this)}
+              onClick={this.toggleMinimize}
               onContextMenu={
                 this.props.openModuleInstanceContextMenu.bind(
                   null,

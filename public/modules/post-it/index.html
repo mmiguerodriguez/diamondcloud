@@ -1,19 +1,18 @@
 <html>
   <head>
     <link href="https://fonts.googleapis.com/css?family=Kalam" rel="stylesheet">
-    <link href='main.css' rel='stylesheet'>
-    <script src='main.js'></script>
+    <link href="css/main.css" rel="stylesheet">
+    <link href="css/emojionearea.css" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="js/emojionearea.min.js"></script>
   </head>
   <body>
-    <div id='resizable' class='post-it ui-widget-content'>
-  		<div class='text-container container-fluid'>
-  			<textarea
-          id='text'
-          class='post-it-text'
-          placeholder='Texto'
-          onkeyup='updatePostIt(this);'>
-        </textarea>
+    <div id="resizable" class="post-it ui-widget-content">
+  		<div class="text-container container-fluid">
+  			<textarea id="text" class="post-it-text" placeholder="Ingresar texto..."></textarea>
   		</div>
   	</div>
+    <script src="js/main.js"></script>
   </body>
 </html>

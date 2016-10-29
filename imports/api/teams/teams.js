@@ -5,12 +5,9 @@ export const Teams = new Mongo.Collection('Teams');
 
 Teams.helpers({
   /**
-   * Shows if the user has certain hierarchy in the given team
+   * Returns the user hierarchy in the team
    * @param {String} email
-   * @param {String} hierarchy
-   * @returns {Boolean} isCertainHierarchy
-   *
-   * TODO: let hierarchy be an array of hierarchies
+   * @returns {String} hierarchy
    */
   userHierarchy(email) {
     for (const user of this.users) {
@@ -21,6 +18,14 @@ Teams.helpers({
 
     return 'ghost';
   },
+  /**
+   * Shows if the user has a certain hierarchy in the team
+   * @param {String} email
+   * @param {String} hierarchy
+   * @returns {Boolean} isCertainHierarchy
+   *
+   * TODO: let hierarchy be an array of hierarchies
+   */
   userIsCertainHierarchy(email, hierarchy) {
     for (let i = 0; i < this.users.length; i += 1) {
       if (email === this.users[i].email) {
@@ -39,15 +44,15 @@ Teams.helpers({
     let found = false;
 
     if (typeof user === 'string') {
-      user = Meteor.users.findOne(user);
-      mail = user.email();
-    } else {
-      if (user._id) {
-        user = Meteor.users.findOne(user._id);
-        mail = user.email();
-      } else if (typeof user.email === 'string') {
-        mail = user.email;
+      if (/\S+@\S+\.\S+/.test(user)) { // email RegEx
+        mail = user;
+      } else {
+        mail = Meteor.users.findOne(user).email();
       }
+    } else if (user._id) {
+      mail = Meteor.users.findOne(user._id).email();
+    } else if (typeof user.email === 'string') {
+      mail = user.email;
     }
 
     this.users.forEach((_user) => {
@@ -113,12 +118,12 @@ Teams.removeUser = (teamId, userEmail) => {
   });
 };
 
-Teams.getTeam = (teamId, userEmail, fields = { _id: 1, name: 1 }) => {
-  return Teams.find({
+Teams.getTeam = (teamId, userEmail, fields = { _id: 1, name: 1 }) => (
+  Teams.find({
     _id: teamId,
     'users.email': userEmail,
     archived: false,
   }, {
     fields,
-  });
-};
+  })
+);

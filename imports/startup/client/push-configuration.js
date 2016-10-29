@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Push }   from 'meteor/raix:push';
+
 Push.Configure({
   android: {
     senderID: Meteor.settings.public.gcm.projectNumber,

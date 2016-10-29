@@ -108,6 +108,18 @@ export default class Board extends React.Component {
     }
   }
 
+  getMaxZIndex() {
+    let maxZIndex = 0;
+
+    for (const i in this.state.zIndexs) {
+      if (this.state.zIndexs[i] > maxZIndex) {
+        maxZIndex = this.state.zIndexs[i];
+      }
+    }
+
+    return maxZIndex;
+  }
+
   toggleBoardToDirectors(methodName) {
     const self = this;
 
@@ -130,18 +142,6 @@ export default class Board extends React.Component {
         });
       }
     });
-  }
-
-  getMaxZIndex() {
-    let maxZIndex = 0;
-
-    for (const i in this.state.zIndexs) {
-      if (this.state.zIndexs[i] > maxZIndex) {
-        maxZIndex = this.state.zIndexs[i];
-      }
-    }
-
-    return maxZIndex;
   }
 
   renderUsers() {
@@ -222,7 +222,7 @@ export default class Board extends React.Component {
           <div className="sub-header-data col-xs-6">
             <ol className="breadcrumb truncate">
               <li>
-                <a href="">{this.props.team.name}</a>
+                <a href="#">{this.props.team.name}</a>
               </li>
               <li className="active">{this.props.board.name}</li>
             </ol>

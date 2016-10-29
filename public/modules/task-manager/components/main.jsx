@@ -13,8 +13,7 @@ const {
 const {
   Router,
   Route,
-  IndexRoute,
-  browserHistory
+  browserHistory,
 } = ReactRouter;
 
 /**
@@ -120,8 +119,9 @@ class TaskManagerPage extends React.Component {
       const filter = coordination ? {
         archived: false,
       } : {
-        boardId: currentBoard._id,
+        archived: false,
         status: 'not_finished',
+        boardId: currentBoard._id,
       };
 
       /**
@@ -556,8 +556,13 @@ class BoardsList extends React.Component {
  */
 class Board extends React.Component {
   render() {
+    const classes = classNames({
+      board: !this.props.coordination,
+      'board-fixed': this.props.coordination,
+    });
+
     return (
-      <div className='board'>
+      <div className={classes}>
         <TasksList
           board={this.props.board}
           tasks={this.props.tasks}
@@ -787,6 +792,7 @@ class Task extends React.Component {
     const durations = [];
     let updateQuery;
 
+    /*
     if (status === 'finished') {
       const date = new Date().getTime();
       this.props.task.durations.forEach((duration) => {
@@ -810,6 +816,12 @@ class Task extends React.Component {
         },
       };
     }
+    */
+    updateQuery = {
+      $set: {
+        status,
+      },
+    };
 
     DiamondAPI.update({
       collection: 'tasks',
@@ -819,11 +831,11 @@ class Task extends React.Component {
       updateQuery,
       callback(error, result) {
         if (error) {
-          this.props.showError({
+          self.props.showError({
             body: 'Error al actualizar el estado de la tarea',
           });
         } else {
-          this.props.showError({
+          self.props.showError({
             body: 'Estado de la tarea actualizado',
           });
         }
@@ -1179,27 +1191,33 @@ class Task extends React.Component {
               />
             ) : (null)
           }
-
+          
           {
+            this.props.coordination && !this.state.editing && this.props.task.status === "finished" ? (
+              <div className="finished-task" />
+            ) : (null)
+          }
+
+          {/*
             !this.props.coordination && (this.props.doing || this.state.doing) ? (
               <div>
-                <div className='record'>
+                {/*<div className='record'>
                   <img
                     src='/modules/task-manager/img/record.svg'
                     width='25px'
                   />
-                </div>
+                </div>}
                 <div
                   className='done'
                   title='Marcar como finalizado'
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
-                      src='/modules/task-manager/img/finished-task.svg'
+                      src='http://image.flaticon.com/icons/svg/65/65578.svg'
                       width='25px'
                     />
                 </div>
-                <div
+                {<div
                   className='pause'
                   title='Marcar como pausado'
                   role='button'
@@ -1208,13 +1226,13 @@ class Task extends React.Component {
                       src='/modules/task-manager/img/pause-button.svg'
                       width='15px'
                     />
-                </div>
+                </div>}
               </div>
             ) : (null)
-          }
+          */}
 
           {
-            !this.props.coordination && (!this.props.doing || !this.state.doing) && this.props.task.status === 'not_finished' ? (
+            !this.props.coordination /* && (!this.props.doing || !this.state.doing) */ && this.props.task.status === 'not_finished' ? (
               <div>
                 <div
                   className='done'
@@ -1222,11 +1240,11 @@ class Task extends React.Component {
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
-                      src='/modules/task-manager/img/finished-task.svg'
-                      width='25px'
+                      src='http://image.flaticon.com/icons/svg/65/65578.svg'
+                      width='20px'
                     />
                 </div>
-                <div
+                {/*<div
                   className='play'
                   title='Marcar como haciendo'
                   role='button'
@@ -1235,7 +1253,7 @@ class Task extends React.Component {
                       src='/modules/task-manager/img/play-arrow.svg'
                       width='15px'
                     />
-                </div>
+                </div>*/}
               </div>
             ) : (null)
           }
@@ -1243,7 +1261,7 @@ class Task extends React.Component {
           {
             !this.state.editing ? (
               <div className='col-xs-12'>
-                <p className='col-xs-12 expiration'>Vencimiento: {$.format.date(new Date(this.props.task.dueDate), 'MM/dd/yyyy')}</p>
+                <p className='col-xs-12 expiration'>Vencimiento: {$.format.date(new Date(this.props.task.dueDate), 'dd/MM/yyyy')}</p>
               </div>
             ) : (null)
           }
@@ -1299,7 +1317,7 @@ class TaskInformation extends React.Component {
               <b>Tarea:</b> {this.state.task.title}
             </p>
             <p>
-              <b>Fecha de vencimiento:</b> {new Date(this.state.task.dueDate).toLocaleDateString()}
+              <b>Vencimiento:</b> {new Date(this.state.task.dueDate).toLocaleDateString()}
             </p>
             <p>
               <b>Estado:</b> {this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada'}
@@ -1307,13 +1325,13 @@ class TaskInformation extends React.Component {
             <p>
               <b>Board:</b> {this.state.board.name}
             </p>
-            <p>
+            {/*<p>
               <b>Usuarios:</b>
             </p>
             <UserTaskInformation
               durations={this.state.task.durations}
               users={this.props.users}
-            />
+            />*/}
           </div>
         </div>
       </div>

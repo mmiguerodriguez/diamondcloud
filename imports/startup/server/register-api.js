@@ -1,27 +1,27 @@
 // Boards
-import '../../api/boards/server/publications.js';
-import '../../api/boards/methods.js';
+import '../../api/boards/server/publications';
+import '../../api/boards/methods';
 
 // Direct chats
-import '../../api/direct-chats/methods.js';
+import '../../api/direct-chats/methods';
 
 // Messages
-import '../../api/messages/server/publications.js';
-import '../../api/messages/methods.js';
+import '../../api/messages/server/publications';
+import '../../api/messages/methods';
 
 // Teams
-import '../../api/teams/server/publications.js';
-import '../../api/teams/methods.js';
+import '../../api/teams/server/publications';
+import '../../api/teams/methods';
 
 // Users
-import '../../api/users/users.js';
+import '../../api/users/users';
 
 // Module Instances
-import '../../api/module-instances/methods.js';
+import '../../api/module-instances/methods';
 
 // API
-import '../../api/api/server/publications.js';
-import '../../api/api/methods.js';
+import '../../api/api/server/publications';
+import '../../api/api/methods';
 
 // Accounts
-import '../../api/accounts/methods.js';
+import '../../api/accounts/methods';

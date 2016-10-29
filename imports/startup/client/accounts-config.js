@@ -33,7 +33,7 @@ if (Meteor.isClient) {
       google: false,
     },
     forceApprovalPrompt: {
-      google: "auto",
+      google: 'auto',
     },
   });
 
@@ -50,7 +50,13 @@ if (Meteor.isClient) {
       path = e.pathname;
     });
 
-    if (path === '/carlosydario' || path === '/diamond') {
+    const PATHS = [
+      '/carlosydario',
+      '/diamond',
+      '/presentacion', // TODO: Remove
+    ];
+
+    if (PATHS.indexOf(path) > -1) {
       path = path.substr(1, path.length - 1);
 
       Meteor.call('Accounts.methods.insertFirstUser', { url: path }, (error, result) => {

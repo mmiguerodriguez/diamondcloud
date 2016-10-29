@@ -90,7 +90,7 @@ export const createTeam = new ValidatedMethod({
         }
 
         team.boards.push({ _id: result._id });
-
+        /*
         if (users) {
           users.forEach(({ email }) => {
             if (Meteor.users.findByEmail(email, {})) {
@@ -111,7 +111,7 @@ export const createTeam = new ValidatedMethod({
             }
           });
         }
-
+        */
         future.return(team);
       });
     });
@@ -208,10 +208,21 @@ export const shareTeam = new ValidatedMethod({
       'Must be logged in to edit a team.');
     }
 
+    if (Meteor.user().email() === email) {
+      throw new Meteor.Error('Teams.methods.share.cantShareYourself',
+      'You can\'t share yourself to a team');
+    }
+
     const team = Teams.findOne(teamId);
+
     if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
       throw new Meteor.Error('Teams.methods.share.notAllowed',
       'The user is not allowed to share the team');
+    }
+
+    if (team.hasUser(email)) {
+      throw new Meteor.Error('Teams.methods.share.alreadyInTeam',
+      'The user you want to add is already in the team');
     }
 
     const user = { email, hierarchy };
@@ -220,12 +231,12 @@ export const shareTeam = new ValidatedMethod({
     const existingUser = Meteor.users.findByEmail(email, {});
     if (existingUser) {
       // User registered
-      Mail.sendMail({
+      /* Mail.sendMail({
         from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
         to: email,
         subject: 'Te invitaron a colaborar en Diamond Cloud',
         html: Mail.messages.sharedTeamRegistered(teamId),
-      });
+      }); */
 
       team.boards.forEach((boardIdObj) => {
         const board = Boards.findOne(boardIdObj._id);
@@ -233,14 +244,14 @@ export const shareTeam = new ValidatedMethod({
           Boards.addUser(board._id, existingUser._id);
         }
       });
-    } else {
+    }/* else {
       Mail.sendMail({
         from: 'Diamond Cloud <no-reply@diamondcloud.tk>',
         to: email,
         subject: 'Te invitaron a colaborar en Diamond Cloud',
         html: Mail.messages.sharedTeamNotRegistered(teamId),
       });
-    }
+    } */
 
     return Teams.findOne(teamId);
   },
