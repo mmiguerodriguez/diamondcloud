@@ -4,19 +4,19 @@ import { ModuleInstances }  from '../../module-instances/module-instances.js';
 import { APICollection }       from '../../api-collection/api-collection.js';
 import { Boards }           from '../../boards/boards.js';
 
-Meteor.publish('APICollection.data', function(moduleInstanceId, collection, filter) {
-  let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
+Meteor.publish('APICollection.data', function (moduleInstanceId, collection, filter) {
+  const moduleInstance = ModuleInstances.findOne(moduleInstanceId);
 
   if (moduleInstance === undefined || moduleInstance === null) {
-    throw new Meteor.Error('ModuleData.data.notAValidModuleInstance',
+    throw new Meteor.Error('APICollection.data.notAValidModuleInstance',
     'Must call from existing module instance.');
   }
 
-  let board = moduleInstance.board();
-  let teamId = board.team()._id;
+  const board = moduleInstance.board();
+  const teamId = board.team()._id;
 
   if (!Boards.isValid(board._id, this.userId)) {
-    throw new Meteor.Error('ModuleData.data.notAValidMember',
+    throw new Meteor.Error('APICollection.data.notAValidMember',
     'Must be a valid member.');
   }
 
@@ -34,10 +34,9 @@ Meteor.publish('APICollection.data', function(moduleInstanceId, collection, filt
           {
             '#moduleId': moduleInstance.moduleId,
             '#teamId': teamId,
-          }
-        ]
-      }
+          },
+        ],
+      },
     ],
   });
-
 });
