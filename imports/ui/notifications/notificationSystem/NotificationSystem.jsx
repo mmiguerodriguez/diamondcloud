@@ -6,8 +6,7 @@ import Notification from './Notification';
 
 export default class NotificationSystem extends React.Component {
   renderNotifications() {
-    let arr = [];
-    let authors = [];
+    const arr = [];
 
     this.props.messages.forEach((message) => {
       const isSender = message.senderId === Meteor.userId();
@@ -28,11 +27,9 @@ export default class NotificationSystem extends React.Component {
 
           title = Boards.findOne(message.boardId).name;
           body = `${sender}: ${message.content}`;
-          authors.push(title);
         } else {
           title = Meteor.users.findOne(message.senderId).profile.name;
           body = message.content;
-          authors.push(title);
         }
 
         arr.push(
@@ -44,32 +41,6 @@ export default class NotificationSystem extends React.Component {
         );
       }
     });
-
-    if (arr.length > 1) {
-      const title = 'Tenés nuevos mensajes';
-      let body = 'Te llegaron mensajes de ';
-
-      authors = authors.filter((item, pos) => authors.indexOf(item) === pos);
-
-      authors.forEach((author, index) => {
-        if (index === authors.length - 2) {
-          body += `${author} y `;
-        } else if (index === authors.length - 1) {
-          body += `${author}.`;
-        } else {
-          body += `${author}, `;
-        }
-      });
-
-      arr = [
-        <Notification
-          key={this.props.messages[0]._id}
-          // TODO: Fix this key, right now is random
-          title={title}
-          body={body}
-        />,
-      ];
-    }
 
     return arr;
   }

@@ -20,6 +20,7 @@ export default class TeamPage extends React.Component {
     this.state = {
       chats: [],
       moduleInstancesFrames: [],
+      moment: new Date(),
     };
 
     this.openHiddenChat = this.openHiddenChat.bind(this);
@@ -344,6 +345,10 @@ export default class TeamPage extends React.Component {
       }
     }
 
+    const newMessages = this.props.messages.filter((message) => {
+      return message.createdAt > this.state.moment;
+    });
+
     console.log('no hay error');
 
     return (
@@ -376,7 +381,7 @@ export default class TeamPage extends React.Component {
         {
           !isMobile.any ? (
             <NotificationSystem
-              messages={this.props.messages}
+              messages={newMessages}
             />
           ) : (null)
         }
