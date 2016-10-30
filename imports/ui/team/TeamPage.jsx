@@ -28,8 +28,20 @@ export default class TeamPage extends React.Component {
     this.boardSubscribe = this.boardSubscribe.bind(this);
     this.togglePosition = this.togglePosition.bind(this);
   }
-
+  
+  componentDidMount() {
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body',
+    });
+  }
+  
   componentDidUpdate() {
+    $('[data-toggle="tooltip"]')
+      .tooltip('destroy')
+      .tooltip({
+        container: 'body',
+      });
+    
     /**
      * If it already loaded and team doesn't exist then we
      * should return the user to a NotFound Layout or
@@ -264,7 +276,7 @@ export default class TeamPage extends React.Component {
       onError() {
         self.props.toggleError({
           type: 'show',
-          body: 'Hubo un error interno al entrar al board',
+          body: 'Hubo un error interno al entrar al pizarrón',
         });
       },
     });
@@ -294,17 +306,14 @@ export default class TeamPage extends React.Component {
     const self = this;
 
     if (!this.props.boardId) {
-      console.log('error', 1);
-      return null;
+      return (null);
     }
 
     if (this.props.team === undefined) {
-      console.log('error', 2);
-      return null;
+      return (null);
     }
 
     if (this.props.loading) {
-      console.log('error', 3);
       return (
         <div className="loading">
           <div className="loader" />
@@ -333,18 +342,15 @@ export default class TeamPage extends React.Component {
         }, 0);
 
       } else {
-        console.log('error', 4);
         return (
           <div>
             <p>
-              <a href="">No hay ningun board, rip</a>
+              <a href="#">No hay ningun pizarrón</a>
             </p>
           </div>
         );
       }
     }
-
-    console.log('no hay error');
 
     return (
       <div>

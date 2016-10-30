@@ -296,7 +296,10 @@ export default class TeamLayout extends React.Component {
       userId,
     }, (error, response) => {
       if (error) {
-        console.log('error');
+        self.props.toggleError({
+          type: 'show',
+          body: 'Hubo un error interno al abrir el mensaje directo',
+        });
       } else {
         self.props.addChat({ directChatId: response._id });
       }

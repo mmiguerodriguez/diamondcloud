@@ -71,7 +71,7 @@ export default class CreateBoardModal extends React.Component {
           if (error) {
             this.toggleError({
               type: 'show',
-              body: 'Hubo un error interno al crear el board',
+              body: 'Hubo un error interno al crear el pizarrón',
             });
           } else {
             this.close();
@@ -80,13 +80,13 @@ export default class CreateBoardModal extends React.Component {
       } else {
         this.props.toggleError({
           type: 'show',
-          body: 'El nombre del board debe tener 3 o más caracteres',
+          body: 'El nombre del pizarrón debe tener 3 o más caracteres',
         });
       }
     } else {
       this.props.toggleError({
         type: 'show',
-        body: 'El nombre del board no puede estar vacío',
+        body: 'El nombre del pizarrón no puede estar vacío',
       });
     }
   }
@@ -164,13 +164,13 @@ export default class CreateBoardModal extends React.Component {
             <button type="button" className="close" data-dismiss="modal" aria-label="Close">
               <img src="/img/close-icon.svg" width="18px" />
             </button>
-            <h4 className="modal-title">Crear un board</h4>
+            <h4 className="modal-title">Crear un pizarrón</h4>
           </div>
         }
         body={
           <div className="modal-body-fixed container-fluid">
             <p className="explanation-text">
-              Insertá el nombre del board y decidí quienes lo van a poder ver.
+              Insertá el nombre del pizarrón y decidí quienes lo van a poder ver.
             </p>
             <div className="form-group name-input">
               <label
@@ -183,7 +183,7 @@ export default class CreateBoardModal extends React.Component {
                 <TextInput
                   id="boardName"
                   class="form-control"
-                  placeholder="Nombre del board"
+                  placeholder="Nombre del pizarrón"
                   value={this.state.name}
                   minCharacters={3}
                   onChange={e => this.handleChange('name', e)}

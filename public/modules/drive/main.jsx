@@ -1,4 +1,4 @@
-const { DiamondAPI, React, ReactDOM, ReactRouter } = window;
+const { DiamondAPI, React, ReactDOM, ReactRouter, $ } = window;
 const { Router, Route, browserHistory } = ReactRouter;
 
 browserHistory.push('/folder'); // initialize the router
@@ -61,6 +61,7 @@ class Index extends React.Component {
 
   componentDidMount() {
     let self = this;
+    
     DiamondAPI.subscribe({
       collection: 'globalValues',
       callback: (error, result) => {
@@ -196,6 +197,8 @@ class FileManagerLayout extends React.Component {
         <div
           className="document fixed"
           title={folder.name}
+          data-toggle="tooltip"
+          data-placement="bottom"
           onClick={
             () => {
               browserHistory.push(`/folder/${folder._id}`);
@@ -265,6 +268,8 @@ class FileManagerLayout extends React.Component {
         <div
           className="document fixed"
           title={document.name}
+          data-toggle="tooltip"
+          data-placement="bottom"
           onClick={
             () => {
               browserHistory.push(`/document/${document._id}`);
@@ -306,6 +311,10 @@ class FileManagerLayout extends React.Component {
 
   componentDidMount() {
     this.props.initPicker('import-file', this.handleImport.bind(this));
+    
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body',
+    });
   }
 
   componentDidUpdate() {
@@ -569,31 +578,51 @@ class FileManagerLayout extends React.Component {
           }
           <div className="create">
             <div
-              className="img"
               data-toggle="modal"
               data-target="#create-document"
-              title='Crear documento'
-            />
+            >
+              <div
+                className="img"
+                title='Crear documento'
+                data-toggle="tooltip"
+                data-placement="left"
+              />
+            </div>
             <div className="options">
               <div
-                className="option drive"
                 id="import-file"
-                title="Importar de drive"
-              />
+                className="option drive"
+              >
+                <div
+                  title="Importar de drive"
+                  data-toggle="tooltip"
+                  data-placement="left"
+                />
+              </div>
+
               <div
                 className="option folder"
                 data-toggle="modal"
                 data-target="#create-folder"
-                title='Crear carpeta'
-                >
+              >
+                <div
+                  title='Crear carpeta'
+                  data-toggle="tooltip"
+                  data-placement="left"
+                />
               </div>
+
               <div
                 className="option upload"
-                id="upload-files"
                 data-toggle="modal"
                 data-target="#upload-files"
-                title="Subir foto o video"
-              />
+              >
+                <div
+                  title="Subir foto o video"
+                  data-toggle="tooltip"
+                  data-placement="left"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -1497,6 +1526,8 @@ class FileViewerPage extends React.Component {
   }
 
   componentDidMount() {
+    
+    
     // Set in the data storage the opened document
     if (!this.props.openedDocumentId) {
       DiamondAPI.insert({
@@ -1570,7 +1601,10 @@ class FileViewerLayout extends React.Component {
             className="go-back"
             onClick={ () => { browserHistory.push('/folder') } }
           />
-          <p className='file-name truncate' title={this.props.fileName}>{this.props.fileName}</p>
+          <p
+            className='file-name truncate'
+            title={this.props.fileName}
+          >{this.props.fileName}</p>
           {
             (this.props.fileType === 'application/vnd.google-apps.presentation') ?
             (<i
@@ -1619,7 +1653,10 @@ class PresentationPage extends React.Component {
             className="go-back"
             onClick={ () => { browserHistory.push('/folder') } }
           />
-          <p className='file-name truncate' title={this.props.fileName}>{this.props.fileName}</p>
+          <p
+            className='file-name truncate'
+            title={this.props.fileName}
+          >{this.props.fileName}</p>
           <i
             className="drive-navbar-btn presentate"
             onClick={() => { browserHistory.push(`/document/${this.props.params.id}`) }}

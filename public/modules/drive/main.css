@@ -183,6 +183,11 @@ body {
   background-repeat: no-repeat;
   background-size: 18px;
 }
+.option div {
+  width: 100%;
+  height: 100%;
+}
+
 .doc,
 .folder,
 .drive,
