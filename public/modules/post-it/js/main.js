@@ -176,6 +176,14 @@ function handleNewData(text) {
  * @param {Number} position
  */
 function createSelection(node, position) {
+  if (!node) {
+    return;
+  }
+
+  if (position > node.firstChild.length) {
+    position = node.firstChild.length;
+  }
+
   const range = document.createRange();
   range.setStart(node.firstChild, position);
   range.setEnd(node.firstChild, position);
