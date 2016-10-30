@@ -20,7 +20,7 @@ export default class BoardsLayout extends React.Component {
     return (
       <div className='container-fluid'>
         <h5>
-          <b>Pizarrón</b>
+          <b>Pizarrones</b>
         </h5>
         <hr className='hr-fixed-color' />
         <div>
