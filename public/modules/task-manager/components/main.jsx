@@ -90,6 +90,10 @@ class TaskManagerPage extends React.Component {
 
   componentDidMount() {
     const self = this;
+    
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body',
+    });
 
     const currentBoard = DiamondAPI.getCurrentBoard();
     const currentUser = DiamondAPI.getCurrentUser();
@@ -452,7 +456,7 @@ class CreateTask extends React.Component {
             />
           </div>
           <div className="form-group">
-            <label className="control-label" htmlFor="create-task-board">Board</label>
+            <label className="control-label" htmlFor="create-task-board">Pizarrón</label>
             <select
               id="create-task-board"
               className="form-control"
@@ -478,6 +482,18 @@ class CreateTask extends React.Component {
  * Renders all the boards the team has.
  */
 class BoardsList extends React.Component {
+  componentDidMount() {
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body',
+    });
+  }
+
+  componentDidUpdate() {
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body',
+    });
+  }
+
   renderBoards() {
     return this.props.boards.map((board) => {
       let tasks = [];
@@ -585,7 +601,7 @@ class TasksList extends React.Component {
   renderTasks() {
     if (this.props.tasks.length === 0) {
       return (
-        <div className='text-center no-task'>No hay tareas asignadas a este board</div>
+        <div className='text-center no-task'>No hay tareas asignadas a este pizarrón</div>
       );
     }
 
@@ -750,6 +766,8 @@ class Task extends React.Component {
     const self = this;
 
     if (self.props.coordination) {
+      $(`#archive-task-${self.props.task._id}`).tooltip('destroy');
+
       DiamondAPI.update({
         collection: 'tasks',
         filter: {
@@ -822,6 +840,10 @@ class Task extends React.Component {
         status,
       },
     };
+
+    if (status === 'finished') {
+      $(`#finish-task-${self.props.task._id}`).tooltip('destroy');            
+    }
 
     DiamondAPI.update({
       collection: 'tasks',
@@ -1023,6 +1045,8 @@ class Task extends React.Component {
    * the task title.
    */
   startEditing() {
+    $(`#edit-task-${this.props.task._id}`).tooltip('hide');
+
     this.setState({
       editing: true,
     });
@@ -1173,8 +1197,11 @@ class Task extends React.Component {
           {
             this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
               <div
+                id={`edit-task-${this.props.task._id}`}
                 className={editClass}
                 title='Editar tarea'
+                data-toggle="tooltip"
+                data-placement="bottom"
                 role='button'
                 onClick={this.startEditing}
               />
@@ -1184,8 +1211,11 @@ class Task extends React.Component {
           {
             this.props.coordination && !this.state.editing ? (
               <div
+                id={`archive-task-${this.props.task._id}`}
                 className={archiveClass}
                 title='Archivar tarea'
+                data-toggle="tooltip"
+                data-placement="bottom"
                 role='button'
                 onClick={this.archiveTask}
               />
@@ -1198,45 +1228,15 @@ class Task extends React.Component {
             ) : (null)
           }
 
-          {/*
-            !this.props.coordination && (this.props.doing || this.state.doing) ? (
-              <div>
-                {/*<div className='record'>
-                  <img
-                    src='/modules/task-manager/img/record.svg'
-                    width='25px'
-                  />
-                </div>}
-                <div
-                  className='done'
-                  title='Marcar como finalizado'
-                  role='button'
-                  onClick={() => this.setTaskStatus('finished')}>
-                    <img
-                      src='http://image.flaticon.com/icons/svg/65/65578.svg'
-                      width='25px'
-                    />
-                </div>
-                {<div
-                  className='pause'
-                  title='Marcar como pausado'
-                  role='button'
-                  onClick={this.stopTask}>
-                    <img
-                      src='/modules/task-manager/img/pause-button.svg'
-                      width='15px'
-                    />
-                </div>}
-              </div>
-            ) : (null)
-          */}
-
           {
-            !this.props.coordination /* && (!this.props.doing || !this.state.doing) */ && this.props.task.status === 'not_finished' ? (
+            !this.props.coordination && this.props.task.status === 'not_finished' ? (
               <div>
                 <div
+                  id={`finish-task-${this.props.task._id}`}
                   className='done'
                   title='Marcar como finalizado'
+                  data-toggle="tooltip"
+                  data-placement="bottom"
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
@@ -1244,16 +1244,6 @@ class Task extends React.Component {
                       width='20px'
                     />
                 </div>
-                {/*<div
-                  className='play'
-                  title='Marcar como haciendo'
-                  role='button'
-                  onClick={this.startTask}>
-                    <img
-                      src='/modules/task-manager/img/play-arrow.svg'
-                      width='15px'
-                    />
-                </div>*/}
               </div>
             ) : (null)
           }
@@ -1275,16 +1265,16 @@ class Task extends React.Component {
  * Renders information from the task.
  */
 class TaskInformation extends React.Component {
+  /**
+   * Sets the state for the task we are showing
+   * information and the board of the task.
+   */
   constructor(props) {
     super(props);
 
     this.state = { task: {}, board: {} };
   }
 
-  /**
-   * Sets the state for the task we are showing
-   * information and the board of the task.
-   */
   componentWillMount() {
     this.props.tasks.forEach((task) => {
       if (task._id === this.props.params.taskId) {
@@ -1323,7 +1313,7 @@ class TaskInformation extends React.Component {
               <b>Estado:</b> {this.state.task.status === 'finished' ? 'Finalizada' : 'No finalizada'}
             </p>
             <p>
-              <b>Board:</b> {this.state.board.name}
+              <b>Pizarrón:</b> {this.state.board.name}
             </p>
             {/*<p>
               <b>Usuarios:</b>

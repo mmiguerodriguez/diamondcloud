@@ -11,9 +11,7 @@ export default class Notification extends React.Component {
   }
 
   render() {
-    return (
-      <div />
-    );
+    return (null);
   }
 }
 

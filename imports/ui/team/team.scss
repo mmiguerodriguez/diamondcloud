@@ -28,33 +28,6 @@
   }
 }
 
-.context-menu {
-  display: none;
-  position: absolute;
-  padding: 0;
-  background: #FFF;
-  color: #333;
-  white-space: nowrap;
-  border: 1px solid #CCC;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, .2);
-  overflow: hidden;
-  z-index: 1000;
-
-  .row {
-    padding: 10px 5px;
-    cursor: pointer;
-    transition: all .3s ease;
-  }
-
-  p {
-    margin: 0 !important;
-  }
-
-  div:hover {
-    background-color: #DEF;
-  }
-}
-
 .dropdown {
   position: absolute !important;
   margin-top: 8px;

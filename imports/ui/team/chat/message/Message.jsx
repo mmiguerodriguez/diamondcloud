@@ -45,7 +45,10 @@ export default class Message extends React.Component {
               <p className="message-text">{this.props.message.content}</p>
               <div className="arrow" />
             </div>
-            <div className="col-xs-2 message-user-image" title={user.profile.name}>
+            <div
+              className="col-xs-2 message-user-image"
+              title={user.profile.name}
+            >
               <img className="img-rounded" src={`${user.profile.picture}?sz=60`} width="32px" />
             </div>
           </div>
@@ -54,7 +57,10 @@ export default class Message extends React.Component {
         const sender = Meteor.users.findOne(this.props.message.senderId);
         return (
           <div className="message-other">
-            <div className="col-xs-2 message-user-image" title={sender.profile.name}>
+            <div
+              className="col-xs-2 message-user-image"
+              title={sender.profile.name}
+            >
               <img className="img-rounded" src={`${sender.profile.picture}?sz=60`} width="32px" />
             </div>
             <div className="col-xs-10 message-text-container">
@@ -73,7 +79,10 @@ export default class Message extends React.Component {
               <p className="message-text">{this.props.message.content}</p>
               <div className="arrow maximize" />
             </div>
-            <div className="col-xs-1 message-user-image" title={user.profile.name}>
+            <div
+              className="col-xs-1 message-user-image"
+              title={user.profile.name}
+            >
               <img className="img-rounded" src={`${user.profile.picture}?sz=60`} width="48px" />
             </div>
           </div>
@@ -82,7 +91,10 @@ export default class Message extends React.Component {
         const sender = Meteor.users.findOne(this.props.message.senderId);
         return (
           <div className="message-other">
-            <div className="col-xs-1 message-user-image" title={sender.profile.name}>
+            <div
+              className="col-xs-1 message-user-image"
+              title={sender.profile.name}
+            >
               <img className="img-rounded" src={`${sender.profile.picture}?sz=60`} width="48px" />
             </div>
             <div className="col-xs-10 message-text-container">
@@ -101,7 +113,10 @@ export default class Message extends React.Component {
               <p className="message-text">{this.props.message.content}</p>
               <div className="arrow" />
             </div>
-            <div className="col-xs-2 message-user-image" title={user.profile.name}>
+            <div
+              className="col-xs-2 message-user-image"
+              title={user.profile.name}
+            >
               <img className="img-rounded" src={`${user.profile.picture}?sz=60`} width="32px" />
             </div>
           </div>

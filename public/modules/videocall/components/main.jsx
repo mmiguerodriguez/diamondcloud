@@ -10,6 +10,7 @@ const {
   SimpleWebRTC,
   classNames,
   URL,
+  $,
 } = window;
 const {
   Router,
@@ -359,28 +360,39 @@ class UserVideo extends React.Component {
             <div className='user-video-btn'>
             {
               this.state.video === 'playing' ? (
-                <button
+                <div
                   className='btn btn-danger pause'
-                  onClick={this.pause}>
-                </button>
+                  title="Apagar video"
+    
+                  role="button"
+                  onClick={this.pause}
+                />
               ) : (
-                <button
+                <div
                   className='btn btn-success play'
-                  onClick={this.resume}>
-                </button>
+                  title="Prender video"
+    
+                  role="button"
+                  onClick={this.resume}
+                />
               )
             }
             {
               this.state.audio === 'unmuted' ? (
-                <button
+                <div
                   className='btn btn-danger mute'
-                  onClick={this.mute}>
-                </button>
+                  title="Silenciar"
+    
+                  role="button"
+                  onClick={this.mute}
+                />
               ) : (
-                <button
+                <div
                   className='btn btn-success unmute'
-                  onClick={this.unmute}>
-                </button>
+                  title="Activar microfono"
+                  role="button"
+                  onClick={this.unmute}
+                />
               )
             }
             </div>

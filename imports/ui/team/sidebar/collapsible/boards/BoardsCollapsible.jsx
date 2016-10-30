@@ -7,16 +7,16 @@ export default class BoardsCollapsible extends React.Component {
   render() {
     return (
       <Collapsible
-        id={ 'boards-collapsible' }
+        id={'boards-collapsible'}
         header={
           <div>
             <div
               type='button'
               className='close col-xs-2'
-              onClick={ this.props.toggleCollapsible.bind(null, 'boards') }>
+              onClick={this.props.toggleCollapsible.bind(null, 'boards')}>
               <img src='/img/close-icon.svg' width='18px' />
             </div>
-            <h3 className='col-xs-10 title'>Boards</h3>
+            <h3 className='col-xs-10 title'>Pizarrones</h3>
           </div>
         }
         body={
@@ -27,10 +27,10 @@ export default class BoardsCollapsible extends React.Component {
             <a
               className='btn btn-default footer-btn'
               role='button'
-              onClick={ this.props.openCreateBoardModal }>
-              CREAR BOARD
+              onClick={this.props.openCreateBoardModal}>
+              CREAR PIZARRON
             </a>
-          ) : ( <div></div> )
+          ) : (<div></div>)
         }
       />
     );
@@ -39,12 +39,13 @@ export default class BoardsCollapsible extends React.Component {
     return this.props.boards.map((board) => {
       return (
         <Board
-          key={ board._id }
-          board={ board }
-          isAdmin={ this.props.isAdmin }
-          toggleCollapsible={ this.props.toggleCollapsible }
-          changeBoard={ this.props.changeBoard }
-          openBoardContextMenu={ this.props.openBoardContextMenu } />
+          key={board._id}
+          board={board}
+          isAdmin={this.props.isAdmin}
+          toggleCollapsible={this.props.toggleCollapsible}
+          changeBoard={this.props.changeBoard}
+          openBoardContextMenu={this.props.openBoardContextMenu}
+        />
       );
     });
   }

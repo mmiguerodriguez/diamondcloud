@@ -79,12 +79,9 @@ const TeamPageContainer = createContainer(({ params }) => {
         }
       }
 
-      console.log('First Board', board._id);
       const boardHandle = Meteor.subscribe('boards.board', board._id, {
         onReady() {
-          console.log('Setting boardId, ', board._id);
           setBoardId(board._id);
-          console.log('boardId set is', boardId.get());
         },
         onError(error) {
           console.log('Error en la subscription de boards.board', error);

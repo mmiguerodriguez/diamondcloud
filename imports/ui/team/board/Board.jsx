@@ -133,7 +133,7 @@ export default class Board extends React.Component {
       if (error) {
         self.props.toggleError({
           type: 'show',
-          body: 'Hubo un error interno al cambiar el estado del board',
+          body: 'Hubo un error interno al cambiar el estado del pizarrón',
         });
 
         // If there was an error, reset state to the correct one.
@@ -155,6 +155,8 @@ export default class Board extends React.Component {
             className="img-circle shared-people"
             src={user.profile ? `${user.profile.picture}?sz=60` : '/img/user-shape.jpg'}
             title={user.profile ? user.profile.name : _user.email}
+            data-toggle="tooltip"
+            data-placement="bottom"
             width="32px"
           />
         );
@@ -169,6 +171,8 @@ export default class Board extends React.Component {
             className="img-circle shared-people"
             src={user.profile ? `${user.profile.picture}?sz=60` : '/img/user-shape.jpg'}
             title={user.profile ? user.profile.name : user.email}
+            data-toggle="tooltip"
+            data-placement="bottom"
             width="32px"
           />
         );
@@ -219,16 +223,15 @@ export default class Board extends React.Component {
     return (
       <div className={classes}>
         <div className="sub-header">
-          <div className="sub-header-data col-xs-6">
+          <div className="sub-header-data col-xs-5 col-md-6">
             <ol className="breadcrumb truncate">
               <li>
                 <a href="#">{this.props.team.name}</a>
               </li>
               <li className="active">{this.props.board.name}</li>
             </ol>
-            { /* <h4 className='title truncate'>{ this.props.board.name }</h4> */ }
           </div>
-          <div className="col-xs-6 right-data truncate">
+          <div className="col-xs-7 col-md-6 right-data truncate">
             <h4 className="members truncate">
               {this.renderUsers()}
             </h4>
@@ -239,27 +242,20 @@ export default class Board extends React.Component {
               !this.props.team.userIsCertainHierarchy(email, 'coordinador') &&
               this.props.board.type === 'creativos' ? (
                 <div className="visibility">
-                  {
-                    this.state.visibleForDirectors ? (
-                      <img
-                        role="button"
-                        onClick={() => this.toggleBoardToDirectors('lockBoard')}
-                        src="/img/visibility-off.svg"
-                        className="visibility-img"
-                        title="Hacer no visible para directores"
-                        alt="Hacer no visible para directores"
-                      />
-                    ) : (
-                      <img
-                        role="button"
-                        onClick={() => this.toggleBoardToDirectors('unlockBoard')}
-                        src="/img/visibility-on.svg"
-                        className="visibility-img"
-                        title="Hacer visible para directores"
-                        alt="Hacer visible para directores"
-                      />
-                    )
-                  }
+                  <label 
+                    className="switch"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    title="Cambiar visibilidad de directores"
+                  >
+                    <input
+                      id="visible-input"
+                      type="checkbox"
+                      checked={this.state.visibleForDirectors ? true : false}
+                      onChange={() => this.toggleBoardToDirectors(this.state.visibleForDirectors ? 'lockBoard' : 'unlockBoard')}
+                    />
+                    <div className="slider round" />
+                  </label>
                 </div>
               ) : (null)
             }
@@ -267,10 +263,11 @@ export default class Board extends React.Component {
               className="message-icon-span"
               onClick={this.props.addChat.bind(null, { boardId: this.props.board._id })}
             >
-              { /* <h4 className='message-text'>Chat del board</h4> */ }
               <img
                 src="/img/sidebar/messages.svg"
                 title="Abrir chat del board"
+                data-toggle="tooltip"
+                data-placement="bottom"
                 className="message-icon"
                 width="28px"
               />
