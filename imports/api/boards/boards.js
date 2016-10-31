@@ -143,17 +143,10 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
             isPrivate: false,
           },
           {
-            $and: [
-              {
-                visibleForDirectors: true,
-              },
-              {
-                // Check that isDirector is true
-                _id: {
-                  $in: isDirector ? boardsIds : [],
-                },
-              },
-            ],
+            // Check that isDirector is true
+            _id: {
+              $in: isDirector ? boardsIds : [],
+            },
           },
           {
             // Check that isSistemas is true

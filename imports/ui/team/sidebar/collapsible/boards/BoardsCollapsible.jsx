@@ -1,3 +1,4 @@
+import { Meteor }  from 'meteor/meteor';
 import React       from 'react';
 
 import Collapsible from '../Collapsible.jsx';
@@ -36,8 +37,13 @@ export default class BoardsCollapsible extends React.Component {
     );
   }
   renderBoards() {
-    return this.props.boards.map((board) => {
-      return (
+    const boards = [];
+    const isDirector =
+      this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'director creativo') ||
+      this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'director de cuentas');
+
+    this.props.boards.forEach((board) => {
+      const _board = (
         <Board
           key={board._id}
           board={board}
@@ -47,7 +53,17 @@ export default class BoardsCollapsible extends React.Component {
           openBoardContextMenu={this.props.openBoardContextMenu}
         />
       );
+
+      if (isDirector) {
+        if ((board.type === 'creativos' && board.visibleForDirectors) || (board.type !== 'creativos')) {
+          boards.push(_board);
+        }
+      } else {
+        boards.push(_board);
+      }
     });
+    
+    return boards;
   }
 }
 
