@@ -1240,7 +1240,7 @@ class Task extends React.Component {
                   role='button'
                   onClick={() => this.setTaskStatus('finished')}>
                     <img
-                      src='http://image.flaticon.com/icons/svg/65/65578.svg'
+                      src='/modules/task-manager/img/finished-task.svg'
                       width='20px'
                     />
                 </div>
