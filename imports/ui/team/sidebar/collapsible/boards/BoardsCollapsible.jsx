@@ -1,8 +1,8 @@
 import { Meteor }  from 'meteor/meteor';
 import React       from 'react';
 
-import Collapsible from '../Collapsible.jsx';
-import Board       from './board/Board.jsx';
+import Collapsible from '../Collapsible';
+import Board       from './board/Board';
 
 export default class BoardsCollapsible extends React.Component {
   render() {
@@ -12,12 +12,13 @@ export default class BoardsCollapsible extends React.Component {
         header={
           <div>
             <div
-              type='button'
-              className='close col-xs-2'
-              onClick={this.props.toggleCollapsible.bind(null, 'boards')}>
-              <img src='/img/close-icon.svg' width='18px' />
+              type="button"
+              className="close col-xs-2"
+              onClick={this.props.toggleCollapsible.bind(null, 'boards')}
+            >
+              <img src="/img/close-icon.svg" width="18px" />
             </div>
-            <h3 className='col-xs-10 title'>Pizarrones</h3>
+            <h3 className="col-xs-10 title">Pizarrones</h3>
           </div>
         }
         body={
@@ -26,12 +27,13 @@ export default class BoardsCollapsible extends React.Component {
         footer={
           this.props.isAdmin ? (
             <a
-              className='btn btn-default footer-btn'
-              role='button'
-              onClick={this.props.openCreateBoardModal}>
-              CREAR PIZARRON
+              className="btn btn-default footer-btn"
+              role="button"
+              onClick={this.props.openCreateBoardModal}
+            >
+              CREAR PIZARRÓN
             </a>
-          ) : (<div></div>)
+          ) : (<div />)
         }
       />
     );
@@ -62,7 +64,7 @@ export default class BoardsCollapsible extends React.Component {
         boards.push(_board);
       }
     });
-    
+
     return boards;
   }
 }

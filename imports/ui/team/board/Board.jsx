@@ -242,7 +242,7 @@ export default class Board extends React.Component {
               !this.props.team.userIsCertainHierarchy(email, 'coordinador') &&
               this.props.board.type === 'creativos' ? (
                 <div className="visibility">
-                  <label 
+                  <label
                     className="switch"
                     title="Cambiar visibilidad de directores"
                     data-toggle="tooltip"
@@ -251,7 +251,7 @@ export default class Board extends React.Component {
                     <input
                       id="visible-input"
                       type="checkbox"
-                      checked={this.state.visibleForDirectors ? true : false}
+                      checked={this.state.visibleForDirectors}
                       onChange={() => this.toggleBoardToDirectors(this.state.visibleForDirectors ? 'lockBoard' : 'unlockBoard')}
                     />
                     <div className="slider round" />
@@ -265,7 +265,7 @@ export default class Board extends React.Component {
             >
               <img
                 src="/img/sidebar/messages.svg"
-                title="Abrir chat del board"
+                title="Abrir chat del pizarrón"
                 data-toggle="tooltip"
                 data-placement="bottom"
                 className="message-icon"
