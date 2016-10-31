@@ -18,7 +18,8 @@
   }
   .collapsible-body {
     overflow: auto;
-    max-height: 500px;
+    max-height: calc(100% - 55px);
+    padding-bottom: 55px;
   }
   .collapsible-footer {
     position: absolute;
