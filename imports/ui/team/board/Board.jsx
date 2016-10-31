@@ -244,9 +244,9 @@ export default class Board extends React.Component {
                 <div className="visibility">
                   <label 
                     className="switch"
+                    title="Cambiar visibilidad de directores"
                     data-toggle="tooltip"
                     data-placement="bottom"
-                    title="Cambiar visibilidad de directores"
                   >
                     <input
                       id="visible-input"

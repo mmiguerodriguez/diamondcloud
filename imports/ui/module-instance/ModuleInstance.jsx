@@ -117,7 +117,7 @@ export default class ModuleInstance extends React.Component {
         .css('padding-bottom', paddingBottom);
       },
     });
-
+    
     this.setState({
       loading: false,
     });
@@ -171,13 +171,6 @@ export default class ModuleInstance extends React.Component {
             </div>
           ) : (null)
         }
-        {/*
-          this.state.minimized ? (
-            <span className="minimized-module-name">
-              {this.props.module.name}
-            </span>
-          ) : (null)
-        */}
         {
           !this.state.loading || this.state.minimized ? (
             <div
