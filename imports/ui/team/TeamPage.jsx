@@ -37,11 +37,14 @@ export default class TeamPage extends React.Component {
   }
   
   componentDidUpdate() {
-    $('[data-toggle="tooltip"]')
-      .tooltip('destroy')
-      .tooltip({
+    const $tooltips = $('[data-toggle="tooltip"]');
+    // console.log('hola soy miguel', $tooltips);
+    $tooltips.tooltip('destroy');
+    setTimeout(() => {
+      $tooltips.tooltip({
         container: 'body',
       });
+    }, 200);
     
     /**
      * If it already loaded and team doesn't exist then we

@@ -125,3 +125,17 @@ input:focus, select:focus, textarea:focus, button:focus {
 iframe {
   border: none !important;
 }
+
+// Placeholders
+*::-webkit-input-placeholder {
+  text-transform: initial;
+}
+*::-moz-placeholder {
+  text-transform: initial;
+}
+*:-ms-input-placeholder {
+  text-transform: initial;
+}
+*:-moz-placeholder {
+  text-transform: initial;
+}

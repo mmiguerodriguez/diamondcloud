@@ -279,6 +279,7 @@ export default class TeamLayout extends React.Component {
   }
 
   openConfigBoardModal() {
+    this.closeContextMenu(this.refs['board-context-menu']);
     $('#configBoardModal').modal('show');
   }
 
