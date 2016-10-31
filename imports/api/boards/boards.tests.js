@@ -206,7 +206,7 @@ if (Meteor.isServer) {
         let result1 = Boards.getBoards([boards[3]._id, boards[4]._id], users[2]._id); // Creativo
         let result2 = Boards.getBoards([boards[3]._id, boards[4]._id], users[3]._id); // Director
         chai.assert.deepEqual(result1.fetch(), [boards[3]]);
-        chai.assert.deepEqual(result2.fetch(), [boards[4]]);
+        chai.assert.deepEqual(result2.fetch(), [boards[4], boards[3]]);
         done();
       });
     });
