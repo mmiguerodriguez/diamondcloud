@@ -3,11 +3,7 @@ import Select          from 'react-select';
 import classNames      from 'classnames';
 
 import Modal           from '../Modal';
-import {
-  InputError,
-  TextInput,
-  SelectInput
-}                      from '../../validation/inputs';
+import { TextInput }   from '../../validation/inputs';
 
 import { BOARD_TYPES } from '../board-types';
 
