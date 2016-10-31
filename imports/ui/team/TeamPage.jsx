@@ -7,6 +7,7 @@ import isMobile            from 'ismobilejs';
 import { Boards }          from '../../api/boards/boards';
 import { DirectChats }     from '../../api/direct-chats/direct-chats';
 
+import hierarchyToType     from '../helpers/hierarchyToType';
 import NotificationSystem  from '../notifications/notificationSystem/NotificationSystem';
 import TeamLayout          from './TeamLayout';
 
@@ -29,13 +30,13 @@ export default class TeamPage extends React.Component {
     this.boardSubscribe = this.boardSubscribe.bind(this);
     this.togglePosition = this.togglePosition.bind(this);
   }
-  
+
   componentDidMount() {
     $('[data-toggle="tooltip"]').tooltip({
       container: 'body',
     });
   }
-  
+
   componentDidUpdate() {
     const $tooltips = $('[data-toggle="tooltip"]');
     // console.log('hola soy miguel', $tooltips);
@@ -45,7 +46,7 @@ export default class TeamPage extends React.Component {
         container: 'body',
       });
     }, 200);
-    
+
     /**
      * If it already loaded and team doesn't exist then we
      * should return the user to a NotFound Layout or
@@ -326,9 +327,33 @@ export default class TeamPage extends React.Component {
     }
 
     const board = Boards.findOne(this.props.boardId);
-    const _board = Boards.findOne();
+    let _board;
 
-    if (!board) {
+    const isDirector =
+      this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'director creativo') ||
+      this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'director de cuentas');
+
+    if (!board || (board.type === 'creativos' && !board.visibleForDirectors && isDirector)) {
+      const hierarchy = this.props.team.userHierarchy(Meteor.user().email());
+      const type = hierarchyToType(hierarchy);
+
+      /**
+       * If user can't access to the current board, the we find
+       * another one that fits his hierarchy
+       *
+       * If it didn't find anything and it is a director then we
+       * show the user a board that isn't from creativos, but
+       * if user isn't a director we show the first board
+       * we can find
+       */
+      _board = Boards.findOne({ type }) || (
+        isDirector ? (
+          Boards.findOne({
+            type: { $ne: 'creativos' },
+          })
+        ) : Boards.findOne({})
+      );
+
       if (_board) {
         this.props.setBoardId(_board._id);
         this.props.boardSubscription.stop();
@@ -349,16 +374,16 @@ export default class TeamPage extends React.Component {
         return (
           <div>
             <p>
-              <a href="#">No hay ningun pizarrón</a>
+              <a href="#">No hay ningun pizarrón disponible</a>
             </p>
           </div>
         );
       }
     }
 
-    const newMessages = this.props.messages.filter((message) => {
-      return message.createdAt > this.state.moment;
-    });
+    const newMessages = this.props.messages.filter(message => (
+      message.createdAt > this.state.moment
+    ));
 
     return (
       <div>
