@@ -4,8 +4,13 @@ import Board from './board/Board.jsx';
 
 export default class BoardsLayout extends React.Component {
   renderBoards() {
-    return this.props.boards.map((board) => {
-      return (
+    const boards = [];
+    const isDirector =
+      this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'director creativo') ||
+      this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'director de cuentas');
+
+    this.props.boards.forEach((board) => {
+      const _board = (
         <Board
           key={board._id}
           board={board}
@@ -13,7 +18,17 @@ export default class BoardsLayout extends React.Component {
           addChat={this.props.addChat}
         />
       );
+
+      if (isDirector) {
+        if ((board.type === 'creativos' && board.visibleForDirectors) || (board.type !== 'creativos')) {
+          boards.push(_board);
+        }
+      } else {
+        boards.push(_board);
+      }
     });
+    
+    return boards;
   }
 
   render() {

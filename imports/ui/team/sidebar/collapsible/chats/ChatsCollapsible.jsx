@@ -23,6 +23,7 @@ export default class ChatsCollapsible extends React.Component {
         body={
           <div>
             <BoardsLayout
+              team={this.props.team}
               boards={this.props.boards}
               addChat={this.props.addChat}
             />
