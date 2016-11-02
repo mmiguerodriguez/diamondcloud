@@ -1,6 +1,7 @@
 import { Meteor }         from 'meteor/meteor';
 import { Accounts }       from 'meteor/accounts-base';
 import { browserHistory } from 'react-router';
+import { TEAMS }   from '../../api/teams/teams';
 
 if (Meteor.isClient) {
   /**
@@ -50,11 +51,7 @@ if (Meteor.isClient) {
       path = e.pathname;
     });
 
-    const PATHS = [
-      '/carlosydario',
-      '/diamond',
-      '/presentacion', // TODO: Remove
-    ];
+    const PATHS = TEAMS.map(team => team.url);
 
     if (PATHS.indexOf(path) > -1) {
       path = path.substr(1, path.length - 1);

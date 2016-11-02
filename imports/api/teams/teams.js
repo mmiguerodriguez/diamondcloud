@@ -3,6 +3,12 @@ import { Mongo } from 'meteor/mongo';
 
 export const Teams = new Mongo.Collection('Teams');
 
+export const TEAMS = [
+  { name: 'Carlos y Darío', plan: 'free', type: 'Agencia publicitaria', url: 'carlosydario' },
+  { name: 'Carlos y Darío', plan: 'free', type: 'Agencia publicitaria', url: 'presentacion' }, // TODO: remove
+  { name: 'Diamond Cloud', plan: 'premium', type: 'Plataforma web', url: 'diamond' },
+];
+
 Teams.helpers({
   /**
    * Returns the user hierarchy in the team

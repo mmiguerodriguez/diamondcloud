@@ -8,6 +8,8 @@ import {
   browserHistory,
 }                        from 'react-router';
 
+import { TEAMS }         from '../../api/teams/teams';
+
 // Route components
 import AppPageContainer  from '../../ui/app/AppPageContainer';
 import TeamPageContainer from '../../ui/team/TeamPageContainer';
@@ -21,27 +23,31 @@ const logPageView = (nextState) => {
   analytics.page(nextState.location.pathname);
 };
 
-const renderRoutes = () => (
-  <Router history={browserHistory}>
-    <Redirect from="/" to="carlosydario" />
-    <Route path="/carlosydario" component={AppPageContainer} onEnter={logPageView}>
-      <IndexRoute component={LandingPage} />
-      <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
+const renderRoutes = () => {
+  let getRoutes = () => {
+    return TEAMS.map(team => team.url).map((route) => {
+      return (
+        <Route key={route} path={route} component={AppPageContainer} onEnter={logPageView}>
+          <IndexRoute component={LandingPage} />
+          <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
+          <Route path="*" component={NotFound} onEnter={logPageView} />
+        </Route>
+      );
+    });
+  };
+  
+  console.log(getRoutes());
+
+  let expected = (
+    <Router history={browserHistory}>
+      <Redirect from="/" to="carlosydario" />
+      {getRoutes()}
       <Route path="*" component={NotFound} onEnter={logPageView} />
-    </Route>
-    <Route path="/diamond" component={AppPageContainer} onEnter={logPageView}>
-      <IndexRoute component={LandingPage} />
-      <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
-      <Route path="*" component={NotFound} onEnter={logPageView} />
-    </Route>
-    <Route path="/presentacion" component={AppPageContainer} onEnter={logPageView}>
-      <IndexRoute component={LandingPage} />
-      <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
-      <Route path="*" component={NotFound} onEnter={logPageView} />
-    </Route>
-    <Route path="*" component={NotFound} onEnter={logPageView} />
-  </Router>
-);
+    </Router>
+  );
+
+  return expected;
+};
 
 export default renderRoutes;
 
