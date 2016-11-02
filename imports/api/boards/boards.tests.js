@@ -206,10 +206,29 @@ if (Meteor.isServer) {
         let result1 = Boards.getBoards([boards[3]._id, boards[4]._id], users[2]._id); // Creativo
         let result2 = Boards.getBoards([boards[3]._id, boards[4]._id], users[3]._id); // Director
         chai.assert.deepEqual(result1.fetch(), [boards[3]]);
+        
+        let compare = (a, b) => {
+          if (a._id < b._id) {
+            return -1;
+          }
+
+          if (a._id > b._id) {
+            return 1;
+          }
+
+          return 0;
+        };
+        
+        let res = result2.fetch();
+        let expected = [boards[4], boards[3]];
+        res.sort(compare);
+        expected.sort(compare);
+
         chai.assert.equal(
-          JSON.stringify(result2.fetch()),
-          JSON.stringify([boards[4], boards[3]])
+          JSON.stringify(res),
+          JSON.stringify(expected)
         );
+        
         done();
       });
     });
