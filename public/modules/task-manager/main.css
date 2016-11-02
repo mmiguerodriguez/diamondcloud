@@ -129,18 +129,33 @@
 .archive-task {
   background-image: url(img/archive-task.svg);
 }
-.finished-task {
+.finished-task,
+.rejected-task {
   width: 25px;
   height: 25px;
   position: absolute;
   right: 10px;
   top: 10px;
   background-size: 100%;
-  background-image: url(img/flag.svg);
   opacity: 0.7;
   transition: 0.3s all ease;
 }
-.task:hover .finished-task {
+.finished-task {
+  width: 25px;
+  height: 25px;
+  right: 10px;
+  top: 10px;
+  background-image: url(img/flag.svg);
+}
+.rejected-task {
+  width: 20px;
+  height: 20px;
+  right: 12.5px;
+  top: 12.5px;
+  background-image: url(img/rejected-task.svg);
+}
+.task:hover .finished-task,
+.task:hover .rejected-task {
   opacity: 0 !important;
 }
 .icon-fixed {
@@ -154,14 +169,16 @@
 }
 .task:hover .play,
 .task:hover .pause,
-.task:hover .done {
+.task:hover .done,
+.task:hover .accept,
+.task:hover .reject {
   opacity: 1;
   z-index: 1;
 }
 .task:hover {
   background-color: #eee;
 }
-.play, .pause, .done {
+.play, .pause, .done, .accept, .reject {
   position: absolute;
   top: calc(50% - 15px);
   height: 30px;
@@ -169,7 +186,7 @@
   border-radius: 50%;
   opacity: 0;
 }
-.play {
+.play, .accept {
   right: 50px;
   background-color: #27ae60;
 }
@@ -177,30 +194,41 @@
   right: 50px;
   background-color: #f1c40f;
 }
-.done {
+.done, .reject{
   right: 15px;
   background-color: #e74c3c;
 }
-.play img {
+.play img,
+.pause img,
+.done img,
+.accept img,
+.reject img {
   position: absolute;
+}
+.play img {
   top: calc(50% - 7.5px);
   left: calc(50% - 6.5px);
 }
 .pause img {
-  position: absolute;
   top: calc(50% - 7.5px);
   left: calc(50% - 7.5px);
 }
 .done img {
-  position: absolute;
   top: calc(50% - 10px);
   left: calc(50% - 10px);
   -webkit-filter: invert(1);
 }
-.expiration {
+.accept img, .reject img {
+  top: calc(50% - 7.5px);
+  left: calc(50% - 7.5px);
+}
+.expiration-date, .start-date {
   padding: 0px;
   margin: 0 0 15px;
   font-size: 13px !important;
+}
+.start-date {
+  margin-bottom: 5px !important;
 }
 .time-active {
   margin: 0 0 5px;
