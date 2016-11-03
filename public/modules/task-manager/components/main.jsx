@@ -338,13 +338,14 @@ class CreateTask extends React.Component {
       collection: 'tasks',
       object: {
         title: self.state.title,
-        boardId: self.state.boardId,
+        description: self.state.description || 'No hay descripción',
         durations: [],
         startDate,
         dueDate,
         position,
         status: 'queued',
         archived: false,
+        boardId: self.state.boardId,
       },
       isGlobal: true,
       callback(error, result) {
@@ -415,6 +416,8 @@ class CreateTask extends React.Component {
     this.state = {
       title: this.props.taskTitle,
       boardId: this.props.selectedBoardId || this.props.boards[0]._id,
+      description: '',
+      type: 'tv',
       startDate: new Date().getTime() + (1000 * 60 * 60),
       dueDate: new Date().getTime() + (1000 * 60 * 60 * 24),
     };
@@ -458,6 +461,18 @@ class CreateTask extends React.Component {
             />
           </div>
           <div className="form-group">
+            <label className="control-label" htmlFor="create-task-board">Tipo</label>
+            <select
+              id="create-task-type"
+              className="form-control"
+              value={this.state.type}
+              onChange={(e) => this.handleChange('type', e)}>
+                <option value="tv">TV</option>
+                <option value="radio">Radio</option>
+                <option value="grafica">Gráfica</option>
+            </select>
+          </div>
+          <div className="form-group">
             <label className="control-label" htmlFor="create-task-startdate">Fecha de inicio</label>
             <input
               id="create-task-startdate"
@@ -488,6 +503,15 @@ class CreateTask extends React.Component {
               onChange={(e) => this.handleChange('boardId', e)}>
               {this.renderOptions()}
             </select>
+          </div>
+          <div className="form-group">
+            <label className="control-label" htmlFor="create-task-description">Descripción</label>
+            <textarea
+            id="create-task-description"
+            className="form-control"
+            placeholder="Ingresá la la descripción de la tarea"
+            onChange={(e) => this.handleChange('description', e)}
+            ></textarea>
           </div>
           <button
             onClick={this.createTask}
@@ -869,9 +893,12 @@ class Task extends React.Component {
 
     if (status === 'finished') {
       $(`#finish-task-${self.props.task._id}`).tooltip('destroy');            
-    } else if (status === 'not_finished' || status === 'rejected') {
-      $(`#accept-task-${self.props.task._id}`).tooltip('destroy');   
-      $(`#reject-task-${self.props.task._id}`).tooltip('destroy');   
+    } else if (status === 'not_finished') {
+      if (status === 'rejected') {
+        $(`#accept-task-${self.props.task._id}`).tooltip('destroy');   
+        $(`#reject-task-${self.props.task._id}`).tooltip('destroy');
+      }
+      $(`#restore-task-${self.props.task._id}`).tooltip('destroy');
     }
 
     DiamondAPI.update({
@@ -1137,6 +1164,8 @@ class Task extends React.Component {
       doing: this.props.doing,
       task_title: this.props.task.title,
       editing: false,
+      
+      showDescription: false,
     };
 
     this.startTask = this.startTask.bind(this);
@@ -1172,6 +1201,7 @@ class Task extends React.Component {
       $(`#edit-task-${this.props.task._id}`).tooltip('destroy');
       $(`#accept-task-${this.props.task._id}`).tooltip('destroy');
       $(`#reject-task-${this.props.task._id}`).tooltip('destroy');
+      $(`#restore-task-${this.props.task._id}`).tooltip('destroy');
     } else {
       $(`#play-task-${this.props.task._id}`).tooltip('destroy');
       $(`#pause-task-${this.props.task._id}`).tooltip('destroy');
@@ -1184,32 +1214,39 @@ class Task extends React.Component {
   }
 
   render() {
+    const self = this;
+
     const isCoordination = this.props.coordination;
     const isDoing = this.state.doing;
     const isEditing = this.state.editing;
     const isQueued = this.props.task.status === 'queued';
     const isFinished = this.props.task.status === 'finished';
-    const isRejected = this.props.task.status === 'rejected'
+    const isRejected = this.props.task.status === 'rejected';
+    const showDescription = this.state.showDescription;
 
-    const role = classNames({
-      button: isCoordination,
-    });
+    const role = classNames('button');
     const containerClass = classNames({
       'col-xs-12': isEditing || (!isCoordination && !isFinished),
-      'col-xs-10': !isEditing && isFinished,
-      'col-xs-8': !isEditing && isCoordination && !isFinished,
+      'col-xs-8': !isEditing && isCoordination,
       'fixed-title': !isCoordination || !isEditing,
     });
     const archiveClass = classNames({
       'col-xs-2': isCoordination && !isEditing,
-      'col-xs-2 icon-fixed': isCoordination && !isEditing && !isFinished,
+      'col-xs-2 icon-fixed': isCoordination && !isEditing && !isFinished && !isRejected,
     }, 'archive-task');
     const editClass = classNames({
       'col-xs-2': isCoordination && !isEditing && isFinished,
       'col-xs-2 icon-fixed': isCoordination && !isEditing && !isFinished,
     }, 'edit-task');
-    const clickHandle = isCoordination ? this.openTask : () => {};
-
+    const descriptionClass = classNames({
+      'open-description': showDescription,
+      'hide-description': !showDescription,
+    }, 'col-xs-12 description')
+    const clickHandle = isCoordination ? this.openTask : () => {
+      self.setState({
+        showDescription: !this.state.showDescription,
+      });
+    };
 
     return (
       <div className='col-xs-12 task'>
@@ -1232,6 +1269,7 @@ class Task extends React.Component {
                     className='task-title col-xs-12'>
                     {this.state.task_title}
                   </h5>
+                  <p className={descriptionClass}><b>Descripción:</b> {this.props.task.description}</p>
                   {
                     !isCoordination && isDoing ? (
                       <p className='col-xs-12 time-active'>Tiempo activo: {this.state.count}</p>
@@ -1243,7 +1281,7 @@ class Task extends React.Component {
           </div>
 
           {
-            isCoordination && !isEditing && !isFinished ? (
+            isCoordination && !isEditing && !isFinished && !isRejected ? (
               <div
                 id={`edit-task-${this.props.task._id}`}
                 className={editClass}
@@ -1269,19 +1307,33 @@ class Task extends React.Component {
               />
             ) : (null)
           }
-          
+
+          {
+            isCoordination && !isEditing && (isFinished || isRejected) ? (
+                <div
+                  id={`restore-task-${this.props.task._id}`}
+                  className="col-xs-2 restore-task"
+                  title="Restaurar tarea"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  role="button"
+                  onClick={() => this.setTaskStatus('not_finished')}
+                />
+            ) : (null)
+          }
+
           {
             isCoordination && !isEditing && isFinished ? (
               <div className="finished-task" />
             ) : (null)
           }
-          
+
           {
             isCoordination && !isEditing && isRejected ? (
               <div className="rejected-task" />
             ) : (null)
           }
-          
+
           {
             !isCoordination && isDoing && !isQueued ? (
               <div>
@@ -1308,7 +1360,7 @@ class Task extends React.Component {
               </div>
             ) : (null)
           }
-          
+
           {
             !isCoordination && !isDoing && !isQueued ? (
               <div
@@ -1383,17 +1435,17 @@ class Task extends React.Component {
               </div>
             ) : (null)
           }
-          
+
           {
             !isEditing ? (
               <div className="col-xs-12">
                 <p className="col-xs-12 expiration-date">
-                  {`Plazo: ${$.format.date(new Date(this.props.task.startDate), 'dd/MM/yy')} - ${$.format.date(new Date(this.props.task.dueDate), 'dd/MM/yy')}`}
+                  <b>Plazo: </b>
+                  {`${$.format.date(new Date(this.props.task.startDate), 'dd/MM/yy')} - ${$.format.date(new Date(this.props.task.dueDate), 'dd/MM/yy')}`}
                 </p>
               </div>
             ) : (null)
           }
-
         </div>
       </div>
     );
@@ -1443,10 +1495,11 @@ class TaskInformation extends React.Component {
               <b>Tarea:</b> {task.title}
             </p>
             <p>
-              <b>Fecha de inicio:</b> {$.format.date(new Date(task.startDate), 'dd/MM/yyyy')}
+              <b>Tipo de tarea:</b> {/* task.type */}
             </p>
             <p>
-              <b>Fecha de vencimiento:</b> {$.format.date(new Date(task.dueDate), 'dd/MM/yyyy')}
+              <b>Plazo:</b>
+              {`${$.format.date(new Date(task.startDate), 'dd/MM/yy')} - ${$.format.date(new Date(task.dueDate), 'dd/MM/yy')}`}
             </p>
             <p>
               <b>Estado:</b> {status}
@@ -1455,7 +1508,7 @@ class TaskInformation extends React.Component {
               <b>Pizarrón:</b> {board.name}
             </p>
             <p>
-              <b>Usuarios:</b>
+              <b>Descripción:</b> {task.description}
             </p>
             <UserTaskInformation
               durations={task.durations}
