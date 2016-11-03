@@ -7,6 +7,7 @@ import { APICollection }        from '../api-collection/api-collection';
 
 export const generateAPI = (moduleInstanceId) => {
   let subscriptions = [];
+
   const DiamondAPI = {
     subscribe({ collection, filter = {}, callback }) {
       let subscription;
@@ -51,7 +52,7 @@ export const generateAPI = (moduleInstanceId) => {
             }
           };
 
-          const handle = query.observeChanges({
+          query.observeChanges({
             added: caller,
             changed: caller,
             removed: caller,
@@ -77,6 +78,7 @@ export const generateAPI = (moduleInstanceId) => {
       subscriptions.forEach((subscription) => {
         subscription.stop();
       });
+
       subscriptions = [];
     },
     insert({ collection, object, isGlobal, callback }) {
@@ -160,10 +162,18 @@ export const generateAPI = (moduleInstanceId) => {
 
       throw new Meteor.Error(`User ${userId} doesn't exist.`);
     },
-    change(callback) {
+    change() {
       return 'This feature is not done yet. Sorry! :/';
     },
   };
+
+  ModuleInstances.find({ _id: moduleInstanceId }).observeChanges({
+    changed: () => {
+      if (ModuleInstances.findOne(moduleInstanceId).archived) {
+        DiamondAPI.unsubscribe();
+      }
+    },
+  });
 
   return DiamondAPI;
 };

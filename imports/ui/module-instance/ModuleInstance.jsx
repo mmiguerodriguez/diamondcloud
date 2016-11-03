@@ -30,12 +30,6 @@ export default class ModuleInstance extends React.Component {
     this.props.moduleInstancesFrames.push(this.iframe.contentWindow);
   }
 
-  componentDidUpdate() {
-    if (this.props.moduleInstance.archived) {
-      this.iframe.contentWindow.DiamondAPI.unsubscribe();
-    }
-  }
-
   iframeLoaded() {
     const self = this;
 
@@ -117,7 +111,7 @@ export default class ModuleInstance extends React.Component {
         .css('padding-bottom', paddingBottom);
       },
     });
-    
+
     this.setState({
       loading: false,
     });
