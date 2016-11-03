@@ -53,9 +53,9 @@ if (Meteor.isClient) {
 
     const PATHS = TEAMS.map(team => team.url);
 
-    if (PATHS.indexOf(path) > -1) {
-      path = path.substr(1, path.length - 1);
+    path = path.substr(1);
 
+    if (PATHS.indexOf(path) > -1) {
       Meteor.call('Accounts.methods.insertFirstUser', { url: path }, (error, result) => {
         if (error) {
           throw new Meteor.Error(error);

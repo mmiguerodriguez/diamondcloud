@@ -8,8 +8,6 @@ import {
   browserHistory,
 }                        from 'react-router';
 
-import { TEAMS }         from '../../api/teams/teams';
-
 // Route components
 import AppPageContainer  from '../../ui/app/AppPageContainer';
 import TeamPageContainer from '../../ui/team/TeamPageContainer';
@@ -23,31 +21,17 @@ const logPageView = (nextState) => {
   analytics.page(nextState.location.pathname);
 };
 
-const renderRoutes = () => {
-  let getRoutes = () => {
-    return TEAMS.map(team => team.url).map((route) => {
-      return (
-        <Route key={route} path={route} component={AppPageContainer} onEnter={logPageView}>
-          <IndexRoute component={LandingPage} />
-          <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
-          <Route path="*" component={NotFound} onEnter={logPageView} />
-        </Route>
-      );
-    });
-  };
-  
-  console.log(getRoutes());
-
-  let expected = (
-    <Router history={browserHistory}>
-      <Redirect from="/" to="carlosydario" />
-      {getRoutes()}
+const renderRoutes = () => (
+  <Router history={browserHistory}>
+    <Redirect from="/" to="carlosydario" />
+    <Route path="/:teamUrl" component={AppPageContainer} onEnter={logPageView}>
+      <IndexRoute component={LandingPage} />
+      <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
       <Route path="*" component={NotFound} onEnter={logPageView} />
-    </Router>
-  );
-
-  return expected;
-};
+    </Route>
+    <Route path="*" component={NotFound} onEnter={logPageView} />
+  </Router>
+);
 
 export default renderRoutes;
 
