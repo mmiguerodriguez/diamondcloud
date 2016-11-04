@@ -80,6 +80,7 @@
 .hr-fix {
   margin: 10px 0 0;
   border-color: #2980b9;
+  width: 100%;
 }
 .task {
   height: auto;

@@ -242,15 +242,33 @@ class TaskManagerLayout extends React.Component {
   }
 
   render() {
+    const isCoordination = this.props.coordination;
+
+    const taskTitleClass = classNames({
+      'col-xs-12': !isCoordination,
+      'col-xs-6': isCoordination,
+    }, 'text-center board-list-title');
+    
     return (
       <div className="col-xs-12 task-manager">
         <div
           role="button"
-          className="col-xs-12 text-center board-list-title"
+          className={taskTitleClass}
           onClick={() => this.setLocation('tasks/show')}>
           <b>Lista de tareas</b>
-          <hr className="hr-fix" />
         </div>
+        {
+          isCoordination ? (
+            <div
+              role="button"
+              className="col-xs-6 text-center board-list-title"
+              onClick={() => this.setLocation('/panel')}>
+              <b>Panel</b>
+            </div>
+          ) : (null)
+        }
+
+        <hr className="hr-fix" />
 
         {
           React.cloneElement(this.props.children, {
@@ -417,9 +435,11 @@ class CreateTask extends React.Component {
       title: this.props.taskTitle,
       boardId: this.props.selectedBoardId || this.props.boards[0]._id,
       description: '',
-      type: 'tv',
+      type: '',
       startDate: new Date().getTime() + (1000 * 60 * 60),
       dueDate: new Date().getTime() + (1000 * 60 * 60 * 24),
+
+      task_types: [],
     };
 
     this.createTask = this.createTask.bind(this);
@@ -427,7 +447,33 @@ class CreateTask extends React.Component {
   }
 
   componentDidMount() {
+    const self = this;
+
+    DiamondAPI.get({
+      collection: 'task_types',
+      callback(error, result) {
+        if (error) {
+          self.props.showError({
+            body: 'Ocurrió un error interno al agarrar los tipos de tareas',
+          });
+        } else {
+          self.setState({
+            type: result[0] || '',
+            task_types: result,
+          });
+        }
+      },
+    });
+
     $('#create-task-title').focus();
+  }
+
+  renderTaskTypes() {
+    return this.state.task_types.map((type) => {
+      return (
+        <option value={type.time}>{type.name}</option>
+      );
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -466,10 +512,9 @@ class CreateTask extends React.Component {
               id="create-task-type"
               className="form-control"
               value={this.state.type}
-              onChange={(e) => this.handleChange('type', e)}>
-                <option value="tv">TV</option>
-                <option value="radio">Radio</option>
-                <option value="grafica">Gráfica</option>
+              onChange={(e) => this.handleChange('type', e)}
+            >
+              {this.renderTaskTypes()}
             </select>
           </div>
           <div className="form-group">
@@ -500,18 +545,20 @@ class CreateTask extends React.Component {
               id="create-task-board"
               className="form-control"
               value={this.state.boardId}
-              onChange={(e) => this.handleChange('boardId', e)}>
+              onChange={(e) => this.handleChange('boardId', e)}
+            >
               {this.renderOptions()}
             </select>
           </div>
           <div className="form-group">
             <label className="control-label" htmlFor="create-task-description">Descripción</label>
             <textarea
-            id="create-task-description"
-            className="form-control"
-            placeholder="Ingresá la la descripción de la tarea"
-            onChange={(e) => this.handleChange('description', e)}
-            ></textarea>
+              id="create-task-description"
+              className="form-control"
+              placeholder="Ingresá la la descripción de la tarea"
+              onChange={(e) => this.handleChange('description', e)}
+            >
+            </textarea>
           </div>
           <button
             onClick={this.createTask}
@@ -526,6 +573,147 @@ class CreateTask extends React.Component {
   }
 }
 
+
+class Panel extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      name: '',
+      time: '',
+
+      types: [],
+      subscription: {},
+    };
+    
+    this.handleChange = this.handleChange.bind(this);
+    this.insertTaskType = this.insertTaskType.bind(this);
+  }
+
+  componentDidMount() {
+    const self = this;
+
+    const subscription = DiamondAPI.subscribe({
+      collection: 'task_types',
+      callback(error, result) {
+        if (error) {
+          self.props.showError({
+            body: 'Ocurrió un error interno al agarrar los tipos de tareas',
+          });
+        } else {
+          self.setState({
+            types: result,
+          });
+        }
+      },
+    });
+    
+    self.setState({
+      subscription,
+    });
+  }
+
+  componentWillUnmount() {
+    this.state.subscription.stop();
+  }
+
+  insertTaskType() {
+    let { name, time } = this.state;
+    time = Number(time);
+
+    this.setState({
+      name: '',
+      time: '',
+    });
+  
+    if (name === '') {
+      this.props.showError({
+        body: 'Ingresá un nombre válido',
+      });
+      return;
+    }
+ 
+    if (name.length < 3) {
+      this.props.showError({
+        body: 'Ingresá un nombre con más de 3 caracteres',
+      });
+      return;
+    }
+
+    if (!Number.isInteger(time) || Number(time) <= 0) {
+      this.props.showError({
+        body: 'El tiempo ingresado es inválido',
+      });
+      return;
+    }
+
+    DiamondAPI.insert({
+      collection: 'task_types',
+      object: {
+        name,
+        time,
+      },
+      isGlobal: true,
+    });
+  }
+
+  handleChange(index, e) {
+    const value = e.target.value;
+
+    this.setState({
+      [index]: value,
+    });
+  }
+
+  renderTypes() {
+    return this.state.types.map((type) => {
+      return (
+        <li>{type.name} | {type.time}</li>
+      );
+    });
+  }
+
+  render() {
+    return (
+      <div>
+        <h3>Tipos de tareas</h3>
+        <ol>
+          {this.renderTypes()}
+        </ol>
+        
+        <div className="form-group">
+          <label className="control-label" htmlFor="panel-task-type-name">Nombre</label>
+          <input
+            id="panel-task-type-name"
+            className="form-control"
+            value={this.state.name}
+            onChange={(e) => this.handleChange('name', e)}
+            type="text"
+            placeholder="Ingresá el nombre de la tarea"
+          />
+        </div>
+        <div className="form-group">
+          <label className="control-label" htmlFor="panel-task-type-time">Tiempo (días)</label>
+          <input
+            id="panel-task-type-time"
+            className="form-control"
+            value={this.state.time}
+            onChange={(e) => this.handleChange('time', e)}
+            type="text"
+            placeholder="Ingresá el tiempo"
+          />
+        </div>
+        <button
+          onClick={this.insertTaskType}
+          type="submit"
+          className="btn btn-primary"
+        >
+          Crear tarea
+        </button>
+      </div>
+    );
+  }
+}
 /**
  * Renders all the boards the team has.
  */
@@ -1159,13 +1347,15 @@ class Task extends React.Component {
      *  Used to check if user is editing the task title.
      */
     this.state = {
-      count: '00:00:00',
-      intervalId: false,
       doing: this.props.doing,
       task_title: this.props.task.title,
+
+      task_types: [],
+
       editing: false,
-      
       showDescription: false,
+      intervalId: false,
+      count: '00:00:00',
     };
 
     this.startTask = this.startTask.bind(this);
@@ -1638,6 +1828,8 @@ ReactDOM.render(
       <Route path="/tasks/show" component={BoardsList} />
       <Route path="/tasks/create" component={CreateTask} />
       <Route path="/tasks/:taskId" component={TaskInformation} />
+      
+      <Route path="/panel" component={Panel} />
     </Route>
   </Router>,
   document.getElementById('render-target')
