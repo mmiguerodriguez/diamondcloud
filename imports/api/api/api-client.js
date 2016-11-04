@@ -167,13 +167,13 @@ export const generateAPI = (moduleInstanceId) => {
     },
   };
 
-  ModuleInstances.find({ _id: moduleInstanceId }).observeChanges({
-    changed: () => {
-      if (ModuleInstances.findOne(moduleInstanceId).archived) {
-        DiamondAPI.unsubscribe();
-      }
-    },
-  });
+  setTimeout(() => {
+    ModuleInstances.find({
+      _id: moduleInstanceId,
+    }).observeChanges({
+      removed: DiamondAPI.unsubscribe,
+    });
+  }, 0);
 
   return DiamondAPI;
 };
