@@ -1,6 +1,5 @@
 import React           from 'react';
 
-import { ModuleInstances } from '../../api/module-instances/module-instances';
 import { generateAPI } from '../../api/api/api-client';
 
 const PIN_HEIGHT = 16;
