@@ -248,7 +248,9 @@ class TaskManagerLayout extends React.Component {
       'col-xs-12': !isCoordination,
       'col-xs-6': isCoordination,
     }, 'text-center board-list-title');
-    
+
+    console.log(this.props.location.pathname);
+
     return (
       <div className="col-xs-12 task-manager">
         <div
@@ -588,10 +590,15 @@ class Panel extends React.Component {
     
     this.handleChange = this.handleChange.bind(this);
     this.insertTaskType = this.insertTaskType.bind(this);
+    this.removeTaskType = this.removeTaskType.bind(this);
   }
 
   componentDidMount() {
     const self = this;
+    
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body',
+    });
 
     const subscription = DiamondAPI.subscribe({
       collection: 'task_types',
@@ -612,13 +619,21 @@ class Panel extends React.Component {
       subscription,
     });
   }
+  
+  componentDidUpdate() {
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body',
+    });
+  }
 
   componentWillUnmount() {
     this.state.subscription.stop();
   }
 
   insertTaskType() {
+    const self = this;
     let { name, time } = this.state;
+
     time = Number(time);
 
     this.setState({
@@ -654,6 +669,31 @@ class Panel extends React.Component {
         time,
       },
       isGlobal: true,
+      callback(error, result) {
+        if (error) {
+          self.props.showError({
+            body: 'Hubo un error interno al insertar el tipo de tarea',
+          });
+        }
+      }
+    });
+  }
+
+  removeTaskType(typeId) {
+    const self = this;
+
+    DiamondAPI.remove({
+      collection: 'task_types',
+      filter: {
+        _id: typeId,
+      },
+      callback(error, result) {
+        if (error) {
+          self.props.showError({
+            body: 'Hubo un error interno al eliminar el tipo de tarea',
+          });
+        }
+      }
     });
   }
 
@@ -668,19 +708,25 @@ class Panel extends React.Component {
   renderTypes() {
     return this.state.types.map((type) => {
       return (
-        <li>{type.name} | {type.time}</li>
+        <ul className="task-type-item">
+          <div
+            className="remove-task"
+            title="Borrar tipo de tarea"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            onClick={() => this.removeTaskType(type._id)}
+          />
+          <p className="task-type-item-name">Tipo: {type.name}</p>
+          <p>Duración: {type.time} días</p>
+        </ul>
       );
     });
   }
 
   render() {
     return (
-      <div>
-        <h3>Tipos de tareas</h3>
-        <ol>
-          {this.renderTypes()}
-        </ol>
-        
+      <div className="task-type">
+        <h4 className="task-type-title" >Tipos de tareas</h4>
         <div className="form-group">
           <label className="control-label" htmlFor="panel-task-type-name">Nombre</label>
           <input
@@ -699,7 +745,7 @@ class Panel extends React.Component {
             className="form-control"
             value={this.state.time}
             onChange={(e) => this.handleChange('time', e)}
-            type="text"
+            type="number"
             placeholder="Ingresá el tiempo"
           />
         </div>
@@ -710,6 +756,10 @@ class Panel extends React.Component {
         >
           Crear tarea
         </button>
+
+        <ol className="col-xs-12 task-type-list">
+          {this.renderTypes()}
+        </ol>
       </div>
     );
   }
@@ -1459,7 +1509,11 @@ class Task extends React.Component {
                     className='task-title col-xs-12'>
                     {this.state.task_title}
                   </h5>
-                  <p className={descriptionClass}><b>Descripción:</b> {this.props.task.description}</p>
+                  {
+                    !isCoordination ? (
+                      <p className={descriptionClass}><b>Descripción:</b> {this.props.task.description}</p>
+                    ) : (null)
+                  }
                   {
                     !isCoordination && isDoing ? (
                       <p className='col-xs-12 time-active'>Tiempo activo: {this.state.count}</p>
@@ -1651,6 +1705,9 @@ class TaskInformation extends React.Component {
     let board;
     let status;
 
+    task = this.props.tasks.find(_task => _task._id === this.props.params.taskId);
+    board = this.props.boards.find(_board => _board._id === task.boardId);
+    /*
     this.props.tasks.forEach((_task) => {
       if (_task._id === this.props.params.taskId) {
         task = _task;
@@ -1661,7 +1718,7 @@ class TaskInformation extends React.Component {
         });
       }
     });
-
+*/
     if (task.status === 'finished') {
       status = 'Finalizada';
     } else if (task.status === 'not_finished') {
@@ -1689,7 +1746,7 @@ class TaskInformation extends React.Component {
             </p>
             <p>
               <b>Plazo:</b>
-              {`${$.format.date(new Date(task.startDate), 'dd/MM/yy')} - ${$.format.date(new Date(task.dueDate), 'dd/MM/yy')}`}
+              {` ${$.format.date(new Date(task.startDate), 'dd/MM/yy')} - ${$.format.date(new Date(task.dueDate), 'dd/MM/yy')}`}
             </p>
             <p>
               <b>Estado:</b> {status}
