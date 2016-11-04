@@ -380,7 +380,7 @@ ol, ul {
 .remove-task {
   display: inline-block;
   float: right;
-  background-image: url(http://image.flaticon.com/icons/svg/61/61155.svg);
+  background-image: url(img/close.svg);
   background-size: 100%;
   width: 15px;
   height: 15px;
