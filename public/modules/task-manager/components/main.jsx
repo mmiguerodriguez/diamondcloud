@@ -241,14 +241,27 @@ class TaskManagerLayout extends React.Component {
   render() {
     return (
       <div className="col-xs-12 task-manager">
-        <div
-          role="button"
-          className="col-xs-12 text-center board-list-title"
-          onClick={() => this.setLocation('tasks/show')}>
-          <b>Lista de tareas</b>
+        <div className="row board-list-title">
+          <div
+            role="button"
+            className="col-xs-6 col-xs-offset-3 text-center"
+            onClick={() => this.setLocation('tasks/show')}
+          >
+            <b>Lista de tareas</b>
+            
+          </div>
+          <div
+            id="view-archived-tasks"
+            className="col-xs-2"
+            title='Ver tareas archivadas'
+            data-toggle="tooltip"
+            data-placement="bottom"
+            role='button'
+          />
+        </div>
+        <div className="col-xs-12" >
           <hr className="hr-fix" />
         </div>
-
         {
           React.cloneElement(this.props.children, {
             ...this.props,
@@ -671,7 +684,7 @@ class TasksList extends React.Component {
 /**
  * Renders an unique task.
  */
-class Task extends React.Component {
+class Task extends React.Component { 
   /**
    * Opens a task information.
    * Routes to -> /task/taskId.
@@ -1209,7 +1222,9 @@ class Task extends React.Component {
           }
 
           {
-            this.props.coordination && !this.state.editing ? (
+            this.props.coordination &&
+            !this.state.editing &&
+            !this.props.task.archived ? (
               <div
                 id={`archive-task-${this.props.task._id}`}
                 className={archiveClass}
@@ -1251,7 +1266,9 @@ class Task extends React.Component {
           {
             !this.state.editing ? (
               <div className='col-xs-12'>
-                <p className='col-xs-12 expiration'>Vencimiento: {$.format.date(new Date(this.props.task.dueDate), 'dd/MM/yyyy')}</p>
+                <p className='col-xs-12 expiration'>
+                  Vencimiento: {$.format.date(new Date(this.props.task.dueDate), 'dd/MM/yyyy')}
+                </p>
               </div>
             ) : (null)
           }
