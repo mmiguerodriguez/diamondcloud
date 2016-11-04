@@ -257,6 +257,7 @@ class TaskManagerLayout extends React.Component {
             data-toggle="tooltip"
             data-placement="bottom"
             role='button'
+            onClick={() => this.setLocation('tasks/show-archived-tasks')}
           />
         </div>
         <div className="col-xs-12" >
@@ -1460,12 +1461,95 @@ class ErrorMessage extends React.Component {
 }
 
 /**
+ * Gets a list of archived tasks.
+ * If the board is coordination or directors, shows all archived tasks
+ * Otherwise, it shows archived tasks of the current board only.
+ */
+class ArchivedTasksPage extends React.Component {
+  constructor() {
+    super();
+
+    /**
+     * States
+     *
+     * @param {Array} tasks
+     *  The archived tasks that are shown to the user.
+     */
+    this.state = {
+      tasks: [],
+      loading: true,
+    };
+  }
+
+  componentDidMount() {
+    const self = this;
+    let filter; // The filter for the subscription.
+    // If the current board is coordination, get all archived tasks
+    if (isCoordination(DiamondAPI.getCurrentBoard())) {
+      filter = {
+        archived: true,
+      };
+    } else {
+      // Get only tasks of the current board
+      filter = {
+        boardId: DiamondAPI.getCurrentBoard()._id,
+      };
+    }
+    DiamondAPI.subscribe({
+      collection: 'tasks',
+      filter,
+      callback(error, result) {
+        if (error) {
+          console.error(error);
+        } else {
+          console.log(result);
+          self.setState({
+            tasks: result || [],
+            loading: false,
+          });
+        }
+      },
+    })
+  }
+
+  render() {
+    if (this.state.loading || this.state.loading === undefined) {
+      return (
+        <div className="loading">
+          <div className="loader" />
+        </div>
+      );
+    }
+
+    return (
+      <ArchivedTasksLayout tasks={this.state.tasks} />
+    );
+  }
+}
+
+class ArchivedTasksLayout extends React.Component {
+  render() {
+    return (
+      <TasksList
+        board={{ name: 'Tareas archivadas' }}
+        tasks={this.props.tasks}
+      />
+    );
+  }
+}
+
+ArchivedTasksLayout.propTypes = {
+  tasks: React.PropTypes.array.isRequired,
+};
+
+/**
  * Router setup.
  */
 ReactDOM.render(
   <Router history={browserHistory}>
     <Route path="/" component={TaskManagerPage}>
       <Route path="/tasks/show" component={BoardsList} />
+      <Route path="/tasks/show-archived-tasks" component={ArchivedTasksPage} />
       <Route path="/tasks/create" component={CreateTask} />
       <Route path="/tasks/:taskId" component={TaskInformation} />
     </Route>
