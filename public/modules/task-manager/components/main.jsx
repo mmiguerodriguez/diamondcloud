@@ -1415,6 +1415,7 @@ class Task extends React.Component {
   createDraggable() {
     $(this.task).draggable({
       revert: 'invalid',
+      start: function(event, ui) { $(this).css("z-index", "1"); }
     });
   }
 
