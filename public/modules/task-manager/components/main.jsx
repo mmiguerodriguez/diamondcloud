@@ -878,6 +878,27 @@ class Board extends React.Component {
 }
 
 /**
+ * Renders information of tasks within a board
+ */
+class BoardInformation extends React.Component {
+  render() {
+    let tasks;
+    let board;
+
+    board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
+    tasks = this.props.tasks.map(_task => _task.boardId === board._id);
+
+    console.log(board, tasks);
+
+    return (
+      <div>
+        
+      </div>
+    );
+  }
+}
+
+/**
  * Renders the task list from a board.
  */
 class TasksList extends React.Component {
@@ -959,11 +980,24 @@ class TasksList extends React.Component {
   }
 
   render() {
+    const onClick = this.props.coordination ? (
+      () => this.props.setLocation.bind(null, `/board/${this.props.board._id}`)
+    ) : (
+      () => {}
+    );
+    
+    console.log(this.props.coordination);
+    
+    console.log(onClick);
+    onClick();
+
     return (
       <div className='col-xs-12 tasks-list' data-board-id={this.props.board._id}>
-        <p className='text-center'>
-          <b>{this.props.board.name}</b>
-        </p>
+        <div onClick={onClick}>
+          <p className='text-center'>
+            <b>{this.props.board.name}</b>
+          </p>
+        </div>
         {this.renderTasks()}
         {
           this.props.coordination ? (
@@ -1829,18 +1863,7 @@ class TaskInformation extends React.Component {
 
     task = this.props.tasks.find(_task => _task._id === this.props.params.taskId);
     board = this.props.boards.find(_board => _board._id === task.boardId);
-    /*
-    this.props.tasks.forEach((_task) => {
-      if (_task._id === this.props.params.taskId) {
-        task = _task;
-        this.props.boards.forEach((_board) => {
-          if (_board._id === _task.boardId) {
-            board = _board;
-          }
-        });
-      }
-    });
-*/
+
     if (task.status === 'finished') {
       status = 'Finalizada';
     } else if (task.status === 'not_finished') {
@@ -2004,6 +2027,8 @@ ReactDOM.render(
       <Route path="/tasks/show" component={BoardsList} />
       <Route path="/tasks/create" component={CreateTask} />
       <Route path="/tasks/:taskId" component={TaskInformation} />
+      
+      <Route path="/board/:boardId" component={BoardInformation} />
       
       <Route path="/panel" component={Panel} />
     </Route>
