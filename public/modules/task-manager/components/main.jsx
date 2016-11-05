@@ -120,9 +120,7 @@ class TaskManagerPage extends React.Component {
        * If not, fetch the ones that are from the
        * currentBoard and that are not finished.
        */
-      const filter = coordination ? {
-        archived: false,
-      } : {
+      const filter = coordination ? {} : {
         archived: false,
         status: 'not_finished',
         boardId: currentBoard._id,
@@ -590,12 +588,13 @@ class Board extends React.Component {
       board: !this.props.coordination,
       'board-fixed': this.props.coordination,
     });
-
+    // Show only non-archived tasks
+    const tasks = this.props.tasks.filter(task => !task.archived);
     return (
       <div className={classes}>
         <TasksList
           board={this.props.board}
-          tasks={this.props.tasks}
+          tasks={tasks}
           coordination={this.props.coordination}
           setLocation={this.props.setLocation}
           currentUser={this.props.currentUser}
@@ -664,7 +663,8 @@ class TasksList extends React.Component {
         </p>
         {this.renderTasks()}
         {
-          this.props.coordination ? (
+          // Input for adding a task
+          this.props.coordination && !this.props.archivedView ? (
             <div className="form-group">
               <input
                 id="task_title"
@@ -685,7 +685,7 @@ class TasksList extends React.Component {
 /**
  * Renders an unique task.
  */
-class Task extends React.Component { 
+class Task extends React.Component {
   /**
    * Opens a task information.
    * Routes to -> /task/taskId.
@@ -1136,6 +1136,7 @@ class Task extends React.Component {
   }
 
   componentWillMount() {
+    console.log('estoy en task. las props son: ', this.props);
     if (!this.props.coordination) {
       if (this.props.doing) {
         this.startTimer();
@@ -1316,7 +1317,10 @@ class TaskInformation extends React.Component {
       <div>
         <div
           className='go-back go-back-task'
-          onClick={() => this.props.setLocation('tasks/show')}>
+          onClick={(this.state.task.archived) ?
+            () => this.props.setLocation('tasks/show-archived-tasks') :
+            () => this.props.setLocation('tasks/show')
+          }>
         </div>
         <div className='task-info col-xs-12'>
           <h4 className='task-info-title'>Información de la tarea</h4>
@@ -1482,34 +1486,12 @@ class ArchivedTasksPage extends React.Component {
   }
 
   componentDidMount() {
-    const self = this;
-    let filter; // The filter for the subscription.
-    // If the current board is coordination, get all archived tasks
-    if (isCoordination(DiamondAPI.getCurrentBoard())) {
-      filter = {
-        archived: true,
-      };
-    } else {
-      // Get only tasks of the current board
-      filter = {
-        boardId: DiamondAPI.getCurrentBoard()._id,
-      };
-    }
-    DiamondAPI.subscribe({
-      collection: 'tasks',
-      filter,
-      callback(error, result) {
-        if (error) {
-          console.error(error);
-        } else {
-          console.log(result);
-          self.setState({
-            tasks: result || [],
-            loading: false,
-          });
-        }
-      },
-    })
+    //show only archived tasks
+    const tasks = this.props.tasks.filter(task => task.archived);
+    this.setState({
+      tasks,
+      loading: false,
+    });
   }
 
   render() {
@@ -1533,6 +1515,11 @@ class ArchivedTasksLayout extends React.Component {
       <TasksList
         board={{ name: 'Tareas archivadas' }}
         tasks={this.props.tasks}
+        coordination={isCoordination(DiamondAPI.getCurrentBoard())}
+        archivedView={true}
+        currentUser={DiamondAPI.getCurrentUser()}
+        showError={this.props.showError}
+        hideError={this.props.hideError}
       />
     );
   }
