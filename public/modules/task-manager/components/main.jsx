@@ -8,6 +8,7 @@ const {
   ReactDOM,
   ReactRouter,
   classNames,
+  google,
   $,
 } = window;
 const {
@@ -878,6 +879,62 @@ class Board extends React.Component {
 }
 
 /**
+ * Renders information of tasks within a board
+ */
+class BoardInformation extends React.Component {
+  componentDidMount() {
+    const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
+    const tasks = this.props.tasks.filter(_task => _task.boardId === board._id);
+
+    if (tasks.length > 0) {
+      const container = this.timeline;
+      const chart = new google.visualization.Timeline(container);
+      const dataTable = new google.visualization.DataTable();
+
+      const data = [];
+
+      dataTable.addColumn({ type: 'string', id: 'Tarea' });
+      dataTable.addColumn({ type: 'date', id: 'Inicio' });
+      dataTable.addColumn({ type: 'date', id: 'Fin' });
+
+      tasks.forEach(task => {
+        data.push([
+          task.title,
+          new Date(task.startDate),
+          new Date(task.dueDate),
+        ]);
+      });
+
+      dataTable.addRows(data);
+      chart.draw(dataTable);
+    }
+  }
+
+  render() {
+    const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
+    const tasks = this.props.tasks.filter(_task => _task.boardId === board._id);
+
+    return (
+      <div>
+        <div>
+          {board.name}
+        </div>
+        <div ref={c => this.timeline = c }>
+          
+        </div>
+        {
+          tasks.length === 0 ? (
+            <div>
+              No hay tareas de las que mostrar informacion
+            </div>
+          ) : (null)
+        }
+      </div>
+    );
+  }
+}
+
+/**
  * Renders the task list from a board.
  */
 class TasksList extends React.Component {
@@ -959,11 +1016,18 @@ class TasksList extends React.Component {
   }
 
   render() {
+    const onClick = this.props.coordination ? (
+      () => this.props.setLocation(`/board/${this.props.board._id}`)
+    ) : (
+      () => {}
+    );
     return (
       <div className='col-xs-12 tasks-list' data-board-id={this.props.board._id}>
-        <p className='text-center'>
-          <b>{this.props.board.name}</b>
-        </p>
+        <div role="button" onClick={onClick}>
+          <p className='text-center'>
+            <b>{this.props.board.name}</b>
+          </p>
+        </div>
         {this.renderTasks()}
         {
           this.props.coordination ? (
@@ -1830,18 +1894,7 @@ class TaskInformation extends React.Component {
 
     task = this.props.tasks.find(_task => _task._id === this.props.params.taskId);
     board = this.props.boards.find(_board => _board._id === task.boardId);
-    /*
-    this.props.tasks.forEach((_task) => {
-      if (_task._id === this.props.params.taskId) {
-        task = _task;
-        this.props.boards.forEach((_board) => {
-          if (_board._id === _task.boardId) {
-            board = _board;
-          }
-        });
-      }
-    });
-*/
+
     if (task.status === 'finished') {
       status = 'Finalizada';
     } else if (task.status === 'not_finished') {
@@ -2005,6 +2058,8 @@ ReactDOM.render(
       <Route path="/tasks/show" component={BoardsList} />
       <Route path="/tasks/create" component={CreateTask} />
       <Route path="/tasks/:taskId" component={TaskInformation} />
+      
+      <Route path="/board/:boardId" component={BoardInformation} />
       
       <Route path="/panel" component={Panel} />
     </Route>
