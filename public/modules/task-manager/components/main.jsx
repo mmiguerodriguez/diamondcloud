@@ -244,18 +244,19 @@ class TaskManagerLayout extends React.Component {
   render() {
     const isCoordination = this.props.coordination;
 
-    const taskTitleClass = classNames({
-      'col-xs-12': !isCoordination,
-      'col-xs-6': isCoordination,
-    }, 'text-center board-list-title');
-
-    console.log(this.props.location.pathname);
-
     return (
       <div className="col-xs-12 task-manager">
+        {
+          this.props.location.pathname === "/panel" ? (
+            <div
+              className="go-back go-back-task"
+              onClick={() => this.setLocation('tasks/show')}
+            />
+          ) : (null)
+        }
         <div
           role="button"
-          className={taskTitleClass}
+          className='col-xs-12 text-center board-list-title'
           onClick={() => this.setLocation('tasks/show')}>
           <b>Lista de tareas</b>
         </div>
@@ -263,10 +264,9 @@ class TaskManagerLayout extends React.Component {
           isCoordination ? (
             <div
               role="button"
-              className="col-xs-6 text-center board-list-title"
-              onClick={() => this.setLocation('/panel')}>
-              <b>Panel</b>
-            </div>
+              className="text-center panel-btn"
+              onClick={() => this.setLocation('/panel')}
+            />
           ) : (null)
         }
 
@@ -492,8 +492,8 @@ class CreateTask extends React.Component {
       <div className="row create-task-form">
         <div
           className="go-back go-back-task"
-          onClick={() => this.props.setLocation('tasks/show')}>
-        </div>
+          onClick={() => this.props.setLocation('tasks/show')}
+        />
         <div className="col-xs-12">
           <h4 className="visible-xs-inline-block">Crear una tarea</h4>
         </div>
@@ -742,7 +742,7 @@ class Panel extends React.Component {
             value={this.state.time}
             onChange={(e) => this.handleChange('time', e)}
             type="number"
-            placeholder="Ingresá el tiempo"
+            placeholder="Duración"
           />
         </div>
         <button
@@ -750,7 +750,7 @@ class Panel extends React.Component {
           type="submit"
           className="btn btn-primary"
         >
-          Crear tarea
+          Crear tipo de tarea
         </button>
 
         <ol className="col-xs-12 task-type-list">
@@ -856,7 +856,7 @@ class BoardsList extends React.Component {
 class Board extends React.Component {
   render() {
     const classes = classNames({
-      board: !this.props.coordination,
+      'no-coordination-board': !this.props.coordination,
       'board-fixed': this.props.coordination,
     });
 
@@ -1855,8 +1855,8 @@ class TaskInformation extends React.Component {
       <div>
         <div
           className='go-back go-back-task'
-          onClick={() => this.props.setLocation('tasks/show')}>
-        </div>
+          onClick={() => this.props.setLocation('tasks/show')}
+        />
         <div className='task-info col-xs-12'>
           <h4 className='task-info-title'>Información de la tarea</h4>
           <div className='item'>
