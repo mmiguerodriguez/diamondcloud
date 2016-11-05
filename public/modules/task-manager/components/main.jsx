@@ -8,6 +8,7 @@ const {
   ReactDOM,
   ReactRouter,
   classNames,
+  google,
   $,
 } = window;
 const {
@@ -881,18 +882,53 @@ class Board extends React.Component {
  * Renders information of tasks within a board
  */
 class BoardInformation extends React.Component {
+  componentDidMount() {
+    const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
+    const tasks = this.props.tasks.filter(_task => _task.boardId === board._id);
+
+    if (tasks.length > 0) {
+      const container = this.timeline;
+      const chart = new google.visualization.Timeline(container);
+      const dataTable = new google.visualization.DataTable();
+
+      const data = [];
+
+      dataTable.addColumn({ type: 'string', id: 'Tarea' });
+      dataTable.addColumn({ type: 'date', id: 'Inicio' });
+      dataTable.addColumn({ type: 'date', id: 'Fin' });
+
+      tasks.forEach(task => {
+        data.push([
+          task.title,
+          new Date(task.startDate),
+          new Date(task.dueDate),
+        ]);
+      });
+
+      dataTable.addRows(data);
+      chart.draw(dataTable);
+    }
+  }
+
   render() {
-    let tasks;
-    let board;
-
-    board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
-    tasks = this.props.tasks.map(_task => _task.boardId === board._id);
-
-    console.log(board, tasks);
+    const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
+    const tasks = this.props.tasks.filter(_task => _task.boardId === board._id);
 
     return (
       <div>
-        
+        <div>
+          {board.name}
+        </div>
+        <div ref={c => this.timeline = c }>
+          
+        </div>
+        {
+          tasks.length === 0 ? (
+            <div>
+              No hay tareas de las que mostrar informacion
+            </div>
+          ) : (null)
+        }
       </div>
     );
   }
@@ -981,19 +1017,13 @@ class TasksList extends React.Component {
 
   render() {
     const onClick = this.props.coordination ? (
-      () => this.props.setLocation.bind(null, `/board/${this.props.board._id}`)
+      () => this.props.setLocation(`/board/${this.props.board._id}`)
     ) : (
       () => {}
     );
-    
-    console.log(this.props.coordination);
-    
-    console.log(onClick);
-    onClick();
-
     return (
       <div className='col-xs-12 tasks-list' data-board-id={this.props.board._id}>
-        <div onClick={onClick}>
+        <div role="button" onClick={onClick}>
           <p className='text-center'>
             <b>{this.props.board.name}</b>
           </p>
