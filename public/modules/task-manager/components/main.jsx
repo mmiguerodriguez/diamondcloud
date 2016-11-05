@@ -338,7 +338,7 @@ class CreateTask extends React.Component {
       return;
     }
     
-    if (type === '' || !Number.isInteger(type)) {
+    if (self.state.type === '' || !Number.isInteger(type)) {
       self.props.showError({
         body: 'El tipo de tarea es inválido'
       });
@@ -461,7 +461,7 @@ class CreateTask extends React.Component {
           });
         } else {
           self.setState({
-            type: result[0] || '',
+            type: result.length ? result[0].time : '',
             task_types: result,
           });
         }
@@ -471,20 +471,20 @@ class CreateTask extends React.Component {
     $('#create-task-title').focus();
   }
 
-  renderTaskTypes() {
-    return this.state.task_types.map((type) => {
-      return (
-        <option value={type.time}>{type.name}</option>
-      );
-    });
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.taskTitle !== this.props.taskTitle) {
       this.setState({
         title: nextProps.taskTitle,
       });
     }
+  }
+
+  renderTaskTypes() {
+    return this.state.task_types.map((type) => {
+      return (
+        <option value={type.time}>{type.name}</option>
+      );
+    });
   }
 
   render() {
@@ -565,7 +565,10 @@ class CreateTask extends React.Component {
   }
 }
 
-
+/**
+ * Panel to add task-types
+ * Renders only to coordinators
+ */
 class Panel extends React.Component {
   constructor(props) {
     super(props);
@@ -672,6 +675,8 @@ class Panel extends React.Component {
   removeTaskType(typeId) {
     const self = this;
 
+    $(`#task-type${typeId}`).tooltip('destroy');
+
     DiamondAPI.remove({
       collection: 'task_types',
       filter: {
@@ -700,6 +705,7 @@ class Panel extends React.Component {
       return (
         <ul className="task-type-item">
           <div
+            id={`task-type${type._id}`}
             className="remove-task"
             title="Borrar tipo de tarea"
             data-toggle="tooltip"
