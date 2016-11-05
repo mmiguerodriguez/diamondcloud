@@ -760,6 +760,7 @@ class Panel extends React.Component {
     );
   }
 }
+
 /**
  * Renders all the boards the team has.
  */
@@ -923,10 +924,43 @@ class TasksList extends React.Component {
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
   }
+  
+  componentDidMount() {
+    const self = this;
+
+    $('.tasks-list').droppable({
+      accept: '.task',
+      drop: function (event, ui) {
+        const $board = $(this);
+        const $drag = $(ui.draggable);
+        const taskId = $drag.data('task-id');
+        const boardId = $board.data('board-id');
+
+        DiamondAPI.update({
+          collection: 'tasks',
+          filter: {
+            _id: taskId,
+          },
+          updateQuery: {
+            $set: {
+              boardId,
+            },
+          },
+          callback(error, result) {
+            if (error) {
+              self.props.showError({
+                body: 'Hubo un error al cambiar la tarea de pizarrón', 
+              });
+            }
+          }
+        });
+      },
+    });
+  }
 
   render() {
     return (
-      <div className='col-xs-12 tasks-list'>
+      <div className='col-xs-12 tasks-list' data-board-id={this.props.board._id}>
         <p className='text-center'>
           <b>{this.props.board.name}</b>
         </p>
@@ -1117,21 +1151,41 @@ class Task extends React.Component {
           status,
         },
       };
-    } else {
+      
+      $(`#finish-task-${self.props.task._id}`).tooltip('destroy');
+    } else if (status === 'not_finished') {
+      if (this.state.rejecting) {
+        this.setState({
+          rejecting: false,
+        });
+      }
+      
       updateQuery = {
         $set: {
           status,
         },
       };
-    }
+      
+      $(`#accept-task-${self.props.task._id}`).tooltip('destroy');   
+      $(`#reject-task-${self.props.task._id}`).tooltip('destroy');
+    } else if (status === 'rejected') {
+      updateQuery = {
+        $set: {
+          status,
+          rejectMessage: self.state.rejectDescription,
+        },
+      };
+      
+      $(`#accept-task-${self.props.task._id}`).tooltip('destroy');   
+      $(`#reject-task-${self.props.task._id}`).tooltip('destroy');
+    } else if (status === 'queued') {
+      updateQuery = {
+        $set: {
+          status,
+          rejectMessage: '',
+        },
+      };
 
-    if (status === 'finished') {
-      $(`#finish-task-${self.props.task._id}`).tooltip('destroy');            
-    } else if (status === 'not_finished') {
-      if (status === 'rejected') {
-        $(`#accept-task-${self.props.task._id}`).tooltip('destroy');   
-        $(`#reject-task-${self.props.task._id}`).tooltip('destroy');
-      }
       $(`#restore-task-${self.props.task._id}`).tooltip('destroy');
     }
 
@@ -1355,19 +1409,43 @@ class Task extends React.Component {
       callback();
     });
   }
+  /**
+   * Creates a draggable for the task element
+   */
+  createDraggable() {
+    $(this.task).draggable({
+      revert: 'invalid',
+    });
+  }
 
   handleChange(index, event) {
-    if (this.props.coordination) {
+    if (index === 'edit_task') {
+      if (this.props.coordination) {
+        this.setState({
+          [index]: event.target.value,
+        });
+      }
+    } else {
       this.setState({
         [index]: event.target.value,
       });
     }
   }
 
-  handleKeyDown() {
-    if (this.props.coordination) {
-      if (event.which === 13) {
-        this.setTaskTitle();
+  handleKeyDown(index, event) {
+    if (event.which === 13) {
+      if (index === 'edit_task') {
+        if (this.props.coordination) {
+            this.setTaskTitle();
+        }
+      } else if (index === 'reject_task') {
+        this.setTaskStatus('rejected');
+      }
+    } else if (event.which === 27) {
+      if (index === 'reject_task') {
+        this.setState({
+          rejecting: false,
+        });
       }
     }
   }
@@ -1399,7 +1477,11 @@ class Task extends React.Component {
       task_types: [],
 
       editing: false,
+      rejecting: false,
+      rejectDescription: '',
+      showRejection: false,
       showDescription: false,
+
       intervalId: false,
       count: '00:00:00',
     };
@@ -1423,11 +1505,27 @@ class Task extends React.Component {
     }
   }
 
+  componentDidMount() {
+    if (this.props.coordination) {
+      if (this.props.task.status === 'rejected') {
+        this.createDraggable();
+      }
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.task.title !== this.state.task_title) {
       this.setState({
         task_title: nextProps.task.title,
       });
+    }
+    
+    if (this.props.coordination) {
+      if (nextProps.task.status !== this.props.task.status) {
+        if (nextProps.task.status === 'rejected') {
+          this.createDraggable();
+        }
+      }
     }
   }
 
@@ -1458,6 +1556,7 @@ class Task extends React.Component {
     const isQueued = this.props.task.status === 'queued';
     const isFinished = this.props.task.status === 'finished';
     const isRejected = this.props.task.status === 'rejected';
+    const isRejecting = this.state.rejecting;
     const showDescription = this.state.showDescription;
 
     const role = classNames('button');
@@ -1477,7 +1576,7 @@ class Task extends React.Component {
     const descriptionClass = classNames({
       'open-description': showDescription,
       'hide-description': !showDescription,
-    }, 'col-xs-12 description')
+    }, 'col-xs-12 description');
     const clickHandle = isCoordination ? this.openTask : () => {
       self.setState({
         showDescription: !this.state.showDescription,
@@ -1485,7 +1584,11 @@ class Task extends React.Component {
     };
 
     return (
-      <div className='col-xs-12 task'>
+      <div
+        ref={c => this.task = c }
+        className='col-xs-12 task'
+        data-task-id={this.props.task._id}
+      >
         <div>
           <div className={containerClass}>
             {
@@ -1495,7 +1598,7 @@ class Task extends React.Component {
                   type='text'
                   value={this.state.task_title}
                   onChange={(e) => this.handleChange('task_title', e)}
-                  onKeyDown={this.handleKeyDown}
+                  onKeyDown={(e) => this.handleKeyDown('edit_task', e)}
                 />
               ) : (
                 <div>
@@ -1550,15 +1653,15 @@ class Task extends React.Component {
 
           {
             isCoordination && !isEditing && (isFinished || isRejected) ? (
-                <div
-                  id={`restore-task-${this.props.task._id}`}
-                  className="col-xs-2 restore-task"
-                  title="Restaurar tarea"
-                  data-toggle="tooltip"
-                  data-placement="bottom"
-                  role="button"
-                  onClick={() => this.setTaskStatus('not_finished')}
-                />
+              <div
+                id={`restore-task-${this.props.task._id}`}
+                className="col-xs-2 restore-task"
+                title="Restaurar tarea"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                role="button"
+                onClick={() => this.setTaskStatus('queued')}
+              />
             ) : (null)
           }
 
@@ -1571,6 +1674,14 @@ class Task extends React.Component {
           {
             isCoordination && !isEditing && isRejected ? (
               <div className="rejected-task" />
+            ) : (null)
+          }
+          
+          {
+            isCoordination && isRejected ? (
+              <div className="col-xs-12">
+                <b>Mensaje de rechazo:</b> {this.props.task.rejectMessage}
+              </div>
             ) : (null)
           }
 
@@ -1665,7 +1776,7 @@ class Task extends React.Component {
                   data-toggle="tooltip"
                   data-placement="bottom"
                   role="button"
-                  onClick={() => this.setTaskStatus('rejected')}
+                  onClick={() => this.setState({ rejecting: !isRejecting })}
                 >
                   <img
                     src="/modules/task-manager/img/reject-task.svg"
@@ -1677,7 +1788,22 @@ class Task extends React.Component {
           }
 
           {
-            !isEditing ? (
+            !isCoordination && isRejecting ? (
+              <div className="col-xs-12">
+                Razon de rechazo (click Enter)
+                <input
+                  className="form-control"
+                  type="text"
+                  value={this.state.rejectDescription}
+                  onChange={(e) => this.handleChange('rejectDescription', e)}
+                  onKeyDown={(e) => this.handleKeyDown('reject_task', e)}
+                />
+              </div>
+            ) : (null)
+          }
+
+          {
+            !isEditing && !isRejecting ? (
               <div className="col-xs-12">
                 <p className="col-xs-12 expiration-date">
                   <b>Plazo: </b>
