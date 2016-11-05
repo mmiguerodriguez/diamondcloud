@@ -301,6 +301,22 @@ class TaskManagerLayout extends React.Component {
  * Renders the layout to create a task.
  */
 class CreateTask extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      title: this.props.taskTitle,
+      boardId: this.props.selectedBoardId || this.props.boards[0]._id,
+      description: '',
+      type: '',
+      startDate: new Date().getTime() + (1000 * 60 * 60),
+
+      task_types: [],
+    };
+
+    this.createTask = this.createTask.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
   /**
    * Creates a task checking before if the input data is
    * correct.
@@ -309,12 +325,22 @@ class CreateTask extends React.Component {
     const self = this;
 
     const position = self.getBiggestTaskPosition();
+    
+    const type = Number(self.state.type);
+    const miliseconds = type * 24 * 60 * 60 * 1000;
     const startDate = Number(self.state.startDate);
-    const dueDate = Number(self.state.dueDate);
+    const dueDate = Number(startDate + miliseconds);
 
     if (self.state.title.length <= 0 || self.state.title === '') {
       self.props.showError({
         body: 'El título de la tarea es inválido',
+      });
+      return;
+    }
+    
+    if (type === '' || !Number.isInteger(type)) {
+      self.props.showError({
+        body: 'El tipo de tarea es inválido'
       });
       return;
     }
@@ -333,13 +359,6 @@ class CreateTask extends React.Component {
       return;
     }
 
-    if (!Number.isInteger(dueDate) || dueDate === 0 || dueDate < new Date().getTime()) {
-      self.props.showError({
-        body: 'La fecha de finalización de la tarea es inválida',
-      });
-      return;
-    }
-    
     if (startDate > dueDate) {
       self.props.showError({
         body: 'La fecha de inicio de la tarea es antes que la de finalización',
@@ -421,31 +440,13 @@ class CreateTask extends React.Component {
   handleChange(index, event) {
     let value = event.target.value;
 
-    if (index === 'startDate' || index === 'dueDate') {
+    if (index === 'startDate') {
       value = new Date(value).getTime();
     }
 
     this.setState({
       [index]: value,
     });
-  }
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      title: this.props.taskTitle,
-      boardId: this.props.selectedBoardId || this.props.boards[0]._id,
-      description: '',
-      type: '',
-      startDate: new Date().getTime() + (1000 * 60 * 60),
-      dueDate: new Date().getTime() + (1000 * 60 * 60 * 24),
-
-      task_types: [],
-    };
-
-    this.createTask = this.createTask.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
@@ -528,17 +529,6 @@ class CreateTask extends React.Component {
               placeholder="Ingresá la fecha de inicio"
               onChange={(e) => this.handleChange('startDate', e)}
               defaultValue={$.format.date(this.state.startDate, 'yyyy-MM-ddThh:mm')}
-            />
-          </div>
-          <div className="form-group">
-            <label className="control-label" htmlFor="create-task-duedate">Fecha de vencimiento</label>
-            <input
-              id="create-task-duedate"
-              className="form-control"
-              type="datetime-local"
-              placeholder="Ingresá la fecha de vencimiento"
-              onChange={(e) => this.handleChange('dueDate', e)}
-              defaultValue={$.format.date(this.state.dueDate, 'yyyy-MM-ddThh:mm')}
             />
           </div>
           <div className="form-group">
@@ -1740,9 +1730,6 @@ class TaskInformation extends React.Component {
           <div className='item'>
             <p>
               <b>Tarea:</b> {task.title}
-            </p>
-            <p>
-              <b>Tipo de tarea:</b> {/* task.type */}
             </p>
             <p>
               <b>Plazo:</b>
