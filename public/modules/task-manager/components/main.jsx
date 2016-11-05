@@ -248,15 +248,19 @@ class TaskManagerLayout extends React.Component {
             <b>Lista de tareas</b>
             
           </div>
-          <div
-            id="view-archived-tasks"
-            className="col-xs-2"
-            title='Ver tareas archivadas'
-            data-toggle="tooltip"
-            data-placement="bottom"
-            role='button'
-            onClick={() => this.setLocation('tasks/show-archived-tasks')}
-          />
+          {
+            (this.props.location.pathname === '/tasks/show' ||
+            this.props.location.pathname === 'tasks/show') ?
+              <div
+                id="view-archived-tasks"
+                className="col-xs-2"
+                title='Ver tareas archivadas'
+                data-toggle="tooltip"
+                data-placement="bottom"
+                role='button'
+                onClick={() => this.setLocation('tasks/show-archived-tasks')}
+              /> : null
+          }
         </div>
         <div className="col-xs-12" >
           <hr className="hr-fix" />
@@ -1504,7 +1508,10 @@ class ArchivedTasksPage extends React.Component {
     }
 
     return (
-      <ArchivedTasksLayout tasks={this.state.tasks} />
+      <ArchivedTasksLayout
+        tasks={this.state.tasks}
+        setLocation={this.props.setLocation}
+      />
     );
   }
 }
@@ -1512,15 +1519,22 @@ class ArchivedTasksPage extends React.Component {
 class ArchivedTasksLayout extends React.Component {
   render() {
     return (
-      <TasksList
-        board={{ name: 'Tareas archivadas' }}
-        tasks={this.props.tasks}
-        coordination={isCoordination(DiamondAPI.getCurrentBoard())}
-        archivedView={true}
-        currentUser={DiamondAPI.getCurrentUser()}
-        showError={this.props.showError}
-        hideError={this.props.hideError}
-      />
+      <div>
+        <div
+          className='go-back go-back-task'
+          onClick={() => this.props.setLocation('tasks/show')}
+        >
+        </div>
+        <TasksList
+          board={{ name: 'Tareas archivadas' }}
+          tasks={this.props.tasks}
+          coordination={isCoordination(DiamondAPI.getCurrentBoard())}
+          archivedView={true}
+          currentUser={DiamondAPI.getCurrentUser()}
+          showError={this.props.showError}
+          hideError={this.props.hideError}
+        />
+      </div>
     );
   }
 }
