@@ -151,6 +151,13 @@ export default class ModuleInstance extends React.Component {
       zIndex: this.state.zIndex,
     };
 
+    /*const dev = process.env.NODE_ENV === 'development';
+    const url = dev ? (
+      `${window.location.host}:8082/modules/${this.props.moduleInstance.moduleId}/index.html`
+    ) : (
+      `/modules/${this.props.moduleInstance.moduleId}/index.html`
+    );*/
+
     return (
       <div
         className="module-container"

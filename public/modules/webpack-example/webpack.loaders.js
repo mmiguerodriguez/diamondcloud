@@ -1,16 +1,12 @@
 const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = [
     {
       test: /\.(js|jsx)$/,
       loader: 'babel',
       include: [
-        path.resolve(__dirname, './src')
+        path.resolve(__dirname, './src'),
       ],
-      /*query: {
-        presets: ['react', 'es2015'],
-      },*/
     },
 	{
 		test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
@@ -48,17 +44,10 @@ module.exports = [
 		loader: 'url-loader?limit=10000&mimetype=image/png',
 	},
 	{
-		test: /[\/\\]src[\/\\].*\.css/,
-		exclude: /(node_modules|bower_components|public)/,
-		loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!css-loader'),
-	},
-	{
-		test: /[\/\\]src[\/\\].*\.scss/,
-		exclude: /(node_modules|bower_components|public)/,
-		loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss!sass'),
-	},
-	{
-		test: /[\/\\](node_modules|global)[\/\\].*\.css$/,
-		loader: ExtractTextPlugin.extract('style', 'css'),
+		test: /\.css$/,
+		loader: 'style-loader!css-loader',
+    include: [
+      path.resolve(__dirname, './src'),
+    ],
 	},
 ];
