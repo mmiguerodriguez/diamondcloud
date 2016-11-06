@@ -121,8 +121,6 @@ class TaskManagerPage extends React.Component {
        * currentBoard and that are not finished.
        */
       const filter = coordination ? {} : {
-        archived: false,
-        status: 'not_finished',
         boardId: currentBoard._id,
       };
 
@@ -596,7 +594,10 @@ class Board extends React.Component {
       'board-fixed': this.props.coordination,
     });
     // Show only non-archived tasks
-    const tasks = this.props.tasks.filter(task => !task.archived);
+    let tasks = this.props.tasks.filter(task => !task.archived);
+    tasks = isCoordination(this.props.board) ?
+      tasks :
+      tasks.filter(task => task.status === 'not_finished');
     return (
       <div className={classes}>
         <TasksList
