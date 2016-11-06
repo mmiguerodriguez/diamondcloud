@@ -91,7 +91,7 @@ class TaskManagerPage extends React.Component {
 
   componentDidMount() {
     const self = this;
-    
+
     $('[data-toggle="tooltip"]').tooltip({
       container: 'body',
     });
@@ -232,13 +232,19 @@ class TaskManagerLayout extends React.Component {
 
   render() {
     const isCoordination = this.props.coordination;
+    const isUnarchiving = this.props.location.pathname === '/tasks/show-archived-tasks' || this.props.location.pathname === 'tasks/show-archived-tasks';
+    const isPanel = this.props.location.pathname === '/panel' || this.props.location.pathname === 'panel';
+
+    const classes = classNames({
+      'fixed': isPanel,
+    }, 'view-archived-tasks');
 
     return (
       <div className="col-xs-12 task-manager">
         <div className="row board-list-title">
           {
             // Show back button for panel
-            this.props.location.pathname === "/panel" ? (
+            isPanel || isUnarchiving ? (
               <div
                 className="go-back go-back-task"
                 onClick={() => this.setLocation('tasks/show')}
@@ -247,19 +253,18 @@ class TaskManagerLayout extends React.Component {
           }
           <div
             role="button"
-            className="col-xs-6 col-xs-offset-3 text-center"
+            className="col-xs-12 text-center"
             onClick={() => this.setLocation('tasks/show')}
           >
             <b>Lista de tareas</b>
-            
+
           </div>
           {
             // Show show-archived-tasks button
-            (this.props.location.pathname === '/tasks/show' ||
-            this.props.location.pathname === 'tasks/show') ?
+            isCoordination && !isUnarchiving ?
               <div
                 id="view-archived-tasks"
-                className="col-xs-2"
+                className={classes}
                 title="Ver tareas archivadas"
                 data-toggle="tooltip"
                 data-placement="bottom"
@@ -268,25 +273,27 @@ class TaskManagerLayout extends React.Component {
                   $('#' + e.target.id).tooltip('hide');
                   this.setLocation('tasks/show-archived-tasks');
                 }}
-              /> : null
+              /> : (null)
           }
           {
             // Show show-panel button
-            isCoordination ? (
+            isCoordination && !isPanel ? (
               <div
-                role="button"
+                id="show-panel"
                 className="text-center panel-btn"
                 title="Configurar tipos de tareas"
                 data-toggle="tooltip"
                 data-placement="bottom"
-                onClick={() => this.setLocation('/panel')}
+                role="button"
+                onClick={(e) => {
+                  $('#' + e.target.id).tooltip('hide');
+                  this.setLocation('panel');
+                }}
               />
             ) : (null)
           }
         </div>
-        <div className="col-xs-12" >
-          <hr className="hr-fix" />
-        </div>
+        <hr className="hr-fix" />
         {
           React.cloneElement(this.props.children, {
             ...this.props,
@@ -340,7 +347,7 @@ class CreateTask extends React.Component {
     const self = this;
 
     const position = self.getBiggestTaskPosition();
-    
+
     const type = Number(self.state.type);
     const miliseconds = type * 24 * 60 * 60 * 1000;
     const startDate = Number(self.state.startDate);
@@ -352,7 +359,7 @@ class CreateTask extends React.Component {
       });
       return;
     }
-    
+
     if (self.state.type === '' || !Number.isInteger(type)) {
       self.props.showError({
         body: 'El tipo de tarea es inválido'
@@ -595,7 +602,7 @@ class Panel extends React.Component {
       types: [],
       subscription: {},
     };
-    
+
     this.handleChange = this.handleChange.bind(this);
     this.insertTaskType = this.insertTaskType.bind(this);
     this.removeTaskType = this.removeTaskType.bind(this);
@@ -603,7 +610,7 @@ class Panel extends React.Component {
 
   componentDidMount() {
     const self = this;
-    
+
     $('[data-toggle="tooltip"]').tooltip({
       container: 'body',
     });
@@ -622,12 +629,12 @@ class Panel extends React.Component {
         }
       },
     });
-    
+
     self.setState({
       subscription,
     });
   }
-  
+
   componentDidUpdate() {
     $('[data-toggle="tooltip"]').tooltip({
       container: 'body',
@@ -648,14 +655,14 @@ class Panel extends React.Component {
       name: '',
       time: '',
     });
-  
+
     if (name === '') {
       this.props.showError({
         body: 'Ingresá un nombre válido',
       });
       return;
     }
- 
+
     if (name.length < 3) {
       this.props.showError({
         body: 'Ingresá un nombre con más de 3 caracteres',
@@ -916,14 +923,14 @@ class BoardInformation extends React.Component {
     dataTable.addRows(data);
     chart.draw(dataTable);
   }
-  
+
   componentDidMount() {
     const self = this;
-    
+
     const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
     const tasks = this.props.tasks.filter(_task => _task.boardId === board._id);
     const data = [];
-    
+
     $(window).resize(function (event) {
       self.drawChart(data);
     });
@@ -961,7 +968,7 @@ class BoardInformation extends React.Component {
           {board.name}
         </div>
         <div className="timeline" ref={c => this.timeline = c }>
-          
+
         </div>
         {
           tasks.length === 0 ? (
@@ -1022,7 +1029,7 @@ class TasksList extends React.Component {
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
   }
-  
+
   componentDidMount() {
     const self = this;
 
@@ -1047,7 +1054,7 @@ class TasksList extends React.Component {
           callback(error, result) {
             if (error) {
               self.props.showError({
-                body: 'Hubo un error al cambiar la tarea de pizarrón', 
+                body: 'Hubo un error al cambiar la tarea de pizarrón',
               });
             }
           }
@@ -1060,11 +1067,13 @@ class TasksList extends React.Component {
     const onClick = this.props.coordination && this.props.tasks.length !== 0 ? (
       () => this.props.setLocation(`/board/${this.props.board._id}`)
     ) : (
-      () => {
-        this.props.showError({
-          body: 'El board no tiene tareas',
-        });
-      }
+      this.props.coordination ? (
+        () => {
+          this.props.showError({
+            body: 'El pizarron no tiene tareas',
+          });
+        }
+      ) : (null)
     );
     return (
       <div className='col-xs-12 tasks-list' data-board-id={this.props.board._id}>
@@ -1298,7 +1307,7 @@ class Task extends React.Component {
           status,
         },
       };
-      
+
       $(`#finish-task-${self.props.task._id}`).tooltip('destroy');
     } else if (status === 'not_finished') {
       if (this.state.rejecting) {
@@ -1306,14 +1315,14 @@ class Task extends React.Component {
           rejecting: false,
         });
       }
-      
+
       updateQuery = {
         $set: {
           status,
         },
       };
-      
-      $(`#accept-task-${self.props.task._id}`).tooltip('destroy');   
+
+      $(`#accept-task-${self.props.task._id}`).tooltip('destroy');
       $(`#reject-task-${self.props.task._id}`).tooltip('destroy');
     } else if (status === 'rejected') {
       updateQuery = {
@@ -1322,8 +1331,8 @@ class Task extends React.Component {
           rejectMessage: self.state.rejectDescription,
         },
       };
-      
-      $(`#accept-task-${self.props.task._id}`).tooltip('destroy');   
+
+      $(`#accept-task-${self.props.task._id}`).tooltip('destroy');
       $(`#reject-task-${self.props.task._id}`).tooltip('destroy');
     } else if (status === 'queued') {
       updateQuery = {
@@ -1667,7 +1676,7 @@ class Task extends React.Component {
         task_title: nextProps.task.title,
       });
     }
-    
+
     if (this.props.coordination) {
       if (nextProps.task.status !== this.props.task.status) {
         if (nextProps.task.status === 'rejected') {
@@ -1720,7 +1729,7 @@ class Task extends React.Component {
     }, 'archive-task');
     const dearchiveClass = classNames({
       'col-xs-2 icon-fixed': this.props.coordination && this.props.task.archived,
-    }, 'dearchive-task');
+    }, 'unarchive-task');
     const editClass = classNames({
       'col-xs-2': isCoordination && !isEditing && isFinished,
       'col-xs-2 icon-fixed': isCoordination && !isEditing && !isFinished,
@@ -1789,10 +1798,7 @@ class Task extends React.Component {
               />
             ) : (null)
           }
-          
-          {
-            // Archive task button
-          }
+
           {
             // Archive task button
             isCoordination && !isEditing && !isArchived ? (
@@ -1836,7 +1842,7 @@ class Task extends React.Component {
               />
             ) : (null)
           }
-          
+
           {
             isCoordination && !isEditing && isFinished ? (
               <div className="finished-task" />
@@ -1848,7 +1854,7 @@ class Task extends React.Component {
               <div className="rejected-task" />
             ) : (null)
           }
-          
+
           {
             isCoordination && isRejected ? (
               <div className="col-xs-12">
@@ -2187,7 +2193,7 @@ class ArchivedTasksPage extends React.Component {
       loading: false,
     });
   }
-  
+
   componentWillReceiveProps(nextProps) {
     const tasks = nextProps.tasks.filter(task => task.archived);
     this.setState({
@@ -2218,25 +2224,18 @@ class ArchivedTasksPage extends React.Component {
 class ArchivedTasksLayout extends React.Component {
   render() {
     return (
-      <div>
-        <div
-          className='go-back go-back-task'
-          onClick={() => this.props.setLocation('tasks/show')}
-        >
-        </div>
-        <TasksList
-          board={{ name: 'Tareas archivadas' }}
-          tasks={this.props.tasks}
-          coordination={isCoordination(DiamondAPI.getCurrentBoard())}
-          archivedView={true}
-          currentUser={DiamondAPI.getCurrentUser()}
-          showError={this.props.showError}
-          hideError={this.props.hideError}
-        />
-      </div>
+      <TasksList
+        board={{ name: 'Tareas archivadas' }}
+        tasks={this.props.tasks}
+        coordination={isCoordination(DiamondAPI.getCurrentBoard())}
+        archivedView={true}
+        currentUser={DiamondAPI.getCurrentUser()}
+        showError={this.props.showError}
+        hideError={this.props.hideError}
+      />
     );
   }
-  
+
   componentDidMount() {
     // Do this to be able to show the dearchive task button tooltip
     $('[data-toggle="tooltip"]').tooltip({
@@ -2259,9 +2258,9 @@ ReactDOM.render(
       <Route path="/tasks/show-archived-tasks" component={ArchivedTasksPage} />
       <Route path="/tasks/create" component={CreateTask} />
       <Route path="/tasks/:taskId" component={TaskInformation} />
-      
+
       <Route path="/board/:boardId" component={BoardInformation} />
-      
+
       <Route path="/panel" component={Panel} />
     </Route>
   </Router>,
