@@ -258,7 +258,10 @@ class TaskManagerLayout extends React.Component {
                 data-toggle="tooltip"
                 data-placement="bottom"
                 role='button'
-                onClick={() => this.setLocation('tasks/show-archived-tasks')}
+                onClick={(e) => {
+                  $('#'+e.target.id).tooltip('hide');
+                  this.setLocation('tasks/show-archived-tasks');
+                }}
               /> : null
           }
         </div>
