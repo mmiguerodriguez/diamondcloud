@@ -259,7 +259,7 @@ class TaskManagerLayout extends React.Component {
                 data-placement="bottom"
                 role='button'
                 onClick={(e) => {
-                  $('#'+e.target.id).tooltip('hide');
+                  $('#' + e.target.id).tooltip('hide');
                   this.setLocation('tasks/show-archived-tasks');
                 }}
               /> : null
@@ -816,6 +816,43 @@ class Task extends React.Component {
     }
   }
   /**
+   * Dearchives the task, sets archived: true.
+   * This command can be used only from the
+   * coordination board.
+   */
+  dearchiveTask() {
+    const self = this;
+
+    if (self.props.coordination) {
+      $(`#dearchive-task-${self.props.task._id}`).tooltip('hide');
+
+      DiamondAPI.update({
+        collection: 'tasks',
+        filter: {
+          _id: self.props.task._id,
+        },
+        updateQuery: {
+          $set: {
+            archived: false,
+          },
+        },
+        callback(error, result) {
+          if (error) {
+            console.error(error);
+
+            self.props.showError({
+              body: 'Error al desarchivar una tarea',
+            });
+          } else {
+            self.props.showError({
+              body: 'Tarea desarchivada',
+            });
+          }
+        }
+      });
+    }
+  }
+  /**
    * Sets the task status as the passed parameter.
    * @param {String} status
    */
@@ -1179,6 +1216,9 @@ class Task extends React.Component {
       'col-xs-2': this.props.coordination && !this.state.editing,
       'col-xs-2 icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
     }, 'archive-task');
+    const dearchiveClass = classNames({
+      'col-xs-2 icon-fixed': this.props.coordination && this.props.task.archived,
+    }, 'dearchive-task');
     const editClass = classNames({
       'col-xs-2': this.props.coordination && !this.state.editing && this.props.task.status !== 'not_finished',
       'col-xs-2 icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
@@ -1229,7 +1269,10 @@ class Task extends React.Component {
               />
             ) : (null)
           }
-
+          
+          {
+            // Archive task button
+          }
           {
             this.props.coordination &&
             !this.state.editing &&
@@ -1242,6 +1285,24 @@ class Task extends React.Component {
                 data-placement="bottom"
                 role='button'
                 onClick={this.archiveTask}
+              />
+            ) : (null)
+          }
+          
+          {
+            // Dearchive task button
+          }
+          {
+            this.props.coordination &&
+            this.props.task.archived ? (
+              <div
+                id={`dearchive-task-${this.props.task._id}`}
+                className={dearchiveClass}
+                title='Desarchivar tarea'
+                data-toggle="tooltip"
+                data-placement="bottom"
+                role='button'
+                onClick={this.dearchiveTask}
               />
             ) : (null)
           }
@@ -1539,6 +1600,13 @@ class ArchivedTasksLayout extends React.Component {
         />
       </div>
     );
+  }
+  
+  componentDidMount() {
+    // Do this to be able to show the dearchive task button tooltip
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body',
+    });
   }
 }
 
