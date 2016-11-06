@@ -882,16 +882,35 @@ class Board extends React.Component {
  * Renders information of tasks within a board
  */
 class BoardInformation extends React.Component {
+  drawChart(data) {
+    const container = this.timeline;
+    const chart = new google.visualization.Timeline(container);
+    const dataTable = new google.visualization.DataTable();
+
+    dataTable.addColumn({ type: 'string', id: 'Tarea' });
+    dataTable.addColumn({ type: 'date', id: 'Inicio' });
+    dataTable.addColumn({ type: 'date', id: 'Fin' });
+
+    dataTable.addRows(data);
+    chart.draw(dataTable);
+  }
+  
   componentDidMount() {
+    const self = this;
+    
     const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
     const tasks = this.props.tasks.filter(_task => _task.boardId === board._id);
+    const data = [];
+    
+    $(window).resize(function (event) {
+      self.drawChart(data);
+    });
 
     if (tasks.length > 0) {
       const container = this.timeline;
       const chart = new google.visualization.Timeline(container);
       const dataTable = new google.visualization.DataTable();
 
-      const data = [];
 
       dataTable.addColumn({ type: 'string', id: 'Tarea' });
       dataTable.addColumn({ type: 'date', id: 'Inicio' });
@@ -919,7 +938,7 @@ class BoardInformation extends React.Component {
         <div>
           {board.name}
         </div>
-        <div ref={c => this.timeline = c }>
+        <div className="timeline" ref={c => this.timeline = c }>
           
         </div>
         {
@@ -1016,10 +1035,14 @@ class TasksList extends React.Component {
   }
 
   render() {
-    const onClick = this.props.coordination ? (
+    const onClick = this.props.coordination && this.props.tasks.length !== 0 ? (
       () => this.props.setLocation(`/board/${this.props.board._id}`)
     ) : (
-      () => {}
+      () => {
+        this.props.showError({
+          body: 'El board no tiene tareas',
+        });
+      }
     );
     return (
       <div className='col-xs-12 tasks-list' data-board-id={this.props.board._id}>
@@ -1545,7 +1568,7 @@ class Task extends React.Component {
       rejecting: false,
       rejectDescription: '',
       showRejection: false,
-      showDescription: false,
+      showDescription: true,
 
       intervalId: false,
       count: '00:00:00',
@@ -1680,7 +1703,7 @@ class Task extends React.Component {
                   }
                   {
                     !isCoordination && isDoing ? (
-                      <p className='col-xs-12 time-active'>Tiempo activo: {this.state.count}</p>
+                      <p className='col-xs-12 time-active'><b>Tiempo activo:</b> {this.state.count}</p>
                     ) : (null)
                   }
                 </div>
@@ -1818,7 +1841,7 @@ class Task extends React.Component {
           }
 
           {
-            !isCoordination && isQueued ? (
+            !isCoordination && isQueued && !isRejecting ? (
               <div>
                 <div
                   id={`accept-task-${this.props.task._id}`}
@@ -1854,9 +1877,9 @@ class Task extends React.Component {
 
           {
             !isCoordination && isRejecting ? (
-              <div className="col-xs-12">
-                Razon de rechazo (click Enter)
-                <input
+              <div className="col-xs-12 reject-message">
+                <b>Razón de rechazo:</b>
+                <textarea
                   className="form-control"
                   type="text"
                   value={this.state.rejectDescription}

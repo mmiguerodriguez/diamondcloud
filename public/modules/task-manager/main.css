@@ -295,6 +295,14 @@ ol, ul {
 	  opacity: 0;
 	}
 }
+.reject-message b {
+  font-size: 13px;
+}
+.reject-message textarea {
+  height: 34px;
+  margin: 5px 0px;
+  resize: vertical;
+}
 
 .create-task-form {
   color: #fff;
@@ -465,4 +473,10 @@ ol, ul {
   margin-left: 10px;
   color: #f1c40f;
   cursor: pointer;
+}
+
+.timeline {
+  overflow: auto;
+  width: 100%;
+  height: calc(100% - 80px);
 }
