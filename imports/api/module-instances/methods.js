@@ -70,8 +70,10 @@ export const editModuleInstance = new ValidatedMethod({
     }
 
     let moduleInstance = ModuleInstances.findOne(moduleInstanceId);
-    x = x || moduleInstance.x;
-    y = y || moduleInstance.y;
+
+    if (x === undefined || x === null) x = moduleInstance.x;
+    if (y === undefined || y === null) y = moduleInstance.y;
+
     width = width || moduleInstance.width;
     height = height || moduleInstance.height;
     minimized = minimized !== undefined ? minimized : moduleInstance.minimized;
