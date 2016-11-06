@@ -1,18 +1,15 @@
 /**
  * Preloads all the images
  */
- 
-[
-  '/img/error-404.png',
+
+const images = [
   '/img/add-people-icon.svg',
   '/img/board-background-png.png',
   '/img/board-chat.svg',
   '/img/check-symbol.svg',
   '/img/close-icon.svg',
-  '/img/cyd-landing-background.jpg',
   // '/img/dashboard.png',
   '/img/google-icon.png',
-  '/img/logo-cyd.jpg',
   '/img/logo.ico',
   '/img/logo.png',
   '/img/logo.svg',
@@ -45,7 +42,8 @@
   '/modules/post-it/preview.png',
   '/modules/task-manager/preview.png',
   '/modules/videocall/preview.png',
-]
-.forEach((src) => {
+];
+
+images.forEach((src) => {
   new Image().src = src;
 });

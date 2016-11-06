@@ -1,25 +1,26 @@
 import React             from 'react';
 import classNames        from 'classnames';
 
+import { TEAMS }         from '../../api/teams/teams';
+
 import AccountsUIWrapper from '../accounts/AccountsUIWrapper';
 
 export default class LandingLayout extends React.Component {
   render() {
-    const isCyD = this.props.location.pathname === '/carlosydario' || this.props.location.pathname === '/presentacion';
-    const backgroundClass = classNames({
-      diamond: !isCyD,
-      cyd: isCyD,
-    }, 'background');
-    const logoSrc = classNames({
-      '/img/logo.png': !isCyD,
-      '/img/logo-cyd.jpg': isCyD,
+    const path = this.props.params.teamUrl;
+    const logos = {};
+    const backgrounds = {};
+
+    TEAMS.forEach((team) => {
+      backgrounds[`/img/teams/${team.url}/background.jpg`] = team.url === path;
+      logos[`/img/teams/${team.url}/logo.png`] = team.url === path;
     });
 
     return (
       <div className="landing">
-        <div className={backgroundClass} />
+        <img className="background" src={classNames(backgrounds)} alt="Fondo del equipo" />
         <div className="items-container">
-          <img className="title" src={logoSrc} />
+          <img className="title" src={classNames(logos)} alt="Logo del equipo" />
           <AccountsUIWrapper />
         </div>
       </div>

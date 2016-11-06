@@ -2,20 +2,9 @@
   height: calc(100vh - 50px);
   .background {
     position: absolute;
-    height: calc(100vh - 50px);
     width: 100%;
-    background-size: cover;
-    background-repeat: no-repeat;
     filter: blur(3px);
     z-index: -1;
-
-    &.diamond {
-      background-image: url("/img/diamond-landing-background.jpg");
-    }
-
-    &.cyd {
-      background-image: url("/img/cyd-landing-background.jpg");
-    }
   }
   .items-container {
     padding-top: 50px;

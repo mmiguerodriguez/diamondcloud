@@ -24,17 +24,7 @@ const logPageView = (nextState) => {
 const renderRoutes = () => (
   <Router history={browserHistory}>
     <Redirect from="/" to="carlosydario" />
-    <Route path="/carlosydario" component={AppPageContainer} onEnter={logPageView}>
-      <IndexRoute component={LandingPage} />
-      <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
-      <Route path="*" component={NotFound} onEnter={logPageView} />
-    </Route>
-    <Route path="/diamond" component={AppPageContainer} onEnter={logPageView}>
-      <IndexRoute component={LandingPage} />
-      <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
-      <Route path="*" component={NotFound} onEnter={logPageView} />
-    </Route>
-    <Route path="/presentacion" component={AppPageContainer} onEnter={logPageView}>
+    <Route path="/:teamUrl" component={AppPageContainer} onEnter={logPageView}>
       <IndexRoute component={LandingPage} />
       <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
       <Route path="*" component={NotFound} onEnter={logPageView} />
