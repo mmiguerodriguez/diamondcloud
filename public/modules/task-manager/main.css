@@ -59,6 +59,7 @@
   margin-top: 25px;
   padding: 0px;
   color: #fff;
+  font-size: 16px;
 }
 .board {
   width: 100%;
@@ -112,7 +113,8 @@
   padding-bottom: 5px;
 }
 .edit-task,
-.archive-task {
+.archive-task,
+.dearchive-task{
   height: 18px;
   margin-top: 14px;
   background-position: center;
@@ -122,12 +124,24 @@
   opacity: 0;
   transition: 0.3s all ease;
 }
+.archive-task {
+  background-image: url(img/archive-task.svg);
+}
+.dearchive-task {
+  background-image: url(img/archive-task.svg);
+}
+#view-archived-tasks {
+  height: 18px;
+  margin-top: 1px;
+  opacity: 0.7;
+  background-image: url(img/archive-task.svg);
+  background-position: center;
+  background-size: 18px;
+  background-repeat: no-repeat;
+}
 .edit-task {
   padding-right: 30px !important;
   background-image: url(img/edit-task.svg);
-}
-.archive-task {
-  background-image: url(img/archive-task.svg);
 }
 .finished-task {
   width: 25px;
@@ -149,7 +163,8 @@
   float: right;
 }
 .task:hover .edit-task,
-.task:hover .archive-task {
+.task:hover .archive-task,
+.task:hover .dearchive-task {
   opacity: 0.7;
 }
 .task:hover .play,

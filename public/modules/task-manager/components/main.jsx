@@ -120,11 +120,7 @@ class TaskManagerPage extends React.Component {
        * If not, fetch the ones that are from the
        * currentBoard and that are not finished.
        */
-      const filter = coordination ? {
-        archived: false,
-      } : {
-        archived: false,
-        status: 'not_finished',
+      const filter = coordination ? {} : {
         boardId: currentBoard._id,
       };
 
@@ -241,14 +237,35 @@ class TaskManagerLayout extends React.Component {
   render() {
     return (
       <div className="col-xs-12 task-manager">
-        <div
-          role="button"
-          className="col-xs-12 text-center board-list-title"
-          onClick={() => this.setLocation('tasks/show')}>
-          <b>Lista de tareas</b>
+        <div className="row board-list-title">
+          <div
+            role="button"
+            className="col-xs-6 col-xs-offset-3 text-center"
+            onClick={() => this.setLocation('tasks/show')}
+          >
+            <b>Lista de tareas</b>
+            
+          </div>
+          {
+            (this.props.location.pathname === '/tasks/show' ||
+            this.props.location.pathname === 'tasks/show') ?
+              <div
+                id="view-archived-tasks"
+                className="col-xs-2"
+                title='Ver tareas archivadas'
+                data-toggle="tooltip"
+                data-placement="bottom"
+                role='button'
+                onClick={(e) => {
+                  $('#' + e.target.id).tooltip('hide');
+                  this.setLocation('tasks/show-archived-tasks');
+                }}
+              /> : null
+          }
+        </div>
+        <div className="col-xs-12" >
           <hr className="hr-fix" />
         </div>
-
         {
           React.cloneElement(this.props.children, {
             ...this.props,
@@ -576,12 +593,16 @@ class Board extends React.Component {
       board: !this.props.coordination,
       'board-fixed': this.props.coordination,
     });
-
+    // Show only non-archived tasks
+    let tasks = this.props.tasks.filter(task => !task.archived);
+    tasks = isCoordination(this.props.board) ?
+      tasks :
+      tasks.filter(task => task.status === 'not_finished');
     return (
       <div className={classes}>
         <TasksList
           board={this.props.board}
-          tasks={this.props.tasks}
+          tasks={tasks}
           coordination={this.props.coordination}
           setLocation={this.props.setLocation}
           currentUser={this.props.currentUser}
@@ -650,7 +671,8 @@ class TasksList extends React.Component {
         </p>
         {this.renderTasks()}
         {
-          this.props.coordination ? (
+          // Input for adding a task
+          this.props.coordination && !this.props.archivedView ? (
             <div className="form-group">
               <input
                 id="task_title"
@@ -788,6 +810,43 @@ class Task extends React.Component {
           } else {
             self.props.showError({
               body: 'Tarea archivada',
+            });
+          }
+        }
+      });
+    }
+  }
+  /**
+   * Dearchives the task, sets archived: true.
+   * This command can be used only from the
+   * coordination board.
+   */
+  dearchiveTask() {
+    const self = this;
+
+    if (self.props.coordination) {
+      $(`#dearchive-task-${self.props.task._id}`).tooltip('hide');
+
+      DiamondAPI.update({
+        collection: 'tasks',
+        filter: {
+          _id: self.props.task._id,
+        },
+        updateQuery: {
+          $set: {
+            archived: false,
+          },
+        },
+        callback(error, result) {
+          if (error) {
+            console.error(error);
+
+            self.props.showError({
+              body: 'Error al desarchivar una tarea',
+            });
+          } else {
+            self.props.showError({
+              body: 'Tarea desarchivada',
             });
           }
         }
@@ -1157,6 +1216,9 @@ class Task extends React.Component {
       'col-xs-2': this.props.coordination && !this.state.editing,
       'col-xs-2 icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
     }, 'archive-task');
+    const dearchiveClass = classNames({
+      'col-xs-2 icon-fixed': this.props.coordination && this.props.task.archived,
+    }, 'dearchive-task');
     const editClass = classNames({
       'col-xs-2': this.props.coordination && !this.state.editing && this.props.task.status !== 'not_finished',
       'col-xs-2 icon-fixed': this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished',
@@ -1195,7 +1257,10 @@ class Task extends React.Component {
           </div>
 
           {
-            this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
+            this.props.coordination &&
+            !this.state.editing &&
+            this.props.task.status === 'not_finished' &&
+            !this.props.task.archived ? (
               <div
                 id={`edit-task-${this.props.task._id}`}
                 className={editClass}
@@ -1207,9 +1272,14 @@ class Task extends React.Component {
               />
             ) : (null)
           }
-
+          
           {
-            this.props.coordination && !this.state.editing ? (
+            // Archive task button
+          }
+          {
+            this.props.coordination &&
+            !this.state.editing &&
+            !this.props.task.archived ? (
               <div
                 id={`archive-task-${this.props.task._id}`}
                 className={archiveClass}
@@ -1218,6 +1288,24 @@ class Task extends React.Component {
                 data-placement="bottom"
                 role='button'
                 onClick={this.archiveTask}
+              />
+            ) : (null)
+          }
+          
+          {
+            // Dearchive task button
+          }
+          {
+            this.props.coordination &&
+            this.props.task.archived ? (
+              <div
+                id={`dearchive-task-${this.props.task._id}`}
+                className={dearchiveClass}
+                title='Desarchivar tarea'
+                data-toggle="tooltip"
+                data-placement="bottom"
+                role='button'
+                onClick={this.dearchiveTask.bind(this)}
               />
             ) : (null)
           }
@@ -1251,7 +1339,9 @@ class Task extends React.Component {
           {
             !this.state.editing ? (
               <div className='col-xs-12'>
-                <p className='col-xs-12 expiration'>Vencimiento: {$.format.date(new Date(this.props.task.dueDate), 'dd/MM/yyyy')}</p>
+                <p className='col-xs-12 expiration'>
+                  Vencimiento: {$.format.date(new Date(this.props.task.dueDate), 'dd/MM/yyyy')}
+                </p>
               </div>
             ) : (null)
           }
@@ -1298,7 +1388,10 @@ class TaskInformation extends React.Component {
       <div>
         <div
           className='go-back go-back-task'
-          onClick={() => this.props.setLocation('tasks/show')}>
+          onClick={(this.state.task.archived) ?
+            () => this.props.setLocation('tasks/show-archived-tasks') :
+            () => this.props.setLocation('tasks/show')
+          }>
         </div>
         <div className='task-info col-xs-12'>
           <h4 className='task-info-title'>Información de la tarea</h4>
@@ -1443,12 +1536,104 @@ class ErrorMessage extends React.Component {
 }
 
 /**
+ * Gets a list of archived tasks.
+ * If the board is coordination or directors, shows all archived tasks
+ * Otherwise, it shows archived tasks of the current board only.
+ */
+class ArchivedTasksPage extends React.Component {
+  constructor() {
+    super();
+
+    /**
+     * States
+     *
+     * @param {Array} tasks
+     *  The archived tasks that are shown to the user.
+     */
+    this.state = {
+      tasks: [],
+      loading: true,
+    };
+  }
+
+  componentDidMount() {
+    //show only archived tasks
+    const tasks = this.props.tasks.filter(task => task.archived);
+    this.setState({
+      tasks,
+      loading: false,
+    });
+  }
+  
+  componentWillReceiveProps(nextProps) {
+    const tasks = nextProps.tasks.filter(task => task.archived);
+    this.setState({
+      tasks,
+      loading: false,
+    });
+  }
+
+  render() {
+    if (this.state.loading || this.state.loading === undefined) {
+      return (
+        <div className="loading">
+          <div className="loader" />
+        </div>
+      );
+    }
+
+    return (
+      <ArchivedTasksLayout
+        tasks={this.state.tasks}
+        setLocation={this.props.setLocation}
+        showError={this.props.showError}
+      />
+    );
+  }
+}
+
+class ArchivedTasksLayout extends React.Component {
+  render() {
+    return (
+      <div>
+        <div
+          className='go-back go-back-task'
+          onClick={() => this.props.setLocation('tasks/show')}
+        >
+        </div>
+        <TasksList
+          board={{ name: 'Tareas archivadas' }}
+          tasks={this.props.tasks}
+          coordination={isCoordination(DiamondAPI.getCurrentBoard())}
+          archivedView={true}
+          currentUser={DiamondAPI.getCurrentUser()}
+          showError={this.props.showError}
+          hideError={this.props.hideError}
+        />
+      </div>
+    );
+  }
+  
+  componentDidMount() {
+    // Do this to be able to show the dearchive task button tooltip
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body',
+    });
+  }
+}
+
+ArchivedTasksLayout.propTypes = {
+  tasks: React.PropTypes.array.isRequired,
+};
+
+/**
  * Router setup.
  */
 ReactDOM.render(
   <Router history={browserHistory}>
     <Route path="/" component={TaskManagerPage}>
       <Route path="/tasks/show" component={BoardsList} />
+      <Route path="/tasks/show-archived-tasks" component={ArchivedTasksPage} />
       <Route path="/tasks/create" component={CreateTask} />
       <Route path="/tasks/:taskId" component={TaskInformation} />
     </Route>
