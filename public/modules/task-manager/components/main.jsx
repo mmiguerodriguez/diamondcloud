@@ -1180,7 +1180,6 @@ class Task extends React.Component {
   }
 
   componentWillMount() {
-    console.log('estoy en task. las props son: ', this.props);
     if (!this.props.coordination) {
       if (this.props.doing) {
         this.startTimer();
@@ -1257,7 +1256,10 @@ class Task extends React.Component {
           </div>
 
           {
-            this.props.coordination && !this.state.editing && this.props.task.status === 'not_finished' ? (
+            this.props.coordination &&
+            !this.state.editing &&
+            this.props.task.status === 'not_finished' &&
+            !this.props.task.archived ? (
               <div
                 id={`edit-task-${this.props.task._id}`}
                 className={editClass}
@@ -1302,7 +1304,7 @@ class Task extends React.Component {
                 data-toggle="tooltip"
                 data-placement="bottom"
                 role='button'
-                onClick={this.dearchiveTask}
+                onClick={this.dearchiveTask.bind(this)}
               />
             ) : (null)
           }
@@ -1561,6 +1563,14 @@ class ArchivedTasksPage extends React.Component {
       loading: false,
     });
   }
+  
+  componentWillReceiveProps(nextProps) {
+    const tasks = nextProps.tasks.filter(task => task.archived);
+    this.setState({
+      tasks,
+      loading: false,
+    });
+  }
 
   render() {
     if (this.state.loading || this.state.loading === undefined) {
@@ -1575,6 +1585,7 @@ class ArchivedTasksPage extends React.Component {
       <ArchivedTasksLayout
         tasks={this.state.tasks}
         setLocation={this.props.setLocation}
+        showError={this.props.showError}
       />
     );
   }
