@@ -1,7 +1,11 @@
 import { render } from 'react-dom';
-import renderRoutes from './components/routes.jsx';
+import { browserHistory } from 'react-router';
+
+import renderRoutes from './components/routes';
 
 render(
   renderRoutes(),
   document.getElementById('render-target')
 );
+
+browserHistory.push('/');

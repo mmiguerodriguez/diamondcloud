@@ -62,5 +62,17 @@
     "style-loader": "0.13.1",
     "postcss-loader": "^1.0.0",
     "react-hot-loader": "^3.0.0-beta.6"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "react"
+    ],
+    "plugins": [
+      "transform-runtime",
+      "transform-decorators-legacy",
+      "transform-class-properties",
+      "react-hot-loader/babel"
+    ]
   }
 }
