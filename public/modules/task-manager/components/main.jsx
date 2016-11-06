@@ -30,15 +30,11 @@ const ERROR_DELAY = 5000;
  * @returns {Boolean} isCoordination
  */
 const isCoordination = (board) => {
-  if (
+  return (
     board.type === 'coordinadores' ||
     board.type === 'directores creativos' ||
     board.type === 'directores de cuentas'
-  ) {
-    return true;
-  }
-
-  return false;
+  );
 };
 
 /**
