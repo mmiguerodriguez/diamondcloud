@@ -516,9 +516,6 @@ class CreateTask extends React.Component {
           className="go-back go-back-task"
           onClick={() => this.props.setLocation('tasks/show')}
         />
-        <div className="col-xs-12">
-          <h4 className="visible-xs-inline-block">Crear una tarea</h4>
-        </div>
         <div className="col-xs-12 create-task-inputs">
           <div className="form-group">
             <label className="control-label" htmlFor="create-task-title">Título</label>
@@ -894,7 +891,7 @@ class Board extends React.Component {
         task.status === 'queued'
       )
     );
-  
+
     return (
       <div className={classes}>
         <TasksList
@@ -936,7 +933,7 @@ class BoardInformation extends React.Component {
     const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
     const tasks = this.props.tasks.filter(_task => _task.boardId === board._id);
     const data = [];
-    
+
     tasks.forEach(task => {
       data.push([
         task.title,
@@ -959,17 +956,15 @@ class BoardInformation extends React.Component {
     const tasks = this.props.tasks.filter(_task => _task.boardId === board._id);
 
     return (
-      <div>
+      <div className="timeline-container">
         <div
           className="go-back go-back-task"
           onClick={() => this.props.setLocation('tasks/show')}
         />
-        <div>
-          {board.name}
+        <div className="text-center">
+          <b>{board.name}</b>
         </div>
-        <div className="timeline" ref={c => this.timeline = c }>
-
-        </div>
+        <div className="timeline"ref={c => this.timeline = c } />
         {
           tasks.length === 0 ? (
             <div>
@@ -1090,7 +1085,7 @@ class TasksList extends React.Component {
               this.props.coordination && this.props.tasks.length !== 0 ? (
                 <img
                   src="/modules/task-manager/img/timeline.svg"
-                  id="timeline-btn"
+                  id={`timeline-btn${this.props.board._id}`}
                   className="timeline-btn"
                   title="Ver línea de tiempo del pizarrón"
                   data-toggle="tooltip"
@@ -2031,7 +2026,7 @@ class Task extends React.Component {
                   data-toggle="tooltip"
                   data-placement="bottom"
                   role="button"
-                  onClick={() => this.setState({ rejecting: !isRejecting })}
+                  onClick={this.setState({ rejecting: !isRejecting })}
                 >
                   <img
                     src="/modules/task-manager/img/reject-task.svg"
