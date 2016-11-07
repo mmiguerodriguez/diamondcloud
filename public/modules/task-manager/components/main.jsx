@@ -965,7 +965,7 @@ class BoardInformationLayout extends React.Component {
       $(window).resize(self.drawChart.bind(this, data));
     }
   }
-  
+
   componentWillUnmount() {
     $(window).off('resize');
   }
@@ -1059,9 +1059,9 @@ class TasksList extends React.Component {
         const taskId = $drag.data('task-id');
         const taskBoardId = $drag.data('task-board-id');
         const boardId = $board.data('board-id');
-        
+
         if (taskBoardId === boardId) {
-          return; 
+          return;
         }
 
         DiamondAPI.update({

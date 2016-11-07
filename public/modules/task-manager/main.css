@@ -178,6 +178,7 @@ ol, ul {
 }
 .restore-task {
   background-image: url(img/restore-task.svg);
+  background-size: 22px;
 }
 .finished-task,
 .rejected-task {
@@ -289,7 +290,7 @@ ol, ul {
 }
 .description {
   height: 0px;
-  text-align: justify;
+  text-align: left;
 }
 .open-description {
   animation: open-description .5s linear;
