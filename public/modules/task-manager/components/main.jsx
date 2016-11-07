@@ -128,10 +128,16 @@ class TaskManagerPage extends React.Component {
       const taskManagerHandle = DiamondAPI.subscribe({
         collection: 'tasks',
         filter,
-        callback(error, result) {
+        callback(error, _result) {
           if (error) {
             console.error(error);
           } else {
+            let result = _result;
+
+            result.sort((a, b) => {
+              return new Date(a.startDate) - new Date(b.startDate);
+            });
+
             self.setState({
               tasks: result || [],
               loading: false,
@@ -139,6 +145,7 @@ class TaskManagerPage extends React.Component {
           }
         },
       });
+
       self.setState({
         boards: DiamondAPI.getBoards().fetch(),
         users: DiamondAPI.getUsers(),
@@ -322,7 +329,7 @@ class TaskManagerLayout extends React.Component {
 /**
  * Renders the layout to create a task.
  */
-class CreateTask extends React.Component {
+class CreateTaskLayout extends React.Component {
   constructor(props) {
     super(props);
 
@@ -913,9 +920,23 @@ class Board extends React.Component {
 /**
  * Renders information of tasks within a board
  */
-class BoardInformation extends React.Component {
+class BoardInformationLayout extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
+    const tasks = this.props.tasks.filter(_task =>
+      _task.boardId === board._id && !_task.archived && (_task.status !== 'rejected')
+    );
+
+    this.state = {
+      board,
+      tasks,
+    };
+  }
+
   drawChart(data) {
-    const container = this.timeline || $('.timeline');
+    const container = this.timeline;
     const chart = new google.visualization.Timeline(container);
     const dataTable = new google.visualization.DataTable();
 
@@ -929,14 +950,9 @@ class BoardInformation extends React.Component {
 
   componentDidMount() {
     const self = this;
-
-    const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
-    const tasks = this.props.tasks.filter(_task =>
-      _task.boardId === board._id && !_task.archived && (_task.status !== 'rejected')
-    );
     const data = [];
 
-    tasks.forEach(task => {
+    this.state.tasks.forEach(task => {
       data.push([
         task.title,
         new Date(task.startDate),
@@ -944,21 +960,17 @@ class BoardInformation extends React.Component {
       ]);
     });
 
-    if (tasks.length > 0) {
+    if (this.state.tasks.length > 0) {
       this.drawChart(data);
-
-      $(window).resize((event) => {
-        self.drawChart(data);
-      });
+      $(window).resize(self.drawChart.bind(this, data));
     }
+  }
+  
+  componentWillUnmount() {
+    $(window).off('resize');
   }
 
   render() {
-    const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
-    const tasks = this.props.tasks.filter(_task =>
-      _task.boardId === board._id && !_task.archived && (_task.status !== 'rejected')
-    );
-
     return (
       <div className="timeline-container">
         <div
@@ -966,11 +978,11 @@ class BoardInformation extends React.Component {
           onClick={() => this.props.setLocation('tasks/show')}
         />
         <div className="text-center">
-          <b>{board.name}</b>
+          <b>{this.state.board.name}</b>
         </div>
         <div className="timeline" ref={c => this.timeline = c } />
         {
-          tasks.length === 0 ? (
+          this.state.tasks.length === 0 ? (
             <div>
               No hay tareas de las que mostrar informacion
             </div>
@@ -1014,6 +1026,7 @@ class TasksList extends React.Component {
           key={task._id}
           task={task}
           doing={doing}
+          board={this.props.board}
           coordination={this.props.coordination}
           currentUser={this.props.currentUser}
           showError={this.props.showError}
@@ -1044,7 +1057,12 @@ class TasksList extends React.Component {
         const $board = $(this);
         const $drag = $(ui.draggable);
         const taskId = $drag.data('task-id');
+        const taskBoardId = $drag.data('task-board-id');
         const boardId = $board.data('board-id');
+        
+        if (taskBoardId === boardId) {
+          return; 
+        }
 
         DiamondAPI.update({
           collection: 'tasks',
@@ -1069,24 +1087,13 @@ class TasksList extends React.Component {
   }
 
   render() {
-    const onClick = this.props.coordination && this.props.tasks.length !== 0 ? (
-      () => this.props.setLocation(`/board/${this.props.board._id}`)
-    ) : (
-      this.props.coordination ? (
-        () => {
-          this.props.showError({
-            body: 'El pizarrón no tiene tareas',
-          });
-        }
-      ) : (null)
-    );
     return (
       <div className='col-xs-12 tasks-list' data-board-id={this.props.board._id}>
         <div>
           <p className='text-center'>
             <b>{this.props.board.name}</b>
             {
-              this.props.coordination && this.props.tasks.length !== 0 ? (
+              this.props.coordination && this.props.tasks.length !== 0 && !this.props.archivedView ? (
                 <img
                   src="/modules/task-manager/img/timeline.svg"
                   id={`timeline-btn${this.props.board._id}`}
@@ -1096,19 +1103,11 @@ class TasksList extends React.Component {
                   data-placement="bottom"
                   role="button"
                   onClick={(e) => {
-                    $('#' + e.target.id).tooltip('hide');
-                    this.props.setLocation(`/board/${this.props.board._id}`)
+                    $(`#${e.target.id}`).tooltip('hide');
+                    this.props.setLocation(`/board/${this.props.board._id}`);
                   }}
                   />
-              ) : (
-                this.props.coordination ? (
-                  () => {
-                    this.props.showError({
-                      body: 'El pizarrón no tiene tareas',
-                    });
-                  }
-                ) : (null)
-              )
+              ) : (null)
             }
           </p>
         </div>
@@ -1318,16 +1317,18 @@ class Task extends React.Component {
      * updating and set the durations as
      * undefined again.
      */
-    const durations = [];
     let updateQuery;
 
     if (status === 'finished') {
+      const durations = [];
       const date = new Date().getTime();
+
       this.props.task.durations.forEach((duration) => {
         const _duration = duration;
         if (!_duration.endTime) {
           _duration.endTime = date;
         }
+
         durations.push(_duration);
       });
 
@@ -1416,9 +1417,7 @@ class Task extends React.Component {
             },
             callback(error, result) {
               if (error) {
-                console.error(error);
-
-                this.props.showError({
+                self.props.showError({
                   body: 'Error al actualizar el título de la tarea',
                 });
 
@@ -1540,11 +1539,11 @@ class Task extends React.Component {
     let start = this.getLastTaskUpdate();
     let end = new Date().getTime();
 
-    let count = '',
-        seconds = 0,
-        minutes = 0,
-        hours = 0,
-        days = 0;
+    let count = '';
+    let seconds = 0;
+    let minutes = 0;
+    let hours = 0;
+    let days = 0;
 
     if (start !== 'never_started' && start !== 0) {
       let difference_ms = end - start;
@@ -1579,6 +1578,8 @@ class Task extends React.Component {
 
     this.setState({
       editing: true,
+    }, () => {
+      $(`#edit-task-input-${this.props.task._id}`).focus();
     });
   }
   /**
@@ -1600,8 +1601,18 @@ class Task extends React.Component {
    */
   createDraggable() {
     $(this.task).draggable({
-      revert: 'invalid',
-      start: function(event, ui) { $(this).css("z-index", "1"); }
+      revert: function (event, ui) {
+        const $drag = $(this);
+        const $board = $drag.parent();
+        const $dragStartBoard = $drag.data().parent;
+
+        return $board.is($dragStartBoard);
+      },
+      start: function (event, ui) {
+        $(this)
+          .css('z-index', '1')
+          .data('parent', $(this).parent());
+      }
     });
   }
 
@@ -1780,6 +1791,7 @@ class Task extends React.Component {
         ref={c => this.task = c }
         className='col-xs-12 task'
         data-task-id={this.props.task._id}
+        data-task-board-id={this.props.board._id}
       >
         <div>
           <div className={containerClass}>
@@ -1790,6 +1802,7 @@ class Task extends React.Component {
                */
               isEditing ? (
                 <input
+                  id={`edit-task-input-${this.props.task._id}`}
                   className='form-control edit-task-input'
                   type='text'
                   value={this.state.task_title}
@@ -2038,6 +2051,8 @@ class Task extends React.Component {
                     setTimeout(() => {
                       self.setState({
                         rejecting: !isRejecting
+                      }, () => {
+                        $(`#reject-task-reason-${self.props.task._id}`).focus();
                       });
                     }, 200);
                   }}
@@ -2059,6 +2074,7 @@ class Task extends React.Component {
               <div className="col-xs-12 reject-message">
                 <b>Razón de rechazo:</b>
                 <input
+                  id={`reject-task-reason-${this.props.task._id}`}
                   className="form-control"
                   type="text"
                   value={this.state.rejectDescription}
@@ -2091,7 +2107,7 @@ class Task extends React.Component {
 /**
  * Renders information from the task.
  */
-class TaskInformation extends React.Component {
+class TaskInformationLayout extends React.Component {
   render() {
     let task;
     let board;
@@ -2349,11 +2365,11 @@ ReactDOM.render(
   <Router history={browserHistory}>
     <Route path="/" component={TaskManagerPage}>
       <Route path="/tasks/show" component={BoardsList} />
+      <Route path="/tasks/create" component={CreateTaskLayout} />
       <Route path="/tasks/archived" component={ArchivedTasksPage} />
-      <Route path="/tasks/create" component={CreateTask} />
-      <Route path="/tasks/:taskId" component={TaskInformation} />
+      <Route path="/tasks/:taskId" component={TaskInformationLayout} />
 
-      <Route path="/board/:boardId" component={BoardInformation} />
+      <Route path="/board/:boardId" component={BoardInformationLayout} />
 
       <Route path="/panel" component={Panel} />
     </Route>
