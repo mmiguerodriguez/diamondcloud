@@ -915,7 +915,7 @@ class Board extends React.Component {
  */
 class BoardInformation extends React.Component {
   drawChart(data) {
-    const container = this.timeline;
+    const container = this.timeline || $('.timeline');
     const chart = new google.visualization.Timeline(container);
     const dataTable = new google.visualization.DataTable();
 
@@ -931,7 +931,9 @@ class BoardInformation extends React.Component {
     const self = this;
 
     const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
-    const tasks = this.props.tasks.filter(_task => _task.boardId === board._id);
+    const tasks = this.props.tasks.filter(_task =>
+      _task.boardId === board._id && !_task.archived && (_task.status !== 'rejected')
+    );
     const data = [];
 
     tasks.forEach(task => {
@@ -953,7 +955,9 @@ class BoardInformation extends React.Component {
 
   render() {
     const board = this.props.boards.find(_board => _board._id === this.props.params.boardId);
-    const tasks = this.props.tasks.filter(_task => _task.boardId === board._id);
+    const tasks = this.props.tasks.filter(_task =>
+      _task.boardId === board._id && !_task.archived && (_task.status !== 'rejected')
+    );
 
     return (
       <div className="timeline-container">
@@ -964,7 +968,7 @@ class BoardInformation extends React.Component {
         <div className="text-center">
           <b>{board.name}</b>
         </div>
-        <div className="timeline"ref={c => this.timeline = c } />
+        <div className="timeline" ref={c => this.timeline = c } />
         {
           tasks.length === 0 ? (
             <div>
@@ -1764,7 +1768,7 @@ class Task extends React.Component {
     const descriptionClass = classNames({
       'open-description': showDescription,
       'hide-description': !showDescription,
-    }, 'col-xs-12 description');
+    }, 'col-xs-10 description');
     const clickHandle = isCoordination ? this.openTask : () => {
       self.setState({
         showDescription: !this.state.showDescription,
@@ -2026,7 +2030,17 @@ class Task extends React.Component {
                   data-toggle="tooltip"
                   data-placement="bottom"
                   role="button"
-                  onClick={this.setState({ rejecting: !isRejecting })}
+                  onClick={() => {
+                    const self = this;
+
+                    $(`#reject-task-${this.props.task._id}`).tooltip('hide');
+
+                    setTimeout(() => {
+                      self.setState({
+                        rejecting: !isRejecting
+                      });
+                    }, 200);
+                  }}
                 >
                   <img
                     src="/modules/task-manager/img/reject-task.svg"
@@ -2044,7 +2058,7 @@ class Task extends React.Component {
             !isCoordination && isRejecting ? (
               <div className="col-xs-12 reject-message">
                 <b>Razón de rechazo:</b>
-                <textarea
+                <input
                   className="form-control"
                   type="text"
                   value={this.state.rejectDescription}

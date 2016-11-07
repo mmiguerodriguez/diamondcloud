@@ -289,18 +289,19 @@ ol, ul {
 }
 .description {
   height: 0px;
+  text-align: justify;
 }
 .open-description {
   animation: open-description .5s linear;
-  height: 18px;
+  height: auto;
 }
 @keyframes open-description {
 	0% {
-		height: 0px;
+		min-height: auto;
 	  opacity: 0;
 	}
   100% {
-    height: 18px;
+    height: auto;
 		opacity: 1;
 	}
 }
@@ -310,11 +311,11 @@ ol, ul {
 }
 @keyframes hide-description {
 	0% {
-    height: 18px;
+    height: auto;
 		opacity: 1;
 	}
   100% {
-		height: 0px;
+		min-height: auto;
 	  opacity: 0;
 	}
 }
@@ -456,6 +457,9 @@ ol, ul {
 .panel-body.text-fixed {
   padding: 10px;
   font-size: 12px;
+}
+.panel-body.text-fixed p {
+  margin: 0;
 }
 .panel-heading.fixed {
   padding: 10px;
