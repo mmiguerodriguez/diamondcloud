@@ -964,6 +964,10 @@ class BoardInformation extends React.Component {
 
     return (
       <div>
+        <div
+          className="go-back go-back-task"
+          onClick={() => this.props.setLocation('tasks/show')}
+        />
         <div>
           {board.name}
         </div>
@@ -1070,16 +1074,41 @@ class TasksList extends React.Component {
       this.props.coordination ? (
         () => {
           this.props.showError({
-            body: 'El pizarron no tiene tareas',
+            body: 'El pizarrón no tiene tareas',
           });
         }
       ) : (null)
     );
     return (
       <div className='col-xs-12 tasks-list' data-board-id={this.props.board._id}>
-        <div role="button" onClick={onClick}>
+        <div>
           <p className='text-center'>
             <b>{this.props.board.name}</b>
+            {
+              this.props.coordination && this.props.tasks.length !== 0 ? (
+                <img
+                  src="/modules/task-manager/img/timeline.svg"
+                  id="timeline-btn"
+                  className="timeline-btn"
+                  title="Ver línea de tiempo del pizarrón"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  role="button"
+                  onClick={(e) => {
+                    $('#' + e.target.id).tooltip('hide');
+                    this.props.setLocation(`/board/${this.props.board._id}`)
+                  }}
+                  />
+              ) : (
+                this.props.coordination ? (
+                  () => {
+                    this.props.showError({
+                      body: 'El pizarrón no tiene tareas',
+                    });
+                  }
+                ) : (null)
+              )
+            }
           </p>
         </div>
         {this.renderTasks()}

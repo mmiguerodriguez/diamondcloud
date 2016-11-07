@@ -163,7 +163,10 @@ ol, ul {
   background-image: url(img/archive-task.svg);
 }
 .unarchive-task {
+  width: 24px !important;
+  height: 24px;
   background-image: url(img/unarchive-task.svg);
+  background-size: 24px;
 }
 .edit-task {
   padding-right: 30px !important;
@@ -497,4 +500,11 @@ ol, ul {
   overflow: auto;
   width: 100%;
   height: calc(100% - 80px);
+}
+.timeline-btn {
+  float: right;
+  opacity: 0.5;
+}
+.timeline-btn:hover {
+  opacity: 0.9;
 }
