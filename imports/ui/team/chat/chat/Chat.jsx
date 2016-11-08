@@ -145,7 +145,7 @@ export default class Chat extends React.Component {
 
     if (this.state.position === 'minimized') {
       return (
-        <div className={classes}>
+        <div className={classes} data-ripple="rgba(0,0,0, 0.3)">
           <p
             className="chat-text truncate"
             onClick={this.props.togglePosition.bind(null, this.props.index, 'medium')}
@@ -163,7 +163,7 @@ export default class Chat extends React.Component {
     } else if (this.state.position === 'medium') {
       return (
         <div className={classes}>
-          <div className="chat-header">
+          <div className="chat-header" data-ripple="rgba(0,0,0, 0.3)">
             <p
               className="col-xs-10 chat-text truncate"
               onClick={this.props.togglePosition.bind(null, this.props.index, 'minimized')}

@@ -5,7 +5,9 @@ export default class Board extends React.Component {
     return (
       <div
         className="row row-fixed-margin"
-        onClick={this.props.addChat.bind(null, { boardId: this.props.board._id })}>
+        data-ripple="rgba(0,0,0, 0.3)"
+        onClick={this.props.addChat.bind(null, { boardId: this.props.board._id })}
+        >
         <div className="col-xs-2 img-fixed-margin fixed-padding">
           <img
             className="img-circle"

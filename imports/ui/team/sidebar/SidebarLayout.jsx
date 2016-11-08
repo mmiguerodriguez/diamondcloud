@@ -19,10 +19,10 @@ export default class SidebarLayout extends React.Component {
         hasNotifications = true;
       }
     });
-    
+
     return hasNotifications;
   }
-  
+
   render() {
     const classes = classNames('sidebar', {
       'permission-asker-opened': this.props.permissionAsker,
@@ -33,6 +33,7 @@ export default class SidebarLayout extends React.Component {
         <div
           id="boards-item"
           className="item no-margin"
+          data-ripple="rgba(0,0,0, 0.3)"
           onClick={this.props.toggleCollapsible.bind(null, 'boards')}
         >
           <img src="/img/sidebar/boards.svg" width="32px" />
@@ -41,6 +42,7 @@ export default class SidebarLayout extends React.Component {
         <div
           id="modules-item"
           className="item"
+          data-ripple="rgba(0,0,0, 0.3)"
           onClick={this.props.toggleCollapsible.bind(null, 'modules')}
         >
           <img src="/img/sidebar/modules.svg" width="32px" />
@@ -49,9 +51,10 @@ export default class SidebarLayout extends React.Component {
         <div
           id="chats-item"
           className="item"
+          data-ripple="rgba(0,0,0, 0.3)"
           onClick={this.props.toggleCollapsible.bind(null, 'chats')}
         >
-          { 
+          {
             this.hasNotifications() ? (
               <div className="notification-badge"></div>
             ) : (null)

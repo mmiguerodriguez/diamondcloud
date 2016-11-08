@@ -34,5 +34,10 @@
   border-top: none !important;
 }
 .search-input {
-  border-bottom-right-radius: 4px !important
+  width: 54px !important;
+  border-bottom-right-radius: 4px !important;
+  background-image: url(/img/add-people-icon.svg);
+  background-size: 24px;
+  background-position: center;
+  background-repeat: no-repeat;
 }

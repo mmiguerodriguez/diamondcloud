@@ -3,7 +3,7 @@ import React from 'react';
 export default class Board extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.setBoard = this.setBoard.bind(this);
   }
 
@@ -11,10 +11,13 @@ export default class Board extends React.Component {
     this.props.toggleCollapsible('boards');
     this.props.changeBoard(this.props.board._id);
   }
-  
+
   render() {
     return (
-      <div className="board-item-container">
+      <div
+        className="board-item-container"
+        data-ripple="rgba(0,0,0, 0.3)"
+        >
         <div
           className="board-item col-xs-10 row"
           onClick={this.setBoard}>

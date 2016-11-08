@@ -117,7 +117,7 @@ export default class ModuleInstance extends React.Component {
         .css('padding-bottom', paddingBottom);
       },
     });
-    
+
     this.setState({
       loading: false,
     });
@@ -175,6 +175,7 @@ export default class ModuleInstance extends React.Component {
           !this.state.loading || this.state.minimized ? (
             <div
               className="module-pin"
+              data-ripple="rgba(0,0,0, 0.3)"
               role="button"
               onClick={this.toggleMinimize}
               onContextMenu={

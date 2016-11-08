@@ -186,12 +186,14 @@ export default class ConfigTeamModal extends React.Component {
               type="button"
               className="btn btn-cancel btn-hover"
               data-dismiss="modal"
+              data-ripple="rgba(0,0,0, 0.3)"
             >
               Cancelar
             </button>
             <button
               type="button"
               className="btn btn-accept btn-hover"
+              data-ripple="rgba(0,0,0, 0.3)"
               onClick={this.close}
             >
               Guardar

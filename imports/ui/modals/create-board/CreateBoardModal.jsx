@@ -275,6 +275,7 @@ export default class CreateBoardModal extends React.Component {
                 type="button"
                 className="btn btn-cancel btn-hover"
                 data-dismiss="modal"
+                data-ripple="rgba(0,0,0, 0.3)"
                 onClick={this.close}
               >
                 Cancelar
@@ -282,6 +283,7 @@ export default class CreateBoardModal extends React.Component {
               <button
                 type="button"
                 className="btn btn-accept btn-hover"
+                data-ripple="rgba(0,0,0, 0.3)"
                 onClick={this.createBoard}
               >
                 Crear

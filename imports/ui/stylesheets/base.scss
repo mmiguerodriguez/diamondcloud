@@ -125,7 +125,7 @@ input:focus, select:focus, textarea:focus, button:focus {
 iframe {
   border: none !important;
 }
-
+quires Pebble OS v4.x and therefore w
 // Placeholders
 *::-webkit-input-placeholder {
   text-transform: initial;
@@ -138,4 +138,30 @@ iframe {
 }
 *:-moz-placeholder {
   text-transform: initial;
+}
+
+.ripple{
+  position: absolute;
+  top:0; left:0; bottom:0; right:0;
+  overflow: hidden;
+  -webkit-transform: translateZ(0); /* to contain zoomed ripple */
+  transform: translateZ(0);
+  border-radius: inherit; /* inherit from parent (rounded buttons etc) */
+  pointer-events: none; /* allow user interaction */
+}
+.rippleWave{
+  backface-visibility: hidden;
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0.7); -webkit-transform: scale(0.7);
+  background: rgba(255,255,255, 1);
+  opacity: 0.45;
+  animation: ripple 2.4s forwards;
+  -webkit-animation: ripple 2.4s forwards;
+}
+@keyframes ripple {
+  to {transform: scale(24); opacity: 0;}
+}
+@-webkit-keyframes ripple {
+  to {-webkit-transform: scale(24); opacity: 0;}
 }

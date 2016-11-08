@@ -297,6 +297,7 @@ export default class ConfigBoardModal extends React.Component {
               type="button"
               className="btn btn-cancel btn-hover"
               data-dismiss="modal"
+              data-ripple="rgba(0,0,0, 0.3)"
             >
               Cancelar
             </button>
@@ -304,6 +305,7 @@ export default class ConfigBoardModal extends React.Component {
               type="button"
               className="btn btn-accept btn-hover"
               onClick={this.editBoard}
+              data-ripple="rgba(0,0,0, 0.3)"
             >
               Guardar
             </button>

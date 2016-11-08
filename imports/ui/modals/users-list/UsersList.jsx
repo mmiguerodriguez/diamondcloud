@@ -122,7 +122,7 @@ export default class UsersList extends React.Component {
       <div>
         {
           isAdmin ? (
-            <div className="row container-fluid">
+            <div className="row container-fluid" data-ripple="rgba(0,0,0, 0.3)">
               <div className="input-group col-xs-12">
                 <input
                   id="searchUsers"
@@ -151,14 +151,10 @@ export default class UsersList extends React.Component {
                 </select>
                 <div
                   className="input-group-addon search-input"
+                  data-ripple="rgba(0,0,0, 0.3)"
                   role="button"
                   onClick={this.addUser}
-                >
-                  <img
-                    src="/img/add-people-icon.svg"
-                    width="24px"
-                  />
-                </div>
+                />
               </div>
             </div>
           ) : (null)

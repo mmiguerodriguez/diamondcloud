@@ -11,6 +11,7 @@ export default class DirectChat extends React.Component {
     return (
       <div
         className="row row-fixed-margin"
+        data-ripple="rgba(0,0,0, 0.3)"
         onClick={this.props.addChat.bind(null, { directChatId: this.props.directChat._id })}
       >
         <div className="col-xs-2 img-fixed-margin fixed-padding">

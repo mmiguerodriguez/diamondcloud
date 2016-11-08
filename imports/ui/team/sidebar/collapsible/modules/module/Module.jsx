@@ -26,6 +26,7 @@ export default class Module extends React.Component {
         ref={(c) => { this.module = c; }}
         role="button"
         data-module-id={this.props.module._id}
+        data-ripple="rgba(0,0,0, 0.3)"
       >
         <div className="col-xs-2">
           <img
