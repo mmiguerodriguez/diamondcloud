@@ -275,10 +275,13 @@ ol, ul {
   top: calc(50% - 7.5px);
   left: calc(50% - 7.5px);
 }
-.expiration-date, .start-date {
+.expiration-date, .start-date, .rejected-message {
   padding: 0px;
   margin: 0 0 15px;
   font-size: 13px !important;
+}
+.rejected-message {
+  margin-bottom: 5px;
 }
 .start-date {
   margin-bottom: 5px !important;
@@ -303,15 +306,18 @@ ol, ul {
 	}
   100% {
     height: auto;
+    min-height: 18px;
 		opacity: 1;
 	}
 }
 .hide-description {
+  min-height: 0 !important;
   animation: hide-description .5s linear;
   opacity: 0;
 }
 @keyframes hide-description {
 	0% {
+	  min-height: 18px;
     height: auto;
 		opacity: 1;
 	}
@@ -320,13 +326,25 @@ ol, ul {
 	  opacity: 0;
 	}
 }
-.reject-message b {
-  font-size: 13px;
+.user-time-info {
+  width: calc(33.33333333% - 4px);
+  margin: 0 4px 10px 0;
+  padding: 5px;
+  font-size: 12px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  background-color: #e2e4e6;
+  display: inline-block;
+  overflow: auto;
 }
-.reject-message textarea {
-  height: 34px;
-  margin: 5px 0px;
-  resize: vertical;
+.user-time-info p {
+  margin-bottom: 5px;
+}
+.reject-message b {
+  font-size: 12px;
+}
+.reject-message input {
+  margin-bottom: 10px;
 }
 
 .create-task-form {
@@ -450,6 +468,7 @@ ol, ul {
   border-radius: 5px;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
   margin-bottom: 10px;
+  overflow: auto;
 }
 .text-fixed {
   font-size: 14px;

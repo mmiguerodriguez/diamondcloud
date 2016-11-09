@@ -536,6 +536,27 @@ class CreateTaskLayout extends React.Component {
             />
           </div>
           <div className="form-group">
+            <label className="control-label" htmlFor="create-task-description">Descripción</label>
+            <textarea
+              id="create-task-description"
+              className="form-control"
+              placeholder="Ingresá la la descripción de la tarea"
+              onChange={(e) => this.handleChange('description', e)}
+            >
+            </textarea>
+          </div>
+          <div className="form-group">
+            <label className="control-label" htmlFor="create-task-board">Pizarrón</label>
+            <select
+              id="create-task-board"
+              className="form-control"
+              value={this.state.boardId}
+              onChange={(e) => this.handleChange('boardId', e)}
+            >
+              {this.renderOptions()}
+            </select>
+          </div>
+          <div className="form-group">
             <label className="control-label" htmlFor="create-task-board">Tipo</label>
             <select
               id="create-task-type"
@@ -556,27 +577,6 @@ class CreateTaskLayout extends React.Component {
               onChange={(e) => this.handleChange('startDate', e)}
               defaultValue={$.format.date(this.state.startDate, 'yyyy-MM-ddThh:mm')}
             />
-          </div>
-          <div className="form-group">
-            <label className="control-label" htmlFor="create-task-board">Pizarrón</label>
-            <select
-              id="create-task-board"
-              className="form-control"
-              value={this.state.boardId}
-              onChange={(e) => this.handleChange('boardId', e)}
-            >
-              {this.renderOptions()}
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="control-label" htmlFor="create-task-description">Descripción</label>
-            <textarea
-              id="create-task-description"
-              className="form-control"
-              placeholder="Ingresá la la descripción de la tarea"
-              onChange={(e) => this.handleChange('description', e)}
-            >
-            </textarea>
           </div>
           <button
             onClick={this.createTask}
@@ -1072,6 +1072,8 @@ class TasksList extends React.Component {
           updateQuery: {
             $set: {
               boardId,
+              status: 'queued',
+              rejectMessage: '',
             },
           },
           callback(error, result) {
@@ -1087,13 +1089,17 @@ class TasksList extends React.Component {
   }
 
   render() {
+    const activeTasks = this.props.tasks.filter(_task =>
+      _task.boardId === this.props.board._id && !_task.archived && (_task.status !== 'rejected')
+    );
+
     return (
       <div className='col-xs-12 tasks-list' data-board-id={this.props.board._id}>
         <div>
           <p className='text-center'>
             <b>{this.props.board.name}</b>
             {
-              this.props.coordination && this.props.tasks.length !== 0 && !this.props.archivedView ? (
+              this.props.coordination && activeTasks.length !== 0 && !this.props.archivedView ? (
                 <img
                   src="/modules/task-manager/img/timeline.svg"
                   id={`timeline-btn${this.props.board._id}`}
@@ -1643,6 +1649,10 @@ class Task extends React.Component {
       if (index === 'reject_task') {
         this.setState({
           rejecting: false,
+        }, () => {
+          $('[data-toggle="tooltip"]').tooltip({
+            container: 'body',
+          });
         });
       }
     }
@@ -1706,7 +1716,7 @@ class Task extends React.Component {
 
   componentDidMount() {
     if (this.props.coordination) {
-      if (this.props.task.status === 'rejected') {
+      if (this.props.task.status === 'rejected' && !this.props.task.archived) {
         this.createDraggable();
       }
     }
@@ -1721,7 +1731,7 @@ class Task extends React.Component {
 
     if (this.props.coordination) {
       if (nextProps.task.status !== this.props.task.status) {
-        if (nextProps.task.status === 'rejected') {
+        if (nextProps.task.status === 'rejected' && !nextProps.task.archived) {
           this.createDraggable();
         }
       }
@@ -1931,7 +1941,7 @@ class Task extends React.Component {
              */
             isCoordination && isRejected ? (
               <div className="col-xs-12">
-                <b>Mensaje de rechazo:</b> {this.props.task.rejectMessage}
+                <p className="rejected-message"><b>Mensaje de rechazo:</b> {this.props.task.rejectMessage}</p>
               </div>
             ) : (null)
           }
@@ -2141,17 +2151,17 @@ class TaskInformationLayout extends React.Component {
               <b>Tarea:</b> {task.title}
             </p>
             <p>
-              <b>Plazo:</b>
-              {` ${$.format.date(new Date(task.startDate), 'dd/MM/yy')} - ${$.format.date(new Date(task.dueDate), 'dd/MM/yy')}`}
-            </p>
-            <p>
-              <b>Estado:</b> {status}
+              <b>Descripción:</b> {task.description}
             </p>
             <p>
               <b>Pizarrón:</b> {board.name}
             </p>
             <p>
-              <b>Descripción:</b> {task.description}
+              <b>Plazo:</b>
+              {` ${$.format.date(new Date(task.startDate), 'dd/MM/yy')} - ${$.format.date(new Date(task.dueDate), 'dd/MM/yy')}`}
+            </p>
+            <p>
+              <b>Estado:</b> {status}
             </p>
             <UserTaskInformation
               durations={task.durations}
@@ -2205,19 +2215,25 @@ class UserTaskInformation extends React.Component {
       time = time !== 0 ? this.prettyDate(time) + ' hrs.' : 'No trabajó';
 
       return (
-        <div className="panel panel-default">
-          <div className="panel-heading fixed" role="tab" id={'heading_' + user._id}>
-            <h4 className="panel-title">
-              <a className='text-fixed' role="button" data-toggle="collapse" data-parent="#accordion" href={'#collapse_' + user._id} aria-expanded="false" aria-controls={'collapse_' + user._id}>
-                {user.profile.name}
-              </a>
-            </h4>
-          </div>
-          <div id={'collapse_' + user._id} className="panel-collapse collapse" role="tabpanel" aria-labelledby={'heading_' + user._id}>
-            <div className="panel-body text-fixed">
-              <p>{working ? 'Trabajando actualmente' : `Tiempo trabajado: ${time}`}</p>
+        /*
+          <div className="panel panel-default">
+            <div className="panel-heading fixed" role="tab" id={'heading_' + user._id}>
+              <h4 className="panel-title">
+                <a className='text-fixed' role="button" data-toggle="collapse" data-parent="#accordion" href={'#collapse_' + user._id} aria-expanded="false" aria-controls={'collapse_' + user._id}>
+                  {user.profile.name}
+                </a>
+              </h4>
+            </div>
+            <div id={'collapse_' + user._id} className="panel-collapse collapse" role="tabpanel" aria-labelledby={'heading_' + user._id}>
+              <div className="panel-body text-fixed">
+                <p>{working ? 'Trabajando actualmente' : `Tiempo trabajado: ${time}`}</p>
+              </div>
             </div>
           </div>
+        */
+        <div className="user-time-info">
+          <p><b>{user.profile.name}</b></p>
+          <p>{working ? 'Trabajando actualmente' : `Tiempo trabajado:  ${time}`}</p>
         </div>
       );
     });
@@ -2229,9 +2245,11 @@ class UserTaskInformation extends React.Component {
 
   render() {
     return (
-      <div className="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+      //<div className="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+      <div>
         {this.renderUsers()}
       </div>
+      //</div>
     );
   }
 }
