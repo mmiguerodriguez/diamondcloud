@@ -116,11 +116,14 @@ class TaskManagerPage extends React.Component {
        * currentBoard and that are not finished
        * or queued.
        */
-      const filter = coordination ? {
+      const filter = coordination ? { } : {
         archived: false,
-      } : {
-        archived: false,
-        status: 'not_finished',
+        status: {
+          $in: [
+            'queued',
+            'not_finished',
+          ],
+        },
         boardId: currentBoard._id,
       };
 
@@ -245,6 +248,7 @@ class TaskManagerLayout extends React.Component {
     const isCoordination = this.props.coordination;
     const isUnarchiving = this.props.location.pathname.indexOf('archived') > -1;
     const isPanel = this.props.location.pathname.indexOf('panel') > -1;
+    const hasArchivedTasks = this.props.tasks.filter(_task => _task.archived).length > 0;
 
     const classes = classNames({
       fixed: isPanel,
@@ -272,7 +276,7 @@ class TaskManagerLayout extends React.Component {
           </div>
           {
             // Show archived tasks button
-            isCoordination && !isUnarchiving ?
+            isCoordination && !isUnarchiving && hasArchivedTasks ?
               <div
                 id="view-archived-tasks"
                 className={classes}
@@ -893,21 +897,19 @@ class Board extends React.Component {
     });
 
     let tasks = this.props.tasks.filter(task => !task.archived);
-
     tasks = this.props.coordination ? (
       tasks
     ) : (
       tasks.filter(task =>
-        task.status === 'not_finished' ||
-        task.status === 'queued'
+        task.status === 'not_finished' || task.status === 'queued'
       )
     );
 
     return (
       <div className={classes}>
         <TasksList
+          tasks={tasks}
           board={this.props.board}
-          tasks={this.props.tasks}
           coordination={this.props.coordination}
           setLocation={this.props.setLocation}
           currentUser={this.props.currentUser}
@@ -1093,9 +1095,9 @@ class TasksList extends React.Component {
   }
 
   render() {
-    const activeTasks = this.props.tasks.filter(_task =>
+    const hasTasks = this.props.tasks.filter(_task =>
       _task.boardId === this.props.board._id && !_task.archived && (_task.status !== 'rejected')
-    );
+    ).length > 0;
 
     return (
       <div className='col-xs-12 tasks-list' data-board-id={this.props.board._id}>
@@ -1103,7 +1105,7 @@ class TasksList extends React.Component {
           <p className='text-center'>
             <b>{this.props.board.name}</b>
             {
-              this.props.coordination && activeTasks.length !== 0 && !this.props.archivedView ? (
+              this.props.coordination && !this.props.archivedView && hasTasks ? (
                 <img
                   src="/modules/task-manager/img/timeline.svg"
                   id={`timeline-btn${this.props.board._id}`}
@@ -1123,7 +1125,7 @@ class TasksList extends React.Component {
         </div>
         {this.renderTasks()}
         {
-          this.props.coordination ? (
+          this.props.coordination && !this.props.archivedView ? (
             <div className="form-group">
               <input
                 id="task_title"
@@ -2234,7 +2236,7 @@ class UserTaskInformation extends React.Component {
             </div>
           </div>
         */
-        <div className="user-time-info">
+        <div className="col-xs-12 col-sm-6 col-md-4 col-lg-3 user-time-info">
           <p><b>{user.profile.name}</b></p>
           <p>{working ? 'Trabajando actualmente' : `Tiempo trabajado:  ${time}`}</p>
         </div>
@@ -2360,6 +2362,7 @@ class ArchivedTasksLayout extends React.Component {
         coordination={isCoordination(DiamondAPI.getCurrentBoard())}
         archivedView={true}
         currentUser={DiamondAPI.getCurrentUser()}
+        handleChange={() => true}
         showError={this.props.showError}
         hideError={this.props.hideError}
         location={this.props.location}
