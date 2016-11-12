@@ -1,21 +1,18 @@
 const webpack = require('webpack');
 const path = require('path');
 const loaders = require('./webpack.loaders');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-const HOST = process.env.HOST || "0.0.0.0";
-const PORT = process.env.PORT || "8888";
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 
 module.exports = {
 	entry: [
-		'react-hot-loader/patch',
-		'./src/main.js', // your app's entry point
+	  './src/main.css',
+		'./src/main.js',
 	],
-	devtool: process.env.WEBPACK_DEVTOOL || 'cheap-module-source-map',
 	output: {
-		path: path.join(__dirname, 'public'),
-		filename: 'bundle.js',
+		path: path.join(__dirname, 'dev'),
+		filename: '[chunkhash].js',
 	},
 	resolve: {
 		extensions: ['', '.js', '.jsx'],
@@ -23,27 +20,22 @@ module.exports = {
 	module: {
 		loaders,
 	},
-	devServer: {
-		contentBase: "./public",
-		// do not print bundle build stats
-		noInfo: true,
-		// enable HMR
-		hot: true,
-		// embed the webpack-dev-server runtime into the bundle
-		inline: true,
-		// serve index.html in place of 404 responses to allow HTML5 history
-		historyApiFallback: true,
-		port: PORT,
-		host: HOST,
-	},
 	plugins: [
-		new webpack.NoErrorsPlugin(),
-		new webpack.HotModuleReplacementPlugin(),
-		/*new ExtractTextPlugin('[contenthash].css', {
-			allChunks: true,
-		}),*/
+		new WebpackCleanupPlugin(),
+		new webpack.DefinePlugin({
+			'process.env': {
+				NODE_ENV: '"development"',
+			},
+		}),
+		new ExtractTextPlugin('[contenthash].css'),
 		new HtmlWebpackPlugin({
-			template: './src/main.html',
+			template: './src/index.html',
+			title: 'Webpack example',
 		}),
 	],
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    'react-router': 'ReactRouter',
+  },
 };

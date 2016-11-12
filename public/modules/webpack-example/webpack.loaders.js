@@ -1,13 +1,14 @@
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 
 module.exports = [
-    {
-      test: /\.(js|jsx)$/,
-      loader: 'babel',
-      include: [
-        path.resolve(__dirname, './src'),
-      ],
-    },
+  {
+    test: /\.(js|jsx)$/,
+    loader: 'babel',
+    include: [
+      path.resolve(__dirname, './src'),
+    ],
+  },
 	{
 		test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
 		exclude: /(node_modules|bower_components)/,
@@ -43,11 +44,19 @@ module.exports = [
 		exclude: /(node_modules|bower_components)/,
 		loader: 'url-loader?limit=10000&mimetype=image/png',
 	},
-	{
-		test: /\.css$/,
-		loader: 'style-loader!css-loader',
-    include: [
-      path.resolve(__dirname, './src'),
-    ],
-	},
+  {
+    test: /\.css$/,
+    loader: ExtractTextPlugin.extract('style-loader', 'css-loader'),
+    include: [path.resolve(__dirname, './src')],
+  },
+  {
+    test: /\.sass/,
+    loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader'),
+    include: [path.resolve(__dirname, './src')],
+  },
+  {
+    test: /\.less$/,
+    loader: ExtractTextPlugin.extract('style-loader', 'css-loader!less-loader'),
+    include: [path.resolve(__dirname, './src')],
+  },
 ];

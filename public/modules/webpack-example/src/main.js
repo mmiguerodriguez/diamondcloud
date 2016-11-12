@@ -1,5 +1,3 @@
-import './main.css';
-
 import { render } from 'react-dom';
 import { browserHistory } from 'react-router';
 
@@ -9,15 +7,5 @@ render(
   renderRoutes(),
   document.querySelector('#render-target')
 );
-
-if (module.hot) {
-  module.hot.accept('./components/routes', () => {
-    const renderRoutes = require('./components/routes').default;
-    render(
-      renderRoutes(),
-      document.querySelector("#render-target")
-    );
-  });
-}
 
 browserHistory.push('/');

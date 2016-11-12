@@ -7,6 +7,7 @@ const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 
 module.exports = {
 	entry: [
+	  './src/main.css',
 		'./src/main.js',
 	],
 	output: {
@@ -35,18 +36,16 @@ module.exports = {
 			}
 		}),
 		new webpack.optimize.OccurenceOrderPlugin(),
-		new ExtractTextPlugin('[contenthash].css', {
-			allChunks: true,
-		}),
+		new ExtractTextPlugin('[contenthash].css'),
 		new HtmlWebpackPlugin({
-			template: './src/main.html',
+			template: './src/index.html',
 			title: 'Webpack example',
 		}),
-		new webpack.optimize.DedupePlugin()
+		new webpack.optimize.DedupePlugin(),
 	],
   externals: {
-    react: "React",
-    "react-dom": "ReactDOM",
-    "react-router": "ReactRouter",
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    'react-router': 'ReactRouter',
   },
 };
