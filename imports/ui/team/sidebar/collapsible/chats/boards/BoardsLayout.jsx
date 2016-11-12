@@ -20,7 +20,7 @@ export default class BoardsLayout extends React.Component {
       );
 
       if (isDirector) {
-        if ((board.type === 'creativos' && board.visibleForDirectors) || (board.type !== 'creativos')) {
+        if ((board.type === 'creativos' && board.visibleForDirectors) || (board.type !== 'creativos' && board.type !== 'medios')) {
           boards.push(_board);
         }
       } else {

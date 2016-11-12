@@ -333,7 +333,7 @@ export default class TeamPage extends React.Component {
       this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'director creativo') ||
       this.props.team.userIsCertainHierarchy(Meteor.user().email(), 'director de cuentas');
 
-    if (!board || (board.type === 'creativos' && !board.visibleForDirectors && isDirector)) {
+    if (!board || (((board.type === 'creativos' && !board.visibleForDirectors) || board.type === 'medios') && isDirector)) {
       const hierarchy = this.props.team.userHierarchy(Meteor.user().email());
       const type = hierarchyToType(hierarchy);
 
@@ -349,7 +349,9 @@ export default class TeamPage extends React.Component {
       _board = Boards.findOne({ type }) || (
         isDirector ? (
           Boards.findOne({
-            type: { $ne: 'creativos' },
+            type: {
+              $nin: ['medios', 'creativos'],
+            },
           })
         ) : Boards.findOne({})
       );
