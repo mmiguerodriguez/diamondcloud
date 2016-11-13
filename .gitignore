@@ -1,3 +1,13 @@
 node_modules/
 .tern-project
 npm-debug.log
+public/modules/calendar/dev/
+public/modules/calendar/public/
+public/modules/drive/dev/
+public/modules/drive/public/
+public/modules/post-it/dev/
+public/modules/post-it/public/
+public/modules/task-manager/dev/
+public/modules/task-manager/public/
+public/modules/videocall/dev/
+public/modules/videocall/public/

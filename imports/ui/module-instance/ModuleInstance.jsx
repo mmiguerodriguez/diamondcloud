@@ -151,6 +151,15 @@ export default class ModuleInstance extends React.Component {
       zIndex: this.state.zIndex,
     };
 
+    const dev = process.env.NODE_ENV === 'development';
+    const url = dev ? (
+      `/modules/${this.props.moduleInstance.moduleId}/dev/index.html`
+    ) : (
+      `/modules/${this.props.moduleInstance.moduleId}/public/index.html`
+    );
+    
+    console.log(dev);
+
     return (
       <div
         className="module-container"
@@ -186,7 +195,7 @@ export default class ModuleInstance extends React.Component {
         <iframe
           className="module"
           ref={(c) => { this.iframe = c; }}
-          src={`/modules/${this.props.moduleInstance.moduleId}/index.html`}
+          src={url}
           style={{
             display: this.state.minimized || this.state.loading ? 'none' : 'block',
           }}
