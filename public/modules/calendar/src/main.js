@@ -8,4 +8,4 @@ render(
   document.querySelector('#render-target')
 );
 
-browserHistory.push('/tasks/show');
+browserHistory.push('/view');

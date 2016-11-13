@@ -1,3 +1,4 @@
+import React from 'react';
 import { Router, Route, browserHistory } from 'react-router';
 
 import TaskManagerPage        from './task-manager/TaskManagerPage';
