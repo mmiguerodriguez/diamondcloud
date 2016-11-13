@@ -21,7 +21,7 @@ class Index extends React.Component {
         body: '',
         delay: '',
         showing: false,
-      }
+      },
     };
 
     this.error = this.error.bind(this);
@@ -63,7 +63,7 @@ class Index extends React.Component {
 
   componentDidMount() {
     let self = this;
-    
+
     DiamondAPI.subscribe({
       collection: 'globalValues',
       callback: (error, result) => {
@@ -325,7 +325,7 @@ class FileManagerLayout extends React.Component {
 
   componentDidMount() {
     this.props.initPicker('import-file', this.handleImport.bind(this));
-    
+
     $('[data-toggle="tooltip"]').tooltip({
       container: 'body',
     });
@@ -1541,8 +1541,8 @@ class FileViewerPage extends React.Component {
   }
 
   componentDidMount() {
-    
-    
+
+
     // Set in the data storage the opened document
     if (!this.props.openedDocumentId) {
       DiamondAPI.insert({
@@ -1600,7 +1600,7 @@ class FileViewerPage extends React.Component {
       }
     });
   }
-  
+
   componentWillReceiveProps(nextProps) {
     if (this.props.params.documentId !== nextProps.params.documentId) {
       const self = this;

@@ -13,19 +13,9 @@ const {
   browserHistory,
 } = ReactRouter;
 
-/*
+const ERROR_DELAY = 5000;
 
-Events
-  - _id
-  - title
-  - description
-  - startDate
-  - endDate
-  - isPrivate
-  - boards (<=> isPrivate)
-  - color
-
-*/
+browserHistory.push('/view'); // initialize the router
 
 // Do NOT change function to ES6
 Date.prototype.addDays = function(days) {
@@ -42,11 +32,7 @@ const isCoordination = (board) => {
   );
 };
 
-class EventsList extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  
+class View extends React.Component {
   getEvents() {
     return this.props.events.map((event) => {
       return (
@@ -54,7 +40,7 @@ class EventsList extends React.Component {
       );
     });
   }
-  
+
   render() {
     return (
       <ul>
@@ -72,7 +58,7 @@ class CreateEventTab extends React.Component {
       [index]: value,
     });
   }
-  
+
   handleRadio(index, event) {
     let value = event.target.value;
 
@@ -157,81 +143,99 @@ class Calendar extends React.Component {
     super(props);
 
     this.state = {
-      currentTab: 'events',
-      events: [],
-      loading: true,
+      error: {
+        type: '',
+        body: '',
+        delay: '',
+        showing: false,
+      },
     };
-    
-    this.openCreateEvent = this.openCreateEvent.bind(this);
-    this.closeCreateEvent = this.closeCreateEvent.bind(this);
+
+    this.error = this.error.bind(this);
   }
 
-  componentDidMount() {
-    const self = this;
-    
-    DiamondAPI.get({
-      collection: 'events',
-      filter: {
-        
-      },
-      callback: (error, result) => {
-        self.setState({
-          events: result,
-          loading: false,
-        });
+  error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
+    console.log(type, body);
+    this.setState({
+      error: {
+        body,
+        delay: delay || ERROR_DELAY,
+        showing: type === 'show',
       },
     });
   }
-  
-  openCreateEvent() {
-    this.setState({
-      currentTab: 'create-event',
-    });
-  }
-  
-  closeCreateEvent() {
-    this.setState({
-      currentTab: 'events',
-    });
-  }
-  
+
   render() {
-    if (this.state.loading) {
-      return (
-        <div className="loading">
-          <div className="loader" />
-        </div>
-      );
-    }
-
     return (
       <div>
         {
-          isCoordination(DiamondAPI.getCurrentBoard()) ?
-          (
-            this.state.currentTab === 'events' ?
-            <button onClick={this.openCreateEvent}>Create event</button> :
-            <button onClick={this.closeCreateEvent}>Back to events</button>
-          ) :
-          null
+          React.cloneElement(this.props.children, {
+            error: this.error,
+          })
         }
         {
-          this.state.currentTab === 'events' ?
-          <EventsList
-            events={this.state.events}
-          /> :
-          <CreateEventTab
-            backFunction={this.closeCreateEvent}
-          />
+          this.state.error.showing ? (
+            <ErrorMessage
+              error={this.error}
+              {...this.state.error}
+            />
+          ) : (null)
         }
       </div>
     );
   }
 }
 
+Calendar.propTypes = {
+  children: React.PropTypes.node,
+};
+
+/**
+ * In case of error show this component.
+ */
+class ErrorMessage extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {};
+
+    this.close = this.close.bind(this);
+  }
+
+  componentDidMount() {
+    setTimeout(this.close.bind(null), this.props.delay);
+  }
+
+  close() {
+    const self = this;
+
+    $('.error-message').removeClass('show-error');
+    $('.error-message').addClass('hide-error', () => {
+      setTimeout(self.props.error.bind(null, { type: 'hide' }), 700);
+    });
+  }
+
+  render() {
+    return (
+      <div className="error-message show-error">
+        <div className="error-body">{this.props.body}</div>
+        <div className="error-close" onClick={this.close}>Cerrar</div>
+      </div>
+    );
+  }
+}
+
+ErrorMessage.propTypes = {
+  body: React.PropTypes.string.isRequired,
+  delay: React.PropTypes.number.isRequired,
+  showing: React.PropTypes.bool.isRequired,
+};
+
 ReactDOM.render(
   <Router history={browserHistory}>
-    <Route path="*" component={Calendar} />
+    <Route path="/" component={Calendar}>
+      <Route path="view" component={View} />
+    </Route>
   </Router>,
   document.getElementById('render-target')
 );
