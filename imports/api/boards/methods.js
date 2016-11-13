@@ -6,6 +6,8 @@ import Future              from 'fibers/future';
 import { Boards }          from './boards';
 import { Teams }           from '../teams/teams';
 import { ModuleInstances } from '../module-instances/module-instances';
+import { Hierarchies }     from '../hierarchies/hierarchies';
+import { Templates }       from '../templates/templates';
 
 /**
  * Creates a board
@@ -31,16 +33,7 @@ export const createBoard = new ValidatedMethod({
     name: { type: String, min: 0, max: 200 },
     type: {
       type: String,
-      allowedValues: [
-        'default',
-        'creativos',
-        'sistemas',
-        'directores creativos',
-        'directores de cuentas',
-        'administradores',
-        'coordinadores',
-        'medios',
-      ],
+      allowedValues: Templates.find().fetch().map(e => e._id),
     },
     isPrivate: { type: Boolean },
     users: { type: [Object], optional: true },
@@ -101,36 +94,20 @@ export const createBoard = new ValidatedMethod({
         },
       });
 
-      /**
-       * Inserts certain moduleInstances for each type
-       * of board.
-       */
-      let moduleInstances;
-      if (board.type === 'creativos') {
-        moduleInstances = [
-          { moduleId: 'task-manager', x: 50, y: 20, width: 312, height: 400, archived: false, minimized: false },
-          { moduleId: 'drive', x: 50, y: 352, width: 400, height: 400, archived: false, minimized: false },
-          { moduleId: 'videocall', x: 50, y: 772, width: 270, height: 290, archived: false, minimized: false },
-        ];
-      } else if (board.type === 'coordinadores') {
-        moduleInstances = [
-          { moduleId: 'task-manager', x: 50, y: 20, width: 312, height: 400, archived: false, minimized: false },
-        ];
-      } else if (board.type === 'directores creativos' || board.type === 'directores de cuentas' || board.type === 'administradores' ||  board.type === 'medios') {
-        moduleInstances = [
-          { moduleId: 'task-manager', x: 50, y: 20, width: 312, height: 400, archived: false, minimized: false },
-          { moduleId: 'drive', x: 50, y: 352, width: 400, height: 400, archived: false, minimized: false },
-        ];
-      }
-
-      if (moduleInstances) {
-        ModuleInstances.insertManyInstances(moduleInstances, boardId, (error, result) => {
-          if (error) {
-            throw new Meteor.Error(error);
-          } else {
-            future.return(_board);
-          }
-        });
+      if (Templates.findOne(board.type)) {
+        if (Templates.findOne(board.type).moduleInstances) {
+          ModuleInstances.insertManyInstances(
+            Templates.findOne(board.type).moduleInstances,
+            boardId,
+            (error, result) => {
+              if (error) {
+                throw new Meteor.Error(error);
+              } else {
+                future.return(_board);
+              }
+            }
+          );
+        }
       } else {
         future.return(_board);
       }
@@ -138,6 +115,7 @@ export const createBoard = new ValidatedMethod({
     return future.wait();
   },
 });
+
 /**
  * Edits a board information
  *
@@ -157,16 +135,7 @@ export const editBoard = new ValidatedMethod({
     name: { type: String, optional: true },
     type: {
       type: String,
-      allowedValues: [
-        'default',
-        'creativos',
-        'sistemas',
-        'directores creativos',
-        'directores de cuentas',
-        'administradores',
-        'coordinadores',
-        'medios',
-      ],
+      allowedValues: Templates.find().fetch().map(e => e._id),
       optional: true,
     },
     isPrivate: { type: Boolean, optional: true },
@@ -238,6 +207,7 @@ export const editBoard = new ValidatedMethod({
     return board;
   },
 });
+
 /**
  * Archives a board
  *
@@ -266,6 +236,7 @@ export const archiveBoard = new ValidatedMethod({
     return Boards.findOne(_id);
   },
 });
+
 /**
  * Dearchives a board
  *
@@ -294,15 +265,16 @@ export const dearchiveBoard = new ValidatedMethod({
     return Boards.findOne(_id);
   },
 });
- /**
-  * Unlocks the board and makes it visible for
-  * directors
-  *
-  * @type {ValidatedMethod}
-  * @param {String} _id
-  * @returns {Object} board
-  *  The updated board
-  */
+
+/**
+ * Unlocks the board and makes it visible for
+ * directors
+ *
+ * @type {ValidatedMethod}
+ * @param {String} _id
+ * @returns {Object} board
+ *  The updated board
+ */
 export const unlockBoard = new ValidatedMethod({
   name: 'Boards.methods.unlockBoard',
   validate: new SimpleSchema({
@@ -323,6 +295,7 @@ export const unlockBoard = new ValidatedMethod({
     return Boards.findOne(_id);
   },
 });
+
 /**
  * Unlocks the board and makes it
  * invisible for directors

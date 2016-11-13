@@ -1,5 +1,9 @@
-import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
+import { Meteor }         from 'meteor/meteor';
+import { Mongo }          from 'meteor/mongo';
+
+import { printObject }    from '../helpers/print-objects.js';
+
+import { Hierarchies }    from '../hierarchies/hierarchies';
 
 export const Teams = new Mongo.Collection('Teams');
 
@@ -73,6 +77,21 @@ Teams.helpers({
   getUsers(fields) {
     const emails = this.users.map(user => user.email);
     return Meteor.users.findByEmail(emails, fields);
+  },
+
+  userHasCertainPermission(email, permission) {
+    for (let i = 0; i < this.users.length; i += 1) {
+      if (email === this.users[i].email) {
+        const hierarchy = Hierarchies.findOne(this.users[i].hierarchy);
+
+        if (hierarchy.permissions.find(e => e == permission)) {
+          return true;
+        }
+
+        return false;
+      }
+    }
+    return false;
   },
 });
 

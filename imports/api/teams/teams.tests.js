@@ -6,24 +6,26 @@ import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
 import { Teams }         from './teams.js';
+import { Hierarchies }   from '../hierarchies/hierarchies';
 
 import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Teams', function() {
     describe('Helpers', function() {
-      let user, team;
+      let user, team, hierarchy;
       beforeEach(function() {
         resetDatabase();
 
         user = Factory.create('user');
         team = Factory.create('team');
+        hierarchy = Factory.create('hierarchy');
         team.users = [
-          { email: user.emails[0].address, hierarchy: 'creativo' },
-          { email: faker.internet.email(), permission: 'sistemas' },
-          { email: faker.internet.email(), permission: 'creativo' },
-          { email: faker.internet.email(), permission: 'creativo' },
-          { email: faker.internet.email(), permission: 'creativo' },
+          { email: user.emails[0].address, hierarchy: hierarchy._id },
+          { email: faker.internet.email(), hierarchy: 'sistemas' },
+          { email: faker.internet.email(), hierarchy: 'creativo' },
+          { email: faker.internet.email(), hierarchy: 'creativo' },
+          { email: faker.internet.email(), hierarchy: 'creativo' },
         ];
 
         resetDatabase();
@@ -34,6 +36,7 @@ if (Meteor.isServer) {
         });*/
         Meteor.users.insert(user);
         Teams.insert(team);
+        Hierarchies.insert(hierarchy);
       });
 
       afterEach(function() {
@@ -43,12 +46,12 @@ if (Meteor.isServer) {
 
       it("should return a user's hierarchy", (done) => {
         let result = Teams.findOne(team._id).userHierarchy(user.emails[0].address);
-        chai.assert.equal('creativo', result);
+        chai.assert.equal(hierarchy._id, result);
         done();
       });
 
       it('should return if the user has a given hierarchy', function() {
-        let result = Teams.findOne(team._id).userIsCertainHierarchy(user.emails[0].address, 'creativo');
+        let result = Teams.findOne(team._id).userIsCertainHierarchy(user.emails[0].address, hierarchy._id);
         chai.assert.isTrue(result);
         result = Teams.findOne(team._id).userIsCertainHierarchy(user.emails[0].address, 'sistemas');
         chai.assert.isFalse(result);
@@ -68,6 +71,26 @@ if (Meteor.isServer) {
         result = Teams.findOne(team._id).getUsers({ emails: 1 }).fetch();
 
         chai.assert.deepEqual(JSON.stringify(result), JSON.stringify(expect));
+      });
+
+      it('should check if a user has certain permission', function(done) {
+        let expected = true;
+
+        let result = Teams.findOne(team._id).userHasCertainPermission(
+          user.emails[0].address,
+          hierarchy.permissions[1]
+        );
+
+        chai.assert.equal(result, expected);
+
+        expected = false;
+        
+        result = Teams.findOne(team._id).userHasCertainPermission(
+          user.emails[0].address,
+          faker.lorem.word()
+        );
+
+        done();
       });
     });
   });

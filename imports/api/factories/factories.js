@@ -5,6 +5,7 @@ import faker		           from 'faker';
 import { Teams }           from '../teams/teams.js';
 import { Boards }          from '../boards/boards.js';
 import { Messages }        from '../messages/messages.js';
+import { Hierarchies } 		 from '../hierarchies/hierarchies.js';
 import { DirectChats }     from '../direct-chats/direct-chats.js';
 import { APICollection } 	 from '../api-collection/api-collection.js';
 import { ModuleInstances } from '../module-instances/module-instances.js';
@@ -104,3 +105,11 @@ for (let i = 0; i < 4; i++) {
 }
 
 Factory.define('spamAPIDocument', APICollection, obj);
+
+Factory.define('hierarchy', Hierarchies, {
+	name: faker.lorem.word(),
+	permissions: [
+		faker.lorem.word(),
+		faker.lorem.word(),
+	],
+});
