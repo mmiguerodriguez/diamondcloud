@@ -2,16 +2,18 @@
   "name": "cloud",
   "private": true,
   "scripts": {
-    "start": "meteor run --settings settings.json",
+    "start": "npm run build-modules && meteor run --settings settings.json",
+    "deploy": "./build-modules.sh production && mup deploy",
     "tests": "meteor test --driver-package practicalmeteor:mocha",
     "tests-c9": "meteor test --driver-package practicalmeteor:mocha --port $IP:$PORT",
     "storybook": "start-storybook -p 8080 -s ./public",
     "mobile": "meteor run android-device --mobile-server diamondcloud.tk --settings settings.json",
-    "ryan": "ROOT_URL=https://cloud-joelsobolmark.c9users.io meteor --port $IP:$PORT --settings settings.json",
-    "migue": "ROOT_URL=https://cloud-migue-miguelrodriguez.c9users.io meteor --port $IP:$PORT --settings settings.json",
-    "nico": "ROOT_URL=https://cloud-bilinkis.c9users.io meteor --port $IP:$PORT --settings settings.json",
-    "dylan": "ROOT_URL=https://cloud-dylan-raikhen.c9users.io meteor --port $IP:$PORT --settings settings.json",
-    "joel": "ROOT_URL=https://cloud-joel-joelsobolmark.c9users.io meteor --port $IP:$PORT --settings settings.json"
+    "ryan": "npm run build-modules && ROOT_URL=https://cloud-joelsobolmark.c9users.io meteor --port $IP:$PORT --settings settings.json",
+    "migue": "npm run build-modules && ROOT_URL=https://cloud-migue-miguelrodriguez.c9users.io meteor --port $IP:$PORT --settings settings.json",
+    "nico": "npm run build-modules && ROOT_URL=https://cloud-bilinkis.c9users.io meteor --port $IP:$PORT --settings settings.json",
+    "dylan": "npm run build-modules && ROOT_URL=https://cloud-dylan-raikhen.c9users.io meteor --port $IP:$PORT --settings settings.json",
+    "joel": "npm run build-modules && ROOT_URL=https://cloud-joel-joelsobolmark.c9users.io meteor --port $IP:$PORT --settings settings.json",
+    "build-modules": "./build-modules.sh development"
   },
   "dependencies": {
     "sift": "^3.2.6",
