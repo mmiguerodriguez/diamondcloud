@@ -817,12 +817,7 @@ class Task extends React.Component {
              */
             !isCoordination && isDoing && !isQueued ? (
               <div>
-                <div className="record">
-                   <img
-                     src="/modules/task-manager/img/record.svg"
-                     width="25px"
-                   />
-                </div>
+                <div className="record" />
                 <div
                   id={`pause-task-${this.props.task._id}`}
                   className="pause"
@@ -831,12 +826,7 @@ class Task extends React.Component {
                   title="Marcar como pausado"
                   role="button"
                   onClick={this.stopTask}
-                >
-                  <img
-                    src="/modules/task-manager/img/pause-button.svg"
-                    width="15px"
-                  />
-                </div>
+                />
               </div>
             ) : (null)
           }
@@ -855,12 +845,7 @@ class Task extends React.Component {
                 title="Marcar como haciendo"
                 role="button"
                 onClick={this.startTask}
-              >
-                <img
-                  src="/modules/task-manager/img/play-arrow.svg"
-                  width="15px"
-                />
-              </div>
+              />
             ) : (null)
           }
 
@@ -878,12 +863,7 @@ class Task extends React.Component {
                   data-placement="bottom"
                   role="button"
                   onClick={() => this.setTaskStatus('finished')}
-                >
-                  <img
-                    src="/modules/task-manager/img/finished-task.svg"
-                    width="20px"
-                  />
-                </div>
+                />
               </div>
             ) : (null)
           }
@@ -904,12 +884,7 @@ class Task extends React.Component {
                   title="Aceptar tarea"
                   role="button"
                   onClick={() => this.setTaskStatus('not_finished')}
-                >
-                  <img
-                    src="/modules/task-manager/img/accept-task.svg"
-                    width="15px"
-                  />
-                </div>
+                />
                 <div
                   id={`reject-task-${this.props.task._id}`}
                   className="reject"
@@ -930,12 +905,7 @@ class Task extends React.Component {
                       });
                     }, 200);
                   }}
-                >
-                  <img
-                    src="/modules/task-manager/img/reject-task.svg"
-                    width="15px"
-                  />
-                </div>
+                />
               </div>
             ) : (null)
           }
