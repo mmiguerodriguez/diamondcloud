@@ -5188,11 +5188,6 @@
 	      });
 	    }
 	  }, {
-	    key: "componentDidMount",
-	    value: function componentDidMount() {
-	      $('.collapse').collapse();
-	    }
-	  }, {
 	    key: "render",
 	    value: function render() {
 	      return _react2.default.createElement(

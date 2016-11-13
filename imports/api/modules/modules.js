@@ -56,19 +56,6 @@ const modules = [
     },
     validated: true,
   },
-  {
-    _id: 'webpack-example',
-    name: 'Test webpack',
-    path: '/modules/webpack-example',
-    description: 'Webpack example and test',
-    settings: {
-      width: 250,
-      minWidth: 250,
-      height: 300,
-      minHeight: 250,
-    },
-    validated: true,
-  },
 ];
 
 if (Meteor.isServer) {

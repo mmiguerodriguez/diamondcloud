@@ -49,10 +49,6 @@ class UserTaskInformation extends React.Component {
     });
   }
 
-  componentDidMount() {
-    $('.collapse').collapse();
-  }
-
   render() {
     return (
       <div>

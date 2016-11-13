@@ -6,8 +6,7 @@ html {
   height: 100vh;
   width: 100vw;
 }
-.user-video-container:hover .user-video-btn,
-div:hover .user-video-btn {
+.user-video-container:hover .user-video-btn, div:hover .user-video-btn {
   left: 10px;
 }
 .maximized-video {
