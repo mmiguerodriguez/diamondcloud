@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Build modules
+# param {String} buildType
+# param {String} module (optional)
+
 # Function build
 # params {String} module
 # params {String} build
@@ -22,10 +26,16 @@ function build {
 
 # Open the modules folders
 cd public/modules
-# Iterate for each module folder we find
-for module in */ ; do
-  # Call the build function with the module folder name
-  # and the parameter we passed to the script
-  # (development|production)
-  build $module $1
-done
+
+# check if we should build a specific module
+if [ $2 ]; then
+  build $2 $1
+else
+  # Iterate for each module folder we find
+  for module in */ ; do
+    # Call the build function with the module folder name
+    # and the parameter we passed to the script
+    # (development|production)
+    build $module $1
+  done
+fi

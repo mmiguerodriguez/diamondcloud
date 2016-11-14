@@ -7,7 +7,7 @@ import ViewPage from './view/ViewPage';
 const renderRoutes = () => (
   <Router history={browserHistory}>
     <Route path="/" component={Calendar}>
-      <Route path="view" component={ViewPage} />
+      <Route path="/view" component={ViewPage} />
     </Route>
   </Router>
 );

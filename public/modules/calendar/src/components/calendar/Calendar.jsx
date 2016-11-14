@@ -1,11 +1,12 @@
 import React from 'react';
 
+import ErrorMessage from '../error-message/ErrorMessage';
+
 const ERROR_DELAY = 5000;
 
 class Calendar extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
       error: {
         type: '',
@@ -53,3 +54,5 @@ class Calendar extends React.Component {
 Calendar.propTypes = {
   children: React.PropTypes.node,
 };
+
+export default Calendar;

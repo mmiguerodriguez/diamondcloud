@@ -1,14 +1,16 @@
 import React from 'react';
 
 class ViewPage extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      hola: 'chau',
-    };
-  }
   render() {
-    return (null);
+    return (
+      <div id='calendar'></div>
+    );
+  }
+  
+  componentDidMount() {
+    $('#calendar').fullCalendar({
+        // put your options and callbacks here
+    });
   }
 }
 
