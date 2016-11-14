@@ -6,17 +6,18 @@ import { printObject }   from '../helpers/print-objects.js';
 import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
-import { Teams }           from '../teams/teams.js';
-import { ModuleInstances } from '../module-instances/module-instances.js';
 import { Boards }          from './boards.js';
-import { Messages }        from '../messages/messages.js';
+import { Teams }           from '../teams/teams.js';
+import { Messages }        from '../messages/messages';
+import { Hierarchies }     from '../hierarchies/hierarchies';
+import { ModuleInstances } from '../module-instances/module-instances.js';
 
 import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Boards', function() {
     describe('Helpers', function() {
-      let teams, boards, users, messages, moduleInstances, findRequest;
+      let teams, boards, users, messages, moduleInstances, findRequest, hierarchy;
       function getNotifications(boardId, userId) {
         let user = Meteor.users.findOne(userId);
         return Boards.findOne(boardId).users.find((_user) => {
@@ -58,6 +59,9 @@ if (Meteor.isServer) {
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
         ];
+        
+        hierarchy = Factory.create('hierarchy');
+        hierarchy.permissions = ['accessVisibleBoards'];
 
         teams[0].users.push({ email: users[0].emails[0].address, hierarchy: 'sistemas' });
         teams[0].boards.push({ _id: boards[0]._id });
@@ -72,7 +76,7 @@ if (Meteor.isServer) {
         
         teams[2].users = [];
         teams[2].users.push({ email: users[2].emails[0].address, hierarchy: 'creativos' });
-        teams[2].users.push({ email: users[3].emails[0].address, hierarchy: 'director creativo' });
+        teams[2].users.push({ email: users[3].emails[0].address, hierarchy: hierarchy._id });
         
         boards[3].users.push({ email: users[2].emails[0].address });
         
@@ -97,6 +101,8 @@ if (Meteor.isServer) {
         messages.forEach((message) => {
           Messages.insert(message);
         });
+        
+        Hierarchies.insert(hierarchy);
 
         sinon.stub(Meteor, 'user', () => users[0]);
         sinon.stub(Meteor, 'userId', () => users[0]._id);
@@ -167,7 +173,12 @@ if (Meteor.isServer) {
 
       it('should add a user to a board', function() {
         let expect = boards[0];
-        expect.users.push({ email: users[1].emails[0].address, notifications: 0 });
+
+        expect.users.push({
+          email: users[1].emails[0].address,
+          notifications: 0,
+        });
+
         Boards.addUser(boards[0]._id, users[1]._id);
         chai.assert.deepEqual(Boards.findOne(boards[0]._id), expect);
       });
@@ -206,7 +217,7 @@ if (Meteor.isServer) {
         let result1 = Boards.getBoards([boards[3]._id, boards[4]._id], users[2]._id); // Creativo
         let result2 = Boards.getBoards([boards[3]._id, boards[4]._id], users[3]._id); // Director
         chai.assert.deepEqual(result1.fetch(), [boards[3]]);
-        
+
         let compare = (a, b) => {
           if (a._id < b._id) {
             return -1;
@@ -224,7 +235,7 @@ if (Meteor.isServer) {
         res.sort(compare);
         expected.sort(compare);
 
-        chai.assert.equal(
+        chai.assert.equal( // Bugss
           JSON.stringify(res),
           JSON.stringify(expected)
         );

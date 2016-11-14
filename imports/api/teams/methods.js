@@ -7,6 +7,7 @@ import { Teams }           from './teams';
 import { Mail }            from '../mails/mails';
 import { Boards }          from '../boards/boards';
 import { Messages }        from '../messages/messages';
+import { Hierarchies }     from '../hierarchies/hierarchies';
 import { DirectChats }     from '../direct-chats/direct-chats';
 import { createBoard }     from '../boards/methods';
 
@@ -20,15 +21,7 @@ export const createTeam = new ValidatedMethod({
     'users.$.email': { type: String },
     'users.$.hierarchy': {
       type: String,
-      allowedValues: [
-        'sistemas',
-        'creativo',
-        'director creativo',
-        'director de cuentas',
-        'coordinador',
-        'administrador',
-        'medios',
-      ],
+      allowedValues: Hierarchies.find().fetch().map(e => e._id),
     },
     url: { type: String },
   }).validator(),
@@ -150,15 +143,7 @@ export const changeUserHierarchy = new ValidatedMethod({
     userEmail: { type: String },
     hierarchy: {
       type: String,
-      allowedValues: [
-        'sistemas',
-        'creativo',
-        'director creativo',
-        'director de cuentas',
-        'coordinador',
-        'administrador',
-        'medios',
-      ],
+      allowedValues: Hierarchies.find().fetch().map(e => e._id),
     },
   }).validator(),
   run({ teamId, userEmail, hierarchy }) {
@@ -190,15 +175,7 @@ export const shareTeam = new ValidatedMethod({
     email: { type: String, regEx: SimpleSchema.RegEx.Email },
     hierarchy: {
       type: String,
-      allowedValues: [
-        'sistemas',
-        'creativo',
-        'director creativo',
-        'director de cuentas',
-        'coordinador',
-        'administrador',
-        'medios',
-      ],
+      allowedValues: Hierarchies.find().fetch().map(e => e._id),
     },
     teamId: { type: String },
   }).validator(),

@@ -84,8 +84,10 @@ Teams.helpers({
       if (email === this.users[i].email) {
         const hierarchy = Hierarchies.findOne(this.users[i].hierarchy);
 
-        if (hierarchy.permissions.find(e => e == permission)) {
-          return true;
+        if (hierarchy) {
+          if (hierarchy.permissions.find(e => e == permission)) {
+            return true;
+          }
         }
 
         return false;

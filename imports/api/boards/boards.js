@@ -3,6 +3,7 @@ import { Mongo }           from 'meteor/mongo';
 
 import { Teams }           from '../teams/teams';
 import { Messages }        from '../messages/messages';
+import { Hierarchies }     from '../hierarchies/hierarchies';
 import { ModuleInstances } from '../module-instances/module-instances';
 
 export const Boards = new Mongo.Collection('Boards');
@@ -116,12 +117,11 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
 
   const team = Boards.findOne(boardsIds[0]).team();
   const user = Meteor.users.findOne(userId);
-
-  const isDirector =
-    team.userIsCertainHierarchy(user.email(), 'director creativo') ||
-    team.userIsCertainHierarchy(user.email(), 'director de cuentas');
-  const isSistemas = team.userIsCertainHierarchy(user.email(), 'sistemas');
-  const isCoordinador = team.userIsCertainHierarchy(user.email(), 'coordinador');
+  
+  const isDirector = team.userHasCertainPermission(
+    user.email(),
+    'accessVisibleBoards'
+  );
 
   const result = Boards.find({
     $and: [
@@ -149,15 +149,12 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
             },
           },
           {
-            // Check that isSistemas is true
+            // Check that user can access all boards
             _id: {
-              $in: isSistemas ? boardsIds : [],
-            },
-          },
-          {
-            // Check that isCoordinador is true
-            _id: {
-              $in: isCoordinador ? boardsIds : [],
+              $in: team.userHasCertainPermission(
+                user.email(),
+                'accessAllBoards'
+              ) ? boardsIds : [],
             },
           },
         ],
@@ -181,11 +178,10 @@ Boards.isValid = (boardId, userId) => {
 
   const team = Boards.findOne(boardId).team();
 
-  const isDirector =
-    team.userIsCertainHierarchy(user.email(), 'director creativo') ||
-    team.userIsCertainHierarchy(user.email(), 'director de cuentas');
-  const isSistemas = team.userIsCertainHierarchy(user.email(), 'sistemas');
-  const isCoordinador = team.userIsCertainHierarchy(user.email(), 'coordinador');
+  const isDirector = team.userHasCertainPermission(
+    user.email(),
+    'accessVisibleBoards'
+  );
 
   const board = Boards.findOne({
     _id: boardId,
@@ -210,12 +206,11 @@ Boards.isValid = (boardId, userId) => {
         ],
       },
       {
-        // Check that isSistemas is true
-        _id: isSistemas ? boardId : undefined,
-      },
-      {
-        // Check that isCoordinador is true
-        _id: isCoordinador ? boardId : undefined,
+        // Check that user can access all boards
+        _id: team.userHasCertainPermission(
+          user.email(),
+          'accessAllBoards'
+        ) ? boardId : undefined,
       },
     ],
   });
