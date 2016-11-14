@@ -24,7 +24,6 @@ class Index extends React.Component {
   }
 
   error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
-    console.log('ERROR ERROR ERROR', type === 'show');
     this.setState({
       error: {
         body,
@@ -35,7 +34,6 @@ class Index extends React.Component {
   }
 
   render() {
-    console.log(this.state.error);
     return (
       <div>
         {

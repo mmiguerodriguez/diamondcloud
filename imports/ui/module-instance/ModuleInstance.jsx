@@ -157,8 +157,6 @@ export default class ModuleInstance extends React.Component {
     ) : (
       `/modules/${this.props.moduleInstance.moduleId}/public/index.html`
     );
-    
-    console.log(dev);
 
     return (
       <div

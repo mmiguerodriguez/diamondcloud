@@ -137,7 +137,7 @@ class FileManagerLayout extends React.Component {
                   body: 'Hubo un error al eliminar la carpeta',
                 });
               }
-              console.log('asd');
+
               this.setState({
                 loadingFolders: false,
               });
