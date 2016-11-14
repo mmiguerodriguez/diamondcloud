@@ -92,10 +92,8 @@ class FileManagerLayout extends React.Component {
           data-target="#create-folder"
         >
           <div className="document fixed">
-            <img
-              alt="Crear carpeta"
+            <div
               className="col-xs-3 icon-type create-folder"
-              src="/modules/drive/img/folder.svg"
             />
             <p className="col-xs-9 document-title truncate">Crear</p>
           </div>
@@ -116,10 +114,8 @@ class FileManagerLayout extends React.Component {
             }
           }
         >
-          <img
-            alt="Crear carpeta"
+          <div
             className="col-xs-3 icon-type create-folder"
-            src="/modules/drive/img/folder.svg"
           />
           <p className="col-xs-9 document-title truncate">{folder.name}</p>
         </div>
@@ -160,10 +156,8 @@ class FileManagerLayout extends React.Component {
             data-target="#create-document"
           >
             <div className="document fixed">
-              <img
-                alt="Crear documento"
+              <div
                 className="col-xs-3 icon-type create-doc"
-                src="/modules/drive/img/google-docs.svg"
               />
               <p className="col-xs-9 document-title truncate">Crear</p>
             </div>
@@ -174,9 +168,7 @@ class FileManagerLayout extends React.Component {
           >
             <div className="document fixed">
               <img
-                alt="Importar"
                 className="col-xs-3 icon-type import-drive"
-                src="/modules/drive/img/google-drive-logo.svg"
               />
               <p className="col-xs-9 document-title truncate">Importar</p>
             </div>
@@ -234,7 +226,7 @@ class FileManagerLayout extends React.Component {
 
   componentDidMount() {
     this.props.initPicker('import-file', this.handleImport.bind(this));
-    
+
     $('[data-toggle="tooltip"]').tooltip({
       container: 'body',
     });
