@@ -1,3 +1,4 @@
+import './js/emojionearea.min.js';
 
 const {
   DiamondAPI,

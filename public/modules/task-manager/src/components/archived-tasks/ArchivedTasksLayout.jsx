@@ -1,6 +1,7 @@
 import React from 'react';
 
 import isCoordination from '../helpers/isCoordination';
+import TasksList from '../tasks-list/TasksList';
 
 class ArchivedTasksLayout extends React.Component {
   render() {

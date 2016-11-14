@@ -794,7 +794,6 @@ class FileManagerPage extends React.Component {
           mimeType: contentType,
           parents: [{ id: diamondCloudDriveFolderId }], // TODO: add parentFolderId
         };
-        console.log("metadata: ", metadata);
 
         const base64Data = btoa(reader.result);
         const multipartRequestBody =
