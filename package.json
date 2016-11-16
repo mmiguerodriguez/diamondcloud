@@ -52,7 +52,6 @@
     "html-webpack-plugin": "^2.22.0",
     "node-sass": "^3.8.0",
     "postcss-loader": "^1.0.0",
-    "react-hot-loader": "^3.0.0-beta.6",
     "sass-loader": "^4.0.0",
     "style-loader": "0.13.1",
     "url-loader": "0.5.7",
@@ -69,8 +68,7 @@
     "plugins": [
       "transform-runtime",
       "transform-decorators-legacy",
-      "transform-class-properties",
-      "react-hot-loader/babel"
+      "transform-class-properties"
     ]
   }
 }
