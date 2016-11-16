@@ -56,6 +56,19 @@ const modules = [
     },
     validated: true,
   },
+  {
+    _id: 'calendar',
+    name: 'Calendario',
+    path: '/modules/calendar',
+    description: 'Calendar module with events',
+    settings: {
+      width: 270,
+      minWidth: 270,
+      height: 270,
+      minHeight: 270,
+    },
+    validated: true,
+  },
 ];
 
 if (Meteor.isServer) {
