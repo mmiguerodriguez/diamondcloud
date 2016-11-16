@@ -2,7 +2,8 @@
   height: calc(100vh - 50px);
   .background {
     position: absolute;
-    width: 100%;
+    min-width: 100%;
+    min-height: 100%;
     filter: blur(3px);
     z-index: -1;
   }
