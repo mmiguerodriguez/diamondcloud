@@ -69,12 +69,19 @@ iframe
   background-color: rgba(0, 0, 0, 0.7)
   box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.3)
   z-index: 2000
+  .error-body
+    display: inline-block
+  
+  .error-close
+    display: inline-block
+    margin-left: 10px
+    color: #f1c40f
+    cursor: pointer
+  &.show-error
+    +set-animation(appear 0.7s)
+  &.hide-error
+    +set-animation(disappear 0.7s)
 
-.show-error
-  +set-animation(appear 0.7s)
-
-.hide-error
-  +set-animation(disappear 0.7s)
 
 @keyframes appear
   0%
@@ -94,14 +101,6 @@ iframe
     right: -100px
     opacity: 0
 
-.error-body
-  display: inline-block
-
-.error-close
-  display: inline-block
-  margin-left: 10px
-  color: #f1c40f
-  cursor: pointer
 
 .file-manager
   overflow: auto
@@ -148,34 +147,60 @@ iframe
     +set-background('img/add.svg', 18px, center, no-repeat)
     -webkit-filter: invert(1)
     transition: 0.3s all ease
+  .options
+    height: 163px
+    width: 55.5px
+    position: absolute
+    top: -163px
+    visibility: hidden
+    .option
+      width: 37px
+      height: 37px
+      margin: 5px 0 15px 10px
+      border-radius: 50%
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12)
+      div
+        width: 100%
+        height: 100%
+      &.upload
+        opacity: 0
+        background-color: #2196f3
+        cursor: pointer
+        +set-background('img/photo.svg', 18px, center, no-repeat)
+        transition: all 0.3s ease
+        &:hover
+          box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15)
+      &.drive
+        opacity: 0
+        background-color: #4caf50
+        cursor: pointer
+        +set-background('img/google-drive-logo.svg', 18px, center, no-repeat)
+        transition: all 0.9s ease
+        &:hover
+          box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15)
+      &.folder
+        opacity: 0
+        background-color: #1c43e2
+        +set-background('img/folder.svg', 18px, center, no-repeat)
+        -webkit-filter: invert(1)
+        transition: all 0.6s ease
+        &:hover
+          box-shadow: 0 5px 11px 0 rgba(255, 255, 255, 0.18), 0 4px 15px 0 rgba(255, 255, 255, 0.15)
+        .icon
+          +set-position(absolute, calc(50% - 17px), auto, auto, calc(50% - 10px))
+          font-size: 20px
+          padding: 2px
+          color: #fff
   &:hover
+    box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.3)
     .img
       transform: rotate(360deg)
       +set-background('img/google-docs.svg', 18px, center, no-repeat)
-    box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.3)
     .options
-      .doc, .drive, .folder, .upload
-        opacity: 1
-
-.options
-  height: 163px
-  width: 55.5px
-  position: absolute
-  top: -163px
-  visibility: hidden
-
-.create:hover .options
-  visibility: visible
-
-.option
-  width: 37px
-  height: 37px
-  margin: 5px 0 15px 10px
-  border-radius: 50%
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12)
-  div
-    width: 100%
-    height: 100%
+      visibility: visible
+      .option
+        &.doc, &.drive, &.folder, &.upload
+          opacity: 1
 
 .create-doc
   +set-background('img/google-docs.svg', 30px, center, no-repeat)
@@ -199,39 +224,6 @@ iframe
 
 .create-folder
   +set-background('img/folder.svg', 30px, center, no-repeat)
-
-.doc, .folder, .drive
-  opacity: 0
-
-.upload
-  opacity: 0
-  background-color: #2196f3
-  cursor: pointer
-  +set-background('img/photo.svg', 18px, center, no-repeat)
-  transition: all 0.3s ease
-  &:hover
-    box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15)
-
-.drive
-  background-color: #4caf50
-  cursor: pointer
-  +set-background('img/google-drive-logo.svg', 18px, center, no-repeat)
-  transition: all 0.9s ease
-  &:hover
-    box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15)
-
-.folder
-  background-color: #1c43e2
-  +set-background('img/folder.svg', 18px, center, no-repeat)
-  -webkit-filter: invert(1)
-  transition: all 0.6s ease
-  &:hover
-    box-shadow: 0 5px 11px 0 rgba(255, 255, 255, 0.18), 0 4px 15px 0 rgba(255, 255, 255, 0.15)
-  .icon
-    +set-position(absolute, calc(50% - 17px), auto, auto, calc(50% - 10px))
-    font-size: 20px
-    padding: 2px
-    color: #fff
 
 .files-container, .folders-container, .documents-container
   overflow: auto
@@ -258,12 +250,10 @@ iframe
   opacity: 0.8
   background-color: #ccc
 
-img.icon-type.import-drive
-  -webkit-filter: invert(1)
-
 .icon-type.import-drive
   background-color: #333
   +set-background('img/google-drive-logo.svg', 30px, center, no-repeat)
+  -webkit-filter: invert(1)
 
 .document-title
   padding: 10px 15px 10px 5px

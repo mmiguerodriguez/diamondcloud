@@ -167,7 +167,7 @@ class FileManagerLayout extends React.Component {
             id="import-file-card"
           >
             <div className="document fixed">
-              <img
+              <div
                 className="col-xs-3 icon-type import-drive"
               />
               <p className="col-xs-9 document-title truncate">Importar</p>
