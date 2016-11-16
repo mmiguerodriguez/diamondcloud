@@ -185,7 +185,7 @@ class Panel extends React.Component {
           type="submit"
           className="btn btn-primary"
         >
-          Crear tipo de tarea
+          Crear
         </button>
 
         <ol className="col-xs-12 task-type-list">

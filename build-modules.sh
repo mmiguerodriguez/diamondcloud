@@ -1,12 +1,14 @@
 #!/bin/bash
 
-# Build modules
-# param {String} buildType
-# param {String} module (optional)
+if [[ $1 != "development" && $1 != "production" ]]; then
+  echo 'The environment you are trying to build doesnt exists'
+  exit 1
+fi
 
 # Function build
 # params {String} module
 # params {String} build
+# Calls the webpack function to build a module
 function build {
   # Open the folder
   cd $1
@@ -14,7 +16,7 @@ function build {
   if [ ! -f webpack.$2.config.js ]; then
     # If the build doesn't exists then show an error message
     # and return to the current folder
-    echo 'File webpack.'$2'.config.js in '$1' doesnt exists, watch out!'
+    echo 'File webpack.'$2'.config.js in '$1' doesnt exists'
     cd ..
     return
   fi

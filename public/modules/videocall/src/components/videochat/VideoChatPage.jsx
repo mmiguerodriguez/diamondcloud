@@ -152,23 +152,13 @@ class VideoChatPage extends React.Component {
   }
 
   error({ type = 'show', body = 'Ha ocurrido un error', delay = ERROR_DELAY }) {
-    if (type === 'hide') {
-      this.setState({
-        error: {
-          body: '',
-          delay: ERROR_DELAY,
-          showing: false,
-        },
-      });
-    } else if (type === 'show') {
-      this.setState({
-        error: {
-          body,
-          delay: delay || ERROR_DELAY,
-          showing: true,
-        },
-      });
-    }
+    this.setState({
+      error: {
+        body,
+        delay,
+        showing: type === 'show',
+      },
+    });
   }
 
   render() {

@@ -109,8 +109,7 @@ class TasksList extends React.Component {
             <b>{this.props.board.name}</b>
             {
               this.props.coordination && !this.props.archivedView && hasTasks ? (
-                <img
-                  src="/modules/task-manager/img/timeline.svg"
+                <div
                   id={`timeline-btn${this.props.board._id}`}
                   className="timeline-btn"
                   title="Ver línea de tiempo del pizarrón"

@@ -7,11 +7,11 @@ const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 
 module.exports = {
 	entry: [
-	  './src/main.css',
+	  './src/main.sass',
 		'./src/main.js',
 	],
 	output: {
-		path: path.join(__dirname, 'public'),
+		path: path.join(__dirname, 'dev'),
 		filename: '[chunkhash].js',
 	},
 	resolve: {
@@ -24,24 +24,14 @@ module.exports = {
 		new WebpackCleanupPlugin(),
 		new webpack.DefinePlugin({
 			'process.env': {
-				NODE_ENV: '"production"',
+				NODE_ENV: '"development"',
 			},
 		}),
-		new webpack.optimize.UglifyJsPlugin({
-			compress: {
-				warnings: false,
-				screw_ie8: true,
-				drop_console: true,
-				drop_debugger: true,
-			}
-		}),
-		new webpack.optimize.OccurenceOrderPlugin(),
 		new ExtractTextPlugin('[contenthash].css'),
 		new HtmlWebpackPlugin({
 			template: './src/index.html',
 			title: 'Webpack example',
 		}),
-		new webpack.optimize.DedupePlugin(),
 	],
   externals: {
     react: 'React',

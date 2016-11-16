@@ -7,7 +7,7 @@ const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 
 module.exports = {
 	entry: [
-	  './src/main.css',
+	  './src/main.sass',
 		'./src/main.js',
 	],
 	output: {
