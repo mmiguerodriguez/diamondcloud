@@ -17,19 +17,22 @@ import { generateAPI }          from './api-client.js';
 if (Meteor.isClient) {
   describe('API', () => {
     describe('Subscriptions', () => {
-      let user,
-          weirdUser,
-          teams,
-          boards,
-          modules,
-          moduleInstances,
-          collections,
-          documents,
-          DiamondAPI,
-          params,
-          callback,
-          subscribeInput,
-          subscribeResult;
+      let user;
+      let teams;
+      let boards;
+      let modules;
+      let moduleInstances;
+      let collections;
+      let documents;
+      let DiamondAPI;
+      let params;
+      let callback;
+      let subscribeInput;
+      let subscribeResult;
+      let getParams;
+      let updateParams;
+      let insertParams;
+      let removeParams;
 
       beforeEach(function() {
         user = Factory.create('user');

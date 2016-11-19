@@ -1,4 +1,5 @@
 import React from 'react';
+import { browserHistory } from 'react-router';
 
 import ErrorMessage from '../error-message/ErrorMessage';
 
@@ -48,6 +49,27 @@ class Calendar extends React.Component {
         }
       </div>
     );
+  }
+  
+  componentDidMount() {
+    const self = this;
+    // Check that the calendar was already set up
+    DiamondAPI.get({
+      collection: 'globalValues',
+      callback(error, response) {
+        if (error) {
+          console.log('hubo un error: ', error);
+          self.error({ body: error });
+        } else {
+          const isSetup = response[0] ? !!response[0].calendarUrl : false;
+          if (!isSetup) {
+            browserHistory.push('/setup');
+          } else {
+            // TODO: save the calendarUrl in the state
+          }
+        }
+      }
+    });
   }
 }
 

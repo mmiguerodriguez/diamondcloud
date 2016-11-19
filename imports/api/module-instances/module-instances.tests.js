@@ -39,7 +39,11 @@ if (Meteor.isServer) {
               { _id: moduleInstance._id },
             ],
           }),
-          Factory.create('publicBoard'),
+          Factory.create('publicBoard', {
+            users: [
+              { email: user.emails[0].address, notifications: 0 },
+            ],
+          }),
         ];
         team = Factory.create('team', {
           users: [
@@ -80,11 +84,17 @@ if (Meteor.isServer) {
 
         ModuleInstances.insertManyInstances(moduleInstances, boards[1]._id, (error, result) => {
           if (error) {
+            console.log('holas jajaja');
             throw new Meteor.Error(error);
           } else {
-            const board = Boards.findOne({ _id: boards[1]._id });
+            console.log('llegue al result');
+            console.log(Boards);
+            const board = Boards.findOne({ _id: boards[1]._id }, {}, (_error, _result) => {
+              console.log(`error: ${_error}; result: ${_result}`)
+            });
+            console.log('El board es: ', JSON.stringify(board));
             chai.assert.equal(board.moduleInstances.length, 3);
-
+            console.log('llegué al done()');
             done();
           }
         });
