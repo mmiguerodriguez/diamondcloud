@@ -7,7 +7,6 @@ import isMobile            from 'ismobilejs';
 import { Boards }          from '../../api/boards/boards';
 import { DirectChats }     from '../../api/direct-chats/direct-chats';
 
-import hierarchyToType     from '../helpers/hierarchyToType';
 import NotificationSystem  from '../notifications/notificationSystem/NotificationSystem';
 import TeamLayout          from './TeamLayout';
 
@@ -335,26 +334,8 @@ export default class TeamPage extends React.Component {
 
     if (!board || (((board.type === 'creativos' && !board.visibleForDirectors) || board.type === 'medios') && isDirector)) {
       const hierarchy = this.props.team.userHierarchy(Meteor.user().email());
-      const type = hierarchyToType(hierarchy);
-
-      /**
-       * If user can't access to the current board, the we find
-       * another one that fits his hierarchy
-       *
-       * If it didn't find anything and it is a director then we
-       * show the user a board that isn't from creativos, but
-       * if user isn't a director we show the first board
-       * we can find
-       */
-      _board = Boards.findOne({ type }) || (
-        isDirector ? (
-          Boards.findOne({
-            type: {
-              $nin: ['medios', 'creativos'],
-            },
-          })
-        ) : Boards.findOne({})
-      );
+      
+      _board = Boards.findOne({});
 
       if (_board) {
         this.props.setBoardId(_board._id);

@@ -11,7 +11,6 @@ import { Modules }         from '../../api/modules/modules';
 import { DirectChats }     from '../../api/direct-chats/direct-chats';
 import { Messages }        from '../../api/messages/messages';
 
-import hierarchyToType     from '../helpers/hierarchyToType';
 import TeamPage            from './TeamPage';
 
 const boardId = new ReactiveVar('');
@@ -57,26 +56,15 @@ const TeamPageContainer = createContainer(({ params }) => {
       }
 
       const hierarchy = team.userHierarchy(Meteor.user().email());
-      const type = hierarchyToType(hierarchy);
 
       /**
        * Check if there is a board with the user hierarchy
        */
-      let board = Boards.findOne({ type });
-      /**
-       * If this board doesn't exist, we check again if there
-       * is any board which the user can access
-       */
+      let board = Boards.findOne({});
+
       if (!board) {
-        board = Boards.findOne();
-        /**
-         * If we don't find any board, then we show the user
-         * a not found page since he can't see any board
-         */
-        if (!board) {
-          browserHistory.push('/404');
-          return;
-        }
+        browserHistory.push('/404');
+        return;
       }
 
       const boardHandle = Meteor.subscribe('boards.board', board._id, {
