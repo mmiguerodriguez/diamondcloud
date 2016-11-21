@@ -9,8 +9,8 @@ import {
 }                        from 'react-router';
 
 // Route components
-import AppPageContainer  from '../../ui/app/AppPageContainer';
-import TeamPageContainer from '../../ui/team/TeamPageContainer';
+import AppContainer      from '../../ui/app/AppContainer';
+import TeamContainer     from '../../ui/team/TeamContainer';
 import LandingPage       from '../../ui/landing/LandingPage';
 import NotFound          from '../../ui/not-found/NotFoundPage';
 
@@ -24,9 +24,9 @@ const logPageView = (nextState) => {
 const renderRoutes = () => (
   <Router history={browserHistory}>
     <Redirect from="/" to="carlosydario" />
-    <Route path="/:teamUrl" component={AppPageContainer} onEnter={logPageView}>
+    <Route path="/:teamUrl" component={AppContainer} onEnter={logPageView}>
       <IndexRoute component={LandingPage} />
-      <Route path="/team/:teamUrl" component={TeamPageContainer} onEnter={logPageView} />
+      <Route path="/team/:teamUrl" component={TeamContainer} onEnter={logPageView} />
       <Route path="*" component={NotFound} onEnter={logPageView} />
     </Route>
     <Route path="*" component={NotFound} onEnter={logPageView} />

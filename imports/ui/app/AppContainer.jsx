@@ -3,11 +3,11 @@ import { createContainer } from 'meteor/react-meteor-data';
 
 import AppPage             from './AppPage';
 
-const AppPageContainer = createContainer(() => {
+const AppContainer = createContainer(() => {
   const user = Meteor.user();
   return {
     user,
   };
 }, AppPage);
 
-export default AppPageContainer;
+export default AppContainer;

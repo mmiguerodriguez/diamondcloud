@@ -20,7 +20,7 @@ const boardSubscription = new ReactiveVar({});
 const setBoardId = value => boardId.set(value);
 const setBoardSubscription = value => boardSubscription.set(value);
 
-const TeamPageContainer = createContainer(({ params }) => {
+const TeamContainer = createContainer(({ params }) => {
   if (!Meteor.user()) {
     browserHistory.push('/');
   }
@@ -129,4 +129,4 @@ const TeamPageContainer = createContainer(({ params }) => {
 }, TeamPage);
 
 
-export default TeamPageContainer;
+export default TeamContainer;
