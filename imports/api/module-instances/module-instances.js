@@ -42,7 +42,6 @@ ModuleInstances.insertManyInstances = (moduleInstances, boardId, callback) => {
         }
       });
     });
-
     promises.push(promise);
   });
 
@@ -51,9 +50,11 @@ ModuleInstances.insertManyInstances = (moduleInstances, boardId, callback) => {
    * callback checking if all promises passed the tests
    */
   Promise.all(promises)
-    .then((result) => {
-      callback(null, result);
-    }, (error, result) => {
-      callback(error, result);
-    });
+  .then((result) => {
+    console.log('buenas. estoy por llamar al callback!');
+    callback(null, Boards.findOne(boardId));
+    //callback(null, result);
+  }, (error, result) => {
+    callback(error, result);
+  });
 };

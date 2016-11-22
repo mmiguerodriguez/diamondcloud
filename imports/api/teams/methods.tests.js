@@ -28,14 +28,19 @@ import '../factories/factories.js';
 if (Meteor.isServer) {
   describe('Teams', function() {
     describe('Methods', function() {
-      let users, team, board, boards, generalBoardId = Random.id(),
-          createModuleInstanceArgs,
-          apiInsertArgs, directChats, messages;
+      let users;
+      let team;
+      let board;
+      let boards;
+      let generalBoardId = Random.id();
+      let createModuleInstanceArgs;
+      let apiInsertArgs;
+      let directChats;
+      let messages;
 
       beforeEach(function() {
         resetDatabase();
 
-        createdGeneralBoard = false;
         users = [
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
@@ -143,9 +148,9 @@ if (Meteor.isServer) {
       });
 
       it('should create a team', function(done) {
-        let args,
-            result,
-            expect;
+        let args;
+        let result;
+        let expect;
 
         args = {
           name: team.name,

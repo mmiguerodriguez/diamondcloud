@@ -77,24 +77,18 @@ if (Meteor.isServer) {
         chai.assert.deepEqual(result, boards[0]);
       });
 
-      it('should insert module instances and append it to a board', (done) => {
-        _.each(moduleInstances, (moduleInstance) => {
+      it('should insert many module instances and append them to a board', (done) => {
+        moduleInstances.forEach((moduleInstance) => {
           delete moduleInstance._id;
         });
-
-        ModuleInstances.insertManyInstances(moduleInstances, boards[1]._id, (error, result) => {
+        ModuleInstances.insertManyInstances(moduleInstances, boards[1]._id, function(error, result) {
+          console.log("result: ", result);
           if (error) {
-            console.log('holas jajaja');
             throw new Meteor.Error(error);
           } else {
-            console.log('llegue al result');
-            console.log(Boards);
-            const board = Boards.findOne({ _id: boards[1]._id }, {}, (_error, _result) => {
-              console.log(`error: ${_error}; result: ${_result}`)
-            });
-            console.log('El board es: ', JSON.stringify(board));
+            console.log('llegue al result. los teams son: ', Teams.find().fetch());
+            const board = Boards.findOne({ _id: boards[1]._id });
             chai.assert.equal(board.moduleInstances.length, 3);
-            console.log('llegué al done()');
             done();
           }
         });
