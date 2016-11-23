@@ -1,3 +1,4 @@
+import { Meteor }          from 'meteor/meteor';
 import { Mongo }  from 'meteor/mongo';
 
 import { Boards } from '../boards/boards';
@@ -25,10 +26,11 @@ ModuleInstances.helpers({
  * @param {String} boardId
  *  The board id in where we are inserting
  *  the moduleInstances.
+ * @returns {Promise} promises
+ *  The promise that fires when all module instances are inserted
  */
-ModuleInstances.insertManyInstances = (moduleInstances, boardId, callback) => {
+ModuleInstances.insertManyInstances = (moduleInstances, boardId) => {
   const promises = [];
-
   moduleInstances.forEach((moduleInstance) => {
     const promise = new Promise((resolve, reject) => {
       ModuleInstances.insert(moduleInstance, (error, result) => {
@@ -49,12 +51,5 @@ ModuleInstances.insertManyInstances = (moduleInstances, boardId, callback) => {
    * Iterate through the promises array and return a final
    * callback checking if all promises passed the tests
    */
-  Promise.all(promises)
-  .then((result) => {
-    console.log('buenas. estoy por llamar al callback!');
-    callback(null, Boards.findOne(boardId));
-    //callback(null, result);
-  }, (error, result) => {
-    callback(error, result);
-  });
+  return Promise.all(promises);
 };

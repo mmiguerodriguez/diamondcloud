@@ -70,7 +70,7 @@ if (Meteor.isServer) {
       afterEach(() => {
         Meteor.user.restore();
         Meteor.userId.restore();
-      })
+      });
 
       it('should return the board of a module instance', () => {
         const result = moduleInstance.board();
@@ -78,20 +78,22 @@ if (Meteor.isServer) {
       });
 
       it('should insert many module instances and append them to a board', (done) => {
-        moduleInstances.forEach((moduleInstance) => {
-          delete moduleInstance._id;
+        moduleInstances.forEach((_moduleInstance, index) => {
+          delete moduleInstances[index]._id;
         });
-        ModuleInstances.insertManyInstances(moduleInstances, boards[1]._id, function(error, result) {
-          console.log("result: ", result);
-          if (error) {
-            throw new Meteor.Error(error);
-          } else {
-            console.log('llegue al result. los teams son: ', Teams.find().fetch());
-            const board = Boards.findOne({ _id: boards[1]._id });
-            chai.assert.equal(board.moduleInstances.length, 3);
-            done();
-          }
-        });
+        return ModuleInstances.insertManyInstances(
+          moduleInstances,
+          boards[1]._id
+        )
+        .then(Meteor.bindEnvironment(() => {
+          // We need bindEnvironment to run the callback in the prior context
+          // otherwise we would not be able to use Boards.findOne
+          const board = Boards.findOne({ _id: boards[1]._id });
+          chai.assert.equal(board.moduleInstances.length, 3);
+          done();
+        }, (error) => {
+          throw new Meteor.Error(error);
+        }));
       });
     });
   });

@@ -124,12 +124,11 @@ export const createBoard = new ValidatedMethod({
       }
 
       if (moduleInstances) {
-        ModuleInstances.insertManyInstances(moduleInstances, boardId, (error, result) => {
-          if (error) {
-            throw new Meteor.Error(error);
-          } else {
-            future.return(_board);
-          }
+        ModuleInstances.insertManyInstances(moduleInstances, boardId)
+        .then(() => {
+          future.return(_board);
+        }, (_error) => {
+          throw new Meteor.Error(_error);
         });
       } else {
         future.return(_board);
