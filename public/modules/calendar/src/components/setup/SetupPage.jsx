@@ -10,7 +10,6 @@ class SetupPage extends React.Component {
     };
 
     this.handleChange = this.handleChange.bind(this);
-    // this.setup = this.setup.bind(this);
   }
 
   handleChange(index, e) {

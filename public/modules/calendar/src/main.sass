@@ -46,6 +46,7 @@
     right: -100px
     opacity: 0
 
+// Setup
 .setup
   background-color: #eee
   overflow: auto
@@ -81,3 +82,25 @@
       transition: 0.3s all ease
       &:hover
         box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3)
+
+// Calendar
+.calendar-navbar
+  height: 40px
+  width: 100%
+  background-color: #3498db
+#calendar
+  .fc-toolbar
+    padding: 10px 5px 5px
+    color: #eee
+    background-color: #3498db
+    margin: 0
+    .fc-button-group
+      display: block
+    .fc-button
+      @extend .calendar-button
+      display: block !important
+
+.calendar-button
+  background: none !important
+  background-color: #ddd !important
+  border-radius: 1px
