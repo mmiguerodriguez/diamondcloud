@@ -1,0 +1,62 @@
+@import "./css/emojionearea.css";
+
+/* Post It CSS */
+
+body {
+  background: #ffffa5;
+}
+
+input:focus {
+  border:none;
+}
+
+.title-container {
+  padding-top: 10px;
+}
+
+.text-container {
+  height: calc(100% - 30px);
+  padding-top: 15px;
+}
+
+.post-it-text {
+  font-size: 1.1em;
+  text-align: left;
+  width: 100%;
+  border: none;
+  background: transparent;
+  margin-top: 5px;
+  resize: none;
+  height: 100%;
+  padding: 5px 10px;
+  font-family: 'Kalam' !important;
+}
+
+.post-it-text:focus {
+  outline: none;
+}
+
+[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  display: block;
+}
+
+.emojionearea-editor {
+  height: 100%;
+}
+
+html::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, .2);
+}
+
+html::-webkit-scrollbar-track {
+  background: rgba(255, 255, 165, .5);
+}
+
+.app-wrapper-main::-webkit-scrollbar-track {
+  background-color: #ffffa5;
+}
