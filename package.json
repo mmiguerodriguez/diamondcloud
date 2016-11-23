@@ -4,7 +4,7 @@
   "scripts": {
     "start": "meteor run --settings settings.json",
     "storybook": "start-storybook -p 8080 -s ./public",
-    "tests": "meteor test --driver-package practicalmeteor:mocha",
+    "tests": "LC_ALL=en_US.UTF-8 meteor test --driver-package practicalmeteor:mocha",
     "tests-c9": "meteor test --driver-package practicalmeteor:mocha --port $IP:$PORT",
     "ryan": "ROOT_URL=https://cloud-joelsobolmark.c9users.io meteor --port $IP:$PORT --settings settings.json",
     "migue": "ROOT_URL=https://cloud-migue-miguelrodriguez.c9users.io meteor --port $IP:$PORT --settings settings.json",
