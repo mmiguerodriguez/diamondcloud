@@ -2,58 +2,43 @@ import { Mongo } from 'meteor/mongo';
 
 export let Hierarchies = new Mongo.Collection('Hierarchies');
 
-/*
-
-Permissions
-  - accessAllBoards
-  - accessVisibleBoards
-
-*/
-
 const hierarchies = [
   {
-    _id: 'sistemas',
     name: 'Sistemas',
     permissions: [
-      'accessAllBoards',
+      'access_all_boards',
     ],
   },
   {
-    _id: 'creativo',
     name: 'Creativo',
     permissions: [],
   },
   {
-    _id: 'director creativo',
     name: 'Director creativo',
     permissions: [
-      'accessVisibleBoards',
+      'access_visible_boards',
     ],
   },
   {
-    _id: 'director de cuentas',
     name: 'Director de cuentas',
     permissions: [
-      'accessVisibleBoards',
+      'access_visible_boards',
     ],
   },
   {
-    _id: 'coordinador',
     name: 'Coordinador',
     permissions: [
-      'accessAllBoards',
+      'access_all_boards',
     ],
   },
   {
-    _id: 'administrador',
     name: 'Administrador',
     permissions: [],
   },
   {
-    _id: 'medios',
     name: 'Medios',
     permissions: [],
-  }
+  },
 ];
 
 if (Hierarchies.find().count() < hierarchies.length) {
