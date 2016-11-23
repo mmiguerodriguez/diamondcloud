@@ -1,3 +1,9 @@
+=set-background($image, $size, $position, $repeat)
+  background-image: url($image)
+  background-size: $size
+  background-position: $position
+  background-repeat: $repeat
+
 .error-message
   position: absolute
   right: 10px
@@ -39,3 +45,39 @@
   100%
     right: -100px
     opacity: 0
+
+.setup
+  background-color: #eee
+  overflow: auto
+  h3
+    padding: 30px
+    margin-top: 0
+    background-color: #3498db
+    color: #eee
+  p
+    padding: 0 20px
+  .instructions-list
+    padding: 0 40px
+    .item
+      margin: 10px 0
+  hr
+    &.fixed
+      border-color: #bbb
+      margin: 20px
+  .calendar-link-form
+    padding: 0 20px
+    input
+      background-color: #fff !important
+    .upload
+      height: 40px
+      width: 40px
+      float: right
+      margin: 10px 0
+      border-radius: 50%
+      cursor: pointer
+      background-color: #2ecc71
+      +set-background("img/upload-calendar.svg", 20px, center, no-repeat)
+      box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.3)
+      transition: 0.3s all ease
+      &:hover
+        box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.3)
