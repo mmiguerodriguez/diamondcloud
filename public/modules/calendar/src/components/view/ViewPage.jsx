@@ -18,7 +18,6 @@ class ViewPage extends React.Component {
           center: 'title',
           right:  'month,list'
         },
-        aspectRatio: 2
     });
   }
 }
