@@ -56,7 +56,7 @@ const modules = [
     },
     validated: true,
   },
-  {
+  /*{
     _id: 'calendar',
     name: 'Calendario',
     path: '/modules/calendar',
@@ -68,7 +68,7 @@ const modules = [
       minHeight: 270,
     },
     validated: true,
-  },
+  },*/
 ];
 
 if (Meteor.isServer) {
