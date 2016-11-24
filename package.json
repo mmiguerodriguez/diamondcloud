@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start": "npm run build-modules && meteor run --settings settings.json",
-    "deploy": "./build-modules.sh production && mup deploy",
+    "deploy": "./build-modules.sh production && cd .deploy/80 && mup deploy",
     "tests": "meteor test --driver-package practicalmeteor:mocha",
     "tests-c9": "meteor test --driver-package practicalmeteor:mocha --port $IP:$PORT",
     "storybook": "start-storybook -p 8080 -s ./public",
