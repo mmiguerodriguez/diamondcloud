@@ -4,38 +4,45 @@ import { sinon }                from 'meteor/practicalmeteor:sinon';
 import { chai }                 from 'meteor/practicalmeteor:chai';
 import   faker                  from 'faker';
 import { Random }               from 'meteor/random';
-import { printObject }          from '../helpers/print-objects.js';
-import { Mail }                 from '../mails/mails.js';
 
-import { Teams }                from './teams.js';
-import { Boards }               from '../boards/boards.js';
+import { printObject }          from '../helpers/print-objects';
+import { Mail }                 from '../mails/mails';
+
+import { Teams }                from './teams';
+import { Boards }               from '../boards/boards';
 import { Messages }             from '../messages/messages';
-import { DirectChats }          from '../direct-chats/direct-chats.js';
-import { createTeam,
-         editTeam,
-         changeUserHierarchy,
-         shareTeam,
-         removeUserFromTeam,
-         archiveTeam,
-         dearchiveTeam,
-}                               from './methods.js';
-import { createBoard }          from '../boards/methods.js';
-import { createModuleInstance } from '../module-instances/methods.js';
-import { APIInsert }            from '../api/methods.js';
+import { DirectChats }          from '../direct-chats/direct-chats';
+import { 
+  createTeam,
+  editTeam,
+  changeUserHierarchy,
+  shareTeam,
+  removeUserFromTeam,
+  archiveTeam,
+  dearchiveTeam,
+}                               from './methods';
+import { createBoard }          from '../boards/methods';
+import { createModuleInstance } from '../module-instances/methods';
+import { APIInsert }            from '../api/methods';
 
 import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Teams', function() {
     describe('Methods', function() {
-      let users, team, board, boards, generalBoardId = Random.id(),
-          createModuleInstanceArgs,
-          apiInsertArgs, directChats, messages;
+      let users;
+      let team;
+      let board;
+      let boards;
+      let generalBoardId = Random.id();
+      let createModuleInstanceArgs;
+      let apiInsertArgs;
+      let directChats;
+      let messages;
 
       beforeEach(function() {
         resetDatabase();
 
-        createdGeneralBoard = false;
         users = [
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }] }),
@@ -143,9 +150,9 @@ if (Meteor.isServer) {
       });
 
       it('should create a team', function(done) {
-        let args,
-            result,
-            expect;
+        let args;
+        let result;
+        let expect;
 
         args = {
           name: team.name,

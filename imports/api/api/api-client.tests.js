@@ -29,7 +29,11 @@ if (Meteor.isClient) {
           params,
           callback,
           subscribeInput,
-          subscribeResult;
+          subscribeResult,
+          insertParams,
+          updateParams,
+          getParams,
+          removeParams;
 
       beforeEach(function() {
         user = Factory.create('user');
