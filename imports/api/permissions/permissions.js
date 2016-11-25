@@ -14,9 +14,9 @@ const permissions = [
 ];
 
 if (Permissions.find().count() < permissions.length) {
-  permissions.forEach((hierarchy) => {
-    if (!Permissions.findOne(hierarchy._id)) {
-      Permissions.insert(hierarchy);
+  permissions.forEach((permission) => {
+    if (!Permissions.findOne(permission._id)) {
+      Permissions.insert(permission);
     }
   });
 }

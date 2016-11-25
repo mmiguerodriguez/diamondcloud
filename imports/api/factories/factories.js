@@ -2,13 +2,14 @@ import { Meteor }          from 'meteor/meteor';
 import { Random }          from 'meteor/random';
 import faker		           from 'faker';
 
-import { Teams }           from '../teams/teams.js';
-import { Boards }          from '../boards/boards.js';
-import { Messages }        from '../messages/messages.js';
-import { Hierarchies } 		 from '../hierarchies/hierarchies.js';
-import { DirectChats }     from '../direct-chats/direct-chats.js';
-import { APICollection } 	 from '../api-collection/api-collection.js';
-import { ModuleInstances } from '../module-instances/module-instances.js';
+import { Teams }           from '../teams/teams';
+import { Boards }          from '../boards/boards';
+import { Messages }        from '../messages/messages';
+import { Permissions }     from '../permissions/permissions';
+import { Hierarchies } 		 from '../hierarchies/hierarchies';
+import { DirectChats }     from '../direct-chats/direct-chats';
+import { APICollection } 	 from '../api-collection/api-collection';
+import { ModuleInstances } from '../module-instances/module-instances';
 
 Factory.define('user', Meteor.users, {
 	emails: [
@@ -112,4 +113,9 @@ Factory.define('hierarchy', Hierarchies, {
 		faker.lorem.word(),
 		faker.lorem.word(),
 	],
+});
+
+Factory.define('permission', Permissions, {
+	key: faker.lorem.word(),
+	name: faker.lorem.word(),
 });
