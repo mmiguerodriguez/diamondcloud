@@ -112,3 +112,16 @@ Factory.define('hierarchy', Hierarchies, {
 	teamId: Random.id(),
 	permissions: [],
 });
+  
+/**
+ * Returns a boardType
+ *
+ * @returns {Object} boardType
+ */
+Factory.define('boardType', BoardTypes, {
+	name: faker.lorem.word(),
+	properties: [
+		faker.lorem.word(),
+		faker.lorem.word(),
+	],
+});

@@ -4,6 +4,7 @@ import { Mongo }          from 'meteor/mongo';
 import { printObject }    from '../helpers/print-objects.js';
 
 import { Hierarchies }    from '../hierarchies/hierarchies';
+import { BoardTypes }     from '../board-types/board-types';
 
 export const Teams = new Mongo.Collection('Teams');
 
@@ -94,6 +95,10 @@ Teams.helpers({
       }
     }
     return false;
+  },
+
+  getBoardTypes() {
+    return BoardTypes.find({ teamId: this._id }).fetch();
   },
 });
 
