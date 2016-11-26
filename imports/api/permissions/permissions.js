@@ -1,9 +1,35 @@
-import { Mongo }   from 'meteor/mongo';
-import { Factory } from 'meteor/dburles:factory';
-import { Random }  from 'meteor/random';
-import faker		   from 'faker';
+import { Mongo }        from 'meteor/mongo';
+import { Factory }      from 'meteor/dburles:factory';
+import faker		        from 'faker';
 
-export let Permissions = new Mongo.Collection('Permissions');
+import { Modules }      from '../modules/modules';
+import readModuleConfig from '../helpers/read-module-config';
+
+export const Permissions = new Mongo.Collection('Permissions');
+
+Permissions.helpers({
+  
+});
+
+Modules.find().fetch().forEach((module) => {
+  readModuleConfig(module._id)
+  .then((result) => {
+    const { settings } = result;
+    
+    console.log(result);
+    
+    settings.permissions.forEach((permission) => {
+      Permissions.insert(permission);
+    });
+
+    settings.boardTypeProps.forEach((prop) => {
+      console.log('prop', prop);
+      // BoardTypeProps.insert(prop);
+    });
+  }, (error) => {
+    console.log('error', error);
+  });
+});
 
 /**
  * Permissions
@@ -11,11 +37,9 @@ export let Permissions = new Mongo.Collection('Permissions');
  * - access_visible_boards
  * - 
  */
-
 const permissions = [
 
 ];
-
 if (Permissions.find().count() < permissions.length) {
   permissions.forEach((permission) => {
     if (!Permissions.findOne(permission._id)) {
@@ -24,11 +48,8 @@ if (Permissions.find().count() < permissions.length) {
   });
 }
 
-Permissions.helpers({
-  
-});
-
 Factory.define('permission', Permissions, {
   key: () => faker.lorem.word(),
   name: () => faker.lorem.word(),
+  description: () => faker.lorem.sentence(),
 });

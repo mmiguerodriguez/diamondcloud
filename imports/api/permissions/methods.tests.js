@@ -29,6 +29,7 @@ if (Meteor.isServer) {
         const permission = {
           key: faker.lorem.word(),
           name: faker.lorem.word(),
+          description: faker.lorem.word(),
         };
 
         createPermission.call(permission, (error, result) => {
@@ -51,6 +52,7 @@ if (Meteor.isServer) {
         const permission = {
           key: _permission.key,
           name: _permission.name,
+          description: _permission.description,
         };
         
         createPermission.call(permission, (error, result) => {

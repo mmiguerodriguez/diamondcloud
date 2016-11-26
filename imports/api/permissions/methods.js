@@ -13,8 +13,11 @@ export const createPermission = new ValidatedMethod({
     key: {
       type: String,
     },
+    description: {
+      type: String,
+    },
   }).validator(),
-  run({ name, key }) {
+  run({ name, description, key }) {
     if (!Meteor.user()) {
       throw new Meteor.Error('Permissions.methods.create.notLoggedIn',
       'Must be logged in to create a permission.');
@@ -23,12 +26,14 @@ export const createPermission = new ValidatedMethod({
     const permission = {
       key,
       name,
+      description,
     };
 
     const exists = Permissions.findOne({
       $or: [
         { key },
         { name },
+        { description },
       ],
     });
 

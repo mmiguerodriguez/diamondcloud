@@ -1,0 +1,19 @@
+{
+  "name": "Task manager",
+  "description": "A task manager for Diamond Cloud",
+  "version": "1.0.0",
+  "settings": {
+    "width": 312,
+    "minWidth": 312,
+    "height": 400,
+    "minHeight": 200,
+    "permissions": [],
+    "boardTypeProps": [
+      {
+        "name": "Asignar tareas",
+        "description": "Autoriza a los usuarios de este pizarrón a crear tareas",
+        "key": "assign_tasks"
+      }
+    ]
+  }
+}
