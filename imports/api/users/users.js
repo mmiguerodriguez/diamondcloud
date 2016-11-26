@@ -3,6 +3,7 @@ import { Mongo }       from 'meteor/mongo';
 import { Teams }       from '../teams/teams';
 import { Boards }      from '../boards/boards';
 import { Hierarchies } from '../hierarchies/hierarchies';
+import { Permissions } from '../permissions/permissions';
 
 Meteor.users.helpers({
   teams({ fields }) {
@@ -54,7 +55,7 @@ Meteor.users.helpers({
       user.email === this.email()
     ).hierarchy;
     return Hierarchies.findOne(hierarchyId);
-  }
+  },
   /**
    * Returns if the  current user has a certain permission
    *
@@ -66,9 +67,15 @@ Meteor.users.helpers({
    *  True if the hierarchy of the user in the team has the  permission
    *  False otherwise
    */
-  /*hasPermission({ id, key }) {
-    
-  },*/
+  hasPermission({ teamId, id, key }) {
+    if (!teamId) {
+      throw new Meteor.Error('Meteor.users.helpers.hasPermission.parameterMissing',
+      'There is a missing parameter.');
+    }
+    if (key) {
+      id = Permissions.findByKey(key)._id;
+    }
+  },
 });
 
 Meteor.users.dashboardFields = {

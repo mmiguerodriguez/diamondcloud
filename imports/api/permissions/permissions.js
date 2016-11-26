@@ -20,3 +20,7 @@ if (Permissions.find().count() < permissions.length) {
     }
   });
 }
+
+Permissions.findByKey = () => {
+  
+};
