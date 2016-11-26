@@ -22,6 +22,8 @@ if (Meteor.isServer) {
         team = Factory.create('team');
         hierarchy = Factory.create('hierarchy');
         boardType = Factory.create('boardType');
+
+        //team.boardTypeId
         team.users = [
           { email: user.emails[0].address, hierarchy: hierarchy._id },
           { email: faker.internet.email(), hierarchy: 'sistemas' },

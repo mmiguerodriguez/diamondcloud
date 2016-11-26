@@ -6,24 +6,29 @@ import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
 import { Users }         from './users.js';
+import { Hierarchies }   from '../hierarchies/hierarchies';
 import { Teams }         from '../teams/teams.js';
-import { Boards }         from '../boards/boards.js';
+import { Boards }        from '../boards/boards.js';
 
 import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Users', function() {
     describe('Helpers', function(){
-      let user, teams, boards;
+      let user, teams, boards, userHierarchy;
       beforeEach(function() {
         resetDatabase();
         user = Factory.create('user');
-
+        
         teams = [
           Factory.create('team'),
           Factory.create('team', { archived: true }),
           Factory.create('team'),
         ];
+        
+        userHierarchy = Factory.create('hierarchy', {
+          teamId: teams[0]._id,
+        });
 
         boards = [
           Factory.create('publicBoard'),
@@ -34,11 +39,11 @@ if (Meteor.isServer) {
 
         teams[0].users[0] = {
           email: user.emails[0].address,
-          hierarchy: 'creativo',
+          hierarchy: userHierarchy._id,
         };
         teams[1].users[0] = {
           email: user.emails[0].address,
-          hierarchy: 'creativo',
+          hierarchy: Random.id(),
         };
 
         boards[2].users[0].email = user.emails[0].address;
@@ -52,6 +57,7 @@ if (Meteor.isServer) {
         teams.forEach((team) => {
           Teams.insert(team);
         });
+        Hierarchies.insert(userHierarchy);
         boards.forEach((board) => {
           Boards.insert(board);
         });
@@ -102,6 +108,11 @@ if (Meteor.isServer) {
         result = Meteor.users.findByEmail(user.emails[0].address, {});
 
         chai.assert.deepEqual(expect, result);
+      });
+      
+      it('should return the correct user hierarchy', function() {
+        const hierarchy = user.hierarchy(teams[0]._id);
+        chai.assert.deepEqual(hierarchy, userHierarchy);
       });
     });
   });

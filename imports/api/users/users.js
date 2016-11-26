@@ -1,8 +1,8 @@
 import { Mongo }       from 'meteor/mongo';
 
-import { Teams }       from '../teams/teams.js';
-import { Boards }      from '../boards/boards.js';
-import { DirectChats } from '../direct-chats/direct-chats.js';
+import { Teams }       from '../teams/teams';
+import { Boards }      from '../boards/boards';
+import { Hierarchies } from '../hierarchies/hierarchies';
 
 Meteor.users.helpers({
   teams({ fields }) {
@@ -37,7 +37,38 @@ Meteor.users.helpers({
   },
   email() {
     return this.emails[0].address;
+  },
+  /**
+   * Returns the  hierarchy of the current user in a given team
+   *
+   * @param {String} teamId
+   * @returns {Object} hierarchy
+   */
+  hierarchy(teamId) {
+    if (!teamId) {
+      throw new Meteor.Error('Meteor.users.helpers.hierarchy.parameterMissing',
+      'There is a missing parameter.');
+    }
+    const team = Teams.findOne(teamId);
+    const hierarchyId = team.users.find((user) => 
+      user.email === this.email()
+    ).hierarchy;
+    return Hierarchies.findOne(hierarchyId);
   }
+  /**
+   * Returns if the  current user has a certain permission
+   *
+   * @param {String} id
+   *  The permission id.
+   * @param {String} key
+   *  The permission key
+   * @returns {Boolean} hasPermission
+   *  True if the hierarchy of the user in the team has the  permission
+   *  False otherwise
+   */
+  /*hasPermission({ id, key }) {
+    
+  },*/
 });
 
 Meteor.users.dashboardFields = {

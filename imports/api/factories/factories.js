@@ -1,15 +1,18 @@
 import { Meteor }          from 'meteor/meteor';
 import { Random }          from 'meteor/random';
-import faker               from 'faker';
+
+import { Factory }         from 'meteor/dburles:factory';
+import faker		           from 'faker';
 
 import { Teams }           from '../teams/teams';
 import { Boards }          from '../boards/boards';
 import { Messages }        from '../messages/messages';
+
+import { BoardTypes }      from '../board-types/board-types';
 import { Hierarchies }     from '../hierarchies/hierarchies';
 import { DirectChats }     from '../direct-chats/direct-chats';
-import { APICollection }   from '../api-collection/api-collection';
+import { APICollection } 	 from '../api-collection/api-collection';
 import { ModuleInstances } from '../module-instances/module-instances';
-import { BoardTypes }      from '../board-types/board-types';
 
 Factory.define('user', Meteor.users, {
   emails: [
@@ -108,11 +111,17 @@ for (let i = 0; i < 4; i++) {
 Factory.define('spamAPIDocument', APICollection, obj);
 
 Factory.define('hierarchy', Hierarchies, {
+<<<<<<< HEAD
   name: faker.lorem.word(),
   permissions: [
     faker.lorem.word(),
     faker.lorem.word(),
   ],
+=======
+	name: faker.lorem.word(),
+	teamId: Random.id(),
+	permissions: [],
+>>>>>>> unhardcode
 });
 
 /**
