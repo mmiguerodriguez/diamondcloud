@@ -20,12 +20,12 @@ export const createPermission = new ValidatedMethod({
       'Must be logged in to create a permission.');
     }
 
-    let permission = {
+    const permission = {
       key,
       name,
     };
 
-    let exists = Permissions.findOne({
+    const exists = Permissions.findOne({
       $or: [
         { key },
         { name },
@@ -33,7 +33,7 @@ export const createPermission = new ValidatedMethod({
     });
 
     if (exists) {
-      throw new Meteor.Error( 'Permissions.methods.create.permissionExists',
+      throw new Meteor.Error('Permissions.methods.create.permissionExists',
       'This permission name already exists.');
     }
 
