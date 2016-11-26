@@ -1,0 +1,1 @@
+// TODO: tomar objeto json desde un archivo, y parsearlo, returnear una promise

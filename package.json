@@ -12,6 +12,7 @@
     "dylan": "ROOT_URL=https://cloud-dylan-raikhen.c9users.io meteor --port $IP:$PORT --settings settings.json",
     "nico":"ROOT_URL=https://cloud-bilinkis.c9users.io meteor --port $IP:$PORT --settings settings.json",
     "joel": "ROOT_URL=https://cloud-joel-joelsobolmark.c9users.io meteor --port $IP:$PORT --settings settings.json",
+    "santi": "ROOT_URL=https://cloud-santi-aranguri.c9users.io meteor --port $IP:$PORT --settings settings.json",
     "mobile": "meteor run android-device --mobile-server diamondcloud.tk --settings settings.json"
   },
   "dependencies": {

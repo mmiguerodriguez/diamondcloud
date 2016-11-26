@@ -113,3 +113,16 @@ Factory.define('hierarchy', Hierarchies, {
 		faker.lorem.word(),
 	],
 });
+  
+/**
+ * Returns a boardType
+ *
+ * @returns {Object} boardType
+ */
+Factory.define('boardType', BoardTypes, {
+	name: faker.lorem.word(),
+	properties: [
+		faker.lorem.word(),
+		faker.lorem.word(),
+	],
+});

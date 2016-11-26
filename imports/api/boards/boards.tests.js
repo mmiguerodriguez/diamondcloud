@@ -10,6 +10,7 @@ import { Boards }          from './boards.js';
 import { Teams }           from '../teams/teams.js';
 import { Messages }        from '../messages/messages';
 import { Hierarchies }     from '../hierarchies/hierarchies';
+import { BoardTypes }      from '../board-types/board-types';
 import { ModuleInstances } from '../module-instances/module-instances.js';
 
 import '../factories/factories.js';
@@ -17,7 +18,7 @@ import '../factories/factories.js';
 if (Meteor.isServer) {
   describe('Boards', function() {
     describe('Helpers', function() {
-      let teams, boards, users, messages, moduleInstances, findRequest, hierarchy;
+      let teams, boards, users, messages, moduleInstances, findRequest, hierarchy, boardType;
       function getNotifications(boardId, userId) {
         let user = Meteor.users.findOne(userId);
         return Boards.findOne(boardId).users.find((_user) => {
@@ -62,11 +63,15 @@ if (Meteor.isServer) {
         
         hierarchy = Factory.create('hierarchy');
         hierarchy.permissions = ['accessVisibleBoards'];
+        
+        boardType = Factory.create('boardType');
+        boardType.boardTypeProperties = ['isPrivate'];
 
         teams[0].users.push({ email: users[0].emails[0].address, hierarchy: 'sistemas' });
         teams[0].boards.push({ _id: boards[0]._id });
         teams[1].users.push({ email: users[0].emails[0].address, hierarchy: 'sistemas' });
 
+        boards[0].boardType.push({ boardType });
         boards[0].users.push({ email: users[0].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[0].users.push({ email: users[1].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[2].moduleInstances.push({ _id: moduleInstances[0]._id });
@@ -103,6 +108,8 @@ if (Meteor.isServer) {
         });
         
         Hierarchies.insert(hierarchy);
+        
+        BoardTypes.insert(boardType);
 
         sinon.stub(Meteor, 'user', () => users[0]);
         sinon.stub(Meteor, 'userId', () => users[0]._id);
@@ -163,12 +170,12 @@ if (Meteor.isServer) {
         chai.assert.deepEqual(notifications, expectNotifications);
       });
 
-      it('should return board users as an array of _id\'s', function() {
+      it('should return the boardType of a board', function() {
         let board = Boards.findOne(boards[0]._id);
-        let usersIds = board.getUsers();
-        let expectUsersIds = [users[1]._id];
+        let boardType = board.getBoardType();
+        let expectBoardType = [boardType[0]];
 
-        chai.assert.deepEqual(usersIds, expectUsersIds);
+        chai.assert.equal(boardType, expectBoardType);
       });
 
       it('should add a user to a board', function() {

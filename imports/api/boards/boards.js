@@ -3,7 +3,7 @@ import { Mongo }           from 'meteor/mongo';
 
 import { Teams }           from '../teams/teams';
 import { Messages }        from '../messages/messages';
-import { Hierarchies }     from '../hierarchies/hierarchies';
+import { BoardTypes }      from '../board-types/board-types';
 import { ModuleInstances } from '../module-instances/module-instances';
 
 export const Boards = new Mongo.Collection('Boards');
@@ -84,6 +84,16 @@ Boards.helpers({
     usersIds.splice(index, 1);
 
     return usersIds;
+  },
+  
+  /**
+   * Returns the type of the current board
+   *
+   * @returns {Object} boardType
+   */
+  getBoardType() {
+    const board = Boards.findOne(this._id);
+    return BoardTypes.findOne(board.boardTypeId);
   },
 });
 
