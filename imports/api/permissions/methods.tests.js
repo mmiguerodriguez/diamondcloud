@@ -1,13 +1,12 @@
 import { Meteor }           from 'meteor/meteor';
+import { Factory }          from 'meteor/dburles:factory';
 import { resetDatabase }    from 'meteor/xolvio:cleaner';
 import { sinon }            from 'meteor/practicalmeteor:sinon';
-import { chai, assert }     from 'meteor/practicalmeteor:chai';
+import { assert }           from 'meteor/practicalmeteor:chai';
 import faker                from 'faker';
 
 import { Permissions }      from './permissions';
 import { createPermission } from './methods';
-
-import '../factories/factories';
 
 if (Meteor.isServer) {
   describe('Permissions', () => {
@@ -43,6 +42,19 @@ if (Meteor.isServer) {
           assert.deepEqual(permission, _permission);
           assert.equal(1, Permissions.find().count());
 
+          done();
+        });
+      });
+      
+      it('should not create a permission if it already exists', (done) => {
+        const _permission = Factory.create('permission');
+        const permission = {
+          key: _permission.key,
+          name: _permission.name,
+        };
+        
+        createPermission.call(permission, (error, result) => {
+          assert.isNotNull(error);
           done();
         });
       });
