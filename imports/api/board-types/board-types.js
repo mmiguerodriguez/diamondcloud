@@ -1,12 +1,12 @@
 import { Mongo } from 'meteor/mongo';
 
-export let BoardTypes = new Mongo.Collection('BoardTypes');
+export const BoardTypes = new Mongo.Collection('BoardTypes');
 
 const boardTypes = [
   {
     name: 'test1',
     permissions: [
-      'hasHideButton',  
+      'hasHideButton',
     ],
   },
   {
@@ -22,3 +22,8 @@ if (BoardTypes.find().count() < boardTypes.length) {
     }
   });
 }
+
+//helpers en teams para agarrar todos los boardTypes de un team
+BoardTypes.getBoardsByType = boardTypeId => {
+  return Boards.find({ boardType: boardTypeId });
+};

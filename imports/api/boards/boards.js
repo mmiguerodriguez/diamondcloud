@@ -85,7 +85,7 @@ Boards.helpers({
 
     return usersIds;
   },
-  
+
   /**
    * Returns the type of the current board
    *
@@ -95,6 +95,8 @@ Boards.helpers({
     const board = Boards.findOne(this._id);
     return BoardTypes.findOne(board.boardTypeId);
   },
+  //boardtypesproperties
+  //boardtypes
 });
 
 Boards.boardFields = {
@@ -127,7 +129,7 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
 
   const team = Boards.findOne(boardsIds[0]).team();
   const user = Meteor.users.findOne(userId);
-  
+
   const isDirector = team.userHasCertainPermission(
     user.email(),
     'accessVisibleBoards'
