@@ -98,7 +98,7 @@ Teams.helpers({
   },
 
   getBoardTypes() {
-    return BoardTypes.find({ teamId: this._id });
+    return BoardTypes.find({ teamId: this._id }).fetch();
   },
 });
 
