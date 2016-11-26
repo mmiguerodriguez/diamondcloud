@@ -126,6 +126,7 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
   }
 
   // Se asume que todos los boardsIds pertenecen al mismo Team
+  // TODO: Unhardcode this
 
   const team = Boards.findOne(boardsIds[0]).team();
   const user = Meteor.users.findOne(userId);

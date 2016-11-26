@@ -6,6 +6,7 @@ import faker		           from 'faker';
 import { Teams }           from '../teams/teams';
 import { Boards }          from '../boards/boards';
 import { Messages }        from '../messages/messages';
+import { BoardTypes }      from '../board-types/board-types';
 import { Hierarchies }     from '../hierarchies/hierarchies';
 import { DirectChats }     from '../direct-chats/direct-chats';
 import { APICollection } 	 from '../api-collection/api-collection';

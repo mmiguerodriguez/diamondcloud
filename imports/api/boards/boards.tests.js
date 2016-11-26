@@ -71,7 +71,7 @@ if (Meteor.isServer) {
         teams[0].boards.push({ _id: boards[0]._id });
         teams[1].users.push({ email: users[0].emails[0].address, hierarchy: 'sistemas' });
 
-        boards[0].boardType.push({ boardType });
+        boards[0].boardTypeId = boardType._id;
         boards[0].users.push({ email: users[0].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[0].users.push({ email: users[1].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[2].moduleInstances.push({ _id: moduleInstances[0]._id });
@@ -170,12 +170,12 @@ if (Meteor.isServer) {
         chai.assert.deepEqual(notifications, expectNotifications);
       });
 
-      it('should return the boardType of a board', function() {
-        let board = Boards.findOne(boards[0]._id);
-        let boardType = board.getBoardType();
-        let expectBoardType = [boardType[0]];
+      it('should return the type of a board', function() {
+        const board = Boards.findOne(boards[0]._id);
+        const _boardType = board.getBoardType();
+        const expectBoardType = boardType;
 
-        chai.assert.equal(boardType, expectBoardType);
+        chai.assert.deepEqual(_boardType, expectBoardType);
       });
 
       it('should add a user to a board', function() {
