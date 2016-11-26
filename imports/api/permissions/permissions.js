@@ -35,6 +35,9 @@ Modules.find().fetch().forEach((module) => {
  * Permissions
  * - access_all_boards
  * - access_visible_boards
+ * - share_team
+ * - change_user_hierarchy
+ * - remove_user_from_team
  * - 
  */
 const permissions = [
