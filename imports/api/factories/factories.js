@@ -109,10 +109,8 @@ Factory.define('spamAPIDocument', APICollection, obj);
 
 Factory.define('hierarchy', Hierarchies, {
 	name: faker.lorem.word(),
-	permissions: [
-		faker.lorem.word(),
-		faker.lorem.word(),
-	],
+	teamId: Random.id(),
+	permissions: [],
 });
 
 Factory.define('permission', Permissions, {
