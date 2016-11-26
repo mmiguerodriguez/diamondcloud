@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Popover from '../popover/Popover';
+
 class ViewPage extends React.Component {
   render() {
     return (
@@ -16,32 +18,37 @@ class ViewPage extends React.Component {
 
   componentDidMount() {
     $('#calendar').fullCalendar({
-        // put your options and callbacks here
-        header: {
-          left: 'today prev,next',
-          center: 'title',
-          right:  'month,list'
-        },
-        eventBackgroundColor: '#3498db',
-        eventTextColor: '#eee',
-        eventSources: [{
-          events: [
-            {
-              title  : 'event1',
-              start  : '2016-11-11'
-            },
-            {
-              title  : 'event2',
-              start  : '2016-11-13',
-              end    : '2016-11-18',
-            },
-            {
-              title  : 'event3',
-              start  : '2016-11-10T12:30:00',
-              allDay : false // will make the time show,
-            }
-          ],
-        }],
+      // put your options and callbacks here
+      header: {
+        left: 'today prev,next',
+        center: 'title',
+        right:  'month,list'
+      },
+      locale: 'es',
+      editable: true,
+      eventLimit: true,
+      eventLimitClick: 'popover',
+      eventRender: function(event, element) {
+          $(element).popover({
+            container: 'body',
+            content: (
+              <Popover
+                calendarEvent={event}
+              />
+            ),
+          });
+      },
+      eventSources: [{
+        events: [
+          {
+            title: 'This is a Material Design event!',
+            start: '2016-12-13',
+            end: '2016-12-18',
+            color: '#C2185B !important',
+            textColor: '#fff !important'
+          }
+        ],
+      }],
     });
   }
 }
