@@ -35,13 +35,13 @@ if (Meteor.isServer) {
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }]}),
           Factory.create('user', { _id: Random.id(), emails: [{ address: faker.internet.email() }]}),
         ];
-        
+
         teams = [
           Factory.create('team'),
           Factory.create('team'),
           Factory.create('team'),
         ];
-        
+
         boards = [
           Factory.create('board'),
           Factory.create('board'),
@@ -49,21 +49,21 @@ if (Meteor.isServer) {
           Factory.create('board'),
           Factory.create('board', { visibleForDirectors: true }),
         ];
-        
+
         messages = [];
         for (let i = 0; i < 3; i++) {
           messages.push(Factory.create('boardMessage'));
           messages[i].boardId = boards[0]._id;
         }
-        
+
         moduleInstances = [
           Factory.create('moduleInstance'),
           Factory.create('moduleInstance'),
         ];
-        
+
         hierarchy = Factory.create('hierarchy');
         hierarchy.permissions = ['accessVisibleBoards'];
-        
+
         boardType = Factory.create('boardType');
         boardType.boardTypeProperties = ['isPrivate'];
 
@@ -75,16 +75,16 @@ if (Meteor.isServer) {
         boards[0].users.push({ email: users[0].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[0].users.push({ email: users[1].emails[0].address, notifications: faker.random.number({ min: 1, max: 20 }) });
         boards[2].moduleInstances.push({ _id: moduleInstances[0]._id });
-        
+
         teams[2].boards.push({ _id: boards[3]._id });
         teams[2].boards.push({ _id: boards[4]._id });
-        
+
         teams[2].users = [];
         teams[2].users.push({ email: users[2].emails[0].address, hierarchy: 'creativos' });
         teams[2].users.push({ email: users[3].emails[0].address, hierarchy: hierarchy._id });
-        
+
         boards[3].users.push({ email: users[2].emails[0].address });
-        
+
         resetDatabase();
 
         users.forEach((user) => {
@@ -106,9 +106,9 @@ if (Meteor.isServer) {
         messages.forEach((message) => {
           Messages.insert(message);
         });
-        
+
         Hierarchies.insert(hierarchy);
-        
+
         BoardTypes.insert(boardType);
 
         sinon.stub(Meteor, 'user', () => users[0]);
@@ -218,7 +218,7 @@ if (Meteor.isServer) {
         chai.assert.notEqual(startNotifications, endNotifications);
         chai.assert.equal(endNotifications, 0);
       });
-      
+
       it('should correctly get all requested boards', (done) => {
         let boardsIds = boards.map((board) => board._id);
         let result1 = Boards.getBoards([boards[3]._id, boards[4]._id], users[2]._id); // Creativo
@@ -236,7 +236,7 @@ if (Meteor.isServer) {
 
           return 0;
         };
-        
+
         let res = result2.fetch();
         let expected = [boards[4], boards[3]];
         res.sort(compare);
@@ -246,7 +246,7 @@ if (Meteor.isServer) {
           JSON.stringify(res),
           JSON.stringify(expected)
         );
-        
+
         done();
       });
     });

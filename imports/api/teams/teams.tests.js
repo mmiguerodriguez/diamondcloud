@@ -7,19 +7,21 @@ import   faker           from 'faker';
 
 import { Teams }         from './teams.js';
 import { Hierarchies }   from '../hierarchies/hierarchies';
+import { BoardTypes }    from '../board-types/board-types';
 
 import '../factories/factories.js';
 
 if (Meteor.isServer) {
   describe('Teams', function() {
     describe('Helpers', function() {
-      let user, team, hierarchy;
-      beforeEach(function() {
+      let user, team, hierarchy, boardType;
+      before(function() {
         resetDatabase();
 
         user = Factory.create('user');
         team = Factory.create('team');
         hierarchy = Factory.create('hierarchy');
+        boardType = Factory.create('boardType');
         team.users = [
           { email: user.emails[0].address, hierarchy: hierarchy._id },
           { email: faker.internet.email(), hierarchy: 'sistemas' },
@@ -37,9 +39,10 @@ if (Meteor.isServer) {
         Meteor.users.insert(user);
         Teams.insert(team);
         Hierarchies.insert(hierarchy);
+        BoardTypes.insert(boardType);
       });
 
-      afterEach(function() {
+      after(function() {
         Meteor.user.restore();
         //Meteor.users.findByEmail.restore();
       });
@@ -84,13 +87,17 @@ if (Meteor.isServer) {
         chai.assert.equal(result, expected);
 
         expected = false;
-        
+
         result = Teams.findOne(team._id).userHasCertainPermission(
           user.emails[0].address,
           faker.lorem.word()
         );
 
         done();
+      });
+
+      it('should return the types of the team\'s boards', () => {
+
       });
     });
   });

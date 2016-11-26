@@ -97,6 +97,11 @@ Teams.helpers({
     return false;
   },
 
+  /**
+   * getBoardTypes: Returns the board types of the team's boards
+   *
+   * @returns {Object} boardTypes
+   */
   getBoardTypes() {
     return BoardTypes.find({ teamId: this._id }).fetch();
   },
