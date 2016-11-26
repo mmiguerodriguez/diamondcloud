@@ -1,9 +1,14 @@
+// Functions
 =set-background($image, $size, $position, $repeat)
   background-image: url($image)
   background-size: $size
   background-position: $position
   background-repeat: $repeat
+  
+// Variables
+$white: #eee
 
+// Toast
 .error-message
   position: absolute
   right: 10px
@@ -48,13 +53,13 @@
 
 // Setup
 .setup
-  background-color: #eee
+  background-color: $white
   overflow: auto
   h3
     padding: 30px
     margin-top: 0
     background-color: #3498db
-    color: #eee
+    color: $white
   p
     padding: 0 20px
   .instructions-list
@@ -88,10 +93,29 @@
   height: 40px
   width: 100%
   background-color: #3498db
+  .fixed
+    margin: 0
+    color: $white
+    padding: 10px 5px
+    display: inline-block
+  .navbar-btn
+    height: 30px
+    width: 30px
+    background-color: $white
+    float: right
+    display: inline-block
+    margin-right: 5px
+    border-radius: 50%
+    opacity: 0.5
+    cursor: pointer
+    transition: 0.3s all ease
+    &:hover
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3)
+      opacity: 0.9
 #calendar
   .fc-toolbar
     padding: 10px 5px 5px
-    color: #eee
+    color: $white
     background-color: #3498db
     margin: 0
     .fc-button-group
