@@ -1,11 +1,12 @@
 import { Meteor }        from 'meteor/meteor';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
-import { chai }          from 'meteor/practicalmeteor:chai';
+import { chai, assert }          from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
 import   faker           from 'faker';
 
 import { Teams }         from './teams.js';
+import { Boards }        from '../boards/boards.js';
 import { Hierarchies }   from '../hierarchies/hierarchies';
 import { BoardTypes }    from '../board-types/board-types';
 
@@ -14,22 +15,40 @@ import '../factories/factories.js';
 if (Meteor.isServer) {
   describe('Teams', function() {
     describe('Helpers', function() {
-      let user, team, hierarchy, boardType;
+      let user;
+      let team;
+      let boards;
+      let hierarchy;
+      let boardTypes;
       before(function() {
         resetDatabase();
 
         user = Factory.create('user');
         team = Factory.create('team');
+        boardTypes = [
+          Factory.create('boardType', { teamId: team._id }),
+          Factory.create('boardType', { teamId: team._id }),
+          Factory.create('boardType', { teamId: team._id }),
+        ];
+        boards = [
+          Factory.create('board', { boardTypeId: boardTypes[0]._id }),
+          Factory.create('board', { boardTypeId: boardTypes[1]._id }),
+          Factory.create('board', { boardTypeId: boardTypes[2]._id }),
+        ];
         hierarchy = Factory.create('hierarchy');
-        boardType = Factory.create('boardType');
 
-        //team.boardTypeId
         team.users = [
           { email: user.emails[0].address, hierarchy: hierarchy._id },
           { email: faker.internet.email(), hierarchy: 'sistemas' },
           { email: faker.internet.email(), hierarchy: 'creativo' },
           { email: faker.internet.email(), hierarchy: 'creativo' },
           { email: faker.internet.email(), hierarchy: 'creativo' },
+        ];
+
+        team.boards = [
+          boardTypes[0]._id,
+          boardTypes[1]._id,
+          boardTypes[2]._id,
         ];
 
         resetDatabase();
@@ -41,7 +60,12 @@ if (Meteor.isServer) {
         Meteor.users.insert(user);
         Teams.insert(team);
         Hierarchies.insert(hierarchy);
-        BoardTypes.insert(boardType);
+        boards.forEach((board) => {
+          Boards.insert(board);
+        });
+        boardTypes.forEach((boardType) => {
+          BoardTypes.insert(boardType);
+        });
       });
 
       after(function() {
@@ -99,7 +123,10 @@ if (Meteor.isServer) {
       });
 
       it('should return the types of the team\'s boards', () => {
+        const _team = Teams.findOne(team._id);
+        const result = _team.getBoardTypes();
 
+        assert.deepEqual(result, boardTypes);
       });
     });
   });

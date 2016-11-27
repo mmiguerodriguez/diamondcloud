@@ -111,17 +111,11 @@ for (let i = 0; i < 4; i++) {
 Factory.define('spamAPIDocument', APICollection, obj);
 
 Factory.define('hierarchy', Hierarchies, {
-<<<<<<< HEAD
   name: faker.lorem.word(),
   permissions: [
     faker.lorem.word(),
     faker.lorem.word(),
   ],
-=======
-	name: faker.lorem.word(),
-	teamId: Random.id(),
-	permissions: [],
->>>>>>> unhardcode
 });
 
 /**
@@ -130,8 +124,9 @@ Factory.define('hierarchy', Hierarchies, {
  * @returns {Object} boardType
  */
 Factory.define('boardType', BoardTypes, {
-  name: faker.lorem.word(),
-  properties: [
+  name: () => faker.lorem.word(),
+  teamId: () => Random.id(),
+  properties: () => [
     faker.lorem.word(),
     faker.lorem.word(),
   ],

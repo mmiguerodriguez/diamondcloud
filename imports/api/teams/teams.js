@@ -1,10 +1,11 @@
-import { Meteor }         from 'meteor/meteor';
-import { Mongo }          from 'meteor/mongo';
+import { Meteor }      from 'meteor/meteor';
+import { Mongo }       from 'meteor/mongo';
 
-import { printObject }    from '../helpers/print-objects.js';
+import { printObject } from '../helpers/print-objects.js';
 
-import { Hierarchies }    from '../hierarchies/hierarchies';
-import { BoardTypes }     from '../board-types/board-types';
+import { Hierarchies } from '../hierarchies/hierarchies';
+import { Boards }      from '../boards/boards';
+import { BoardTypes }  from '../board-types/board-types';
 
 export const Teams = new Mongo.Collection('Teams');
 
@@ -98,11 +99,12 @@ Teams.helpers({
   },
 
   /**
-   * getBoardTypes: Returns the board types of the team's boards
+   * getBoardTypes: Returns the types of the team's boards
    *
-   * @returns {Object} boardTypes
+   * @returns {Array} boardTypes
    */
   getBoardTypes() {
+    console.log(this._id);
     return BoardTypes.find({ teamId: this._id }).fetch();
   },
 });

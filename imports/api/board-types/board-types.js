@@ -26,9 +26,9 @@ if (BoardTypes.find().count() < boardTypes.length) {
 }
 
 /**
- * Returns the boards by boardType
+ * Returns the boards by type
  *
- * @param {Array} boardTypeId
+ * @param {String} boardTypeId
  * @returns {Object} boards
  */
 BoardTypes.getBoardsByType = boardTypeId => (
