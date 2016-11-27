@@ -1,13 +1,14 @@
 import { Meteor }          from 'meteor/meteor';
 import { Random }          from 'meteor/random';
 import { Factory }         from 'meteor/dburles:factory';
-import faker		           from 'faker';
+import faker               from 'faker';
 
 import { Teams }           from '../teams/teams';
 import { Boards }          from '../boards/boards';
 import { Messages }        from '../messages/messages';
 import { BoardTypes }      from '../board-types/board-types';
 import { Hierarchies }     from '../hierarchies/hierarchies';
+import { Permissions }     from '../permissions/permissions';
 import { DirectChats }     from '../direct-chats/direct-chats';
 import { APICollection } 	 from '../api-collection/api-collection';
 import { ModuleInstances } from '../module-instances/module-instances';
@@ -113,7 +114,7 @@ Factory.define('hierarchy', Hierarchies, {
 	teamId: Random.id(),
 	permissions: [],
 });
-  
+
 /**
  * Returns a boardType
  *
@@ -125,4 +126,10 @@ Factory.define('boardType', BoardTypes, {
 		faker.lorem.word(),
 		faker.lorem.word(),
 	],
+});
+
+Factory.define('permission', Permissions, {
+  key: () => faker.lorem.word(),
+  name: () => faker.lorem.word(),
+  description: () => faker.lorem.sentence(),
 });
