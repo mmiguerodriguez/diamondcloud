@@ -9,7 +9,8 @@ import { Hierarchies }   from '../hierarchies/hierarchies';
 import { Teams }         from '../teams/teams';
 import { Boards }        from '../boards/boards';
 
-import '../factories/factories';
+import                        './users';
+import                        '../factories/factories';
 
 if (Meteor.isServer) {
   describe('Users', function() {
