@@ -1,16 +1,15 @@
 import { Meteor }        from 'meteor/meteor';
+import { Factory }       from 'meteor/dburles:factory';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
-import { chai }          from 'meteor/practicalmeteor:chai';
+import { chai, assert }  from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
-import   faker           from 'faker';
 
-import { Users }         from './users.js';
 import { Hierarchies }   from '../hierarchies/hierarchies';
-import { Teams }         from '../teams/teams.js';
-import { Boards }        from '../boards/boards.js';
+import { Teams }         from '../teams/teams';
+import { Boards }        from '../boards/boards';
 
-import '../factories/factories.js';
+import '../factories/factories';
 
 if (Meteor.isServer) {
   describe('Users', function() {
@@ -19,13 +18,13 @@ if (Meteor.isServer) {
       beforeEach(function() {
         resetDatabase();
         user = Factory.create('user');
-        
+
         teams = [
           Factory.create('team'),
           Factory.create('team', { archived: true }),
           Factory.create('team'),
         ];
-        
+
         userHierarchy = Factory.create('hierarchy', {
           teamId: teams[0]._id,
         });
@@ -109,10 +108,29 @@ if (Meteor.isServer) {
 
         chai.assert.deepEqual(expect, result);
       });
-      
+
       it('should return the correct user hierarchy', function() {
         const hierarchy = user.hierarchy(teams[0]._id);
         chai.assert.deepEqual(hierarchy, userHierarchy);
+      });
+    });
+  });
+}
+
+if (Meteor.isClient) {
+  describe('Users', () => {
+    describe('Helpers', () => {
+      it('should not let users to update its values', () => {
+        const user = Factory.create('user');
+
+        Meteor.users.update(user._id, {
+          $set: {
+            'profile.name': 'Another name',
+          },
+        });
+
+        const result = Meteor.users.findOne(user._id);
+        assert.equal(result.profile.name, user.profile.name);
       });
     });
   });

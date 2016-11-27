@@ -13,11 +13,14 @@ import { Hierarchies }     from '../hierarchies/hierarchies';
 import { Permissions }     from '../permissions/permissions';
 import { DirectChats }     from '../direct-chats/direct-chats';
 import { APICollection } 	 from '../api-collection/api-collection';
+import { BoardTypeProps }  from '../board-type-props/board-type-props';
 import { ModuleInstances } from '../module-instances/module-instances';
 
 Factory.define('user', Meteor.users, {
   emails: [
-    { address: faker.internet.email() }
+    {
+      address: faker.internet.email(),
+    },
   ],
   profile: {
     name: faker.name.findName(),
@@ -53,7 +56,10 @@ Factory.define('team', Teams, {
   url: 'random_url',
   boards: [],
   users: [
-    { email: faker.internet.email(), hierarchy: 'sistemas' }
+    {
+      email: faker.internet.email(),
+      hierarchy: 'sistemas',
+    },
   ],
   archived: false,
 });
@@ -63,14 +69,14 @@ Factory.define('directChat', DirectChats, {
   users: [
     { _id: Random.id(), notifications: faker.random.number({ min: 0, max: 20 }) },
     { _id: Random.id(), notifications: faker.random.number({ min: 0, max: 20 }) },
-  ]
+  ],
 });
 
 Factory.define('message', Messages, {
   senderId: Factory.get('user')._id,
-  type: "text",
+  type: 'text',
   content: faker.lorem.sentence(),
-  createdAt: new Date()
+  createdAt: new Date(),
 });
 
 Factory.define('directChatMessage', Messages, Factory.extend('message', {
@@ -104,8 +110,8 @@ Factory.define('notGlobalAPIDocument', APICollection, {
   collection: faker.lorem.word(),
 });
 
-let obj = {};
-for (let i = 0; i < 4; i++) {
+const obj = {};
+for (let i = 0; i < 4; i += 1) {
   obj[faker.lorem.word()] = faker.lorem.word();
 }
 
@@ -131,6 +137,12 @@ Factory.define('boardType', BoardTypes, {
     faker.lorem.word(),
     faker.lorem.word(),
   ],
+});
+
+Factory.define('boardTypeProp', BoardTypeProps, {
+  key: () => faker.lorem.word(),
+  name: () => faker.lorem.word(),
+  description: () => faker.lorem.sentence(),
 });
 
 Factory.define('permission', Permissions, {

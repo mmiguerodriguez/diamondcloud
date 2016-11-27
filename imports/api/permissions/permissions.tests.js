@@ -8,14 +8,6 @@ import                      '../factories/factories';
 if (Meteor.isServer) {
   describe('Permissions', () => {
     describe('Interfaces', () => {
-      before(() => {
-
-      });
-
-      after(() => {
-
-      });
-
       it('should find a permission by its key', () => {
         const permission = Factory.create('permission');
         const result = Permissions.findByKey(permission.key);

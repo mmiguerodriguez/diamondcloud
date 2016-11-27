@@ -8,35 +8,14 @@ export const Permissions = new Mongo.Collection('Permissions');
 Permissions.helpers({});
 Permissions.findByKey = key => Permissions.findOne({ key });
 
-Modules.find().fetch().forEach((module) => {
-  readModuleConfig(module._id)
-  .then((result) => {
-    const { settings } = result;
-
-    settings.permissions.forEach((permission) => {
-      if (!Permissions.findByKey(permission.key)) {
-        Permissions.insert(permission);
-      }
-    });
-
-    settings.boardTypeProps.forEach((property) => {
-    //  BoardTypeProps.insert(property);
-    });
-  }, (error) => {
-    if (error.code === 'ENOENT') {
-      console.log(`${module.name} config.json file wasn't found`);
-    }
-  });
-});
-
 /**
- * Permissions
- * - access_all_boards
- * - access_visible_boards
- * - share_team
- * - change_user_hierarchy
- * - remove_user_from_team
- */
+* Permissions
+* - access_all_boards
+* - access_visible_boards
+* - share_team
+* - change_user_hierarchy
+* - remove_user_from_team
+*/
 const permissions = [
   {
     name: 'Acceder a todos los pizarrones',
@@ -65,10 +44,25 @@ const permissions = [
   },
 ];
 
-if (Permissions.find().count() < permissions.length) {
-  permissions.forEach((permission) => {
-    if (!Permissions.findByKey(permission.key)) {
-      Permissions.insert(permission);
+Modules.find().fetch().forEach((module) => {
+  readModuleConfig(module._id)
+  .then((result) => {
+    const { settings } = result;
+
+    settings.permissions.forEach((permission) => {
+      if (!Permissions.findByKey(permission.key)) {
+        Permissions.insert(permission);
+      }
+    });
+  }, (error) => {
+    if (error.code === 'ENOENT') {
+      console.log(`${module.name} config.json file wasn't found`);
     }
   });
-}
+});
+
+permissions.forEach((permission) => {
+  if (!Permissions.findByKey(permission.key)) {
+    Permissions.insert(permission);
+  }
+});
