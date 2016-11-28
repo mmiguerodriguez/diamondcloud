@@ -95,8 +95,6 @@ Boards.helpers({
     const board = Boards.findOne(this._id);
     return BoardTypes.findOne(board.boardTypeId);
   },
-  //boardtypesproperties
-  //boardtypes
 });
 
 Boards.boardFields = {

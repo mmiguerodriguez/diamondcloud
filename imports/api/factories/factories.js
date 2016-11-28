@@ -9,9 +9,10 @@ import { Boards }          from '../boards/boards';
 import { Messages }        from '../messages/messages';
 
 import { BoardTypes }      from '../board-types/board-types';
+import { BoardTypeProps }  from '../board-type-props/board-type-props';
 import { Hierarchies }     from '../hierarchies/hierarchies';
 import { DirectChats }     from '../direct-chats/direct-chats';
-import { APICollection } 	 from '../api-collection/api-collection';
+import { APICollection }   from '../api-collection/api-collection';
 import { ModuleInstances } from '../module-instances/module-instances';
 
 Factory.define('user', Meteor.users, {
@@ -119,7 +120,7 @@ Factory.define('hierarchy', Hierarchies, {
 });
 
 /**
- * Returns a boardType
+ * Returns a type of board
  *
  * @returns {Object} boardType
  */
@@ -130,4 +131,16 @@ Factory.define('boardType', BoardTypes, {
     faker.lorem.word(),
     faker.lorem.word(),
   ],
+  archived: () => false,
+});
+
+/**
+ * Returns a property of board
+ *
+ * @returns {Object} boardTypeProp
+ */
+Factory.define('boardTypeProp', BoardTypeProps, {
+  key: () => faker.lorem.word(),
+  name: () => faker.lorem.word(),
+  description: () => faker.lorem.text(),
 });

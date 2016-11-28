@@ -1,9 +1,8 @@
 import { Meteor }        from 'meteor/meteor';
-import { chai, assert }  from 'meteor/practicalmeteor:chai';
+import { assert }        from 'meteor/practicalmeteor:chai';
 import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { Factory }       from 'meteor/dburles:factory';
 
-import { Boards }        from '../boards/boards';
 import { BoardTypes }    from '../board-types/board-types';
 import                        '../factories/factories';
 
@@ -24,21 +23,16 @@ if (Meteor.isServer) {
         Factory.create('board', { boardTypeId: boardTypes[1]._id }),
         Factory.create('board', { boardTypeId: boardTypes[1]._id }),
       ];
-
-      // foreach vs map
-      boardTypes.map()
-      Boards.insert(boards);
-      BoardTypes.insert(boardTypes);
     });
 
     describe('Interfaces', () => {
       it('should return the boards by type', () => {
         const result = BoardTypes.getBoardsByType(boardTypes._id);
-        const expected = [
+        const expect = [
           boards[0],
           boards[1],
         ];
-        assert(result, expected);
+        assert(result, expect);
       });
     });
   });
