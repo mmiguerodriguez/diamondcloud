@@ -1,4 +1,5 @@
 import { Meteor }               from 'meteor/meteor';
+import { Factory }              from 'meteor/dburles:factory';
 import { resetDatabase }        from 'meteor/xolvio:cleaner';
 import { sinon }                from 'meteor/practicalmeteor:sinon';
 import { chai }                 from 'meteor/practicalmeteor:chai';
@@ -22,6 +23,7 @@ import { createTeam,
 import { createBoard }          from '../boards/methods.js';
 import { createModuleInstance } from '../module-instances/methods.js';
 import { APIInsert }            from '../api/methods.js';
+import                               '../users/users'; // to have the factory
 
 import '../factories/factories.js';
 
@@ -181,6 +183,10 @@ if (Meteor.isServer) {
         };
 
         createTeam.call(args, (err, res) => {
+          if (err) {
+            throw new Meteor.Error(err);
+          }
+          console.log('la respuesta del metodo createTeam es: ', res);
           result = res;
           delete result._id;
 
@@ -300,7 +306,9 @@ if (Meteor.isServer) {
         expect.archived = true;
 
         archiveTeam.call(args, (err, res) => {
-          if (err) throw new Meteor.Error(err);
+          if (err) {
+            throw new Meteor.Error(err);
+          }
           result = res;
         });
         chai.assert.isTrue(JSON.stringify(result) === JSON.stringify(expect));

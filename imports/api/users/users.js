@@ -1,5 +1,3 @@
-import { Mongo }       from 'meteor/mongo';
-
 import { Teams }       from '../teams/teams';
 import { Boards }      from '../boards/boards';
 import { Hierarchies } from '../hierarchies/hierarchies';
@@ -59,7 +57,7 @@ Meteor.users.helpers({
   /**
    * Returns if the  current user has a certain permission
    *
-   * @param {String} id
+   * @param {String} permissionId
    *  The permission id.
    * @param {String} key
    *  The permission key
@@ -67,14 +65,22 @@ Meteor.users.helpers({
    *  True if the hierarchy of the user in the team has the  permission
    *  False otherwise
    */
-  hasPermission({ teamId, id, key }) {
+  hasPermission({ teamId, permissionId, key }) {
     if (!teamId) {
       throw new Meteor.Error('Meteor.users.helpers.hasPermission.parameterMissing',
       'There is a missing parameter.');
     }
     if (key) {
-      id = Permissions.findByKey(key)._id;
+      const permission = Permissions.findByKey(key);
+      if (!permission) {
+        throw new Meteor.Error('Hierarchies.helpers.hasPermission.wrongKey',
+        'The key passed is not valid.');
+      }
+
+      permissionId = permission._id;
     }
+    
+    return this.hierarchy().hasPermission({ id: permissionId });
   },
 });
 

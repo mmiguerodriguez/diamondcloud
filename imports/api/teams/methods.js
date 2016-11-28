@@ -143,7 +143,6 @@ export const changeUserHierarchy = new ValidatedMethod({
     userEmail: { type: String },
     hierarchy: {
       type: String,
-      allowedValues: Hierarchies.find().fetch().map(e => e._id),
     },
   }).validator(),
   run({ teamId, userEmail, hierarchy }) {
@@ -153,7 +152,7 @@ export const changeUserHierarchy = new ValidatedMethod({
     }
 
     const team = Teams.findOne(teamId);
-    if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) {
+    if (!team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) { // TODO: replace this with permissions
       throw new Meteor.Error('Teams.methods.changeUserHierarchy.notAllowed',
       'The user is not allowed to change the hierarchy of another user.');
     }
@@ -175,7 +174,6 @@ export const shareTeam = new ValidatedMethod({
     email: { type: String, regEx: SimpleSchema.RegEx.Email },
     hierarchy: {
       type: String,
-      allowedValues: Hierarchies.find().fetch().map(e => e._id),
     },
     teamId: { type: String },
   }).validator(),

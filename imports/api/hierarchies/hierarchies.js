@@ -1,6 +1,4 @@
 import { Mongo }       from 'meteor/mongo';
-import { Factory }     from 'meteor/dburles:factory';
-import   faker         from 'faker';
 
 import { Team }        from '../teams/teams';
 import { Permissions } from '../permissions/permissions';
@@ -46,11 +44,4 @@ Hierarchies.helpers({
 
     return hasPermission;
   }
-});
-
-
-Factory.define('hierarchy', Hierarchies, {
-  name: () => faker.lorem.sentence(),
-  teamId: () => Factory.get('team'),
-  permissions: () => [],
 });

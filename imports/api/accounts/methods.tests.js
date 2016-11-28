@@ -1,4 +1,5 @@
 import { Meteor }          from 'meteor/meteor';
+import { Factory }         from 'meteor/dburles:factory';
 import { resetDatabase }   from 'meteor/xolvio:cleaner';
 import { sinon }           from 'meteor/practicalmeteor:sinon';
 import { chai }            from 'meteor/practicalmeteor:chai';
@@ -6,8 +7,9 @@ import { chai }            from 'meteor/practicalmeteor:chai';
 import { insertFirstUser } from './methods';
 import { Teams }           from '../teams/teams';
 import { Boards }          from '../boards/boards';
+import                          '../users/users'; // to have the factory
 
-import '../factories/factories';
+import                     '../factories/factories';
 
 if (Meteor.isServer) {
   describe('Accounts', () => {
@@ -37,6 +39,7 @@ if (Meteor.isServer) {
       });
 
       it('should insert the first user of a team on login', (done) => {
+        console.log('el team es: ', JSON.stringify(team, null, 4));
         insertFirstUser.call({ url: team.url }, (error, result) => {
           if (error) {
             throw new Meteor.Error(error);

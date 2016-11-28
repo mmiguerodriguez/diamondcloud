@@ -1,9 +1,7 @@
-import { Meteor }         from 'meteor/meteor';
-import { Mongo }          from 'meteor/mongo';
+import { Meteor }      from 'meteor/meteor';
+import { Mongo }       from 'meteor/mongo';
 
-import { printObject }    from '../helpers/print-objects.js';
-
-import { Hierarchies }    from '../hierarchies/hierarchies';
+import { Hierarchies } from '../hierarchies/hierarchies';
 
 export const Teams = new Mongo.Collection('Teams');
 
@@ -15,6 +13,15 @@ export const TEAMS = [
 
 Teams.helpers({
   /**
+   * Returns the team's hierarchies
+   * @returns {Array} hierarchies
+   */
+  hierarchies() {
+    return Hierarchies.find({
+      teamId: this._id,
+    }).fetch();
+  },
+  /**
    * Returns the user hierarchy in the team
    * @param {String} email
    * @returns {String} hierarchy
@@ -25,21 +32,19 @@ Teams.helpers({
         return user.hierarchy;
       }
     }
-
-    return 'ghost';
   },
   /**
    * Shows if the user has a certain hierarchy in the team
    * @param {String} email
-   * @param {String} hierarchy
+   * @param {String} hierarchyId
    * @returns {Boolean} isCertainHierarchy
    *
    * TODO: let hierarchy be an array of hierarchies
    */
-  userIsCertainHierarchy(email, hierarchy) {
+  userIsCertainHierarchy(email, hierarchyId) {
     for (let i = 0; i < this.users.length; i += 1) {
       if (email === this.users[i].email) {
-        if (hierarchy === this.users[i].hierarchy) {
+        if (hierarchyId === this.users[i].hierarchy) {
           return true;
         }
 
@@ -77,23 +82,6 @@ Teams.helpers({
   getUsers(fields) {
     const emails = this.users.map(user => user.email);
     return Meteor.users.findByEmail(emails, fields);
-  },
-
-  userHasCertainPermission(email, permission) {
-    for (let i = 0; i < this.users.length; i += 1) {
-      if (email === this.users[i].email) {
-        const hierarchy = Hierarchies.findOne(this.users[i].hierarchy);
-
-        if (hierarchy) {
-          if (hierarchy.permissions.find(e => e == permission)) {
-            return true;
-          }
-        }
-
-        return false;
-      }
-    }
-    return false;
   },
 });
 

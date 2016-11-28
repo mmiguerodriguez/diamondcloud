@@ -29,6 +29,10 @@ export default class DashboardLayout extends React.Component {
         <CreateTeamModal />
         {
           (this.state.team) ? (
+            // TODO: si el usuario tiene algun permiso que requiera que se
+            // muestre el modal de configuracion, se tiene que mostrar, pero
+            // solo para esos features. EJ: si tiene share_team pero no
+            // remove_user, se tiene que mostrar, pero solo share.
             (this.state.team.userIsCertainHierarchy(Meteor.user().email(), 'sistemas')) ? (
               <ConfigTeamModal
                 key={ this.state.team._id }

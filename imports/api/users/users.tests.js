@@ -4,14 +4,14 @@ import { resetDatabase } from 'meteor/xolvio:cleaner';
 import { sinon }         from 'meteor/practicalmeteor:sinon';
 import { chai, assert }  from 'meteor/practicalmeteor:chai';
 import { Random }        from 'meteor/random';
-import   faker           from 'faker';
 
 import { Users }         from './users';
 import { Hierarchies }   from '../hierarchies/hierarchies';
 import { Teams }         from '../teams/teams';
 import { Boards }        from '../boards/boards';
+import { Permissions }   from '../permissions/permissions';
 
-import '../factories/factories';
+import                        '../factories/factories';
 
 if (Meteor.isServer) {
   describe('Users', function() {
@@ -120,17 +120,70 @@ if (Meteor.isServer) {
   
   describe('Users (new tests)', () => {
     describe('Helpers', () => {
-      
-      before(() => {
+      describe('hasPermission', () => {
+        let user;
+        let team;
+        let hierarchy;
+        let permissions;
+        before(() => {
+          resetDatabase();
+          permissions = [
+            { _id: Random.id() },
+          ];
+          
+          user = Factory.create('user');
+          team = Factory.create('team');
+          
+          hierarchy = Factory.create('hierarchy', {
+            permissions,
+            teamId: team._id,
+          });
+          
+          Teams.update(team._id, {
+            $set: {
+              users: [
+                {
+                  email: user.email(),
+                  hierarchy: hierarchy._id,
+                },
+              ],
+            }
+          })
+          
+          sinon.stub(Permissions, 'findByKey', () => permissions[0]);
+        });
         
-      });
-      
-      after(() => {
+        after(() => {
+          Permissions.findByKey.restore();
+        });
         
-      });
-      
-      it('', () => {
+        it('should return true if the user has a permission', () => {
+          const hasPermission = hierarchy.hasPermission({
+            permissionId: permissions[0]._id,
+          });
+          
+          assert.isTrue(hasPermission);
+        });
         
+        it('should return false if the user does not has a permission', () => {
+          const hasPermission = hierarchy.hasPermission({
+            permissionId: Random.id(),
+          });
+          
+          assert.isFalse(hasPermission);
+        });
+        
+        it('should return true if the user has a permission by key', () => {
+          /**
+           * Permissions.findByKey is stubbed so it
+           * will always return true
+           */
+          const hasPermission = hierarchy.hasPermission({
+            key: Random.id(),
+          });
+          
+          assert.isTrue(hasPermission);
+        });
       });
     });
   });

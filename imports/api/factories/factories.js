@@ -1,4 +1,5 @@
 import { Meteor }          from 'meteor/meteor';
+import { Factory }         from 'meteor/dburles:factory';
 import { Random }          from 'meteor/random';
 import faker		           from 'faker';
 
@@ -19,10 +20,22 @@ Factory.define('user', Meteor.users, {
 	},
 });
 
+Factory.define('team', Teams, {
+	name: () => faker.company.companyName(),
+	plan: () => Random.choice(['free', 'premium']),
+	type: () => Random.choice(['web', 'android', 'ios', 'marketing']),
+	url: () => faker.internet.domainWord(),
+	boards: [],
+	users: [
+		{ email: faker.internet.email(), hierarchy: Random.id() }
+	],
+	archived: () => false,
+});
+
 Factory.define('board', Boards, {
 	name: faker.lorem.word(),
 	users: [],
-	type: Random.choice(['creativos', 'sistemas', 'directores creativos', 'directores de cuentas', 'administradores', 'coordinadores', 'medios']),
+	type: Random.id(),
 	isPrivate: null,
 	moduleInstances: [],
 	archived: false,
@@ -41,18 +54,6 @@ Factory.define('privateBoard', Boards, Factory.extend('board', {
 	],
 }));
 
-Factory.define('team', Teams, {
-	name: faker.company.companyName(),
-	plan: Random.choice(['free', 'premium']),
-	type: Random.choice(['web', 'android', 'ios', 'marketing']),
-	url: 'random_url',
-	boards: [],
-	users: [
-		{ email: faker.internet.email(), hierarchy: 'sistemas' }
-	],
-	archived: false,
-});
-
 Factory.define('directChat', DirectChats, {
 	teamId: Factory.get('team'),
 	users: [
@@ -62,7 +63,7 @@ Factory.define('directChat', DirectChats, {
 });
 
 Factory.define('message', Messages, {
-	senderId: Factory.get('user')._id,
+	senderId: Random.id(),
 	type: "text",
 	content: faker.lorem.sentence(),
 	createdAt: new Date()
@@ -107,7 +108,7 @@ for (let i = 0; i < 4; i++) {
 Factory.define('spamAPIDocument', APICollection, obj);
 
 Factory.define('hierarchy', Hierarchies, {
-	name: faker.lorem.word(),
-	teamId: Random.id(),
-	permissions: [],
+  name: () => faker.lorem.sentence(),
+  teamId: () => Factory.get('team'),
+  permissions: () => [],
 });

@@ -1,18 +1,20 @@
-import { Meteor }               from 'meteor/meteor';
-import { resetDatabase }        from 'meteor/xolvio:cleaner';
-import { sinon }                from 'meteor/practicalmeteor:sinon';
-import { chai }                 from 'meteor/practicalmeteor:chai';
-import { Random }               from 'meteor/random';
-import { printObject }          from '../helpers/print-objects.js';
-import   faker                  from 'faker';
-import                               '../factories/factories.js';
+import { Meteor }          from 'meteor/meteor';
+import { Factory }         from 'meteor/dburles:factory';
+import { resetDatabase }   from 'meteor/xolvio:cleaner';
+import { sinon }           from 'meteor/practicalmeteor:sinon';
+import { chai }            from 'meteor/practicalmeteor:chai';
+import { Random }          from 'meteor/random';
+import { printObject }     from '../helpers/print-objects.js';
+import   faker             from 'faker';
+import                          '../factories/factories.js';
 
-import { Teams }                from '../teams/teams.js';
-import { Boards }               from '../boards/boards.js';
-import { ModuleInstances }      from '../module-instances/module-instances.js';
-import { APICollection }        from '../api-collection/api-collection.js';
+import { Teams }           from '../teams/teams.js';
+import { Boards }          from '../boards/boards.js';
+import { ModuleInstances } from '../module-instances/module-instances.js';
+import { APICollection }   from '../api-collection/api-collection.js';
+import                          '../users/users'; // to have the factory
 
-import { generateAPI }          from './api-client.js';
+import { generateAPI }     from './api-client.js';
 
 if (Meteor.isClient) {
   describe('API', () => {

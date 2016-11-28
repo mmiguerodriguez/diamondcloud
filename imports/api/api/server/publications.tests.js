@@ -1,5 +1,6 @@
-import   faker                  from 'faker';
 import { Meteor }               from 'meteor/meteor';
+import { Factory }              from 'meteor/dburles:factory';
+import   faker                  from 'faker';
 import { Random }               from 'meteor/random';
 import { resetDatabase }        from 'meteor/xolvio:cleaner';
 import { chai }                 from 'meteor/practicalmeteor:chai';
@@ -13,6 +14,7 @@ import { Teams }                from '../../teams/teams.js';
 import { Boards }               from '../../boards/boards.js';
 import { ModuleInstances }      from '../../module-instances/module-instances.js';
 import { APICollection }        from '../../api-collection/api-collection.js';
+import                          '../../users/users'; // to have the factory
 
 if (Meteor.isServer) {
   describe('API', function() {

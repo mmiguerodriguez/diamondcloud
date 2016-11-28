@@ -118,12 +118,16 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
   const team = Boards.findOne(boardsIds[0]).team();
   const user = Meteor.users.findOne(userId);
   
-  const isDirector = team.userHasCertainPermission(
-    user.email(),
-    'accessVisibleBoards'
-  );
+  const canAccessAllVisibleBoards = user.hasPermission({
+    key: 'access_all_visible_boards',
+    teamId: team._id,
+  });
+  const canAccessAllBoards = user.hasPermission({
+    key: 'access_all_boards',
+    teamId: team._id,
+  });
 
-  const result = Boards.find({
+  return Boards.find({
     $and: [
       {
         _id: {
@@ -133,28 +137,28 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
       {
         $or: [
           {
-            users: {
-              $elemMatch: {
-                email: user.email(),
-              },
-            },
+            'users.email': user.email(),
           },
           {
             isPrivate: false,
           },
           {
-            // Check that isDirector is true
-            _id: {
-              $in: isDirector ? boardsIds : [],
-            },
+            $and: [
+              // Check if an user can access all visible boards
+              {
+                _id: { 
+                  $in: canAccessAllVisibleBoards ? boardsIds : [],
+                },
+              },
+              {
+                visible: true,
+              },
+            ],
           },
           {
             // Check that user can access all boards
             _id: {
-              $in: team.userHasCertainPermission(
-                user.email(),
-                'accessAllBoards'
-              ) ? boardsIds : [],
+              $in: canAccessAllBoards ? boardsIds : [],
             },
           },
         ],
@@ -166,8 +170,6 @@ Boards.getBoards = (boardsIds, userId, fields = {}) => {
   }, {
     fields,
   });
-
-  return result;
 };
 
 Boards.isValid = (boardId, userId) => {
@@ -178,39 +180,42 @@ Boards.isValid = (boardId, userId) => {
 
   const team = Boards.findOne(boardId).team();
 
-  const isDirector = team.userHasCertainPermission(
-    user.email(),
-    'accessVisibleBoards'
-  );
+  const canAccessAllVisibleBoards = user.hasPermission({
+    key: 'access_all_visible_boards',
+    teamId: team._id,
+  });
+  const canAccessAllBoards = user.hasPermission({
+    key: 'access_all_boards',
+    teamId: team._id,
+  });
 
   const board = Boards.findOne({
     _id: boardId,
     $or: [
-      { isPrivate: false },
       {
-        users: {
-          $elemMatch: {
-            email: user.email(),
-          },
-        },
+        'users.email': user.email(),
+      },
+      {
+        isPrivate: false,
       },
       {
         $and: [
+          // Check if an user can access all visible boards
           {
-            visibleForDirectors: true,
+            _id: { 
+              $in: canAccessAllVisibleBoards ? boardId : [],
+            },
           },
           {
-            // Check that isDirector is true
-            _id: isDirector ? boardId : undefined,
+            visible: true,
           },
         ],
       },
       {
         // Check that user can access all boards
-        _id: team.userHasCertainPermission(
-          user.email(),
-          'accessAllBoards'
-        ) ? boardId : undefined,
+        _id: {
+          $in: canAccessAllBoards ? boardId : [],
+        },
       },
     ],
   });

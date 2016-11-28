@@ -1,11 +1,12 @@
-import { Meteor }       from 'meteor/meteor';
-import { Factory }      from 'meteor/dburles:factory';
-import { sinon }        from 'meteor/practicalmeteor:sinon';
-import { chai, assert } from 'meteor/practicalmeteor:chai';
-import { Random }       from 'meteor/random';
+import { Meteor }        from 'meteor/meteor';
+import { resetDatabase } from 'meteor/xolvio:cleaner';
+import { Factory }       from 'meteor/dburles:factory';
+import { sinon }         from 'meteor/practicalmeteor:sinon';
+import { chai, assert }  from 'meteor/practicalmeteor:chai';
+import { Random }        from 'meteor/random';
 
-import { Hierarchies }  from './hierarchies';
-import { Permissions }  from '../permissions/permissions';
+import { Hierarchies }   from './hierarchies';
+import { Permissions }   from '../permissions/permissions';
 
 if (Meteor.isServer) {
   describe('Hierarchies', () => {
@@ -15,9 +16,8 @@ if (Meteor.isServer) {
         let permissions;
   
         before(() => {
+          resetDatabase();
           permissions = [
-            { _id: Random.id() },
-            { _id: Random.id() },
             { _id: Random.id() },
           ];
   

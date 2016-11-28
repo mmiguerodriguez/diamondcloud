@@ -1,4 +1,5 @@
 import { Meteor }               from 'meteor/meteor';
+import { Factory }              from 'meteor/dburles:factory';
 import { resetDatabase }        from 'meteor/xolvio:cleaner';
 import { PublicationCollector } from 'meteor/johanbrook:publication-collector';
 import { sinon }                from 'meteor/practicalmeteor:sinon';
@@ -10,6 +11,7 @@ import                               './publications.js';
 import { Teams }                from '../teams.js';
 import { DirectChats }          from '../../direct-chats/direct-chats.js';
 import { Boards }               from '../../boards/boards.js';
+import                          '../../users/users'; // to have the factory
 
 import '../../factories/factories.js';
 
