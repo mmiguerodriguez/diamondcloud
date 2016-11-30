@@ -31,8 +31,6 @@ $white: #eee
   &.hide-error
     animation-name: disappear
     animation-duration: 0.7s
-
-
 @keyframes appear
   0%
     right: -100px
@@ -41,7 +39,6 @@ $white: #eee
   100%
     right: 10px
     opacity: 1
-
 @keyframes disappear
   0%
     right: 10px
@@ -123,7 +120,6 @@ $white: #eee
     .fc-button
       @extend .calendar-button
       display: block !important
-
 .calendar-button
   background: none !important
   background-color: #ddd !important
@@ -132,7 +128,6 @@ $white: #eee
 .fc-today
   opacity: 0
   border: none
-
 /* Styling for each event from Schedule */
 .fc-time-grid-event.fc-v-event.fc-event
   border-radius: 4px
@@ -141,12 +136,10 @@ $white: #eee
   opacity: .65
   left: 5% !important
   right: 5% !important
-
 /* Bolds the name of the event and inherits the font size */
 .fc-event
   font-size: inherit !important
   font-weight: bold !important
-
 /* Remove the header border from Schedule */
 .fc td, .fc th
   border-bottom: none
@@ -154,27 +147,21 @@ $white: #eee
   border-right: none
   border-width: 1px !important
   vertical-align: top !important
-
 .fc-day-top
   border-top: 1px solid #eee !important
-
 /* Inherits background for each event from Schedule. */
 .fc-event .fc-bg
   z-index: 1 !important
   background: inherit !important
   opacity: .25 !important
-
 /* Normal font weight for the time in each event */
 .fc-time-grid-event .fc-time
   font-weight: normal !important
-
 /* Apply same opacity to all day events */
 .fc-ltr .fc-h-event.fc-not-end, .fc-rtl .fc-h-event.fc-not-start
   opacity: .65 !important
   margin-left: 12px !important
   padding: 5px! important
-
-
 /* Apply same opacity to all day events */
 .fc-day-grid-event.fc-h-event.fc-event.fc-not-start.fc-end
   opacity: .65 !important
@@ -182,29 +169,39 @@ $white: #eee
   padding: 5px! important
 
 //Popover
+$popover-icon-size: 15px
+
+.popover-icon
+  float: right
+  opacity: 0.5
+  cursor: pointer
+  transition: 0.3s all ease
+  &:hover
+    opacity: 0.9
+
 .popover
-  top: 50px !important
   width: 300px
-
-.popover-user-photo
-  margin-top: 5px
-  border-radius: 30px
-  width: 60px
-
-.popover-content
-  padding: 9px 0px
-
-.popover-data
-  margin-left: 0
-  margin-right: 0
-  margin-bottom: 10px
-  .user-info
-    color: #000 !important
-
-  .user-mail
-    color: #777 !important
-    font-size: 12px
-
-.popover-content
-  hr
-    margin: 0 !important
+  .popover-content
+    padding: 9px 0px
+    .popover-data
+      margin-left: 0
+      margin-right: 0
+      .event-name
+        color: #000 !important
+      .event-duration
+        color: #777 !important
+        font-size: 12px
+      .col-xs-2.fixed
+        padding-right: 9px
+        .close-popover
+          width: $popover-icon-size
+          @extend .popover-icon
+    .popover-footer
+      padding: 0 9px
+      overflow: auto
+      .footer-icon
+        display: inline-block
+        margin-left: 5px
+        @extend .popover-icon
+        .delete-event, .edit-event
+          width: $popover-icon-size

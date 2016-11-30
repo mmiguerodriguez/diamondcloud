@@ -3,6 +3,7 @@ import React from 'react';
 import Popover from '../popover/Popover';
 
 class ViewPage extends React.Component {
+
   render() {
     return (
       <div>
@@ -42,6 +43,27 @@ class ViewPage extends React.Component {
       },
       eventSources: [{
         events: [
+          {
+            title: 'This is a Material Design event!',
+            start: '2016-11-13',
+            end: '2016-11-18',
+            color: '#C2185B !important',
+            textColor: '#fff !important',
+          },
+          {
+            title: 'This is a Material Design event!',
+            start: '2016-11-13',
+            end: '2016-11-18',
+            color: '#C2185B !important',
+            textColor: '#fff !important',
+          },
+          {
+            title: 'This is a Material Design event!',
+            start: '2016-11-13',
+            end: '2016-11-18',
+            color: '#C2185B !important',
+            textColor: '#fff !important',
+          },
           {
             title: 'This is a Material Design event!',
             start: '2016-11-13',
