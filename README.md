@@ -1,6 +1,8 @@
 # Diamond Cloud
 
-Diamond cloud is a ...
+Diamond Cloud is a web and mobile platform where teams can work collaboratively in real time, in the cloud, and have all their communications in one place. Each team can create boards where teammates can draw and place modules such as a Google Drive integration, task manager, and video conferencing.
+
+We also provide an easy to use API for third-party developers to create their own modules.
 
 # Modules building
 **Production build**
